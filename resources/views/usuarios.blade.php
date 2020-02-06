@@ -1,1 +1,1 @@
-@extends("layout.plantilla")
+@extends('layouts.app')

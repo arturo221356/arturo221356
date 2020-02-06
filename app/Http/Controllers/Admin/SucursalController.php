@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Sucursal;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class SucursalController extends Controller
     public function index()
     {
         $sucursales= Sucursal::all();
-        return view("../sucursales/index",compact("sucursales"));
+        return view("../../sucursales/index",compact("sucursales"));
     }
 
     /**
@@ -25,7 +26,7 @@ class SucursalController extends Controller
      */
     public function create()
     {
-        return view("../sucursales/create");
+        return view("../../sucursales/create");
     }
 
     /**
@@ -42,7 +43,7 @@ class SucursalController extends Controller
         $sucursal->direccion_sucursal=$request->direccion_sucursal;
         $sucursal->email_sucursal=$request->email_sucursal;
         $sucursal->save();
-        return redirect("/sucursales");
+        return redirect("/admin/sucursales");
     }
 
     /**
@@ -80,7 +81,7 @@ class SucursalController extends Controller
         $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
         $sucursal = Sucursal::findOrFail($id);
         $sucursal->update($request->all());
-        return redirect("/sucursales");
+        return redirect("/admin/sucursales");
     }
 
     /**
@@ -93,6 +94,6 @@ class SucursalController extends Controller
     {
         $sucursal = Sucursal::findOrFail($id);
         $sucursal->delete();
-        return redirect("/sucursales");
+        return redirect("/admin/sucursales");
     }
 }

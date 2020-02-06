@@ -1,4 +1,4 @@
-@extends("../layout.plantilla")
+@extends('layouts.app')
 
 @section('title', 'Crear nueva Sucursal')
 
@@ -13,7 +13,7 @@
     <div class="container">
         <div class="col-md-6 mx-auto">    
             <h1>Nueva Sucursal</h1><br> 
-            <form method="POST" action="/sucursales">
+            <form method="POST" action="/admin/sucursales">
                 <div class="form-group">
                     <label for="nombre_sucursal">Nombre Sucursal:</label>
                     <input type="text" name="nombre_sucursal" id="nombre_sucursal" class="form-control" placeholder="Nombre">

@@ -14,11 +14,27 @@
 
 use App\Sucursal;
 
+Auth::routes();
+
 Route::get("/", "baseController@index");
 
-Route::get("/usuarios", "baseController@usuarios");
-
-Route::resource('/sucursales','SucursalController');
+//Route::resource("/admin/users", "Admin\UsersController");
 
 
 
+
+
+Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function(){
+    Route::resource('/','UsersController');
+    Route::resource('/users','UsersController');
+    Route::resource('/sucursales','SucursalController');
+});
+
+
+
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+Route::get('/home', 'HomeController@index')->name('home');

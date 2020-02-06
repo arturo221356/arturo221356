@@ -1,6 +1,5 @@
-@extends("../layout.plantilla")
+@extends('layouts.app')
 
-@section('title', "Editar Sucursal: $sucursal->nombre_sucursal")
 
 @section('container')
  
@@ -13,7 +12,7 @@
   <div class="container">  
     <div class="col-md-6 mx-auto">
         <h1>Editar: {{$sucursal->nombre_sucursal}}  </h1><br>     
-             <form method="POST" action="/sucursales/{{$sucursal->id}}">
+             <form method="POST" action="/admin/sucursales/{{$sucursal->id}}">
                 <input type="hidden" name="_method" value="PUT">
                 <div class="form-group">
                     <label for="nombre_sucursal">Nombre Sucursal:</label>
@@ -38,7 +37,7 @@
             </form>
             
                 <div class="col">
-                    <form method="post" action="/sucursales/{{$sucursal->id}}">
+                    <form method="post" action="/admin/sucursales/{{$sucursal->id}}">
                         <input type="hidden" name="_method" value="DELETE" class="btn btn-danger">    
                         <input type="submit" name="enviar" value="Eliminar" class="btn btn-danger" > 
                             {{ csrf_field() }}

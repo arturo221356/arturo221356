@@ -18,8 +18,8 @@ class CreateSucursalesTable extends Migration
             $table->string("nombre_sucursal");
             $table->string("direccion_sucursal");
             $table->string("email_sucursal");
-            $table->decimal("caja_sucursal");
-            $table->dateTime("ultimo_corte");
+            $table->decimal("caja_sucursal")->nullable();
+            $table->dateTime("ultimo_corte")->nullable();
             $table->timestamps();
         });
     }

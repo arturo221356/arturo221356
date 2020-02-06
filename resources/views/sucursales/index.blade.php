@@ -1,6 +1,5 @@
-@extends("../layout.plantilla")
+@extends('layouts.app')
 
-@section('title', 'Sucursales')
 
 @section('navbarBrand', 'Sucursales')
 
@@ -35,7 +34,7 @@
                         <td>{{$sucursal->email_sucursal}}</td>
                         <td>$@if($sucursal->caja_sucursal== NULL) 0 @else{{$sucursal->caja_sucursal}}@endif</td>
                         <td>{{$sucursal->ultimo_corte}}</td>
-                <td><a class="btn btn-outline-warning" href="{{route('sucursales.edit', $sucursal->id)}}" role="button">Editar</td>
+                <td><a class="btn btn-outline-warning" href="{{route('admin.sucursales.edit', $sucursal->id)}}" role="button">Editar</td>
                 </tr>
             @endforeach
         @stop
