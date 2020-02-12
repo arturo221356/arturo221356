@@ -4,10 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Sucursal;
+use App\User;
 use Illuminate\Http\Request;
 
 class SucursalController extends Controller
 {
+
+    
+    
+    
+    
+    
     /**
      * Display a listing of the resource.
      *

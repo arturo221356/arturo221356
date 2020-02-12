@@ -8,6 +8,9 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    
+    
+    
     use Notifiable;
 
     /**
@@ -42,5 +45,13 @@ class User extends Authenticatable
     public function sucursal(){
         return $this->belongsToMany('App\Sucursal');
     }
-
+    public function hasRole($role){
+        return User::roles()->where('name', $role)->first();
+       
+    }
+    public function roleName(){
+        return User::roles()->pluck('name')->first();
+       
+    }
+    
 }

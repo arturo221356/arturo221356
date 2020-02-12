@@ -14,17 +14,14 @@
 
 use App\Sucursal;
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
-Route::get("/", "baseController@index");
-
-//Route::resource("/admin/users", "Admin\UsersController");
+// Route::get("/", "baseController@index")->middleware('auth');
 
 
 
 
-
-Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function(){
+Route::namespace('Admin')->middleware('auth','role:admin')->prefix('admin')->name('admin.')->group(function(){
     Route::resource('/','UsersController');
     Route::resource('/users','UsersController');
     Route::resource('/sucursales','SucursalController');
@@ -33,8 +30,21 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function(){
 
 
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', function(){
+    
+    $redir = Auth::user()->roleName();
+    return redirect("$redir/");
+})->name('home');
+
+Route::get('/', function(){
+   
+    $redir = Auth::user()->roleName();
+    return redirect("$redir/");
+})->name('home')->middleware('auth');
 
 
 
-Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+

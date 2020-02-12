@@ -36,8 +36,20 @@
 
                     </ul>
                     
+                    @auth
+
+                           
+                        
+                        @if (Auth::user()->roleName()=='admin')
+                        @include('admin.adminNavbar')
+                        @else
+                        
+                    @endif 
                     
-                    @include('../layout.adminNavbar')
+                    @endauth
+
+
+                    
                 
                 
                   </div>

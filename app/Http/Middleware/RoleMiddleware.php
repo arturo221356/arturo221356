@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
+
 class RoleMiddleware
 {
     /**
@@ -14,9 +15,23 @@ class RoleMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, ... $roles)
     {
-        return redirect('/');
-        // return $next($request);
+        
+        $user = Auth::user();
+
+
+    
+        foreach($roles as $role) {
+            // Check if user has the role This check will depend on how your roles are set up
+            if($user->hasRole($role))
+                return $next($request);
+        }
+        
+        $redir = implode($user->roles()->get()->pluck('name')->toArray());
+        
+        return redirect("$redir/");
+        
+       
     }
 }
