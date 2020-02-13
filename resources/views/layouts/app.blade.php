@@ -44,6 +44,7 @@
                         @include('admin.adminNavbar')
                         @else
                         
+                    
                     @endif 
                     
                     @endauth
@@ -58,7 +59,7 @@
                 <!-- Authentication Links -->
                                   @guest
                                   <li class="nav-item">
-                                      <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                      <a class="nav-link" href="{{ route('login') }}">{{ __('Iniciar Sesion') }}</a>
                                   </li>
                                   @if (Route::has('register'))
                                       <li class="nav-item">
@@ -75,7 +76,7 @@
                                           <a class="dropdown-item" href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
                                                           document.getElementById('logout-form').submit();">
-                                              {{ __('Logout') }}
+                                              {{ __('Cerrar Sesion') }}
                                           </a>
       
                                           <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -90,7 +91,12 @@
           </nav>
 
         <main class="py-4">
-            @yield('content')
+            
+            <div class="container-fluid">
+                @yield('content')
+            </div>
+        
+        
         </main>
     </div>
 </body>

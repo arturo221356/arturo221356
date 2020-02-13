@@ -14,7 +14,7 @@
 
 use App\Sucursal;
 
-Auth::routes(['register' => false]);
+Auth::routes(['register' => false , 'reset' => false , 'password.reset' => false]);
 
 // Route::get("/", "baseController@index")->middleware('auth');
 
@@ -22,7 +22,9 @@ Auth::routes(['register' => false]);
 
 
 Route::namespace('Admin')->middleware('auth','role:admin')->prefix('admin')->name('admin.')->group(function(){
-    Route::resource('/','UsersController');
+    Route::get('/',function(){
+        return view('admin.index');
+    });
     Route::resource('/users','UsersController');
     Route::resource('/sucursales','SucursalController');
 });

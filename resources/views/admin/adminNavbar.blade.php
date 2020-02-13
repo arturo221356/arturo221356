@@ -16,13 +16,14 @@
                           </div>
                         </li>
                   
-                        <li class="nav-item dropdown {{ Request::is('usuarios') ? 'active' : '' }}">
+                        <li class="nav-item dropdown {{ Request::is('reportes') ? 'active' : '' }}">
                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Usuarios
+                            Reportes
                           </a>
                           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/admin/users">Lista de Usuarios</a>
-                            <a class="dropdown-item" href="/admin/users/create">Nueva Usuario</a>
+                            <a class="dropdown-item" href="/admin/reportes/ventas">Reporte de ventas</a>
+                            <a class="dropdown-item" href="/admin/reportes/activaciones/">Reporte de Activaciones</a>
+                            <a class="dropdown-item" href="/admin/reportes/activaciones/">Reporte de Equipos</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Productos</a>
                           </div>
@@ -48,6 +49,19 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                               <a class="dropdown-item" href="/admin/users">Lista de Usuarios</a>
                               <a class="dropdown-item" href="/admin/users/create">Nuevo Usuario</a>
+
+                            </div>
+                          </li>
+
+                          <li class="nav-item dropdown {{ Request::is('sucursales') ? 'active' : '' }}">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Productos
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/admin/users">Sims</a>
+                              <a class="dropdown-item" href="/admin/users/create">Equipos</a>
+                              <a class="dropdown-item" href="/admin/users/create">Recargas</a>
+                              <a class="dropdown-item" href="/admin/users/create">Promocionales</a>
 
                             </div>
                           </li>

@@ -2,9 +2,10 @@
 
 
 <div class="table-responsive">
-    <table class="table table-striped table-hover table-light results ">
+    <table class="table table-striped table-hover table-light results " id="myTable">
         <thead class="thead-light">
-            <tr>
+            <tr class="tablehead">
+                
                 @yield('thead')
                 
             </tr>

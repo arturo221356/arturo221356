@@ -28,7 +28,7 @@ class RoleMiddleware
                 return $next($request);
         }
         
-        $redir = implode($user->roles()->get()->pluck('name')->toArray());
+        $redir = Auth::user()->roleName();
         
         return redirect("$redir/");
         
