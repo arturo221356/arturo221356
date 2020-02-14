@@ -59,8 +59,8 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                               <a class="dropdown-item" href="/admin/users">Sims</a>
-                              <a class="dropdown-item" href="/admin/users/create">Equipos</a>
-                              <a class="dropdown-item" href="/admin/users/create">Recargas</a>
+                              <a class="dropdown-item" href="/admin/productos/equipos">Equipos</a>
+                              <a class="dropdown-item" href="/admin/productos/recargas">Recargas</a>
                               <a class="dropdown-item" href="/admin/users/create">Promocionales</a>
 
                             </div>

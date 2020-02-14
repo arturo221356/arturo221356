@@ -1,7 +1,12 @@
 @extends('layouts.app')
 
+@section('TableNavbarName', 'Usuarios')
+@section('TableNavbarButtons')
+    <li class="nav-item active">
+    <a class="nav-link" href="/admin/users/create">Nuevo Usuario<span class="sr-only">(current)</span></a>
+    </li>
+@endsection
 
-@section('navbarBrand', 'Sucursales')
 
 @section('container')
  
@@ -11,6 +16,8 @@
     @section('content')
         
         @include('layout.tablesearch') 
+
+
         
         
         

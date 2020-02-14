@@ -1,7 +1,12 @@
 @extends('layouts.app')
 
 
-@section('navbarBrand', 'Sucursales')
+@section('TableNavbarName', 'Sucursales')
+@section('TableNavbarButtons')
+<li class="nav-item active">
+    <a class="nav-link" href="/admin/sucursales/create">Nueva Sucursal<span class="sr-only">(current)</span></a>
+</li>
+@endsection
 
 @section('container')
  

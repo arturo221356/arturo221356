@@ -21,12 +21,14 @@ Auth::routes(['register' => false , 'reset' => false , 'password.reset' => false
 
 
 
-Route::namespace('Admin')->middleware('auth','role:admin')->prefix('admin')->name('admin.')->group(function(){
+Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->name('admin.')->group(function(){
     Route::get('/',function(){
         return view('admin.index');
     });
     Route::resource('/users','UsersController');
     Route::resource('/sucursales','SucursalController');
+    Route::resource('/productos/recargas','RecargasController');
+    Route::resource('/productos/equipos','EquiposController');
 });
 
 

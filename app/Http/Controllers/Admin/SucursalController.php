@@ -23,7 +23,7 @@ class SucursalController extends Controller
     public function index()
     {
         $sucursales= Sucursal::all();
-        return view("../../sucursales/index",compact("sucursales"));
+        return view("../admin/sucursales/index",compact("sucursales"));
     }
 
     /**
@@ -33,7 +33,7 @@ class SucursalController extends Controller
      */
     public function create()
     {
-        return view("../../sucursales/create");
+        return view("../admin/sucursales/create");
     }
 
     /**
@@ -73,7 +73,7 @@ class SucursalController extends Controller
     public function edit($id)
     {
         $sucursal = Sucursal::findOrFail($id);
-        return view("sucursales.edit", compact("sucursal"));   
+        return view("admin.sucursales.edit", compact("sucursal"));   
     }
 
     /**
