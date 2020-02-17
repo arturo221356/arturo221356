@@ -14,4 +14,7 @@ protected $fillable = ["nombre_sucursal","direccion_sucursal","email_sucursal"];
 public function users(){
     return $this->belongsToMany('App\User');
 }
+public function imeis(){
+    return $this->hasMany('App\Imei');
+}
 }
