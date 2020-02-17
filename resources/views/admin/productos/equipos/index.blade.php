@@ -3,7 +3,7 @@
 
 @section('TableNavbarButtons')
 <li class="nav-item active">
-    <a class="nav-link" href="/admin/productos/recargas/create">Nuevo Equipo<span class="sr-only">(current)</span></a>
+    <a class="nav-link" href="/admin/productos/equipos/create">Nuevo Equipo<span class="sr-only">(current)</span></a>
 </li>
 @endsection
 
@@ -32,8 +32,8 @@
         <th scope="col">Marca</th>
         <th scope="col">Modelo</th>
         <th scope="col">Precio</th>
-        <th scope="col">Costo de Compra</th>
-        <th scope="col">Eliminar</th>
+        <th scope="col">Costo</th>
+        <th scope="col">Editar</th>
         @stop
 
         @section('tbody')
@@ -44,12 +44,7 @@
                         <td>{{$equipo->modelo}}</td>
                         <td>${{$equipo->precio}}</td>
                         <td>${{$equipo->costo}}</td>
-                <td> 
-                    <form method="post" action="/admin/productos/recargas/{{$equipo->id}}">
-                    <input type="hidden" name="_method" value="DELETE" class="btn btn-danger">    
-                    <input type="submit" name="enviar" value="Eliminar" class="btn btn-danger" > 
-                    {{ csrf_field() }}
-                </form> </td>
+                        <td><a class="btn btn-outline-warning" href="{{route('admin.equipos.edit', $equipo->id)}}" role="button">Editar</td>
                 </tr>
             @endforeach
         @stop
@@ -66,6 +61,6 @@
      
         @endsection
 
-
+            
 
 @endsection

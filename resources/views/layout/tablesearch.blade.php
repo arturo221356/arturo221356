@@ -11,7 +11,7 @@
         @yield('TableNavbarButtons')
       </ul>
       <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2 search" type="search" placeholder="Search" aria-label="Search" onkeyup="tablesearch()" id="tableSearchField">
+        <input class="form-control mr-sm-2 search" type="text" placeholder="Search" aria-label="Search" onsearch="tablesearch()" id="tableSearchField">
         
       </form>
     </div>

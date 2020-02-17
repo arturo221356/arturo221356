@@ -26,7 +26,7 @@ class EquiposController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.productos.equipos.create');
     }
 
     /**
@@ -37,7 +37,20 @@ class EquiposController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,
+        ['marca_equipo'=>'required',
+        'modelo_equipo'=>'required',
+        'precio_equipo'=>'required|numeric',
+        'costo_equipo'=>'required|numeric',
+
+        ]);
+        $equipo =new Equipo;
+        $equipo->marca=$request->marca_equipo;
+        $equipo->modelo=$request->modelo_equipo;
+        $equipo->precio=$request->precio_equipo;
+        $equipo->costo=$request->costo_equipo;
+        $equipo->save();
+        return redirect("/admin/productos/equipos");
     }
 
     /**
@@ -59,7 +72,7 @@ class EquiposController extends Controller
      */
     public function edit(Equipo $equipo)
     {
-        //
+        return view('admin.productos.equipos.edit',compact('equipo'));
     }
 
     /**
@@ -71,7 +84,15 @@ class EquiposController extends Controller
      */
     public function update(Request $request, Equipo $equipo)
     {
-        //
+        $this->validate($request,
+        ['marca'=>'required',
+        'modelo'=>'required',
+        'precio'=>'required|numeric',
+        'costo'=>'required|numeric',
+
+        ]);
+        $equipo->update($request->all());
+        return redirect("/admin/productos/equipos");
     }
 
     /**
@@ -82,6 +103,7 @@ class EquiposController extends Controller
      */
     public function destroy(Equipo $equipo)
     {
-        //
+        $equipo->delete();
+        return redirect("/admin/productos/equipos");
     }
 }

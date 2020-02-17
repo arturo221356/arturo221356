@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Equipo extends Model
 {
-    protected $table = "equipos";
+    protected $fillable = [
+        'marca', 'modelo', 'precio','costo','precio_promocion',
+    ];
 }
