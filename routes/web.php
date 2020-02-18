@@ -33,6 +33,10 @@ Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->na
 
 
 
+Route::get('/inventario/equipos', 'InventarioController@equipos')->middleware('auth');
+
+
+
 
 Route::get('/home', function(){
     

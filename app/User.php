@@ -45,6 +45,12 @@ class User extends Authenticatable
     public function sucursal(){
         return $this->belongsToMany('App\Sucursal');
     }
+    public function sucursalName(){
+        return User::sucursal()->pluck('nombre_sucursal')->first();
+    }
+    public function sucursalId(){
+        return User::sucursal()->pluck('sucursal_id')->first();
+    }
     public function hasRole($role){
         return User::roles()->where('name', $role)->first();
        
