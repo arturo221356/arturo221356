@@ -16,11 +16,11 @@ class CreateImeisTable extends Migration
         Schema::create('imeis', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->char('imei', 15)->unique();
-            $table->integer('status_id');
+            $table->integer('status_id')->nullable();
             $table->integer('sucursal_id');
             $table->integer('equipo_id');
-            $table->integer('venta_id');
-            $table->integer('precio_vendido');
+            $table->integer('venta_id')->nullable();
+            $table->integer('precio_vendido')->nullable();
             $table->timestamps();
         });
     }

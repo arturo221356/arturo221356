@@ -46,9 +46,9 @@ class SucursalController extends Controller
     {
         $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
         $sucursal=new Sucursal;
-        // $sucursal->nombre_sucursal=$request->nombre_sucursal;
-        // $sucursal->direccion_sucursal=$request->direccion_sucursal;
-        // $sucursal->email_sucursal=$request->email_sucursal;
+        $sucursal->nombre_sucursal=$request->nombre_sucursal;
+        $sucursal->direccion_sucursal=$request->direccion_sucursal;
+        $sucursal->email_sucursal=$request->email_sucursal;
         $sucursal->save();
         return redirect("/admin/sucursales");
     }

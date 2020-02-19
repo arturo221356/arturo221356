@@ -76,7 +76,7 @@
                     
                     @if ($userRole == 'admin')
                     <td>${{$imei->equipo->costo}}</td> 
-                    <td><a class="btn btn-outline-warning" href="{{route('admin.equipos.edit', $imei->id)}}" role="button">Editar</td>
+                    <td><a class="btn btn-outline-warning" href="{{route('admin.imei.edit', $imei->id)}}" role="button">Editar</td>
                     @endif
                     
                 </tr>

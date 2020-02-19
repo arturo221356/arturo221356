@@ -29,6 +29,7 @@ Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->na
     Route::resource('/sucursales','SucursalController');
     Route::resource('/productos/recargas','RecargasController');
     Route::resource('/productos/equipos','EquiposController');
+    Route::resource('/imei','ImeisController');
 });
 
 
