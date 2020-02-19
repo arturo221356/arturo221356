@@ -9,7 +9,7 @@
 
 <div class="jumbotron">
     <div class="col-md-6 mx-auto">
-        <h1>Agregar Imeis</h1>
+        <h1>Agregar Imeis:</h1>
 
         <form action="/admin/imei" method="POST">
             @csrf  

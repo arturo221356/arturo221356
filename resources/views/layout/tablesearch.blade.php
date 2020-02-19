@@ -17,22 +17,3 @@
     </div>
   </nav>
 
- <script>
-
-
-
-    //buscar en la tabla !!    
-  function tablesearch() {
-  const input = document.getElementById("tableSearchField");
-  const inputStr = input.value.toUpperCase();
-  document.querySelectorAll('#myTable tr:not(.tablehead)').forEach((tr) => {
-    const anyMatch = [...tr.children]
-      .some(td => td.textContent.toUpperCase().includes(inputStr));
-    if (anyMatch) tr.style.removeProperty('display');
-    else tr.style.display = 'none';
-  });
-}
-
-        
-        
-        </script>

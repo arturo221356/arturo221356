@@ -9,8 +9,8 @@
                             Inventario
                           </a>
                           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Reporte de Inventario</a>
-                            <a class="dropdown-item" href="#">Cargar Inventario</a>
+                            <a class="dropdown-item" href="/inventario/equipos">Reporte de Inventario</a>
+                            <a class="dropdown-item" href="/admin/imei/create">Cargar Inventario</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Productos</a>
                           </div>

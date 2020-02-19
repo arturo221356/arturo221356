@@ -36,6 +36,21 @@
 @section('container')
 @section('content')
         
+        @if(count($errors)>0)
+                
+            <div class="alert alert-warning mt-lg-2" role="alert">
+                    <h4 class="alert-heading">Error</h4>
+                    <p>
+                    @foreach($errors->all() as $error)
+                        {{$error}}
+                        <hr>
+                    @endforeach</p>
+                    
+                </div>
+            
+
+            
+            @endif
 
     
     
@@ -53,7 +68,7 @@
         <th scope="col">Modelo</th>
         <th scope="col">Sucursal</th>
         <th scope="col">Precio</th>
-        
+        <th scope="col">Estatus</th>
         
         @if ($userRole == 'admin')
         <th scope="col">Editar</th> 
@@ -62,6 +77,8 @@
        
         @stop
 
+
+        
         @section('tbody')
            @foreach ($imeis as $imei)
                 <tr>
@@ -70,6 +87,7 @@
                     <td>{{$imei->equipo->modelo}}</td>    
                     <td>{{$imei->sucursal->nombre_sucursal}}</td>
                     <td>${{$imei->equipo->precio}}</td>
+                    <td>{{$imei->status->status}}</td>
                     
 
                     

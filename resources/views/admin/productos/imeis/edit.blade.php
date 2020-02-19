@@ -27,12 +27,13 @@
 
                         <div class="form-group">
                             <label for="sucursal">Sucursal:</label>
-                            <select id="sucursal" class="form-control" name="sucursal">
+                            <select id="sucursal" class="form-control" name="sucursal_id">
                                 
                                 <option selected value="{{$imei->sucursal->id}}">{{$imei->sucursal->nombre_sucursal}}</option>
                             
                                 @foreach($sucursales as $sucursal)
-                            <option value="{{$sucursal->id}}">{{$sucursal->nombre_sucursal}}</option>                                               @endforeach
+                                    <option value="{{$sucursal->id}}">{{$sucursal->nombre_sucursal}}</option>                                               
+                                @endforeach
                             </select>
                         </div>   
                         
@@ -41,13 +42,25 @@
         
                         <div class="form-group">
                             <label for="equipo">Equipo:</label>
-                            <select id="equipo" class="form-control" name="rol">
+                            <select id="equipo" class="form-control" name="equipo_id">
                             <option selected value="{{$imei->equipo->id}}">{{$imei->equipo->marca}} {{$imei->equipo->modelo}}</option>
                                 @foreach($equipos as $equipo)
                                 <option value="{{$equipo->id}}">{{$equipo->marca}} {{$equipo->modelo}}</option>
                                 @endforeach
                             </select>
-                            </div>  
+                            </div>
+                            
+                        <!--select de status -->
+        
+                        <div class="form-group">
+                            <label for="status">Estatus:</label>
+                            <select id="status" class="form-control" name="status_id">
+                            <option selected value="{{$imei->status->id}}">{{$imei->status->status}}</option>
+                                @foreach($status as $statu)
+                                    <option value="{{$statu->id}}">{{$statu->status}}</option>
+                                @endforeach
+                            </select>
+                        </div> 
                 
                 
                 

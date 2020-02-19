@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Imei;
 use App\Sucursal;
 use App\Equipo;
+use App\Status;
+use Dotenv\Regex\Success;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 class ImeisController extends Controller
@@ -46,45 +49,69 @@ class ImeisController extends Controller
     {
 
        
-        $imeis = explode("\n", str_replace("\r", "", $request['imei']));
-        
+         $imeis = explode("\n", str_replace("\r", null, $request['imei']));
+
+         
+
+         $imeis = explode("\r\n", trim( $request['imei']));
+
 
         
+        $errorMsgs = [];
+        
+        
         foreach($imeis as $imei){
+            //$data = [];
             
             $data = ['imei' => $imei];
+
+            //var_dump($data);
             
             $newImei = new Imei;
 
             $newImei->imei = $imei;
             
-            $newImei->status_id = 5;
+            $newImei->status_id = 1;
             
             $newImei->sucursal_id = $request->sucursal;
             
             $newImei->equipo_id = $request->equipo;    
            
+            
+
             $validator = Validator::make($data, [
-                'imei' => 'numeric|unique:imeis,imei',
+                'imei' => 'numeric|unique:imeis,imei|digits:15',
+                
+                
 
             ]);
             if ($validator->fails()) {
-                echo "errror";
+                
+                
+                $errorMsgs[$imei]= $imei;
+                
+               
+
+                
                 
             }else{
+                
+                
                 $newImei->save();
                 
                 
             }
             
-
+            
             
             
 
         
         }
 
-        return redirect('/inventario/equipos');
+       return redirect('/inventario/equipos')->withErrors($errorMsgs);
+
+       
 
         
 
@@ -111,8 +138,9 @@ class ImeisController extends Controller
     {
         $imei = Imei::findorfail($imei);
         $sucursales = Sucursal::all()->sortBy('nombre_sucursal');
+        $status = Status::all()->sortBy('status');
         $equipos = Equipo::all()->sortby('marca');
-        return view('admin.productos.imeis.edit',compact("imei","sucursales","equipos"));
+        return view('admin.productos.imeis.edit',compact("imei","sucursales","equipos","status"));
 
     }
 
@@ -125,8 +153,12 @@ class ImeisController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-
+        $this->validate($request,['imei'=>'numeric|digits:15', Rule::unique('imei')->ignore($request->id),]);
+        
+        $imei = Imei::findOrFail($id);
+        $imei->update($request->all());
+        return redirect("/inventario/equipos");
+      
         
     }
 
