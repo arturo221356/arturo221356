@@ -11,6 +11,7 @@ use App\Status;
 use Dotenv\Regex\Success;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ImeiResource as ImeiResource;
 
 class ImeisController extends Controller
 {
@@ -174,4 +175,18 @@ class ImeisController extends Controller
         $imei->delete();
         return redirect("/inventario/equipos");
     }
+
+    public function getimeis(Request $request){
+
+       $sucursal = $request->sucursal;
+        
+        return ImeiResource::collection(Imei::where('sucursal_id', $sucursal)->get());
+
+
+    }
+
+
+
+
+
 }

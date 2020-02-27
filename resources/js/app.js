@@ -8,6 +8,10 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import BootstrapVue from 'bootstrap-vue' //Importing
+
+Vue.use(BootstrapVue) // Telling Vue to use this in whole applicat
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

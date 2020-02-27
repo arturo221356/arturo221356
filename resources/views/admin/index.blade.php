@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-Index de Administrador
+
+<example-component>
+</example-component>
+
+
 @endsection
