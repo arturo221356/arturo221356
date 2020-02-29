@@ -103,4 +103,9 @@ class SucursalController extends Controller
         $sucursal->delete();
         return redirect("/admin/sucursales");
     }
+    public function getSucursales(){
+        $data = Sucursal::get();
+   
+        return response()->json($data);
+    }
 }

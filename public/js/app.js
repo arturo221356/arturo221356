@@ -1953,9 +1953,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      sucursal: 0,
+      sucursales: [],
       items: [],
       fields: [{
         key: 'id',
@@ -1997,13 +2008,12 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
-    var _this = this;
-
-    axios.post('/admin/inventario/equipos', {
-      sucursal: 2
-    }).then(function (res) {
-      _this.items = res.data.data;
-    });
+    // axios.post('/admin/inventario/equipos',{
+    //   sucursal_id: 1,
+    // }).then(res=>{
+    //   this.items = res.data.data;
+    // })
+    this.getSucursales();
   },
   computed: {
     sortOptions: function sortOptions() {
@@ -2022,18 +2032,80 @@ __webpack_require__.r(__webpack_exports__);
     //   this.totalRows = this.items.length
   },
   methods: {
-    info: function info(item, index, button) {// this.infoModal.title = `Row index: ${index}`
-      // this.infoModal.content = JSON.stringify(item, null, 2)
-      // this.$root.$emit('bv::show::modal', this.infoModal.id, button)
+    getSucursales: function getSucursales() {
+      axios.get('/get/sucursales').then(function (response) {
+        this.sucursales = response.data;
+      }.bind(this));
     },
-    resetInfoModal: function resetInfoModal() {// this.infoModal.title = ''
-      // this.infoModal.content = ''
+    sucursalChange: function sucursalChange() {
+      axios.post('/admin/inventario/equipos', {
+        sucursal_id: this.sucursal
+      }).then(function (response) {
+        this.items = response.data.data;
+      }.bind(this));
     },
     onFiltered: function onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     }
+  } //     created: function(){
+  //     
+  // }
+
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  mounted: function mounted() {
+    console.log('Component mounted.');
+  },
+  data: function data() {
+    return {
+      sucursal: 0,
+      sucursales: []
+    };
+  },
+  methods: {
+    getSucursales: function getSucursales() {
+      axios.get('/get/sucursales').then(function (response) {
+        this.sucursales = response.data;
+      }.bind(this));
+    },
+    sucursalChange: function sucursalChange() {
+      axios.post('/admin/inventario/equipos', {
+        params: {
+          sucursal: 2
+        }
+      }).then(function (response) {
+        this.items = response.data.data;
+      }.bind(this));
+    }
+  },
+  created: function created() {
+    this.getSucursales();
   }
 });
 
@@ -74184,6 +74256,57 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("form", { staticClass: "form-inline my-2 my-lg-0" }, [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.sucursal,
+                        expression: "sucursal"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    on: {
+                      change: [
+                        function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.sucursal = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        },
+                        function($event) {
+                          return _vm.sucursalChange()
+                        }
+                      ]
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "0" } }, [
+                      _vm._v("Seleccionar Sucursal")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "all" } }, [
+                      _vm._v("Todas")
+                    ]),
+                    _vm._v(" "),
+                    _vm._l(_vm.sucursales, function(data) {
+                      return _c("option", { domProps: { value: data.id } }, [
+                        _vm._v(_vm._s(data.nombre_sucursal))
+                      ])
+                    })
+                  ],
+                  2
+                ),
+                _vm._v(" "),
                 _c("input", {
                   directives: [
                     {
@@ -74247,6 +74370,75 @@ var render = function() {
       })
     ],
     1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&":
+/*!**************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& ***!
+  \**************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "select",
+    {
+      directives: [
+        {
+          name: "model",
+          rawName: "v-model",
+          value: _vm.sucursal,
+          expression: "sucursal"
+        }
+      ],
+      staticClass: "form-control",
+      on: {
+        change: [
+          function($event) {
+            var $$selectedVal = Array.prototype.filter
+              .call($event.target.options, function(o) {
+                return o.selected
+              })
+              .map(function(o) {
+                var val = "_value" in o ? o._value : o.value
+                return val
+              })
+            _vm.sucursal = $event.target.multiple
+              ? $$selectedVal
+              : $$selectedVal[0]
+          },
+          function($event) {
+            return _vm.sucursalChange()
+          }
+        ]
+      }
+    },
+    [
+      _c("option", { attrs: { value: "0" } }, [_vm._v("Seleccionar Sucursal")]),
+      _vm._v(" "),
+      _c("option", { attrs: { value: "all" } }, [_vm._v("Todas")]),
+      _vm._v(" "),
+      _vm._l(_vm.sucursales, function(data) {
+        return _c("option", { domProps: { value: data.id } }, [
+          _vm._v(_vm._s(data.nombre_sucursal))
+        ])
+      })
+    ],
+    2
   )
 }
 var staticRenderFns = []
@@ -86446,6 +86638,7 @@ Vue.use(bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__["default"]); // Telling Vue t
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]);
+Vue.component('select-sucursal', __webpack_require__(/*! ./components/SelectSucursalComponent.vue */ "./resources/js/components/SelectSucursalComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -86572,6 +86765,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/SelectSucursalComponent.vue":
+/*!*************************************************************!*\
+  !*** ./resources/js/components/SelectSucursalComponent.vue ***!
+  \*************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& */ "./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&");
+/* harmony import */ var _SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SelectSucursalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/SelectSucursalComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************!*\
+  !*** ./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectSucursalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&":
+/*!********************************************************************************************!*\
+  !*** ./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& ***!
+  \********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/sass/app.scss":
 /*!*********************************!*\
   !*** ./resources/sass/app.scss ***!
@@ -86590,8 +86852,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

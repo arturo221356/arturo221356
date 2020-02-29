@@ -24,6 +24,7 @@ Vue.use(BootstrapVue) // Telling Vue to use this in whole applicat
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('select-sucursal', require('./components/SelectSucursalComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

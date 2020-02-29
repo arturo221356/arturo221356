@@ -178,9 +178,19 @@ class ImeisController extends Controller
 
     public function getimeis(Request $request){
 
-       $sucursal = $request->sucursal;
+       $sucursal = $request->sucursal_id;
+
+       if($sucursal == 'all'){
+
+        return ImeiResource::collection(Imei::all());
+
+       }else{
         
         return ImeiResource::collection(Imei::where('sucursal_id', $sucursal)->get());
+
+       }
+        
+        
 
 
     }

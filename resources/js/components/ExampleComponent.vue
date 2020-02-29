@@ -11,7 +11,16 @@
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           @yield('TableNavbarButtons')
         </ul>
+        
         <form class="form-inline my-2 my-lg-0">
+          
+          <select class='form-control' v-model='sucursal' @change='sucursalChange()'>
+                <option value='0' >Seleccionar Sucursal</option>
+                <option value='all' >Todas</option>
+                <option v-for='data in sucursales' :value='data.id'>{{ data.nombre_sucursal }}</option>
+          </select>
+
+
           <input class="form-control mr-sm-2 search" type="text" placeholder="Search" aria-label="Search" id="filterInpt" v-model="filter">
           
         </form>
@@ -51,7 +60,8 @@
     
     data() {
       return {
-
+        sucursal: 0,
+        sucursales: [],
         items: [],
         fields: [
           { key: 'id', label: '#', sortable: true, sortDirection: 'desc' },
@@ -72,11 +82,14 @@
       }
     },
       created(){
-      axios.post('/admin/inventario/equipos',{
-        sucursal: 2,
-      }).then(res=>{
-        this.items = res.data.data;
-      })
+      // axios.post('/admin/inventario/equipos',{
+      //   sucursal_id: 1,
+      // }).then(res=>{
+      //   this.items = res.data.data;
+      // })
+    
+      this.getSucursales()
+    
     },
 
 
@@ -96,22 +109,38 @@
     //   this.totalRows = this.items.length
     },
     methods: {
-      info(item, index, button) {
-        // this.infoModal.title = `Row index: ${index}`
-        // this.infoModal.content = JSON.stringify(item, null, 2)
-        // this.$root.$emit('bv::show::modal', this.infoModal.id, button)
+      
+      getSucursales: function(){
+        axios.get('/get/sucursales')
+        .then(function (response) {
+            this.sucursales= response.data;
+        }.bind(this));
       },
-      resetInfoModal() {
-        // this.infoModal.title = ''
-        // this.infoModal.content = ''
-      },
+
+                  sucursalChange: function() {
+                axios.post('/admin/inventario/equipos',{
+                 
+                   sucursal_id: this.sucursal
+                 
+                 
+              }).then(function (response) {
+                 this.items = response.data.data;
+              }.bind(this));
+            },
+
+
+
+      
       onFiltered(filteredItems) {
         // Trigger pagination to update the number of buttons/pages due to filtering
         this.totalRows = filteredItems.length
         this.currentPage = 1
       }
-    }
-  
+    
+    },
+        //     created: function(){
+        //     
+        // }
 
   
   
