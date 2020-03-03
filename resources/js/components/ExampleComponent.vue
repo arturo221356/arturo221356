@@ -6,7 +6,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">@yield('TableNavbarName')</a>
+        <a class="navbar-brand" href="#">{{navbarName}}  {{actualSucursal}}</a>
         
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
           @yield('TableNavbarButtons')
@@ -17,7 +17,7 @@
           <select class='form-control' v-model='sucursal' @change='sucursalChange()'>
                 <option value='0' >Seleccionar Sucursal</option>
                 <option value='all' >Todas</option>
-                <option v-for='data in sucursales' :value='data.id'>{{ data.nombre_sucursal }}</option>
+                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" :key='data'>{{ data.nombre_sucursal }} </option>
           </select>
 
 
@@ -31,7 +31,8 @@
     <!-- Main table element -->
     <b-table
       show-empty
-      small
+      responsive
+      striped hover
       stacked="md"
       :items="items"
       :fields="fields"
@@ -43,6 +44,11 @@
       @filtered="onFiltered"
     >
 
+      <template v-slot:table-caption>Aqui sirve para contar.</template>
+      <template v-slot:cell(editar)="data">
+        <!-- `data.value` is the value after formatted by the Formatter -->
+        <b-button :href="`/admin/imei/${data.item.id}/edit`"> Editar</b-button>
+      </template>
 
 
     </b-table>
@@ -54,8 +60,13 @@
 
 <script>
   export default {
-    
 
+  props: {
+    
+    fetchUrl: { type: String, required: true },
+    fields: { type: Array, required: true },
+    navbarName: {type: String, required: true},
+  },
     
     
     data() {
@@ -63,30 +74,19 @@
         sucursal: 0,
         sucursales: [],
         items: [],
-        fields: [
-          { key: 'id', label: '#', sortable: true, sortDirection: 'desc' },
-          { key: 'imei', label: 'Imei', sortable: true, class: 'text-center' },
-          { key: 'marca', label: 'Marca', sortable: true, class: 'text-center' },
-          { key: 'modelo', label: 'Modelo', sortable: true, class: 'text-center' },
-          { key: 'sucursal', label: 'Sucursal', sortable: true, class: 'text-center' },
-          { key: 'status', label: 'Status', sortable: true, class: 'text-center' },
-
-        ],
+       
         totalRows: 1,
         sortBy: '',
         sortDesc: false,
         sortDirection: 'asc',
         filter: null,
         filterOn: [],
+        actualSucursal: "",
 
       }
     },
       created(){
-      // axios.post('/admin/inventario/equipos',{
-      //   sucursal_id: 1,
-      // }).then(res=>{
-      //   this.items = res.data.data;
-      // })
+
     
       this.getSucursales()
     
@@ -117,14 +117,19 @@
         }.bind(this));
       },
 
-                  sucursalChange: function() {
-                axios.post('/admin/inventario/equipos',{
+      sucursalChange: function() {
+           
+           this.actualSucursal = this.sucursal.text;
+
+
+                axios.post(this.fetchUrl,{
                  
-                   sucursal_id: this.sucursal
+                   sucursal_id: this.sucursal.id
                  
                  
               }).then(function (response) {
                  this.items = response.data.data;
+                
               }.bind(this));
             },
 
@@ -138,9 +143,7 @@
       }
     
     },
-        //     created: function(){
-        //     
-        // }
+
 
   
   

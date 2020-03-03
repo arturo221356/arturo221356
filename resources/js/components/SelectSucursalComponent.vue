@@ -3,11 +3,13 @@
                    
 
                    
-                              <select class='form-control' v-model='sucursal' @change='sucursalChange()'>
-                              <option value='0' >Seleccionar Sucursal</option>
-                              <option value='all' >Todas</option>
-                              <option v-for='data in sucursales' :value='data.id'>{{ data.nombre_sucursal }}</option>
-                            </select>
+          <select class='form-control' v-model='sucursal' @change='sucursalChange()'>
+                <option value='0' >Seleccionar Sucursal</option>
+                <option value='all' >Todas</option>
+                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" :key='data'>{{ data.nombre_sucursal }} </option>
+          </select>
+
+
 </template>
 
 <script>

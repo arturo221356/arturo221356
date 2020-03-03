@@ -1962,57 +1962,42 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    fetchUrl: {
+      type: String,
+      required: true
+    },
+    fields: {
+      type: Array,
+      required: true
+    },
+    navbarName: {
+      type: String,
+      required: true
+    }
+  },
   data: function data() {
     return {
       sucursal: 0,
       sucursales: [],
       items: [],
-      fields: [{
-        key: 'id',
-        label: '#',
-        sortable: true,
-        sortDirection: 'desc'
-      }, {
-        key: 'imei',
-        label: 'Imei',
-        sortable: true,
-        "class": 'text-center'
-      }, {
-        key: 'marca',
-        label: 'Marca',
-        sortable: true,
-        "class": 'text-center'
-      }, {
-        key: 'modelo',
-        label: 'Modelo',
-        sortable: true,
-        "class": 'text-center'
-      }, {
-        key: 'sucursal',
-        label: 'Sucursal',
-        sortable: true,
-        "class": 'text-center'
-      }, {
-        key: 'status',
-        label: 'Status',
-        sortable: true,
-        "class": 'text-center'
-      }],
       totalRows: 1,
       sortBy: '',
       sortDesc: false,
       sortDirection: 'asc',
       filter: null,
-      filterOn: []
+      filterOn: [],
+      actualSucursal: ""
     };
   },
   created: function created() {
-    // axios.post('/admin/inventario/equipos',{
-    //   sucursal_id: 1,
-    // }).then(res=>{
-    //   this.items = res.data.data;
-    // })
     this.getSucursales();
   },
   computed: {
@@ -2038,8 +2023,9 @@ __webpack_require__.r(__webpack_exports__);
       }.bind(this));
     },
     sucursalChange: function sucursalChange() {
-      axios.post('/admin/inventario/equipos', {
-        sucursal_id: this.sucursal
+      this.actualSucursal = this.sucursal.text;
+      axios.post(this.fetchUrl, {
+        sucursal_id: this.sucursal.id
       }).then(function (response) {
         this.items = response.data.data;
       }.bind(this));
@@ -2049,10 +2035,7 @@ __webpack_require__.r(__webpack_exports__);
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     }
-  } //     created: function(){
-  //     
-  // }
-
+  }
 });
 
 /***/ }),
@@ -74248,7 +74231,9 @@ var render = function() {
             },
             [
               _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
-                _vm._v("@yield('TableNavbarName')")
+                _vm._v(
+                  _vm._s(_vm.navbarName) + "  " + _vm._s(_vm.actualSucursal)
+                )
               ]),
               _vm._v(" "),
               _c("ul", { staticClass: "navbar-nav mr-auto mt-2 mt-lg-0" }, [
@@ -74299,9 +74284,16 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _vm._l(_vm.sucursales, function(data) {
-                      return _c("option", { domProps: { value: data.id } }, [
-                        _vm._v(_vm._s(data.nombre_sucursal))
-                      ])
+                      return _c(
+                        "option",
+                        {
+                          key: data,
+                          domProps: {
+                            value: { id: data.id, text: data.nombre_sucursal }
+                          }
+                        },
+                        [_vm._v(_vm._s(data.nombre_sucursal) + " ")]
+                      )
                     })
                   ],
                   2
@@ -74342,7 +74334,9 @@ var render = function() {
       _c("b-table", {
         attrs: {
           "show-empty": "",
-          small: "",
+          responsive: "",
+          striped: "",
+          hover: "",
           stacked: "md",
           items: _vm.items,
           fields: _vm.fields,
@@ -74366,7 +74360,28 @@ var render = function() {
             _vm.sortDesc = $event
           },
           filtered: _vm.onFiltered
-        }
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "table-caption",
+            fn: function() {
+              return [_vm._v("Aqui sirve para contar.")]
+            },
+            proxy: true
+          },
+          {
+            key: "cell(editar)",
+            fn: function(data) {
+              return [
+                _c(
+                  "b-button",
+                  { attrs: { href: "/admin/imei/" + data.item.id + "/edit" } },
+                  [_vm._v(" Editar")]
+                )
+              ]
+            }
+          }
+        ])
       })
     ],
     1
@@ -86852,8 +86867,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
