@@ -30,7 +30,7 @@ class ImeiResource extends JsonResource
     
     }
 
-    public $preserveKeys = true;
+    public $preserveKeys = false;
 
 
 }

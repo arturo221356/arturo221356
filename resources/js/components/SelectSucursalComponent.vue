@@ -3,10 +3,10 @@
                    
 
                    
-          <select class='form-control' v-model='sucursal' @change='sucursalChange()'>
-                <option value='0' >Seleccionar Sucursal</option>
-                <option value='all' >Todas</option>
-                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" :key='data'>{{ data.nombre_sucursal }} </option>
+          <select class='form-control' v-model='sucursal' @change='emitToParent'>
+                <option value='' >Seleccionar Sucursal</option>
+                <option :value="{id:'all', text:'Todas'}" >Todas</option>
+                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" >{{ data.nombre_sucursal }} </option>
           </select>
 
 
@@ -19,35 +19,35 @@ export default {
         },
         data(){
             return {
-                sucursal: 0,
-                sucursales: [],
+             sucursal: 0,
+             sucursales: [],
+
             }
         },
         methods:{
-            getSucursales: function(){
-              axios.get('/get/sucursales')
-              .then(function (response) {
-                 this.sucursales= response.data;
-              }.bind(this));
+
+        getSucursales: function(){
+        axios.get('/get/sucursales')
+        .then(function (response) {
+            this.sucursales= response.data;
+        }.bind(this));
+      },
+
+
+    emitToParent (event) {
+      this.$emit('sucursal', this.sucursal)
+    }
+
+
+
+
+
+
             },
-            
-                      sucursalChange: function() {
-                axios.post('/admin/inventario/equipos',{
-                 params: {
-                   sucursal: 2
-                 }
-                 
-              }).then(function (response) {
-                 this.items= response.data.data;
-              }.bind(this));
-            }
-            
-            
-            },
-                created: function(){
+      created: function(){
             this.getSucursales()
         } 
-        }
+     }
  
     
     

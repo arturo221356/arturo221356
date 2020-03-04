@@ -1968,6 +1968,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     fetchUrl: {
@@ -1985,8 +2014,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      sucursal: 0,
-      sucursales: [],
+      product: '',
+      countItems: 0,
       items: [],
       totalRows: 1,
       sortBy: '',
@@ -1994,11 +2023,11 @@ __webpack_require__.r(__webpack_exports__);
       sortDirection: 'asc',
       filter: null,
       filterOn: [],
-      actualSucursal: ""
+      actualSucursal: "",
+      perPage: 150,
+      currentPage: 1,
+      isBusy: false
     };
-  },
-  created: function created() {
-    this.getSucursales();
   },
   computed: {
     sortOptions: function sortOptions() {
@@ -2011,24 +2040,37 @@ __webpack_require__.r(__webpack_exports__);
           value: f.key
         };
       });
+    },
+    rows: function rows() {
+      return this.items.length;
     }
   },
   mounted: function mounted() {// Set the initial number of items
     //   this.totalRows = this.items.length
   },
   methods: {
-    getSucursales: function getSucursales() {
-      axios.get('/get/sucursales').then(function (response) {
-        this.sucursales = response.data;
-      }.bind(this));
-    },
-    sucursalChange: function sucursalChange() {
+    loadData: function loadData() {},
+    sucursalChange: function sucursalChange(value) {
+      var _this = this;
+
+      this.sucursal = value;
+      console.log(this.sucursal);
+      this.isBusy = true;
       this.actualSucursal = this.sucursal.text;
       axios.post(this.fetchUrl, {
         sucursal_id: this.sucursal.id
       }).then(function (response) {
-        this.items = response.data.data;
-      }.bind(this));
+        _this.items = response.data.data;
+        _this.totalRows = response.data.meta.total;
+        _this.isBusy = false;
+        console.log(_this.totalRows);
+
+        if (_this.totalRows == 1) {
+          _this.product = 'Equipo';
+        } else {
+          _this.product = 'Equipos';
+        }
+      });
     },
     onFiltered: function onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
@@ -2061,6 +2103,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Component mounted.');
@@ -2077,14 +2121,8 @@ __webpack_require__.r(__webpack_exports__);
         this.sucursales = response.data;
       }.bind(this));
     },
-    sucursalChange: function sucursalChange() {
-      axios.post('/admin/inventario/equipos', {
-        params: {
-          sucursal: 2
-        }
-      }).then(function (response) {
-        this.items = response.data.data;
-      }.bind(this));
+    emitToParent: function emitToParent(event) {
+      this.$emit('sucursal', this.sucursal);
     }
   },
   created: function created() {
@@ -74240,99 +74278,74 @@ var render = function() {
                 _vm._v("\n        @yield('TableNavbarButtons')\n      ")
               ]),
               _vm._v(" "),
-              _c("form", { staticClass: "form-inline my-2 my-lg-0" }, [
-                _c(
-                  "select",
-                  {
+              _c(
+                "form",
+                { staticClass: "form-inline my-2 my-lg-0" },
+                [
+                  _c("select-sucursal", {
+                    on: { sucursal: _vm.sucursalChange }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
                     directives: [
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.sucursal,
-                        expression: "sucursal"
+                        value: _vm.filter,
+                        expression: "filter"
                       }
                     ],
-                    staticClass: "form-control",
+                    staticClass: "form-control mr-sm-2 search",
+                    attrs: {
+                      type: "text",
+                      placeholder: "Search",
+                      "aria-label": "Search",
+                      id: "filterInpt"
+                    },
+                    domProps: { value: _vm.filter },
                     on: {
-                      change: [
-                        function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.sucursal = $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
-                        },
-                        function($event) {
-                          return _vm.sucursalChange()
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
                         }
-                      ]
-                    }
-                  },
-                  [
-                    _c("option", { attrs: { value: "0" } }, [
-                      _vm._v("Seleccionar Sucursal")
-                    ]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "all" } }, [
-                      _vm._v("Todas")
-                    ]),
-                    _vm._v(" "),
-                    _vm._l(_vm.sucursales, function(data) {
-                      return _c(
-                        "option",
-                        {
-                          key: data,
-                          domProps: {
-                            value: { id: data.id, text: data.nombre_sucursal }
-                          }
-                        },
-                        [_vm._v(_vm._s(data.nombre_sucursal) + " ")]
-                      )
-                    })
-                  ],
-                  2
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.filter,
-                      expression: "filter"
-                    }
-                  ],
-                  staticClass: "form-control mr-sm-2 search",
-                  attrs: {
-                    type: "text",
-                    placeholder: "Search",
-                    "aria-label": "Search",
-                    id: "filterInpt"
-                  },
-                  domProps: { value: _vm.filter },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
+                        _vm.filter = $event.target.value
                       }
-                      _vm.filter = $event.target.value
                     }
-                  }
-                })
-              ])
+                  })
+                ],
+                1
+              )
             ]
           )
         ]
       ),
       _vm._v(" "),
+      _c("b-pagination", {
+        attrs: {
+          "total-rows": _vm.totalRows,
+          "per-page": _vm.perPage,
+          "aria-controls": "my-table",
+          "prev-text": "Atras",
+          "next-text": "Siguiente",
+          "first-number": "",
+          "last-number": ""
+        },
+        model: {
+          value: _vm.currentPage,
+          callback: function($$v) {
+            _vm.currentPage = $$v
+          },
+          expression: "currentPage"
+        }
+      }),
+      _vm._v(" "),
+      _c("p", { staticClass: "mt-3" }, [
+        _vm._v("Current Page: " + _vm._s(_vm.currentPage))
+      ]),
+      _vm._v(" "),
       _c("b-table", {
         attrs: {
+          id: "my-table",
           "show-empty": "",
           responsive: "",
           striped: "",
@@ -74344,7 +74357,10 @@ var render = function() {
           filterIncludedFields: _vm.filterOn,
           "sort-by": _vm.sortBy,
           "sort-desc": _vm.sortDesc,
-          "sort-direction": _vm.sortDirection
+          "sort-direction": _vm.sortDirection,
+          "per-page": _vm.perPage,
+          "current-page": _vm.currentPage,
+          busy: _vm.isBusy
         },
         on: {
           "update:sortBy": function($event) {
@@ -74363,9 +74379,35 @@ var render = function() {
         },
         scopedSlots: _vm._u([
           {
+            key: "table-busy",
+            fn: function() {
+              return [
+                _c(
+                  "div",
+                  { staticClass: "text-center text-danger my-2" },
+                  [
+                    _c("b-spinner", { staticClass: "align-middle" }),
+                    _vm._v(" "),
+                    _c("strong", [_vm._v("Cargando...")])
+                  ],
+                  1
+                )
+              ]
+            },
+            proxy: true
+          },
+          {
             key: "table-caption",
             fn: function() {
-              return [_vm._v("Aqui sirve para contar.")]
+              return [
+                _vm._v(
+                  "Resultado: - " +
+                    _vm._s(_vm.totalRows) +
+                    " " +
+                    _vm._s(_vm.product) +
+                    " "
+                )
+              ]
             },
             proxy: true
           },
@@ -74436,21 +74478,23 @@ var render = function() {
               ? $$selectedVal
               : $$selectedVal[0]
           },
-          function($event) {
-            return _vm.sucursalChange()
-          }
+          _vm.emitToParent
         ]
       }
     },
     [
-      _c("option", { attrs: { value: "0" } }, [_vm._v("Seleccionar Sucursal")]),
+      _c("option", { attrs: { value: "" } }, [_vm._v("Seleccionar Sucursal")]),
       _vm._v(" "),
-      _c("option", { attrs: { value: "all" } }, [_vm._v("Todas")]),
+      _c("option", { domProps: { value: { id: "all", text: "Todas" } } }, [
+        _vm._v("Todas")
+      ]),
       _vm._v(" "),
       _vm._l(_vm.sucursales, function(data) {
-        return _c("option", { domProps: { value: data.id } }, [
-          _vm._v(_vm._s(data.nombre_sucursal))
-        ])
+        return _c(
+          "option",
+          { domProps: { value: { id: data.id, text: data.nombre_sucursal } } },
+          [_vm._v(_vm._s(data.nombre_sucursal) + " ")]
+        )
       })
     ],
     2

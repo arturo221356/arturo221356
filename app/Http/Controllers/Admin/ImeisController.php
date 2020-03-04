@@ -182,15 +182,16 @@ class ImeisController extends Controller
 
        if($sucursal == 'all'){
 
-        return ImeiResource::collection(Imei::all());
+        return ImeiResource::collection(Imei::paginate(150));
 
        }else{
         
-        return ImeiResource::collection(Imei::where('sucursal_id', $sucursal)->get());
+        return ImeiResource::collection(Imei::where('sucursal_id', $sucursal)->paginate(150));
 
        }
         
-        
+
+        //return ImeiResource::collection(Imei::paginate(100));
 
 
     }

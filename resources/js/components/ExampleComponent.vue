@@ -14,11 +14,10 @@
         
         <form class="form-inline my-2 my-lg-0">
           
-          <select class='form-control' v-model='sucursal' @change='sucursalChange()'>
-                <option value='0' >Seleccionar Sucursal</option>
-                <option value='all' >Todas</option>
-                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" :key='data'>{{ data.nombre_sucursal }} </option>
-          </select>
+          <select-sucursal
+            v-on:sucursal="sucursalChange"
+          
+          ></select-sucursal>
 
 
           <input class="form-control mr-sm-2 search" type="text" placeholder="Search" aria-label="Search" id="filterInpt" v-model="filter">
@@ -28,8 +27,24 @@
     </nav>
 
 
+
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="totalRows"
+      :per-page="perPage"
+      aria-controls="my-table"
+      prev-text="Atras"
+      next-text="Siguiente"
+      first-number
+      last-number
+    ></b-pagination>
+    
+    <p class="mt-3">Current Page: {{ currentPage }}</p>
+
+
     <!-- Main table element -->
     <b-table
+      id="my-table"
       show-empty
       responsive
       striped hover
@@ -42,9 +57,23 @@
       :sort-desc.sync="sortDesc"
       :sort-direction="sortDirection"
       @filtered="onFiltered"
+      :per-page="perPage"
+      :current-page="currentPage"
+      :busy="isBusy"
     >
 
-      <template v-slot:table-caption>Aqui sirve para contar.</template>
+      <template v-slot:table-busy>
+        <div class="text-center text-danger my-2">
+          <b-spinner class="align-middle"></b-spinner>
+          <strong>Cargando...</strong>
+        </div>
+      </template>
+
+
+
+
+
+      <template v-slot:table-caption>Resultado: - {{totalRows}} {{product}} </template>
       <template v-slot:cell(editar)="data">
         <!-- `data.value` is the value after formatted by the Formatter -->
         <b-button :href="`/admin/imei/${data.item.id}/edit`"> Editar</b-button>
@@ -71,10 +100,9 @@
     
     data() {
       return {
-        sucursal: 0,
-        sucursales: [],
+        product: '',
+        countItems: 0,
         items: [],
-       
         totalRows: 1,
         sortBy: '',
         sortDesc: false,
@@ -82,15 +110,13 @@
         filter: null,
         filterOn: [],
         actualSucursal: "",
+        perPage: 150,
+        currentPage: 1,
+        isBusy: false,
 
       }
     },
-      created(){
 
-    
-      this.getSucursales()
-    
-    },
 
 
 
@@ -102,7 +128,12 @@
           .map(f => {
             return { text: f.label, value: f.key }
           })
+      },
+        rows() {
+        return this.items.length
       }
+
+
     },
     mounted() {
       // Set the initial number of items
@@ -110,28 +141,74 @@
     },
     methods: {
       
-      getSucursales: function(){
-        axios.get('/get/sucursales')
-        .then(function (response) {
-            this.sucursales= response.data;
-        }.bind(this));
-      },
+        loadData(){
 
-      sucursalChange: function() {
-           
-           this.actualSucursal = this.sucursal.text;
+          
 
 
-                axios.post(this.fetchUrl,{
-                 
-                   sucursal_id: this.sucursal.id
-                 
-                 
-              }).then(function (response) {
-                 this.items = response.data.data;
+
+
+        },
+        
+        
+        
+        sucursalChange(value) {
+        
+        
+        
+        this.sucursal = value;
+
+        console.log(this.sucursal);
+
+        this.isBusy = true;
+        
+        
+        this.actualSucursal = this.sucursal.text;
+
+
+
+            axios.post(this.fetchUrl,{
+              
+            
+            sucursal_id: this.sucursal.id,
+
                 
-              }.bind(this));
-            },
+
+                
+              
+              
+          }).then(response => {
+              this.items = response.data.data;
+
+              this.totalRows = response.data.meta.total;
+
+              this.isBusy = false;
+
+             
+
+              console.log(this.totalRows);
+
+              if(this.totalRows == 1){
+                this.product = 'Equipo';
+              }
+              else{
+                this.product = 'Equipos'
+              }
+
+
+            
+          })
+        
+
+        
+        
+        
+        
+        
+        
+        },
+
+
 
 
 
