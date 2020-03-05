@@ -27,21 +27,29 @@
     </nav>
 
 
-
+    <!-- pagination  -->
     <b-pagination
       v-model="currentPage"
-      :total-rows="totalRows"
+      
       :per-page="perPage"
+      :total-rows="totalRows"
       aria-controls="my-table"
       prev-text="Atras"
       next-text="Siguiente"
       first-number
       last-number
+      
+      
+     
     ></b-pagination>
     
+   
+   
     <p class="mt-3">Current Page: {{ currentPage }}</p>
 
 
+   
+   
     <!-- Main table element -->
     <b-table
       id="my-table"
@@ -57,11 +65,12 @@
       :sort-desc.sync="sortDesc"
       :sort-direction="sortDirection"
       @filtered="onFiltered"
-      :per-page="perPage"
+      
       :current-page="currentPage"
       :busy="isBusy"
     >
 
+      <!--busy template-->
       <template v-slot:table-busy>
         <div class="text-center text-danger my-2">
           <b-spinner class="align-middle"></b-spinner>
@@ -72,7 +81,7 @@
 
 
 
-
+      <!-- resultado template -->
       <template v-slot:table-caption>Resultado: - {{totalRows}} {{product}} </template>
       <template v-slot:cell(editar)="data">
         <!-- `data.value` is the value after formatted by the Formatter -->
@@ -100,19 +109,22 @@
     
     data() {
       return {
+        
         product: '',
         countItems: 0,
         items: [],
-        totalRows: 1,
+        totalRows: 0,
         sortBy: '',
         sortDesc: false,
         sortDirection: 'asc',
         filter: null,
         filterOn: [],
         actualSucursal: "",
-        perPage: 150,
+        perPage:0,
         currentPage: 1,
         isBusy: false,
+        
+        
 
       }
     },
@@ -131,23 +143,97 @@
       },
         rows() {
         return this.items.length
-      }
+      },
 
+
+
+
+
+    
 
     },
+  watch:{
+        currentPage:{
+          handler: function(){
+              this.loadData();
+          }
+          
+        }
+
+
+
+      },
+
+
+
+
+
     mounted() {
-      // Set the initial number of items
-    //   this.totalRows = this.items.length
+  
+
+    
+    
     },
     methods: {
       
         loadData(){
-
+          
           
 
+        console.log(this.sucursal);
+
+         this.isBusy = true;
+
+         
+
+         axios.post(this.fetchUrl,{
+              
+            
+         sucursal_id: this.sucursal.id,
+
+         page: this.currentPage,
+
+        
+
+                
+
+                
+              
+              
+          }).then(response => {
+              
+              
+              
+              this.items = response.data.data;
+
+              this.totalRows = response.data.meta.total;
+
+              this.perPage = response.data.meta.per_page;
+
+              
 
 
 
+              this.isBusy = false;
+
+             
+
+              console.log(this.totalRows);
+
+              console.log(this.currentPage);
+
+
+
+            
+          })
+        
+        
+        
+        
+        
+        
+        
+        
         },
         
         
@@ -157,56 +243,14 @@
         
         
         this.sucursal = value;
-
-        console.log(this.sucursal);
-
-        this.isBusy = true;
-        
         
         this.actualSucursal = this.sucursal.text;
 
+        this.currentPage = 1;
 
+        this.loadData();
 
-            axios.post(this.fetchUrl,{
-              
-            
-            sucursal_id: this.sucursal.id,
-
-                
-
-                
-              
-              
-          }).then(response => {
-              this.items = response.data.data;
-
-              this.totalRows = response.data.meta.total;
-
-              this.isBusy = false;
-
-             
-
-              console.log(this.totalRows);
-
-              if(this.totalRows == 1){
-                this.product = 'Equipo';
-              }
-              else{
-                this.product = 'Equipos'
-              }
-
-
-            
-          })
-        
-
-        
-        
-        
-        
-        
-        
-        },
+},
 
 
 
@@ -215,8 +259,8 @@
       
       onFiltered(filteredItems) {
         // Trigger pagination to update the number of buttons/pages due to filtering
-        this.totalRows = filteredItems.length
-        this.currentPage = 1
+        //this.totalRows = filteredItems.length
+        
       }
     
     },

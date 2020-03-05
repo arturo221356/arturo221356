@@ -1997,6 +1997,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     fetchUrl: {
@@ -2017,14 +2026,14 @@ __webpack_require__.r(__webpack_exports__);
       product: '',
       countItems: 0,
       items: [],
-      totalRows: 1,
+      totalRows: 0,
       sortBy: '',
       sortDesc: false,
       sortDirection: 'asc',
       filter: null,
       filterOn: [],
       actualSucursal: "",
-      perPage: 150,
+      perPage: 0,
       currentPage: 1,
       isBusy: false
     };
@@ -2045,37 +2054,40 @@ __webpack_require__.r(__webpack_exports__);
       return this.items.length;
     }
   },
-  mounted: function mounted() {// Set the initial number of items
-    //   this.totalRows = this.items.length
+  watch: {
+    currentPage: {
+      handler: function handler() {
+        this.loadData();
+      }
+    }
   },
+  mounted: function mounted() {},
   methods: {
-    loadData: function loadData() {},
-    sucursalChange: function sucursalChange(value) {
+    loadData: function loadData() {
       var _this = this;
 
-      this.sucursal = value;
       console.log(this.sucursal);
       this.isBusy = true;
-      this.actualSucursal = this.sucursal.text;
       axios.post(this.fetchUrl, {
-        sucursal_id: this.sucursal.id
+        sucursal_id: this.sucursal.id,
+        page: this.currentPage
       }).then(function (response) {
         _this.items = response.data.data;
         _this.totalRows = response.data.meta.total;
+        _this.perPage = response.data.meta.per_page;
         _this.isBusy = false;
         console.log(_this.totalRows);
-
-        if (_this.totalRows == 1) {
-          _this.product = 'Equipo';
-        } else {
-          _this.product = 'Equipos';
-        }
+        console.log(_this.currentPage);
       });
     },
-    onFiltered: function onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length;
+    sucursalChange: function sucursalChange(value) {
+      this.sucursal = value;
+      this.actualSucursal = this.sucursal.text;
       this.currentPage = 1;
+      this.loadData();
+    },
+    onFiltered: function onFiltered(filteredItems) {// Trigger pagination to update the number of buttons/pages due to filtering
+      //this.totalRows = filteredItems.length
     }
   }
 });
@@ -74322,8 +74334,8 @@ var render = function() {
       _vm._v(" "),
       _c("b-pagination", {
         attrs: {
-          "total-rows": _vm.totalRows,
           "per-page": _vm.perPage,
+          "total-rows": _vm.totalRows,
           "aria-controls": "my-table",
           "prev-text": "Atras",
           "next-text": "Siguiente",
@@ -74358,7 +74370,6 @@ var render = function() {
           "sort-by": _vm.sortBy,
           "sort-desc": _vm.sortDesc,
           "sort-direction": _vm.sortDirection,
-          "per-page": _vm.perPage,
           "current-page": _vm.currentPage,
           busy: _vm.isBusy
         },
