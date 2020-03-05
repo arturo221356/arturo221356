@@ -25,6 +25,8 @@ Vue.use(BootstrapVue) // Telling Vue to use this in whole applicat
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('select-sucursal', require('./components/SelectSucursalComponent.vue').default);
+Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
+Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

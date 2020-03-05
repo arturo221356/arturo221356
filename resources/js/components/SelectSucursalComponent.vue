@@ -3,10 +3,10 @@
                    
 
                    
-          <select class='form-control' v-model='sucursal' @change='emitToParent'>
-                <option value='' >Seleccionar Sucursal</option>
+          <select class='form-control mr-3' v-model='sucursal' @change='emitToParent'>
+                <option value="0"  selected>Seleccionar Sucursal</option>
                 <option :value="{id:'all', text:'Todas'}" >Todas</option>
-                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" >{{ data.nombre_sucursal }} </option>
+                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" :key="data.id" >{{ data.nombre_sucursal }} </option>
           </select>
 
 
@@ -45,7 +45,7 @@ export default {
 
             },
       created: function(){
-            this.getSucursales()
+            this.getSucursales();
         } 
      }
  

@@ -9,43 +9,46 @@
         <a class="navbar-brand" href="#">{{navbarName}}  {{actualSucursal}}</a>
         
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          @yield('TableNavbarButtons')
+            
+            
+            <radio-producto
+            
+              v-on:producto="productoChange"
+              v-on:fields="loadfields"
+
+            >
+            
+            </radio-producto>
+        
+        
         </ul>
         
         <form class="form-inline my-2 my-lg-0">
           
+          <checkbox-status
+            :producto="producto"
+          >
+          </checkbox-status>
+          
           <select-sucursal
             v-on:sucursal="sucursalChange"
-          
+            
           ></select-sucursal>
 
 
-          <input class="form-control mr-sm-2 search" type="text" placeholder="Search" aria-label="Search" id="filterInpt" v-model="filter">
+          <input class="form-control mr-sm-2 search" type="text" placeholder="Buscar" aria-label="Search" id="filterInpt" v-model="filter">
           
         </form>
       </div>
     </nav>
 
 
-    <!-- pagination  -->
-    <b-pagination
-      v-model="currentPage"
-      
-      :per-page="perPage"
-      :total-rows="totalRows"
-      aria-controls="my-table"
-      prev-text="Atras"
-      next-text="Siguiente"
-      first-number
-      last-number
-      
-      
-     
-    ></b-pagination>
+
+
     
    
    
-    <p class="mt-3">Current Page: {{ currentPage }}</p>
+
 
 
    
@@ -65,14 +68,12 @@
       :sort-desc.sync="sortDesc"
       :sort-direction="sortDirection"
       @filtered="onFiltered"
-      
-      :current-page="currentPage"
       :busy="isBusy"
     >
 
       <!--busy template-->
       <template v-slot:table-busy>
-        <div class="text-center text-danger my-2">
+        <div class="text-center text-primary my-2">
           <b-spinner class="align-middle"></b-spinner>
           <strong>Cargando...</strong>
         </div>
@@ -82,7 +83,7 @@
 
 
       <!-- resultado template -->
-      <template v-slot:table-caption>Resultado: - {{totalRows}} {{product}} </template>
+      <template v-slot:table-caption>Resultado: - {{countItems}} </template>
       <template v-slot:cell(editar)="data">
         <!-- `data.value` is the value after formatted by the Formatter -->
         <b-button :href="`/admin/imei/${data.item.id}/edit`"> Editar</b-button>
@@ -101,8 +102,7 @@
 
   props: {
     
-    fetchUrl: { type: String, required: true },
-    fields: { type: Array, required: true },
+    //fields: { type: Array, required: true },
     navbarName: {type: String, required: true},
   },
     
@@ -110,7 +110,9 @@
     data() {
       return {
         
-        product: '',
+        producto:"",
+        fields:[],
+        fetchUrl:'',
         countItems: 0,
         items: [],
         totalRows: 0,
@@ -120,8 +122,6 @@
         filter: null,
         filterOn: [],
         actualSucursal: "",
-        perPage:0,
-        currentPage: 1,
         isBusy: false,
         
         
@@ -144,6 +144,7 @@
         rows() {
         return this.items.length
       },
+      
 
 
 
@@ -153,12 +154,8 @@
 
     },
   watch:{
-        currentPage:{
-          handler: function(){
-              this.loadData();
-          }
-          
-        }
+
+
 
 
 
@@ -170,7 +167,7 @@
 
     mounted() {
   
-
+      
     
     
     },
@@ -184,6 +181,8 @@
 
          this.isBusy = true;
 
+          
+
          
 
          axios.post(this.fetchUrl,{
@@ -191,27 +190,17 @@
             
          sucursal_id: this.sucursal.id,
 
-         page: this.currentPage,
 
-        
 
-                
-
-                
-              
+     
               
           }).then(response => {
               
               
               
               this.items = response.data.data;
-
-              this.totalRows = response.data.meta.total;
-
-              this.perPage = response.data.meta.per_page;
-
               
-
+              this.countItems = this.items.length;
 
 
               this.isBusy = false;
@@ -220,7 +209,7 @@
 
               console.log(this.totalRows);
 
-              console.log(this.currentPage);
+             
 
 
 
@@ -246,11 +235,44 @@
         
         this.actualSucursal = this.sucursal.text;
 
-        this.currentPage = 1;
-
+        
         this.loadData();
+        
+        
 
-},
+      },
+
+      productoChange(value) {
+        
+        this.producto = value;
+
+        
+        if(value == 'equipos'){
+          this.fetchUrl = '/get/imeis/';
+          
+        }
+        else{
+          this.fetchUrl ='';
+          
+        }
+        
+        
+
+        
+
+        if(this.actualSucursal != ""){
+          this.loadData();
+        }
+      },
+    loadfields(value) {
+        
+        
+        
+        this.fields = value;
+
+      },
+
+
 
 
 
@@ -260,6 +282,14 @@
       onFiltered(filteredItems) {
         // Trigger pagination to update the number of buttons/pages due to filtering
         //this.totalRows = filteredItems.length
+
+        console.log(this.filter);
+
+        this.countItems = filteredItems.length;
+
+
+
+        
         
       }
     

@@ -176,25 +176,7 @@ class ImeisController extends Controller
         return redirect("/inventario/equipos");
     }
 
-    public function getimeis(Request $request){
-
-       $sucursal = $request->sucursal_id;
-
-       if($sucursal == 'all'){
-
-        return ImeiResource::collection(Imei::paginate(1000));
-
-       }else{
         
-        return ImeiResource::collection(Imei::where('sucursal_id', $sucursal)->paginate(1000));
-
-       }
-        
-
-        //return ImeiResource::collection(Imei::paginate(100));
-
-
-    }
 
 
 

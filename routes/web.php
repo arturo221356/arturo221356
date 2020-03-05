@@ -30,14 +30,16 @@ Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->na
     Route::resource('/productos/recargas','RecargasController');
     Route::resource('/productos/equipos','EquiposController');
     Route::resource('/imei','ImeisController');
-    Route::post('/inventario/equipos', 'ImeisController@getimeis');
+    
 });
 
 
 
-Route::get('/inventario/equipos', 'InventarioController@equipos')->middleware('auth');
+//Route::get('/inventario/equipos', 'InventarioController@equipos')->middleware('auth');
 
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');
+
+Route::post('/get/imeis/', 'InventarioController@getimeis')->middleware('auth');
 
 
 

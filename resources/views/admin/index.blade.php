@@ -12,7 +12,7 @@
     { key: 'sucursal', label: 'Sucursal', sortable: true, class: 'text-center' },
     { key: 'status', label: 'Status', sortable: true, class: 'text-center' },
     { key: 'editar', label: 'Editar', class: 'text-center' },]"
-fetch-url="/admin/inventario/equipos"
+
 navbar-name="Inventario"
 
 
