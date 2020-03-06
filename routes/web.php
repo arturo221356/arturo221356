@@ -35,7 +35,7 @@ Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->na
 
 
 
-//Route::get('/inventario/equipos', 'InventarioController@equipos')->middleware('auth');
+Route::get('/inventario', 'InventarioController@inventario')->middleware('auth');
 
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');
 

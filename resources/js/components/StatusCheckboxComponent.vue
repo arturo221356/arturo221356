@@ -1,14 +1,20 @@
 <template>
    
  <div>         
-            <b-form-checkbox-group
-                v-model="selected"
-                :options="options"
-                name="buttons-1"
-                buttons
-            ></b-form-checkbox-group>
-            
-{{producto}}
+    
+    
+      <b-form-checkbox-group
+        switches 
+        size="sm"
+        v-model="selected"
+        :options="options"
+        @input='emitToParent'
+       
+      ></b-form-checkbox-group>
+   
+
+    
+
 </div>
 </template>
 <script>
@@ -18,7 +24,7 @@ export default {
     
     data() {
       return {
-        selected: [], // Must be an array reference!
+        selected: ['5'], // Must be an array reference!
         options: [],
        
         
@@ -33,17 +39,18 @@ export default {
          
            
         if (this.producto == 'equipos'){
-                
+          this.selected= ['5'],      
           this.options = [
-          { text: 'this.producto' , value: this.producto},
-          { text: 'Apple', value: 'apple' },
-          { text: 'Pineapple', value: 'pineapple' },
-          { text: 'Grape', value: 'grape' }
+          { text: 'Disponible' , value: '5'},
+          { text: 'Garantia', value: '4' },
+          { text: 'En Transito', value: '3' },
+          { text: 'Perdido', value: '2' },
+          { text: 'Incompleto', value: '6' },
         ]
 
         }else{
         
-        
+          this.selected= [],
           this.options = [
           { text: 'otro' , value: this.producto },
           { text: 'Apple', value: 'apple' },
@@ -54,6 +61,20 @@ export default {
         
         }
     },
+    methods:{
+                
+                emitToParent(){
+
+                    this.$emit('status', this.selected);
+                }
+                
+                
+            
+            },
+
+    created: function(){
+                    this.emitToParent();
+                }
 
     
 

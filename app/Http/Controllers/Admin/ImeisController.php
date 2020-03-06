@@ -110,7 +110,7 @@ class ImeisController extends Controller
         
         }
 
-       return redirect('/inventario/equipos')->withErrors($errorMsgs);
+       return redirect('/inventario')->withErrors($errorMsgs);
 
        
 
@@ -158,7 +158,7 @@ class ImeisController extends Controller
         
         $imei = Imei::findOrFail($id);
         $imei->update($request->all());
-        return redirect("/inventario/equipos");
+        return redirect("/inventario");
       
         
     }
@@ -173,7 +173,7 @@ class ImeisController extends Controller
     {
 
         $imei->delete();
-        return redirect("/inventario/equipos");
+        return redirect("/inventario");
     }
 
         

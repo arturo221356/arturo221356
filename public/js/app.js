@@ -2007,8 +2007,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
+    userRole: {
+      type: String,
+      required: true
+    },
+    userSucursal: {
+      type: String
+    },
     //fields: { type: Array, required: true },
     navbarName: {
       type: String,
@@ -2018,6 +2028,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       producto: "",
+      status: [],
       fields: [],
       fetchUrl: '',
       countItems: 0,
@@ -2054,21 +2065,44 @@ __webpack_require__.r(__webpack_exports__);
     loadData: function loadData() {
       var _this = this;
 
-      console.log(this.sucursal);
-      this.isBusy = true;
-      axios.post(this.fetchUrl, {
-        sucursal_id: this.sucursal.id
-      }).then(function (response) {
-        _this.items = response.data.data;
-        _this.countItems = _this.items.length;
-        _this.isBusy = false;
-        console.log(_this.totalRows);
-      });
+      if (!this.userSucursal) {
+        console.log(this.sucursal);
+        this.isBusy = true;
+        axios.post(this.fetchUrl, {
+          sucursal_id: this.sucursal.id,
+          status: this.status
+        }).then(function (response) {
+          _this.items = response.data.data;
+          _this.countItems = _this.items.length;
+          _this.isBusy = false;
+          console.log(_this.totalRows);
+        });
+      } else {
+        console.log(this.sucursal);
+        this.isBusy = true;
+        axios.post(this.fetchUrl, {
+          sucursal_id: this.userSucursal,
+          status: this.status
+        }).then(function (response) {
+          _this.items = response.data.data;
+          _this.countItems = _this.items.length;
+          _this.isBusy = false;
+          console.log(_this.totalRows);
+        });
+      }
     },
     sucursalChange: function sucursalChange(value) {
       this.sucursal = value;
       this.actualSucursal = this.sucursal.text;
       this.loadData();
+    },
+    statusChange: function statusChange(value) {
+      this.status = value;
+      console.log(this.status);
+
+      if (this.actualSucursal != "") {
+        this.loadData();
+      }
     },
     productoChange: function productoChange(value) {
       this.producto = value;
@@ -2126,6 +2160,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    userRole: {
+      type: String,
+      required: true
+    }
+  },
   data: function data() {
     return {
       selected: 'equipos',
@@ -2146,41 +2186,82 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     emitToParent: function emitToParent() {
       if (this.selected == 'equipos') {
-        this.fields = [{
-          key: 'id',
-          label: '#',
-          sortable: true,
-          sortDirection: 'desc'
-        }, {
-          key: 'imei',
-          label: 'Imei',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'marca',
-          label: 'Marca',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'modelo',
-          label: 'Modelo',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'sucursal',
-          label: 'Sucursal',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'status',
-          label: 'Status',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'editar',
-          label: 'Editar',
-          "class": 'text-center'
-        }];
+        switch (this.userRole) {
+          case 'admin':
+            this.fields = [{
+              key: 'id',
+              label: '#',
+              sortable: true,
+              sortDirection: 'desc'
+            }, {
+              key: 'imei',
+              label: 'Imei',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'marca',
+              label: 'Marca',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'modelo',
+              label: 'Modelo',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'sucursal',
+              label: 'Sucursal',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'status',
+              label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'editar',
+              label: 'Editar',
+              "class": 'text-center'
+            }];
+            break;
+
+          case 'supervisor':
+            this.fields = [{
+              key: 'id',
+              label: '#',
+              sortable: true,
+              sortDirection: 'desc'
+            }, {
+              key: 'imei',
+              label: 'Imei',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'marca',
+              label: 'Marca',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'modelo',
+              label: 'Modelo',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'sucursal',
+              label: 'Sucursal',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'status',
+              label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }];
+            break;
+
+          default:
+            this.fields = [];
+        }
       } else {
         this.fields = [{
           key: 'id',
@@ -2302,11 +2383,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['producto'],
   data: function data() {
     return {
-      selected: [],
+      selected: ['5'],
       // Must be an array reference!
       options: []
     };
@@ -2314,21 +2401,24 @@ __webpack_require__.r(__webpack_exports__);
   watch: {
     producto: function producto() {
       if (this.producto == 'equipos') {
-        this.options = [{
-          text: 'this.producto',
-          value: this.producto
+        this.selected = ['5'], this.options = [{
+          text: 'Disponible',
+          value: '5'
         }, {
-          text: 'Apple',
-          value: 'apple'
+          text: 'Garantia',
+          value: '4'
         }, {
-          text: 'Pineapple',
-          value: 'pineapple'
+          text: 'En Transito',
+          value: '3'
         }, {
-          text: 'Grape',
-          value: 'grape'
+          text: 'Perdido',
+          value: '2'
+        }, {
+          text: 'Incompleto',
+          value: '6'
         }];
       } else {
-        this.options = [{
+        this.selected = [], this.options = [{
           text: 'otro',
           value: this.producto
         }, {
@@ -2343,6 +2433,14 @@ __webpack_require__.r(__webpack_exports__);
         }];
       }
     }
+  },
+  methods: {
+    emitToParent: function emitToParent() {
+      this.$emit('status', this.selected);
+    }
+  },
+  created: function created() {
+    this.emitToParent();
   }
 });
 
@@ -74495,6 +74593,7 @@ var render = function() {
                 { staticClass: "navbar-nav mr-auto mt-2 mt-lg-0" },
                 [
                   _c("radio-producto", {
+                    attrs: { "user-role": _vm.userRole },
                     on: { producto: _vm.productoChange, fields: _vm.loadfields }
                   })
                 ],
@@ -74505,11 +74604,16 @@ var render = function() {
                 "form",
                 { staticClass: "form-inline my-2 my-lg-0" },
                 [
-                  _c("checkbox-status", { attrs: { producto: _vm.producto } }),
-                  _vm._v(" "),
-                  _c("select-sucursal", {
-                    on: { sucursal: _vm.sucursalChange }
+                  _c("checkbox-status", {
+                    attrs: { producto: _vm.producto },
+                    on: { status: _vm.statusChange }
                   }),
+                  _vm._v(" "),
+                  _vm.userRole == "supervisor" || _vm.userRole == "admin"
+                    ? _c("select-sucursal", {
+                        on: { sucursal: _vm.sucursalChange }
+                      })
+                    : _vm._e(),
                   _vm._v(" "),
                   _c("input", {
                     directives: [
@@ -74663,7 +74767,7 @@ var render = function() {
         }
       }),
       _vm._v(" "),
-      _c("span", [_vm._v("Picked: " + _vm._s(_vm.selected))])
+      _c("span", [_vm._v("Picked: " + _vm._s(_vm.userRole))])
     ],
     1
   )
@@ -74770,7 +74874,8 @@ var render = function() {
     "div",
     [
       _c("b-form-checkbox-group", {
-        attrs: { options: _vm.options, name: "buttons-1", buttons: "" },
+        attrs: { switches: "", size: "sm", options: _vm.options },
+        on: { input: _vm.emitToParent },
         model: {
           value: _vm.selected,
           callback: function($$v) {
@@ -74778,8 +74883,7 @@ var render = function() {
           },
           expression: "selected"
         }
-      }),
-      _vm._v("\n            \n" + _vm._s(_vm.producto) + "\n")
+      })
     ],
     1
   )

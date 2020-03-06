@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Imei;
 use App\Sucursal;
 use App\Role;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ImeiResource as ImeiResource;
 
@@ -18,7 +19,7 @@ class InventarioController extends Controller
 
         
     }
-    public function Equipos()
+    public function Inventario()
     {
        $user = Auth::User();
        $userRole= $user->Rolename();
@@ -26,19 +27,13 @@ class InventarioController extends Controller
        
        if($userRole == 'seller'){
        $userSucursal = $user->sucursalId();
-       $currentSucursal = $user->sucursalName();
-        $imeis = Imei::where('sucursal_id',$userSucursal)->get();
-        //  return $userSucursal;
-      return view('inventario.index',compact('imeis','userRole','currenSucursal'));
+      return view('inventario.index',compact('userRole','userSucursal'));
        }
        else{
-        
-        $sucursales = Sucursal::all();
-        $imeis = Imei::all();
-        $currentSucursal = "Todas";
-        //  return $userSucursal;
-        return view('inventario.index',compact('imeis','userRole','sucursales','currentSucursal')); 
-       }
+
+        return view('inventario.index',compact('userRole')); 
+       
+        }
     }
     
     
@@ -55,18 +50,20 @@ class InventarioController extends Controller
     public function getimeis(Request $request){
 
         $sucursal = $request->sucursal_id;
+
+        $statusArray = $request->status;
  
-       
+        
          
         
  
                  if($sucursal == 'all'){
  
-                     return ImeiResource::collection(Imei::where('status_id',5)->get());
+                     return ImeiResource::collection(Imei::whereIn('status_id',$statusArray)->get());
  
                  }else{
                      
-                     return ImeiResource::collection(Imei::where([['sucursal_id','=', $sucursal],['status_id','=',5]])->get());
+                     return ImeiResource::collection(Imei::where('sucursal_id','=', $sucursal)->whereIn('status_id',$statusArray)->get());
  
                  }
                      

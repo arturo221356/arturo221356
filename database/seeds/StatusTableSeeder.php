@@ -18,5 +18,6 @@ class StatusTableSeeder extends Seeder
         Status::create(['status'=>'En transito']);
         Status::create(['status'=>'Garantia']);
         Status::create(['status'=>'Disponible']);
+        Status::create(['status'=>'Incompleto']);
     }
 }

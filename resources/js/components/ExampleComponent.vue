@@ -12,7 +12,7 @@
             
             
             <radio-producto
-            
+              :user-role="userRole"
               v-on:producto="productoChange"
               v-on:fields="loadfields"
 
@@ -22,15 +22,18 @@
         
         
         </ul>
-        
+         
         <form class="form-inline my-2 my-lg-0">
           
           <checkbox-status
+            
             :producto="producto"
+            v-on:status="statusChange"
           >
           </checkbox-status>
           
           <select-sucursal
+            v-if="userRole == 'supervisor'||userRole =='admin'"
             v-on:sucursal="sucursalChange"
             
           ></select-sucursal>
@@ -92,8 +95,8 @@
 
     </b-table>
 
-    <!-- Info modal -->
-
+    
+ 
   </b-container>
 </template>
 
@@ -102,6 +105,8 @@
 
   props: {
     
+    userRole: {type: String, required: true},
+    userSucursal:{type: String},
     //fields: { type: Array, required: true },
     navbarName: {type: String, required: true},
   },
@@ -111,6 +116,7 @@
       return {
         
         producto:"",
+        status:[],
         fields:[],
         fetchUrl:'',
         countItems: 0,
@@ -144,6 +150,7 @@
         rows() {
         return this.items.length
       },
+
       
 
 
@@ -175,7 +182,7 @@
       
         loadData(){
           
-          
+          if(!this.userSucursal){
 
         console.log(this.sucursal);
 
@@ -187,8 +194,11 @@
 
          axios.post(this.fetchUrl,{
               
-            
+         
+         
          sucursal_id: this.sucursal.id,
+
+         status: this.status,
 
 
 
@@ -219,6 +229,66 @@
         
         
         
+          
+          
+          
+          
+          }
+
+        else{
+                  
+        console.log(this.sucursal);
+
+         this.isBusy = true;
+
+          
+
+         
+
+         axios.post(this.fetchUrl,{
+              
+         
+         
+         sucursal_id: this.userSucursal,
+
+         status: this.status,
+
+
+
+     
+              
+          }).then(response => {
+              
+              
+              
+              this.items = response.data.data;
+              
+              this.countItems = this.items.length;
+
+
+              this.isBusy = false;
+
+             
+
+              console.log(this.totalRows);
+
+             
+
+
+
+            
+          })
+
+
+
+
+
+        }
+          
+          
+         
+         
+        
         
         
         
@@ -238,6 +308,21 @@
         
         this.loadData();
         
+        
+
+      },
+      statusChange(value) {
+        
+        
+        
+        this.status = value;
+
+        
+        console.log(this.status);
+
+       if(this.actualSucursal != ""){
+          this.loadData();
+        }
         
 
       },
@@ -264,6 +349,7 @@
           this.loadData();
         }
       },
+
     loadfields(value) {
         
         
