@@ -2,13 +2,15 @@
   <b-container fluid>
 
   <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #DEDEDE;">
+      <b-row>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">{{navbarName}}  {{actualSucursal}}</a>
+        <a class="navbar-brand" href="#">{{navbarName}} {{actualSucursal}}</a>
         
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        
+        <ul class="navbar-nav m-auto mt-2 mt-lg-0">
             
             
             <radio-producto
@@ -23,7 +25,9 @@
         
         </ul>
          
-        <form class="form-inline my-2 my-lg-0">
+         
+        
+        <form class="form-inline my-2 my-lg-0 ml-2">
           
           <checkbox-status
             
@@ -41,8 +45,13 @@
 
           <input class="form-control mr-sm-2 search" type="text" placeholder="Buscar" aria-label="Search" id="filterInpt" v-model="filter">
           
+        <export-excel></export-excel>
+        
+        
         </form>
+        
       </div>
+    </b-row>
     </nav>
 
 
@@ -119,6 +128,7 @@
         status:[],
         fields:[],
         fetchUrl:'',
+        sucursalid:0,
         countItems: 0,
         items: [],
         totalRows: 0,
@@ -151,6 +161,7 @@
         return this.items.length
       },
 
+
       
 
 
@@ -174,7 +185,12 @@
 
     mounted() {
   
-      
+       if(this.userSucursal){
+          
+          console.log('loading datadfdf');
+          this.sucursalid = this.userSucursal;
+          this.loadData();
+        }
     
     
     },
@@ -182,7 +198,7 @@
       
         loadData(){
           
-          if(!this.userSucursal){
+          
 
         console.log(this.sucursal);
 
@@ -196,7 +212,7 @@
               
          
          
-         sucursal_id: this.sucursal.id,
+         sucursal_id: this.sucursalid,
 
          status: this.status,
 
@@ -233,57 +249,7 @@
           
           
           
-          }
-
-        else{
-                  
-        console.log(this.sucursal);
-
-         this.isBusy = true;
-
-          
-
          
-
-         axios.post(this.fetchUrl,{
-              
-         
-         
-         sucursal_id: this.userSucursal,
-
-         status: this.status,
-
-
-
-     
-              
-          }).then(response => {
-              
-              
-              
-              this.items = response.data.data;
-              
-              this.countItems = this.items.length;
-
-
-              this.isBusy = false;
-
-             
-
-              console.log(this.totalRows);
-
-             
-
-
-
-            
-          })
-
-
-
-
-
-        }
           
           
          
@@ -304,6 +270,8 @@
         this.sucursal = value;
         
         this.actualSucursal = this.sucursal.text;
+
+        this.sucursalid = this.sucursal.id;
 
         
         this.loadData();
@@ -380,6 +348,10 @@
       }
     
     },
+
+    created(){
+
+    }
 
 
   

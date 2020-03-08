@@ -27,7 +27,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('select-sucursal', require('./components/SelectSucursalComponent.vue').default);
 Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
-
+Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

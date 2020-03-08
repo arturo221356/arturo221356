@@ -72,7 +72,7 @@ class ImeisController extends Controller
 
             $newImei->imei = $imei;
             
-            $newImei->status_id = 1;
+            $newImei->status_id = 5;
             
             $newImei->sucursal_id = $request->sucursal;
             

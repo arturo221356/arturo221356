@@ -2010,6 +2010,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     userRole: {
@@ -2031,6 +2040,7 @@ __webpack_require__.r(__webpack_exports__);
       status: [],
       fields: [],
       fetchUrl: '',
+      sucursalid: 0,
       countItems: 0,
       items: [],
       totalRows: 0,
@@ -2060,40 +2070,33 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   watch: {},
-  mounted: function mounted() {},
+  mounted: function mounted() {
+    if (this.userSucursal) {
+      console.log('loading datadfdf');
+      this.sucursalid = this.userSucursal;
+      this.loadData();
+    }
+  },
   methods: {
     loadData: function loadData() {
       var _this = this;
 
-      if (!this.userSucursal) {
-        console.log(this.sucursal);
-        this.isBusy = true;
-        axios.post(this.fetchUrl, {
-          sucursal_id: this.sucursal.id,
-          status: this.status
-        }).then(function (response) {
-          _this.items = response.data.data;
-          _this.countItems = _this.items.length;
-          _this.isBusy = false;
-          console.log(_this.totalRows);
-        });
-      } else {
-        console.log(this.sucursal);
-        this.isBusy = true;
-        axios.post(this.fetchUrl, {
-          sucursal_id: this.userSucursal,
-          status: this.status
-        }).then(function (response) {
-          _this.items = response.data.data;
-          _this.countItems = _this.items.length;
-          _this.isBusy = false;
-          console.log(_this.totalRows);
-        });
-      }
+      console.log(this.sucursal);
+      this.isBusy = true;
+      axios.post(this.fetchUrl, {
+        sucursal_id: this.sucursalid,
+        status: this.status
+      }).then(function (response) {
+        _this.items = response.data.data;
+        _this.countItems = _this.items.length;
+        _this.isBusy = false;
+        console.log(_this.totalRows);
+      });
     },
     sucursalChange: function sucursalChange(value) {
       this.sucursal = value;
       this.actualSucursal = this.sucursal.text;
+      this.sucursalid = this.sucursal.id;
       this.loadData();
     },
     statusChange: function statusChange(value) {
@@ -2126,8 +2129,25 @@ __webpack_require__.r(__webpack_exports__);
       console.log(this.filter);
       this.countItems = filteredItems.length;
     }
-  }
+  },
+  created: function created() {}
 });
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
 
@@ -2209,6 +2229,16 @@ __webpack_require__.r(__webpack_exports__);
               sortable: true,
               "class": 'text-center'
             }, {
+              key: 'precio',
+              label: 'Precio',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'costo',
+              label: 'Costo',
+              sortable: true,
+              "class": 'text-center'
+            }, {
               key: 'sucursal',
               label: 'Sucursal',
               sortable: true,
@@ -2216,6 +2246,16 @@ __webpack_require__.r(__webpack_exports__);
             }, {
               key: 'status',
               label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'created_at',
+              label: 'Agregado',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'updated_at',
+              label: 'Ultimo cambio',
               sortable: true,
               "class": 'text-center'
             }, {
@@ -2247,6 +2287,11 @@ __webpack_require__.r(__webpack_exports__);
               sortable: true,
               "class": 'text-center'
             }, {
+              key: 'precio',
+              label: 'Precio',
+              sortable: true,
+              "class": 'text-center'
+            }, {
               key: 'sucursal',
               label: 'Sucursal',
               sortable: true,
@@ -2254,6 +2299,55 @@ __webpack_require__.r(__webpack_exports__);
             }, {
               key: 'status',
               label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'created_at',
+              label: 'Agregado',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'updated_at',
+              label: 'Ultimo cambio',
+              sortable: true,
+              "class": 'text-center'
+            }];
+            break;
+
+          case 'seller':
+            this.fields = [{
+              key: 'id',
+              label: '#',
+              sortable: true,
+              sortDirection: 'desc'
+            }, {
+              key: 'imei',
+              label: 'Imei',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'marca',
+              label: 'Marca',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'modelo',
+              label: 'Modelo',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'precio',
+              label: 'Precio',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'status',
+              label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'updated_at',
+              label: 'Ultimo cambio',
               sortable: true,
               "class": 'text-center'
             }];
@@ -74559,94 +74653,102 @@ var render = function() {
           staticStyle: { "background-color": "#DEDEDE" }
         },
         [
-          _c(
-            "button",
-            {
-              staticClass: "navbar-toggler",
-              attrs: {
-                type: "button",
-                "data-toggle": "collapse",
-                "data-target": "#navbarTogglerDemo01",
-                "aria-controls": "navbarTogglerDemo01",
-                "aria-expanded": "false",
-                "aria-label": "Toggle navigation"
-              }
-            },
-            [_c("span", { staticClass: "navbar-toggler-icon" })]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "collapse navbar-collapse",
-              attrs: { id: "navbarTogglerDemo01" }
-            },
-            [
-              _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
-                _vm._v(
-                  _vm._s(_vm.navbarName) + "  " + _vm._s(_vm.actualSucursal)
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "ul",
-                { staticClass: "navbar-nav mr-auto mt-2 mt-lg-0" },
-                [
-                  _c("radio-producto", {
-                    attrs: { "user-role": _vm.userRole },
-                    on: { producto: _vm.productoChange, fields: _vm.loadfields }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "form",
-                { staticClass: "form-inline my-2 my-lg-0" },
-                [
-                  _c("checkbox-status", {
-                    attrs: { producto: _vm.producto },
-                    on: { status: _vm.statusChange }
-                  }),
-                  _vm._v(" "),
-                  _vm.userRole == "supervisor" || _vm.userRole == "admin"
-                    ? _c("select-sucursal", {
-                        on: { sucursal: _vm.sucursalChange }
-                      })
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.filter,
-                        expression: "filter"
+          _c("b-row", [
+            _c(
+              "button",
+              {
+                staticClass: "navbar-toggler",
+                attrs: {
+                  type: "button",
+                  "data-toggle": "collapse",
+                  "data-target": "#navbarTogglerDemo01",
+                  "aria-controls": "navbarTogglerDemo01",
+                  "aria-expanded": "false",
+                  "aria-label": "Toggle navigation"
+                }
+              },
+              [_c("span", { staticClass: "navbar-toggler-icon" })]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "collapse navbar-collapse",
+                attrs: { id: "navbarTogglerDemo01" }
+              },
+              [
+                _c("a", { staticClass: "navbar-brand", attrs: { href: "#" } }, [
+                  _vm._v(
+                    _vm._s(_vm.navbarName) + " " + _vm._s(_vm.actualSucursal)
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "ul",
+                  { staticClass: "navbar-nav m-auto mt-2 mt-lg-0" },
+                  [
+                    _c("radio-producto", {
+                      attrs: { "user-role": _vm.userRole },
+                      on: {
+                        producto: _vm.productoChange,
+                        fields: _vm.loadfields
                       }
-                    ],
-                    staticClass: "form-control mr-sm-2 search",
-                    attrs: {
-                      type: "text",
-                      placeholder: "Buscar",
-                      "aria-label": "Search",
-                      id: "filterInpt"
-                    },
-                    domProps: { value: _vm.filter },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "form",
+                  { staticClass: "form-inline my-2 my-lg-0 ml-2" },
+                  [
+                    _c("checkbox-status", {
+                      attrs: { producto: _vm.producto },
+                      on: { status: _vm.statusChange }
+                    }),
+                    _vm._v(" "),
+                    _vm.userRole == "supervisor" || _vm.userRole == "admin"
+                      ? _c("select-sucursal", {
+                          on: { sucursal: _vm.sucursalChange }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.filter,
+                          expression: "filter"
                         }
-                        _vm.filter = $event.target.value
+                      ],
+                      staticClass: "form-control mr-sm-2 search",
+                      attrs: {
+                        type: "text",
+                        placeholder: "Buscar",
+                        "aria-label": "Search",
+                        id: "filterInpt"
+                      },
+                      domProps: { value: _vm.filter },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.filter = $event.target.value
+                        }
                       }
-                    }
-                  })
-                ],
-                1
-              )
-            ]
-          )
-        ]
+                    }),
+                    _vm._v(" "),
+                    _c("export-excel")
+                  ],
+                  1
+                )
+              ]
+            )
+          ])
+        ],
+        1
       ),
       _vm._v(" "),
       _c("b-table", {
@@ -74732,6 +74834,30 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("b-button", { attrs: { variant: "success" } }, [_vm._v("Excel")])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RadioProductoComponent.vue?vue&type=template&id=952ba026&":
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RadioProductoComponent.vue?vue&type=template&id=952ba026& ***!
@@ -74765,9 +74891,7 @@ var render = function() {
           },
           expression: "selected"
         }
-      }),
-      _vm._v(" "),
-      _c("span", [_vm._v("Picked: " + _vm._s(_vm.userRole))])
+      })
     ],
     1
   )
@@ -87088,6 +87212,7 @@ Vue.component('example-component', __webpack_require__(/*! ./components/ExampleC
 Vue.component('select-sucursal', __webpack_require__(/*! ./components/SelectSucursalComponent.vue */ "./resources/js/components/SelectSucursalComponent.vue")["default"]);
 Vue.component('checkbox-status', __webpack_require__(/*! ./components/StatusCheckboxComponent.vue */ "./resources/js/components/StatusCheckboxComponent.vue")["default"]);
 Vue.component('radio-producto', __webpack_require__(/*! ./components/RadioProductoComponent.vue */ "./resources/js/components/RadioProductoComponent.vue")["default"]);
+Vue.component('export-excel', __webpack_require__(/*! ./components/ExportExcelComponent.vue */ "./resources/js/components/ExportExcelComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -87209,6 +87334,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/ExportExcelComponent.vue":
+/*!**********************************************************!*\
+  !*** ./resources/js/components/ExportExcelComponent.vue ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExportExcelComponent.vue?vue&type=template&id=a5185e76& */ "./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76&");
+/* harmony import */ var _ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExportExcelComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/ExportExcelComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************!*\
+  !*** ./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ExportExcelComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76&":
+/*!*****************************************************************************************!*\
+  !*** ./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76& ***!
+  \*****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./ExportExcelComponent.vue?vue&type=template&id=a5185e76& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -87439,8 +87633,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
