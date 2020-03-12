@@ -45,7 +45,13 @@
 
           <input class="form-control mr-sm-2 search" type="text" placeholder="Buscar" aria-label="Search" id="filterInpt" v-model="filter">
           
-        <export-excel></export-excel>
+        <export-excel
+          :sucursal-id="sucursalid"
+
+          :status-id="status"
+        
+        
+        ></export-excel>
         
         
         </form>

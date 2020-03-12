@@ -79,13 +79,15 @@ class InventarioController extends Controller
 
 
 
-    public function exportImei() 
+    public function exportImei(Request $request) 
 {
-    $sucursal = 1;
+    $sucursal = $request->sucursal_id;
 
-    $status = 3;
+    $status = $request->status_id;
     
     return Excel::download(new ImeiExport ($sucursal,$status), 'invoices.xlsx');
+ 
+
 }
 
 

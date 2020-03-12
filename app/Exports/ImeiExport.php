@@ -6,7 +6,11 @@ use App\Imei;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 
+
+
 use App\Http\Resources\ImeiResource as ImeiResource;
+
+
 
 class ImeiExport implements FromCollection
 {
@@ -16,6 +20,7 @@ class ImeiExport implements FromCollection
     protected $status;
 
     function __construct($sucursal,$status) {
+           
            $this->sucursal = $sucursal;
            $this->status = $status;
     }

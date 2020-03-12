@@ -2019,6 +2019,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     userRole: {
@@ -2148,12 +2154,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['sucursal-id', 'status-id'],
   data: function data() {
     return {
-      exportUrl: '/export/imeis/'
+      exportUrl: ''
     };
   },
-  methods: {}
+  methods: {
+    urlBuilder: function urlBuilder(status, sucursal) {
+      this.exportUrl = '/export/imeis?sucursal_id=' + sucursal + '&status_id=' + status;
+      console.log('cambio sucursal');
+    }
+  },
+  watch: {
+    sucursalId: function sucursalId() {
+      this.urlBuilder(this.statusId, this.sucursalId);
+    },
+    statusId: function statusId() {
+      this.urlBuilder(this.statusId, this.sucursalId);
+    }
+  }
 });
 
 /***/ }),
@@ -74747,7 +74767,12 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _c("export-excel")
+                    _c("export-excel", {
+                      attrs: {
+                        "sucursal-id": _vm.sucursalid,
+                        "status-id": _vm.status
+                      }
+                    })
                   ],
                   1
                 )
@@ -87354,14 +87379,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************************************!*\
   !*** ./resources/js/components/ExportExcelComponent.vue ***!
   \**********************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ExportExcelComponent_vue_vue_type_template_id_a5185e76___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExportExcelComponent.vue?vue&type=template&id=a5185e76& */ "./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76&");
 /* harmony import */ var _ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExportExcelComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _ExportExcelComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -87391,7 +87417,7 @@ component.options.__file = "resources/js/components/ExportExcelComponent.vue"
 /*!***********************************************************************************!*\
   !*** ./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js& ***!
   \***********************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
