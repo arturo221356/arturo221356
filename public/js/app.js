@@ -2147,7 +2147,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      exportUrl: '/export/imeis/'
+    };
+  },
+  methods: {}
+});
 
 /***/ }),
 
@@ -74849,7 +74856,11 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("b-button", { attrs: { variant: "success" } }, [_vm._v("Excel")])
+  return _c(
+    "b-button",
+    { attrs: { variant: "success", href: _vm.exportUrl } },
+    [_vm._v("Excel")]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -87633,8 +87644,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

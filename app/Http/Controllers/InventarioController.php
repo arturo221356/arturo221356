@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ImeiExport;
 use Illuminate\Http\Request;
 use App\Imei;
 use App\Sucursal;
 use App\Role;
 use App\User;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ImeiResource as ImeiResource;
 
@@ -68,10 +70,23 @@ class InventarioController extends Controller
                  }
                      
  
-                     //return ImeiResource::collection(Imei::paginate(100));
- 
+                    
  
     }
+
+
+
+
+
+
+    public function exportImei() 
+{
+    $sucursal = 1;
+
+    $status = 3;
+    
+    return Excel::download(new ImeiExport ($sucursal,$status), 'invoices.xlsx');
+}
 
 
 

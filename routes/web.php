@@ -41,6 +41,8 @@ Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middlew
 
 Route::post('/get/imeis/', 'InventarioController@getimeis')->middleware('auth');
 
+Route::get('/export/imeis/', 'InventarioController@exportImei')->middleware('auth');
+
 
 
 
