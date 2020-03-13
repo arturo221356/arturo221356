@@ -1,6 +1,5 @@
-    
-    <template>
-        <div>
+<template>
+  <div>
       <b-form-radio-group
         id="btn-radios-1"
         v-model="selected"
@@ -12,13 +11,12 @@
       ></b-form-radio-group>
         
 
-        </div>
-    
-    </template>
-    
-    
-    <script>
-        export default {
+   </div>
+</template>
+<script>
+export default {
+   
+       
             props:{
                 userRole: {type: String, required: true},
 
@@ -143,5 +141,6 @@
 
 
 
-        }
-    </script>
+}
+
+</script>

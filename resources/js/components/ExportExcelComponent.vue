@@ -1,16 +1,19 @@
 <template>
-  <b-button variant="success" :href="exportUrl">Excel</b-button>  
+  <b-button variant="success" :href="exportUrl" target="_blank">Excel</b-button>  
 </template>
 <script>
 export default {
   
- props:['sucursal-id','status-id'],
+ props:['sucursal-id','status-id','producto'],
   
   data(){
     
     return{
     
       exportUrl : '',
+      statusArray: '',
+      productoRoute:'',
+      i: 0,
       
 
 
@@ -20,14 +23,81 @@ export default {
   methods:{
 
     urlBuilder(status, sucursal ){
-            
+    
+     this.i = 0;
+
+     this.statusArray = '';
+
+     
+     
+     
+     if(this.producto == 'equipos'){
+
+     this.productoRoute = '/export/imeis?sucursal_id=';
+     
+     this.i = 0;
+
+     this.statusArray = '';
+     
+     status.forEach(element => {
+
+       
+
+       this.statusArray += '&status_id['+this.i+']='+element;
+
+       this.i ++ ;
+
+       console.log(this.statusArray);
+     }
+
+     
+     
+     );  
+
+
+
+    this.exportUrl = this.productoRoute+sucursal+this.statusArray;
+    
     
 
-    this.exportUrl = '/export/imeis?sucursal_id='+sucursal+'&status_id='+status;
-    
-    console.log('cambio sucursal');
 
 
+
+     }
+     else{
+      
+      
+      this.productoRoute = 'ruta de los sims';
+       console.log(this.productoRoute+'from exportexcel');
+     
+     
+     this.i = 0;
+
+     this.statusArray = '';
+     
+     status.forEach(element => {
+
+       
+
+       this.statusArray += '&status_id['+this.i+']='+element;
+
+       this.i ++ ;
+
+       
+     }
+
+     
+     
+     );  
+
+
+
+    this.exportUrl = this.productoRoute+sucursal+this.statusArray;
+
+    console.log(this.exportUrl);
+
+
+     }
 
 }
 
@@ -45,7 +115,8 @@ export default {
 
     this.urlBuilder(this.statusId, this.sucursalId);
     
-    }
+    },
+
   
   
   

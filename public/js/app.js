@@ -2154,16 +2154,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['sucursal-id', 'status-id'],
+  props: ['sucursal-id', 'status-id', 'producto'],
   data: function data() {
     return {
-      exportUrl: ''
+      exportUrl: '',
+      statusArray: '',
+      productoRoute: '',
+      i: 0
     };
   },
   methods: {
     urlBuilder: function urlBuilder(status, sucursal) {
-      this.exportUrl = '/export/imeis?sucursal_id=' + sucursal + '&status_id=' + status;
-      console.log('cambio sucursal');
+      var _this = this;
+
+      this.i = 0;
+      this.statusArray = '';
+
+      if (this.producto == 'equipos') {
+        this.productoRoute = '/export/imeis?sucursal_id=';
+        this.i = 0;
+        this.statusArray = '';
+        status.forEach(function (element) {
+          _this.statusArray += '&status_id[' + _this.i + ']=' + element;
+          _this.i++;
+          console.log(_this.statusArray);
+        });
+        this.exportUrl = this.productoRoute + sucursal + this.statusArray;
+      } else {
+        this.productoRoute = 'ruta de los sims';
+        console.log(this.productoRoute + 'from exportexcel');
+        this.i = 0;
+        this.statusArray = '';
+        status.forEach(function (element) {
+          _this.statusArray += '&status_id[' + _this.i + ']=' + element;
+          _this.i++;
+        });
+        this.exportUrl = this.productoRoute + sucursal + this.statusArray;
+        console.log(this.exportUrl);
+      }
     }
   },
   watch: {
@@ -2187,10 +2215,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
 //
 //
 //
@@ -74770,7 +74794,8 @@ var render = function() {
                     _c("export-excel", {
                       attrs: {
                         "sucursal-id": _vm.sucursalid,
-                        "status-id": _vm.status
+                        "status-id": _vm.status,
+                        producto: _vm.producto
                       }
                     })
                   ],
@@ -74883,7 +74908,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "b-button",
-    { attrs: { variant: "success", href: _vm.exportUrl } },
+    { attrs: { variant: "success", href: _vm.exportUrl, target: "_blank" } },
     [_vm._v("Excel")]
   )
 }

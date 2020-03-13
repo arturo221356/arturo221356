@@ -25,11 +25,23 @@ class ImeiExport implements FromCollection
            $this->status = $status;
     }
     
-   
+    
    
    
     public function collection()
     {
-        return ImeiResource::collection(Imei::where('sucursal_id','=', $this->sucursal)->whereIn('status_id',$this->status)->get());
+
+        if($this->sucursal == 'all'){
+ 
+            return ImeiResource::collection(Imei::whereIn('status_id',$this->status)->get());
+
+        }else{
+            
+            return ImeiResource::collection(Imei::where('sucursal_id','=', $this->sucursal)->whereIn('status_id',$this->status)->get());
+
+        }
+
+
+
     }
 }

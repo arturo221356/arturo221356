@@ -50,7 +50,7 @@
 
           :status-id="status"
         
-        
+          :producto="producto"
         ></export-excel>
         
         
