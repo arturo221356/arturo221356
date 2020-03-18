@@ -4,9 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Imei extends Model
 {
+    use SoftDeletes;
+    
     protected $fillable = ["imei","sucursal_id","equipo_id","status_id"];
+
+    protected $dates = ['deleted_at'];
     
     
     

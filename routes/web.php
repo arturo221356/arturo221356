@@ -30,6 +30,7 @@ Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->na
     Route::resource('/productos/recargas','RecargasController');
     Route::resource('/productos/equipos','EquiposController');
     Route::resource('/imei','ImeisController');
+    Route::resource('/icc','IccController');
     
 });
 

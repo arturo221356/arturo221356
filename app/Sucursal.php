@@ -17,4 +17,7 @@ public function users(){
 public function imeis(){
     return $this->hasMany('App\Imei');
 }
+public function iccs(){
+    return $this->hasMany('App\Icc');
+}
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateImeisTable extends Migration
+class CreateIccsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateImeisTable extends Migration
      */
     public function up()
     {
-        Schema::create('imeis', function (Blueprint $table) {
+        Schema::create('iccs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('imei')->unique();
-            $table->integer('status_id')->nullable();
+            $table->char('icc', 20)->unique();
+            $table->integer('icc_producto_id')->nullable();
             $table->integer('sucursal_id');
-            $table->integer('equipo_id');
-            $table->integer('venta_id')->nullable();
-            $table->integer('precio_vendido')->nullable();
-            $table->softDeletes();
+            $table->integer('icc_status_id');
+            $table->char('dn',10)->nullable();    
             $table->timestamps();
+            $table->softDeletes();
+            
         });
     }
 
@@ -33,6 +33,6 @@ class CreateImeisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('imeis');
+        Schema::dropIfExists('iccs');
     }
 }
