@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\IccStatus;
 
-class IccStatusSeeder extends Seeder
+class IccStatusTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

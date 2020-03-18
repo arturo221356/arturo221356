@@ -16,7 +16,9 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesTableSeeder::class);
         $this->call(UsersTableSeeder::class);
         $this->call(StatusTableSeeder::class);
-        $this->call(Icc_statusSeeder::class);
+        $this->call(IccStatusTableSeeder::class);
+
+
 
          $imeis = factory(App\Imei::class, 100)->create();
          $equipo = factory(App\Equipo::class, 50)->create();

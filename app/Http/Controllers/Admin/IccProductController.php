@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Icc;
 use App\IccProduct;
-// use App\Sucursal;
-// use App\Icc_status;
 use Illuminate\Http\Request;
 
-class IccController extends Controller
+class IccProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,13 +15,7 @@ class IccController extends Controller
      */
     public function index()
     {
-        $iccs = Icc::find(1)->get();
-
-        $products = IccProduct::all();
-       
-       
-
-        return view('admin.index', compact("iccs","products"));
+        //
     }
 
     /**
@@ -51,10 +42,10 @@ class IccController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Icc  $icc
+     * @param  \App\IccProduct  $iccProduct
      * @return \Illuminate\Http\Response
      */
-    public function show(Icc $icc)
+    public function show(IccProduct $iccProduct)
     {
         //
     }
@@ -62,10 +53,10 @@ class IccController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Icc  $icc
+     * @param  \App\IccProduct  $iccProduct
      * @return \Illuminate\Http\Response
      */
-    public function edit(Icc $icc)
+    public function edit(IccProduct $iccProduct)
     {
         //
     }
@@ -74,10 +65,10 @@ class IccController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Icc  $icc
+     * @param  \App\IccProduct  $iccProduct
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Icc $icc)
+    public function update(Request $request, IccProduct $iccProduct)
     {
         //
     }
@@ -85,10 +76,10 @@ class IccController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Icc  $icc
+     * @param  \App\IccProduct  $iccProduct
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Icc $icc)
+    public function destroy(IccProduct $iccProduct)
     {
         //
     }

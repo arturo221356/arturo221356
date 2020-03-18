@@ -13,8 +13,14 @@ class Icc extends Model
     public function sucursal(){
         return $this->belongsTo('App\Sucursal');
     }
-    public function icc_status(){
-        return $this->belongsTo('App\Icc_status');
+    public function status(){
+        return $this->belongsTo('App\IccStatus');
     }
+    public function subproduct(){
+        return $this->belongsTo('App\IccSubProduct','sub_product_id');
+    }
+
+
+
 
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateIccStatusesTable extends Migration
+class CreateIccStatusTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateIccStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('icc_statuses', function (Blueprint $table) {
+        Schema::create('icc_status', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
             $table->string('status');
@@ -27,6 +27,6 @@ class CreateIccStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('icc_statuses');
+        Schema::dropIfExists('icc_status');
     }
 }

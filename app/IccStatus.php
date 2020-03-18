@@ -4,9 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Icc_status extends Model
+class IccStatus extends Model
 {
-    public function imeis(){
+    protected $table = "icc_status";
+
+    public function icc(){
         return $this->hasMany('App\Icc');
     }
 }

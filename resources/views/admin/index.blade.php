@@ -2,10 +2,20 @@
 
 @section('content')
 
-@foreach ($iccs as $icc)
-{{$icc->sucursal->nombre_sucursal}}
-{{$icc->icc_status->status}}
-@endforeach
 
+<table>
+
+@foreach ($iccs as $icc)
+
+<tr>
+
+<td>{{$icc->subproduct->name}}</td>
+<td>{{$icc->subproduct->product->name}}</td>
+
+</tr>
+
+
+@endforeach
+</table>
 
 @endsection
