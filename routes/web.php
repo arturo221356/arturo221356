@@ -29,6 +29,9 @@ Route::namespace('Admin')->middleware('auth','role:admin',)->prefix('admin')->na
     Route::resource('/sucursales','SucursalController');
     Route::resource('/productos/recargas','RecargasController');
     Route::resource('/productos/equipos','EquiposController');
+    Route::get('/productos',function(){
+        return view('admin.productos.index');
+    });
     Route::resource('/imei','ImeisController');
     Route::resource('/icc','IccController');
     

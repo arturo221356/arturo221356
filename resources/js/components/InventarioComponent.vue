@@ -7,13 +7,14 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">{{navbarName}} {{actualSucursal}}</a>
+        <a class="navbar-brand" href="#">{{navbarName}} {{navbarBrand}}</a>
         
         
         <ul class="navbar-nav m-auto mt-2 mt-lg-0">
             
             
             <radio-producto
+              
               :user-role="userRole"
               v-on:producto="productoChange"
               v-on:fields="loadfields"
@@ -143,7 +144,7 @@
         sortDirection: 'asc',
         filter: null,
         filterOn: [],
-        actualSucursal: "",
+        navbarBrand: "",
         isBusy: false,
         
         
@@ -155,7 +156,8 @@
 
 
     computed: {
-      sortOptions() {
+     
+     sortOptions() {
         // Create an options list from our fields
         return this.fields
           .filter(f => f.sortable)
@@ -202,80 +204,39 @@
     },
     methods: {
       
-        loadData(){
+      
+      //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
+      loadData(){
           
-          
-
         console.log(this.sucursal);
 
-         this.isBusy = true;
-
-          
-
-         
-
-         axios.post(this.fetchUrl,{
-              
-         
-         
-         sucursal_id: this.sucursalid,
-
-         status: this.status,
-
-
-
-     
-              
-          }).then(response => {
-              
-              
-              
-              this.items = response.data.data;
-              
-              this.countItems = this.items.length;
-
-
-              this.isBusy = false;
-
-             
-
-              console.log(this.totalRows);
-
-             
-
-
-
+        this.isBusy = true;
+      
+        axios.post(this.fetchUrl,{
             
-          })
+        sucursal_id: this.sucursalid,
+
+        status: this.status,
+
         
+      }).then(response => {
+              
+        this.items = response.data.data;
+              
+        this.countItems = this.items.length;
         
+        this.isBusy = false;
         
+        console.log(this.totalRows);
+      })
+    },
         
-          
-          
-          
-          
-         
-          
-          
-         
-         
-        
-        
-        
-        
-        
-        },
-        
-        
-        
-        sucursalChange(value) {
-        
-        
+    //detecta el cambio de sucursal
+    sucursalChange(value) {
         
         this.sucursal = value;
         
-        this.actualSucursal = this.sucursal.text;
+        this.navbarBrand = this.sucursal.text;
 
         this.sucursalid = this.sucursal.id;
 
@@ -284,80 +245,58 @@
         
         
 
-      },
-      statusChange(value) {
-        
-        
-        
-        this.status = value;
-
-        
-        console.log(this.status);
-
-       if(this.actualSucursal != ""){
-          this.loadData();
-        }
-        
-
-      },
-
-      productoChange(value) {
-        
-        this.producto = value;
-
-        
-        if(value == 'equipos'){
-          this.fetchUrl = '/get/imeis/';
-          
-        }
-        else{
-          this.fetchUrl ='';
-          
-        }
-        
-        
-
-        
-
-        if(this.actualSucursal != ""){
-          this.loadData();
-        }
-      },
-
-    loadfields(value) {
-        
-        
-        
-        this.fields = value;
-
-      },
-
-
-
-
-
-
-
-      
-      onFiltered(filteredItems) {
-        // Trigger pagination to update the number of buttons/pages due to filtering
-        //this.totalRows = filteredItems.length
-
-        console.log(this.filter);
-
-        this.countItems = filteredItems.length;
-
-
-
-        
-        
-      }
+    },
     
+    //carga los datos si la la sucursal esta en blanco 
+    statusChange(value) {
+        
+      this.status = value;
+
+      if(this.navbarBrand != ""){
+          this.loadData();
+        }
+        
+
     },
 
-    created(){
+    //detecta el cambio de producto 
+    productoChange(value) {
+        
+      this.producto = value;
 
+      if(value == 'equipos'){
+        this.fetchUrl = '/get/imeis/';
+        
+      }
+      else{
+        this.fetchUrl ='';
+        
+      }
+      if(this.actualSucursal != ""){
+          this.loadData();
+        }
+    },
+
+    loadfields(value) {
+      
+      this.fields = value;
+
+    },
+
+    onFiltered(filteredItems) {
+      
+     this.countItems = filteredItems.length;
+    
     }
+    
+  },
+
+  created(){
+
+  
+  
+  
+  }
 
 
   

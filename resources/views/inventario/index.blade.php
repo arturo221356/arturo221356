@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-        <example-component
+        <inventario-component
         
         @if($userRole=='seller')
             user-role="{{$userRole}}"
@@ -24,7 +24,7 @@
 
 
         >
-        </example-component>
+        </inventario-component>
 
         
 

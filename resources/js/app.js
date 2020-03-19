@@ -23,11 +23,13 @@ Vue.use(BootstrapVue) // Telling Vue to use this in whole applicat
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('inventario-component', require('./components/InventarioComponent.vue').default);
 Vue.component('select-sucursal', require('./components/SelectSucursalComponent.vue').default);
 Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
 Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
+Vue.component('table-component', require('./components/TableComponent.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
