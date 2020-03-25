@@ -15,8 +15,10 @@
             
             <radio-producto
               
+              :busy="isBusy"
               :user-role="userRole"
               v-on:producto="productoChange"
+              
               v-on:fields="loadfields"
 
             >
@@ -38,6 +40,7 @@
           </checkbox-status>
           
           <select-sucursal
+            
             v-if="userRole == 'supervisor'||userRole =='admin'"
             v-on:sucursal="sucursalChange"
             
@@ -62,7 +65,60 @@
     </nav>
 
 
+    <!-- Info modal -->
+    <b-modal 
+      
+      :id="infoModal.id" 
+      
+      :title="infoModal.title" 
+       
+      
+      @hide="resetInfoModal">
+      
+      <pre>{{ infoModal.content }}</pre>
 
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group
+            
+            label="Name"
+            label-for="name-input"
+            invalid-feedback="Name is required"
+          >
+           <select-sucursal>
+           </select-sucursal>
+          
+          </b-form-group>
+        </form>
+    
+        <!-- Footer del modal Botones -->
+        
+        <template v-slot:modal-footer="{ ok, cancel, hide }">
+        <b>Custom Footer</b>
+        <!-- Emulate built in modal footer ok and cancel button actions -->
+        <b-button size="sm" variant="success" @click="ok()">
+          OK
+        </b-button>
+        <b-button size="sm" variant="danger" @click="cancel()">
+          Cancel
+        </b-button>
+        <!-- Button with custom close trigger value -->
+        <b-button size="sm" variant="outline-danger" @click="deleteItem(infoModal.itemId)">
+          {{infoModal.itemId}}
+        </b-button>
+      </template>
+
+      <!-- Footer del modal Botones -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    </b-modal>
 
     
    
@@ -88,6 +144,9 @@
       :sort-direction="sortDirection"
       @filtered="onFiltered"
       :busy="isBusy"
+      selectable
+
+      
     >
 
       <!--busy template-->
@@ -103,11 +162,18 @@
 
       <!-- resultado template -->
       <template v-slot:table-caption>Resultado: - {{countItems}} </template>
-      <template v-slot:cell(editar)="data">
-        <!-- `data.value` is the value after formatted by the Formatter -->
-        <b-button :href="`/admin/imei/${data.item.id}/edit`"> Editar</b-button>
+      
+      
+      
+      <!--boton de editar -->
+      <template v-slot:cell(editar)="row">
+      
+        
+        <b-button  @click="info(row.item, row.index, $event.target)"> Editar</b-button>
+      
+      
       </template>
-
+      <!--boton de editar -->
 
     </b-table>
 
@@ -123,7 +189,6 @@
     
     userRole: {type: String, required: true},
     userSucursal:{type: String},
-    //fields: { type: Array, required: true },
     navbarName: {type: String, required: true},
   },
     
@@ -146,6 +211,14 @@
         filterOn: [],
         navbarBrand: "",
         isBusy: false,
+        
+        infoModal: {
+          
+          id: 'info-modal',
+          title: '',
+          content: '',
+          itemId: '',
+        }
         
         
 
@@ -203,6 +276,36 @@
     
     },
     methods: {
+
+
+
+      
+      
+      //manda la informacion al modal
+      info(item, index, button) {
+
+        if(this.producto =='equipos'){
+           this.infoModal.title = `Editar Imei: ${item.imei}`;
+          
+        }
+        else if(this.producto =='sims'){
+          this.infoModal.title = `Editar Icc: ${item.icc}`;
+          
+        }
+
+        this.infoModal.itemId = item.id;
+        this.infoModal.content = JSON.stringify(item, null, 2)
+        this.$root.$emit('bv::show::modal', this.infoModal.id, button)
+      },
+      //resetea los valores del modal
+      resetInfoModal() {
+        this.infoModal.title = ''
+        this.infoModal.content = ''
+        this.infoModal.itemId = ''
+      },
+
+
+
       
       
       //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
@@ -230,6 +333,21 @@
         console.log(this.totalRows);
       })
     },
+
+    deleteItem(id){
+
+        
+
+        axios.delete(`/admin/imei/${id}`)
+          .then(()=>{
+
+            alert('eliminado');
+
+            this.loadData();
+
+          })
+
+      },
         
     //detecta el cambio de sucursal
     sucursalChange(value) {
@@ -256,6 +374,7 @@
           this.loadData();
         }
         
+        
 
     },
 
@@ -269,7 +388,7 @@
         
       }
       else{
-        this.fetchUrl ='';
+        this.fetchUrl ='/get/iccs/';
         
       }
       if(this.actualSucursal != ""){

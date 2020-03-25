@@ -64,18 +64,16 @@ export default {
 
 
      }
-     else{
+     else if(this.producto == 'sims'){
       
       
-      this.productoRoute = 'ruta de los sims';
-       console.log(this.productoRoute+'from exportexcel');
+    this.productoRoute = '/export/iccs?sucursal_id=';
      
-     
-     this.i = 0;
+    this.i = 0;
 
-     this.statusArray = '';
+    this.statusArray = '';
      
-     status.forEach(element => {
+    status.forEach(element => {
 
        
 

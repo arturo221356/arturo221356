@@ -19,17 +19,14 @@ export default {
        
             props:{
                 userRole: {type: String, required: true},
+                busy: {type:Boolean}
 
             },
             
             data() {
                 return {
                     selected: 'equipos',
-                    options: [
-                    { text: 'Equipos', value: 'equipos' },
-                    { text: 'Sims', value: 'sims' },
-                    { text: 'Prom', value: 'radio3', disabled: true },
-                    ],
+                    options: [],
                     
 
                     fields:[],
@@ -114,15 +111,57 @@ export default {
                                     }
                         
                         }
-                        else {
-                            this.fields = 
+                        else if(this.selected == 'sims'){
+                            
+                             switch(this.userRole){
+
+                                 case'admin':
+                            
+                                    this.fields = 
                                         [{ key: 'id', label: '#', sortable: true, sortDirection: 'desc' },
-                                        { key: 'imei', label: 'ICCCCCCCC', sortable: true, class: 'text-center' },
-                                        { key: 'marca', label: 'Marca', sortable: true, class: 'text-center' },
-                                        { key: 'modelo', label: 'Modelo', sortable: true, class: 'text-center' },
+                                        { key: 'icc', label: 'Icc', sortable: true, class: 'text-center' },
                                         { key: 'sucursal', label: 'Sucursal', sortable: true, class: 'text-center' },
                                         { key: 'status', label: 'Status', sortable: true, class: 'text-center' },
-                                        { key: 'editar', label: 'Editar', class: 'text-center' },];
+                                        { key: 'created_at', label: 'Agregado', sortable: true, class: 'text-center' },
+                                        { key: 'updated_at', label: 'Ultimo cambio', sortable: true, class: 'text-center' },
+                                        { key: 'editar', label: 'Editar', class: 'text-center' },]
+                                
+                                break;
+
+                                case 'supervisor':
+
+                                    this.fields = 
+                                        
+                                        [{ key: 'id', label: '#', sortable: true, sortDirection: 'desc' },
+                                        { key: 'icc', label: 'Icc', sortable: true, class: 'text-center' },
+                                        { key: 'sucursal', label: 'Sucursal', sortable: true, class: 'text-center' },
+                                        { key: 'status', label: 'Status', sortable: true, class: 'text-center' },
+                                        { key: 'created_at', label: 'Agregado', sortable: true, class: 'text-center' },
+                                        { key: 'updated_at', label: 'Ultimo cambio', sortable: true, class: 'text-center' },]
+                                    
+                                break;
+
+                                case 'seller':
+
+                                    this.fields =
+
+                                        [{ key: 'id', label: '#', sortable: true, sortDirection: 'desc' },
+                                        { key: 'icc', label: 'Icc', sortable: true, class: 'text-center' },
+                                        { key: 'status', label: 'Status', sortable: true, class: 'text-center' },
+                                        { key: 'created_at', label: 'Agregado', sortable: true, class: 'text-center' },
+                                        { key: 'updated_at', label: 'Ultimo cambio', sortable: true, class: 'text-center' },]
+                                        
+                                break;
+                                
+                                default:
+                                                
+                                    this.fields = []
+
+
+
+                             }
+                                
+
                         }
                         
                         this.$emit('producto', this.selected)
@@ -135,7 +174,23 @@ export default {
             },
             created: function(){
                     this.emitToParent();
-                } 
+
+
+                }, 
+            watch:{
+
+                busy(){
+
+                    this.options = [
+                    { text: 'Equipos', value: 'equipos', disabled: this.busy },
+                    { text: 'Sims', value: 'sims', disabled: this.busy},
+                    { text: 'Prom', value: 'radio3', disabled: true },
+                    ]
+
+                }
+
+
+            }
 
 
 

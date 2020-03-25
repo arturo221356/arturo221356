@@ -173,7 +173,7 @@ class ImeisController extends Controller
     {
 
         $imei->delete();
-        return redirect("/inventario");
+        
     }
 
         

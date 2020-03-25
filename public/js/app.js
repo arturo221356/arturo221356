@@ -1938,9 +1938,8 @@ __webpack_require__.r(__webpack_exports__);
           console.log(_this.statusArray);
         });
         this.exportUrl = this.productoRoute + sucursal + this.statusArray;
-      } else {
-        this.productoRoute = 'ruta de los sims';
-        console.log(this.productoRoute + 'from exportexcel');
+      } else if (this.producto == 'sims') {
+        this.productoRoute = '/export/iccs?sucursal_id=';
         this.i = 0;
         this.statusArray = '';
         status.forEach(function (element) {
@@ -2091,6 +2090,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     userRole: {
@@ -2100,7 +2165,6 @@ __webpack_require__.r(__webpack_exports__);
     userSucursal: {
       type: String
     },
-    //fields: { type: Array, required: true },
     navbarName: {
       type: String,
       required: true
@@ -2122,7 +2186,13 @@ __webpack_require__.r(__webpack_exports__);
       filter: null,
       filterOn: [],
       navbarBrand: "",
-      isBusy: false
+      isBusy: false,
+      infoModal: {
+        id: 'info-modal',
+        title: '',
+        content: '',
+        itemId: ''
+      }
     };
   },
   computed: {
@@ -2150,6 +2220,24 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    //manda la informacion al modal
+    info: function info(item, index, button) {
+      if (this.producto == 'equipos') {
+        this.infoModal.title = "Editar Imei: ".concat(item.imei);
+      } else if (this.producto == 'sims') {
+        this.infoModal.title = "Editar Icc: ".concat(item.icc);
+      }
+
+      this.infoModal.itemId = item.id;
+      this.infoModal.content = JSON.stringify(item, null, 2);
+      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    },
+    //resetea los valores del modal
+    resetInfoModal: function resetInfoModal() {
+      this.infoModal.title = '';
+      this.infoModal.content = '';
+      this.infoModal.itemId = '';
+    },
     //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
     loadData: function loadData() {
       var _this = this;
@@ -2164,6 +2252,15 @@ __webpack_require__.r(__webpack_exports__);
         _this.countItems = _this.items.length;
         _this.isBusy = false;
         console.log(_this.totalRows);
+      });
+    },
+    deleteItem: function deleteItem(id) {
+      var _this2 = this;
+
+      axios["delete"]("/admin/imei/".concat(id)).then(function () {
+        alert('eliminado');
+
+        _this2.loadData();
       });
     },
     //detecta el cambio de sucursal
@@ -2188,7 +2285,7 @@ __webpack_require__.r(__webpack_exports__);
       if (value == 'equipos') {
         this.fetchUrl = '/get/imeis/';
       } else {
-        this.fetchUrl = '';
+        this.fetchUrl = '/get/iccs/';
       }
 
       if (this.actualSucursal != "") {
@@ -2236,22 +2333,15 @@ __webpack_require__.r(__webpack_exports__);
     userRole: {
       type: String,
       required: true
+    },
+    busy: {
+      type: Boolean
     }
   },
   data: function data() {
     return {
       selected: 'equipos',
-      options: [{
-        text: 'Equipos',
-        value: 'equipos'
-      }, {
-        text: 'Sims',
-        value: 'sims'
-      }, {
-        text: 'Prom',
-        value: 'radio3',
-        disabled: true
-      }],
+      options: [],
       fields: []
     };
   },
@@ -2408,42 +2498,112 @@ __webpack_require__.r(__webpack_exports__);
           default:
             this.fields = [];
         }
-      } else {
-        this.fields = [{
-          key: 'id',
-          label: '#',
-          sortable: true,
-          sortDirection: 'desc'
-        }, {
-          key: 'imei',
-          label: 'ICCCCCCCC',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'marca',
-          label: 'Marca',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'modelo',
-          label: 'Modelo',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'sucursal',
-          label: 'Sucursal',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'status',
-          label: 'Status',
-          sortable: true,
-          "class": 'text-center'
-        }, {
-          key: 'editar',
-          label: 'Editar',
-          "class": 'text-center'
-        }];
+      } else if (this.selected == 'sims') {
+        switch (this.userRole) {
+          case 'admin':
+            this.fields = [{
+              key: 'id',
+              label: '#',
+              sortable: true,
+              sortDirection: 'desc'
+            }, {
+              key: 'icc',
+              label: 'Icc',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'sucursal',
+              label: 'Sucursal',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'status',
+              label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'created_at',
+              label: 'Agregado',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'updated_at',
+              label: 'Ultimo cambio',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'editar',
+              label: 'Editar',
+              "class": 'text-center'
+            }];
+            break;
+
+          case 'supervisor':
+            this.fields = [{
+              key: 'id',
+              label: '#',
+              sortable: true,
+              sortDirection: 'desc'
+            }, {
+              key: 'icc',
+              label: 'Icc',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'sucursal',
+              label: 'Sucursal',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'status',
+              label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'created_at',
+              label: 'Agregado',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'updated_at',
+              label: 'Ultimo cambio',
+              sortable: true,
+              "class": 'text-center'
+            }];
+            break;
+
+          case 'seller':
+            this.fields = [{
+              key: 'id',
+              label: '#',
+              sortable: true,
+              sortDirection: 'desc'
+            }, {
+              key: 'icc',
+              label: 'Icc',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'status',
+              label: 'Status',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'created_at',
+              label: 'Agregado',
+              sortable: true,
+              "class": 'text-center'
+            }, {
+              key: 'updated_at',
+              label: 'Ultimo cambio',
+              sortable: true,
+              "class": 'text-center'
+            }];
+            break;
+
+          default:
+            this.fields = [];
+        }
       }
 
       this.$emit('producto', this.selected);
@@ -2452,6 +2612,23 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.emitToParent();
+  },
+  watch: {
+    busy: function busy() {
+      this.options = [{
+        text: 'Equipos',
+        value: 'equipos',
+        disabled: this.busy
+      }, {
+        text: 'Sims',
+        value: 'sims',
+        disabled: this.busy
+      }, {
+        text: 'Prom',
+        value: 'radio3',
+        disabled: true
+      }];
+    }
   }
 });
 
@@ -2564,18 +2741,18 @@ __webpack_require__.r(__webpack_exports__);
           value: '6'
         }];
       } else {
-        this.selected = [], this.options = [{
-          text: 'otro',
-          value: this.producto
+        this.selected = ['5'], this.options = [{
+          text: 'Disponible',
+          value: '5'
         }, {
-          text: 'Apple',
-          value: 'apple'
+          text: 'Perdido',
+          value: '2'
         }, {
-          text: 'Pineapple',
-          value: 'pineapple'
+          text: 'En Transito',
+          value: '3'
         }, {
-          text: 'Grape',
-          value: 'grape'
+          text: 'Bloqueado',
+          value: '4'
         }];
       }
     }
@@ -74857,7 +75034,7 @@ var render = function() {
                   { staticClass: "navbar-nav m-auto mt-2 mt-lg-0" },
                   [
                     _c("radio-producto", {
-                      attrs: { "user-role": _vm.userRole },
+                      attrs: { busy: _vm.isBusy, "user-role": _vm.userRole },
                       on: {
                         producto: _vm.productoChange,
                         fields: _vm.loadfields
@@ -74926,6 +75103,102 @@ var render = function() {
         1
       ),
       _vm._v(" "),
+      _c(
+        "b-modal",
+        {
+          attrs: { id: _vm.infoModal.id, title: _vm.infoModal.title },
+          on: { hide: _vm.resetInfoModal },
+          scopedSlots: _vm._u([
+            {
+              key: "modal-footer",
+              fn: function(ref) {
+                var ok = ref.ok
+                var cancel = ref.cancel
+                var hide = ref.hide
+                return [
+                  _c("b", [_vm._v("Custom Footer")]),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    {
+                      attrs: { size: "sm", variant: "success" },
+                      on: {
+                        click: function($event) {
+                          return ok()
+                        }
+                      }
+                    },
+                    [_vm._v("\n        OK\n      ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    {
+                      attrs: { size: "sm", variant: "danger" },
+                      on: {
+                        click: function($event) {
+                          return cancel()
+                        }
+                      }
+                    },
+                    [_vm._v("\n        Cancel\n      ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    {
+                      attrs: { size: "sm", variant: "outline-danger" },
+                      on: {
+                        click: function($event) {
+                          return _vm.deleteItem(_vm.infoModal.itemId)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n        " + _vm._s(_vm.infoModal.itemId) + "\n      "
+                      )
+                    ]
+                  )
+                ]
+              }
+            }
+          ])
+        },
+        [
+          _c("pre", [_vm._v(_vm._s(_vm.infoModal.content))]),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              ref: "form",
+              on: {
+                submit: function($event) {
+                  $event.stopPropagation()
+                  $event.preventDefault()
+                  return _vm.handleSubmit($event)
+                }
+              }
+            },
+            [
+              _c(
+                "b-form-group",
+                {
+                  attrs: {
+                    label: "Name",
+                    "label-for": "name-input",
+                    "invalid-feedback": "Name is required"
+                  }
+                },
+                [_c("select-sucursal")],
+                1
+              )
+            ],
+            1
+          )
+        ]
+      ),
+      _vm._v(" "),
       _c("b-table", {
         attrs: {
           id: "my-table",
@@ -74941,7 +75214,8 @@ var render = function() {
           "sort-by": _vm.sortBy,
           "sort-desc": _vm.sortDesc,
           "sort-direction": _vm.sortDirection,
-          busy: _vm.isBusy
+          busy: _vm.isBusy,
+          selectable: ""
         },
         on: {
           "update:sortBy": function($event) {
@@ -74986,11 +75260,17 @@ var render = function() {
           },
           {
             key: "cell(editar)",
-            fn: function(data) {
+            fn: function(row) {
               return [
                 _c(
                   "b-button",
-                  { attrs: { href: "/admin/imei/" + data.item.id + "/edit" } },
+                  {
+                    on: {
+                      click: function($event) {
+                        return _vm.info(row.item, row.index, $event.target)
+                      }
+                    }
+                  },
                   [_vm._v(" Editar")]
                 )
               ]

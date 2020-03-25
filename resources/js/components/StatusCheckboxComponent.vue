@@ -50,12 +50,12 @@ export default {
 
         }else{
         
-          this.selected= [],
+          this.selected= ['5'],
           this.options = [
-          { text: 'otro' , value: this.producto },
-          { text: 'Apple', value: 'apple' },
-          { text: 'Pineapple', value: 'pineapple' },
-          { text: 'Grape', value: 'grape' }
+          { text: 'Disponible' , value: '5'},
+          { text: 'Perdido', value: '2' },
+          { text: 'En Transito', value: '3' },
+          { text: 'Bloqueado', value: '4' },
         ]
         }  
         

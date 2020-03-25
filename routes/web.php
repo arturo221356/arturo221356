@@ -47,6 +47,12 @@ Route::post('/get/imeis/', 'InventarioController@getimeis')->middleware('auth');
 
 Route::get('/export/imeis/', 'InventarioController@exportImei')->middleware('auth');
 
+Route::get('/export/iccs/', 'InventarioController@exportIcc')->middleware('auth');
+
+Route::post('/get/iccs/', 'InventarioController@geticcs')->middleware('auth');
+
+
+
 
 
 

@@ -16,8 +16,8 @@ class IccStatusSeeder extends Seeder
         IccStatus::create(['status'=>'Vendido']);
         IccStatus::create(['status'=>'Perdido']);
         IccStatus::create(['status'=>'En transito']);
-        IccStatus::create(['status'=>'Garantia']);
+        IccStatus::create(['status'=>'Bloqueado']);
         IccStatus::create(['status'=>'Disponible']);
-        IccStatus::create(['status'=>'Incompleto']);
+        IccStatus::create(['status'=>'Exportado']);
     }
 }
