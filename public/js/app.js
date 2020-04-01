@@ -1899,6 +1899,127 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EditModalComponent.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/EditModalComponent.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      loading: false,
+      infoModal: {
+        id: 'info-modal',
+        title: '',
+        content: '',
+        itemId: ''
+      }
+    };
+  },
+  methods: {
+    //manda la informacion al modal
+    info: function info(item, index, button) {
+      if (this.producto == 'equipos') {
+        this.infoModal.title = "Editar Imei: ".concat(item.imei);
+      } else if (this.producto == 'sims') {
+        this.infoModal.title = "Editar Icc: ".concat(item.icc);
+      }
+
+      this.infoModal.itemId = item.id;
+      this.infoModal.content = JSON.stringify(item, null, 2);
+      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    },
+    //resetea los valores del modal
+    resetInfoModal: function resetInfoModal() {
+      this.infoModal.title = '';
+      this.infoModal.content = '';
+      this.infoModal.itemId = '';
+    },
+    deleteItem: function deleteItem(id) {
+      var _this = this;
+
+      this.loading = true;
+      axios["delete"]("/admin/imei/".concat(id)).then(function () {
+        alert('eliminado');
+
+        _this.$refs['modal'].hide();
+
+        _this.$parent.loadData();
+
+        _this.loading = false;
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExportExcelComponent.vue?vue&type=script&lang=js& ***!
@@ -2104,58 +2225,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     userRole: {
@@ -2186,13 +2255,7 @@ __webpack_require__.r(__webpack_exports__);
       filter: null,
       filterOn: [],
       navbarBrand: "",
-      isBusy: false,
-      infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: '',
-        itemId: ''
-      }
+      isBusy: false
     };
   },
   computed: {
@@ -2220,23 +2283,8 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    //manda la informacion al modal
-    info: function info(item, index, button) {
-      if (this.producto == 'equipos') {
-        this.infoModal.title = "Editar Imei: ".concat(item.imei);
-      } else if (this.producto == 'sims') {
-        this.infoModal.title = "Editar Icc: ".concat(item.icc);
-      }
-
-      this.infoModal.itemId = item.id;
-      this.infoModal.content = JSON.stringify(item, null, 2);
-      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
-    },
-    //resetea los valores del modal
-    resetInfoModal: function resetInfoModal() {
-      this.infoModal.title = '';
-      this.infoModal.content = '';
-      this.infoModal.itemId = '';
+    info: function info(item, index, target) {
+      this.$refs.modal.info(item, index, target);
     },
     //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
     loadData: function loadData() {
@@ -2252,15 +2300,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.countItems = _this.items.length;
         _this.isBusy = false;
         console.log(_this.totalRows);
-      });
-    },
-    deleteItem: function deleteItem(id) {
-      var _this2 = this;
-
-      axios["delete"]("/admin/imei/".concat(id)).then(function () {
-        alert('eliminado');
-
-        _this2.loadData();
       });
     },
     //detecta el cambio de sucursal
@@ -74947,6 +74986,125 @@ var e=function(){return(e=Object.assign||function(e){for(var t,r=1,s=arguments.l
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EditModalComponent.vue?vue&type=template&id=3c7f1bb6&":
+/*!*********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/EditModalComponent.vue?vue&type=template&id=3c7f1bb6& ***!
+  \*********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "b-modal",
+    {
+      ref: "modal",
+      attrs: { id: _vm.infoModal.id, title: _vm.infoModal.title },
+      on: { hide: _vm.resetInfoModal },
+      scopedSlots: _vm._u([
+        {
+          key: "modal-footer",
+          fn: function(ref) {
+            var ok = ref.ok
+            var cancel = ref.cancel
+            var hide = ref.hide
+            return [
+              _c("b", [_vm._v("Custom Footer")]),
+              _vm._v(" "),
+              _c(
+                "b-button",
+                {
+                  attrs: { size: "sm", variant: "success" },
+                  on: {
+                    click: function($event) {
+                      return ok()
+                    }
+                  }
+                },
+                [_vm._v("\n      Guardar\n    ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "b-button",
+                {
+                  attrs: {
+                    disabled: _vm.loading,
+                    size: "sm",
+                    variant: "outline-danger"
+                  },
+                  on: {
+                    click: function($event) {
+                      return _vm.deleteItem(_vm.infoModal.itemId)
+                    }
+                  }
+                },
+                [_vm._v("\n      Eliminar\n    ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "b-button",
+                {
+                  attrs: { size: "sm" },
+                  on: {
+                    click: function($event) {
+                      return cancel()
+                    }
+                  }
+                },
+                [_vm._v("\n      Cancelar\n    ")]
+              )
+            ]
+          }
+        }
+      ])
+    },
+    [
+      _c("pre", [_vm._v(_vm._s(_vm.infoModal.content))]),
+      _vm._v(" "),
+      _c(
+        "form",
+        {
+          ref: "form",
+          on: {
+            submit: function($event) {
+              $event.stopPropagation()
+              $event.preventDefault()
+              return _vm.handleSubmit($event)
+            }
+          }
+        },
+        [
+          _c(
+            "b-form-group",
+            {
+              attrs: {
+                label: "Name",
+                "label-for": "name-input",
+                "invalid-feedback": "Name is required"
+              }
+            },
+            [_c("select-sucursal")],
+            1
+          )
+        ],
+        1
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76&":
 /*!***********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExportExcelComponent.vue?vue&type=template&id=a5185e76& ***!
@@ -75103,101 +75261,7 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c(
-        "b-modal",
-        {
-          attrs: { id: _vm.infoModal.id, title: _vm.infoModal.title },
-          on: { hide: _vm.resetInfoModal },
-          scopedSlots: _vm._u([
-            {
-              key: "modal-footer",
-              fn: function(ref) {
-                var ok = ref.ok
-                var cancel = ref.cancel
-                var hide = ref.hide
-                return [
-                  _c("b", [_vm._v("Custom Footer")]),
-                  _vm._v(" "),
-                  _c(
-                    "b-button",
-                    {
-                      attrs: { size: "sm", variant: "success" },
-                      on: {
-                        click: function($event) {
-                          return ok()
-                        }
-                      }
-                    },
-                    [_vm._v("\n        OK\n      ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "b-button",
-                    {
-                      attrs: { size: "sm", variant: "danger" },
-                      on: {
-                        click: function($event) {
-                          return cancel()
-                        }
-                      }
-                    },
-                    [_vm._v("\n        Cancel\n      ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "b-button",
-                    {
-                      attrs: { size: "sm", variant: "outline-danger" },
-                      on: {
-                        click: function($event) {
-                          return _vm.deleteItem(_vm.infoModal.itemId)
-                        }
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n        " + _vm._s(_vm.infoModal.itemId) + "\n      "
-                      )
-                    ]
-                  )
-                ]
-              }
-            }
-          ])
-        },
-        [
-          _c("pre", [_vm._v(_vm._s(_vm.infoModal.content))]),
-          _vm._v(" "),
-          _c(
-            "form",
-            {
-              ref: "form",
-              on: {
-                submit: function($event) {
-                  $event.stopPropagation()
-                  $event.preventDefault()
-                  return _vm.handleSubmit($event)
-                }
-              }
-            },
-            [
-              _c(
-                "b-form-group",
-                {
-                  attrs: {
-                    label: "Name",
-                    "label-for": "name-input",
-                    "invalid-feedback": "Name is required"
-                  }
-                },
-                [_c("select-sucursal")],
-                1
-              )
-            ],
-            1
-          )
-        ]
-      ),
+      _c("edit-modal", { ref: "modal" }),
       _vm._v(" "),
       _c("b-table", {
         attrs: {
@@ -87762,6 +87826,7 @@ Vue.component('checkbox-status', __webpack_require__(/*! ./components/StatusChec
 Vue.component('radio-producto', __webpack_require__(/*! ./components/RadioProductoComponent.vue */ "./resources/js/components/RadioProductoComponent.vue")["default"]);
 Vue.component('export-excel', __webpack_require__(/*! ./components/ExportExcelComponent.vue */ "./resources/js/components/ExportExcelComponent.vue")["default"]);
 Vue.component('table-component', __webpack_require__(/*! ./components/TableComponent.vue */ "./resources/js/components/TableComponent.vue")["default"]);
+Vue.component('edit-modal', __webpack_require__(/*! ./components/EditModalComponent.vue */ "./resources/js/components/EditModalComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -87816,6 +87881,75 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/EditModalComponent.vue":
+/*!********************************************************!*\
+  !*** ./resources/js/components/EditModalComponent.vue ***!
+  \********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _EditModalComponent_vue_vue_type_template_id_3c7f1bb6___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditModalComponent.vue?vue&type=template&id=3c7f1bb6& */ "./resources/js/components/EditModalComponent.vue?vue&type=template&id=3c7f1bb6&");
+/* harmony import */ var _EditModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EditModalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/EditModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _EditModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _EditModalComponent_vue_vue_type_template_id_3c7f1bb6___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _EditModalComponent_vue_vue_type_template_id_3c7f1bb6___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/EditModalComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/EditModalComponent.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************!*\
+  !*** ./resources/js/components/EditModalComponent.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_EditModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./EditModalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EditModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_EditModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/EditModalComponent.vue?vue&type=template&id=3c7f1bb6&":
+/*!***************************************************************************************!*\
+  !*** ./resources/js/components/EditModalComponent.vue?vue&type=template&id=3c7f1bb6& ***!
+  \***************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditModalComponent_vue_vue_type_template_id_3c7f1bb6___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./EditModalComponent.vue?vue&type=template&id=3c7f1bb6& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EditModalComponent.vue?vue&type=template&id=3c7f1bb6&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditModalComponent_vue_vue_type_template_id_3c7f1bb6___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditModalComponent_vue_vue_type_template_id_3c7f1bb6___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 

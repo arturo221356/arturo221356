@@ -29,6 +29,7 @@ Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.v
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
 Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
 Vue.component('table-component', require('./components/TableComponent.vue').default);
+Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

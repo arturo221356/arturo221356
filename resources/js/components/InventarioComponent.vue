@@ -65,60 +65,8 @@
     </nav>
 
 
-    <!-- Info modal -->
-    <b-modal 
-      
-      :id="infoModal.id" 
-      
-      :title="infoModal.title" 
-       
-      
-      @hide="resetInfoModal">
-      
-      <pre>{{ infoModal.content }}</pre>
-
-        <form ref="form" @submit.stop.prevent="handleSubmit">
-          <b-form-group
-            
-            label="Name"
-            label-for="name-input"
-            invalid-feedback="Name is required"
-          >
-           <select-sucursal>
-           </select-sucursal>
-          
-          </b-form-group>
-        </form>
-    
-        <!-- Footer del modal Botones -->
-        
-        <template v-slot:modal-footer="{ ok, cancel, hide }">
-        <b>Custom Footer</b>
-        <!-- Emulate built in modal footer ok and cancel button actions -->
-        <b-button size="sm" variant="success" @click="ok()">
-          OK
-        </b-button>
-        <b-button size="sm" variant="danger" @click="cancel()">
-          Cancel
-        </b-button>
-        <!-- Button with custom close trigger value -->
-        <b-button size="sm" variant="outline-danger" @click="deleteItem(infoModal.itemId)">
-          {{infoModal.itemId}}
-        </b-button>
-      </template>
-
-      <!-- Footer del modal Botones -->
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    </b-modal>
+  <edit-modal ref="modal">
+  </edit-modal>
 
     
    
@@ -212,13 +160,7 @@
         navbarBrand: "",
         isBusy: false,
         
-        infoModal: {
-          
-          id: 'info-modal',
-          title: '',
-          content: '',
-          itemId: '',
-        }
+
         
         
 
@@ -278,31 +220,12 @@
     methods: {
 
 
-
+      info(item,index,target){
+        this.$refs.modal.info(item,index,target);
+      },
       
       
-      //manda la informacion al modal
-      info(item, index, button) {
 
-        if(this.producto =='equipos'){
-           this.infoModal.title = `Editar Imei: ${item.imei}`;
-          
-        }
-        else if(this.producto =='sims'){
-          this.infoModal.title = `Editar Icc: ${item.icc}`;
-          
-        }
-
-        this.infoModal.itemId = item.id;
-        this.infoModal.content = JSON.stringify(item, null, 2)
-        this.$root.$emit('bv::show::modal', this.infoModal.id, button)
-      },
-      //resetea los valores del modal
-      resetInfoModal() {
-        this.infoModal.title = ''
-        this.infoModal.content = ''
-        this.infoModal.itemId = ''
-      },
 
 
 
@@ -334,20 +257,7 @@
       })
     },
 
-    deleteItem(id){
 
-        
-
-        axios.delete(`/admin/imei/${id}`)
-          .then(()=>{
-
-            alert('eliminado');
-
-            this.loadData();
-
-          })
-
-      },
         
     //detecta el cambio de sucursal
     sucursalChange(value) {
