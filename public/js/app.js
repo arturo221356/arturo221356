@@ -1970,6 +1970,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1979,26 +1997,45 @@ __webpack_require__.r(__webpack_exports__);
         title: '',
         content: '',
         itemId: ''
-      }
+      },
+      options: [{
+        value: null,
+        text: 'Please select an option'
+      }, {
+        value: 'a',
+        text: 'This is First option'
+      }, {
+        value: 'b',
+        text: 'Selected Option'
+      }, {
+        value: {
+          C: '3PO'
+        },
+        text: 'This is an option with object value'
+      }, {
+        value: 'd',
+        text: 'This one is disabled',
+        disabled: true
+      }]
     };
   },
   methods: {
     //manda la informacion al modal
-    info: function info(item, index, button) {
-      if (this.producto == 'equipos') {
+    info: function info(item, index, producto, button) {
+      if (producto == 'equipos') {
         this.infoModal.title = "Editar Imei: ".concat(item.imei);
-      } else if (this.producto == 'sims') {
+      } else if (producto == 'sims') {
         this.infoModal.title = "Editar Icc: ".concat(item.icc);
       }
 
       this.infoModal.itemId = item.id;
-      this.infoModal.content = JSON.stringify(item, null, 2);
+      this.infoModal.content = item;
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
     },
     //resetea los valores del modal
     resetInfoModal: function resetInfoModal() {
       this.infoModal.title = '';
-      this.infoModal.content = '';
+      this.infoModal.content = {};
       this.infoModal.itemId = '';
     },
     deleteItem: function deleteItem(id) {
@@ -2225,6 +2262,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     userRole: {
@@ -2283,8 +2322,8 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    info: function info(item, index, target) {
-      this.$refs.modal.info(item, index, target);
+    info: function info(item, index, producto) {
+      this.$refs.modal.info(item, index, producto);
     },
     //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
     loadData: function loadData() {
@@ -2696,23 +2735,58 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  props: {
+    todas: Boolean,
+    seleccionado: ''
   },
+  mounted: function mounted() {},
   data: function data() {
     return {
-      sucursal: 0,
-      sucursales: []
+      sucursal: {
+        id: 0,
+        text: ''
+      },
+      sucursales: [],
+      selected: null
     };
   },
   methods: {
     getSucursales: function getSucursales() {
       axios.get('/get/sucursales').then(function (response) {
+        this.selected = this.seleccionado;
         this.sucursales = response.data;
       }.bind(this));
     },
     emitToParent: function emitToParent(event) {
+      this.sucursal.id = this.selected;
+
+      if (this.sucursal.id == 'all') {
+        this.sucursal.text = 'Todas';
+      } else {
+        var i = event - 1;
+        this.sucursal.text = this.sucursales[i].nombre_sucursal;
+      }
+
       this.$emit('sucursal', this.sucursal);
     }
   },
@@ -75013,7 +75087,6 @@ var render = function() {
           fn: function(ref) {
             var ok = ref.ok
             var cancel = ref.cancel
-            var hide = ref.hide
             return [
               _c("b", [_vm._v("Custom Footer")]),
               _vm._v(" "),
@@ -75065,7 +75138,7 @@ var render = function() {
       ])
     },
     [
-      _c("pre", [_vm._v(_vm._s(_vm.infoModal.content))]),
+      _c("pre", [_vm._v(_vm._s(_vm.infoModal.content.id_sucursal))]),
       _vm._v(" "),
       _c(
         "form",
@@ -75084,12 +75157,26 @@ var render = function() {
             "b-form-group",
             {
               attrs: {
-                label: "Name",
+                label: "Sucursal",
                 "label-for": "name-input",
                 "invalid-feedback": "Name is required"
               }
             },
-            [_c("select-sucursal")],
+            [
+              _c("select-sucursal", {
+                attrs: {
+                  seleccionado: _vm.infoModal.content.id_sucursal,
+                  todas: false
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "b-form-group",
+            { attrs: { label: "Estatus" } },
+            [_c("b-form-select", { attrs: { options: _vm.options } })],
             1
           )
         ],
@@ -75213,6 +75300,7 @@ var render = function() {
                     _vm._v(" "),
                     _vm.userRole == "supervisor" || _vm.userRole == "admin"
                       ? _c("select-sucursal", {
+                          attrs: { todas: true, seleccionado: null },
                           on: { sucursal: _vm.sucursalChange }
                         })
                       : _vm._e(),
@@ -75331,7 +75419,7 @@ var render = function() {
                   {
                     on: {
                       click: function($event) {
-                        return _vm.info(row.item, row.index, $event.target)
+                        return _vm.info(row.item, row.index, _vm.producto)
                       }
                     }
                   },
@@ -75413,59 +75501,40 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "select",
-    {
-      directives: [
-        {
-          name: "model",
-          rawName: "v-model",
-          value: _vm.sucursal,
-          expression: "sucursal"
-        }
-      ],
-      staticClass: "form-control mr-3",
-      on: {
-        change: [
-          function($event) {
-            var $$selectedVal = Array.prototype.filter
-              .call($event.target.options, function(o) {
-                return o.selected
-              })
-              .map(function(o) {
-                var val = "_value" in o ? o._value : o.value
-                return val
-              })
-            _vm.sucursal = $event.target.multiple
-              ? $$selectedVal
-              : $$selectedVal[0]
-          },
-          _vm.emitToParent
-        ]
-      }
+  return _c("b-form-select", {
+    attrs: {
+      options: _vm.sucursales,
+      "value-field": "id",
+      "text-field": "nombre_sucursal"
     },
-    [
-      _c("option", { attrs: { value: "0", selected: "" } }, [
-        _vm._v("Seleccionar Sucursal")
-      ]),
-      _vm._v(" "),
-      _c("option", { domProps: { value: { id: "all", text: "Todas" } } }, [
-        _vm._v("Todas")
-      ]),
-      _vm._v(" "),
-      _vm._l(_vm.sucursales, function(data) {
-        return _c(
-          "option",
-          {
-            key: data.id,
-            domProps: { value: { id: data.id, text: data.nombre_sucursal } }
-          },
-          [_vm._v(_vm._s(data.nombre_sucursal) + " ")]
-        )
-      })
-    ],
-    2
-  )
+    on: { change: _vm.emitToParent },
+    scopedSlots: _vm._u([
+      {
+        key: "first",
+        fn: function() {
+          return [
+            _c("b-form-select-option", { attrs: { value: null } }, [
+              _vm._v("\n  Seleccionar sucursal\n  ")
+            ]),
+            _vm._v(" "),
+            _vm.todas == true
+              ? _c("b-form-select-option", { attrs: { value: "all" } }, [
+                  _vm._v("\n  Todas\n  ")
+                ])
+              : _vm._e()
+          ]
+        },
+        proxy: true
+      }
+    ]),
+    model: {
+      value: _vm.selected,
+      callback: function($$v) {
+        _vm.selected = $$v
+      },
+      expression: "selected"
+    }
+  })
 }
 var staticRenderFns = []
 render._withStripped = true

@@ -43,7 +43,9 @@
             
             v-if="userRole == 'supervisor'||userRole =='admin'"
             v-on:sucursal="sucursalChange"
+            :todas="true"
             
+            :seleccionado="null"
           ></select-sucursal>
 
 
@@ -117,7 +119,7 @@
       <template v-slot:cell(editar)="row">
       
         
-        <b-button  @click="info(row.item, row.index, $event.target)"> Editar</b-button>
+        <b-button  @click="info(row.item, row.index, producto)"> Editar</b-button>
       
       
       </template>
@@ -220,8 +222,8 @@
     methods: {
 
 
-      info(item,index,target){
-        this.$refs.modal.info(item,index,target);
+      info(item,index,producto){
+        this.$refs.modal.info(item,index,producto);
       },
       
       
@@ -270,6 +272,8 @@
 
         
         this.loadData();
+
+        
         
         
 

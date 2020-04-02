@@ -24,6 +24,7 @@ class IccResource extends JsonResource
             'id'       => $this->id,
             'icc'      => $this->icc,
             'sucursal'    => $this->sucursal->nombre_sucursal,
+            'id_sucursal' =>$this->sucursal_id,
             'producto'    => $this->subproduct->product->name,
             'subproducto'    => $this->subproduct->name,
             'costosim'     => $this->subproduct->costo_sim,

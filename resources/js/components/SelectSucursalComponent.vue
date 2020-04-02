@@ -3,24 +3,63 @@
                    
 
                    
-          <select class='form-control mr-3' v-model='sucursal' @change='emitToParent'>
-                <option value="0"  selected>Seleccionar Sucursal</option>
-                <option :value="{id:'all', text:'Todas'}" >Todas</option>
-                <option v-for='data in sucursales' :value="{ id: data.id, text: data.nombre_sucursal }" :key="data.id" >{{ data.nombre_sucursal }} </option>
-          </select>
+
+
+
+          <b-form-select v-model="selected"
+          
+          :options="sucursales"
+        
+          @change='emitToParent'
+          
+          value-field="id"
+
+          text-field="nombre_sucursal"
+
+          >
+        <template v-slot:first>
+          <b-form-select-option  :value="null" >
+          Seleccionar sucursal
+          </b-form-select-option>
+          <b-form-select-option  value="all"  v-if="todas==true">
+          Todas
+          </b-form-select-option>
+        </template>
+
+          </b-form-select>
 
 
 </template>
 
 <script>
 export default {
+
+        props:{
+          
+          todas:Boolean,
+
+          seleccionado:'',
+
+         
+
+        },
         mounted() {
-            console.log('Component mounted.')
+             
         },
         data(){
             return {
-             sucursal: 0,
+             
+            
+             
+             sucursal: {
+               id:0,
+               text:'',
+             },
              sucursales: [],
+
+             selected:null,
+             
+              
 
             }
         },
@@ -29,14 +68,37 @@ export default {
         getSucursales: function(){
         axios.get('/get/sucursales')
         .then(function (response) {
-            this.sucursales= response.data;
+            
+           this.selected = this.seleccionado;
+           
+           this.sucursales= response.data;
+
+          
+            
         }.bind(this));
       },
 
 
     emitToParent (event) {
-      this.$emit('sucursal', this.sucursal)
-    }
+      
+
+      this.sucursal.id = this.selected;
+
+      if(this.sucursal.id == 'all'){
+        this.sucursal.text = 'Todas'
+      }else{
+      var i = event-1;
+      
+      this.sucursal.text = this.sucursales[i].nombre_sucursal
+      }
+
+
+      
+      
+      this.$emit('sucursal', this.sucursal);
+      
+      
+      }
 
 
 
@@ -46,6 +108,10 @@ export default {
             },
       created: function(){
             this.getSucursales();
+
+
+
+
         } 
      }
  
