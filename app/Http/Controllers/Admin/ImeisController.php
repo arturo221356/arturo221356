@@ -172,6 +172,7 @@ class ImeisController extends Controller
     public function destroy(imei $imei)
     {
 
+        
         $imei->delete();
         
     }

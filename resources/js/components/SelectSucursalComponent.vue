@@ -8,6 +8,7 @@
 
           <b-form-select v-model="selected"
           
+
           :options="sucursales"
         
           @change='emitToParent'
@@ -106,7 +107,7 @@ export default {
 
 
             },
-      created: function(){
+      mounted: function(){
             this.getSucursales();
 
 

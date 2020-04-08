@@ -1,43 +1,43 @@
 <template>
   <b-container fluid>
 
-  <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #DEDEDE;">
-      <b-row>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">{{navbarName}} {{navbarBrand}}</a>
+
+  <b-navbar toggleable="lg" type="light" style="background-color: #DEDEDE;">
+    <b-navbar-brand href="#">{{navbarName}} {{navbarBrand}}</b-navbar-brand>
+
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
         
+         
+      <b-nav-form>   
+
+
         
-        <ul class="navbar-nav m-auto mt-2 mt-lg-0">
-            
-            
-            <radio-producto
-              
-              :busy="isBusy"
-              :user-role="userRole"
-              v-on:producto="productoChange"
-              
-              v-on:fields="loadfields"
+          <radio-producto
+                
+                :busy="isBusy"
+                :user-role="userRole"
+                v-on:producto="productoChange"
+                
+                v-on:fields="loadfields"
+                class="mb-2 mr-sm-2 mb-sm-0"
 
             >
-            
+              
             </radio-producto>
-        
-        
-        </ul>
-         
-         
-        
-        <form class="form-inline my-2 my-lg-0 ml-2">
+          
           
           <checkbox-status
             
             :producto="producto"
             v-on:status="statusChange"
+            class="mb-2 mr-sm-2 mb-sm-0"
           >
           </checkbox-status>
+          
+          
           
           <select-sucursal
             
@@ -46,29 +46,55 @@
             :todas="true"
             
             :seleccionado="null"
+
+            class="mb-2 mr-sm-2 mb-sm-0"
           ></select-sucursal>
+        
+        </b-nav-form>
+      
+      
+      </b-navbar-nav>
 
-
-          <input class="form-control mr-sm-2 search" type="text" placeholder="Buscar" aria-label="Search" id="filterInpt" v-model="filter">
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">
+        
           
-        <export-excel
-          :sucursal-id="sucursalid"
+          <b-nav-form>
+            <b-form-input class="mr-sm-2" placeholder="Buscar" id="filterInpt" v-model="filter"></b-form-input>
+          
+                <export-excel
+                :sucursal-id="sucursalid"
 
-          :status-id="status"
+                :status-id="status"
+              
+                :producto="producto"
+              ></export-excel> 
+
+          </b-nav-form>
         
-          :producto="producto"
-        ></export-excel>
-        
-        
-        </form>
-        
-      </div>
-    </b-row>
-    </nav>
+
+       
+
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
 
 
+
+
+
+
+
+
+
+
+<!-- modal de edicion -->
   <edit-modal ref="modal">
   </edit-modal>
+
+
+
+
 
     
    
@@ -124,6 +150,30 @@
       
       </template>
       <!--boton de editar -->
+
+      <template v-slot:cell(status)="row">
+      
+        
+        <b-link > {{row.item.status}}
+
+          <svg class="bi bi-chat-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+          
+          v-if="row.item.comment"
+
+          v-b-popover.hover.focus.top="row.item.comment.comment" :title="row.item.status"
+
+          variant="primary"
+          >
+              <path fill-rule="evenodd" d="M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h2.5a2 2 0 011.6.8L8 14.333 9.9 11.8a2 2 0 011.6-.8H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v8a2 2 0 002 2h2.5a1 1 0 01.8.4l1.9 2.533a1 1 0 001.6 0l1.9-2.533a1 1 0 01.8-.4H14a2 2 0 002-2V2a2 2 0 00-2-2H2z" clip-rule="evenodd"/>
+          </svg>
+
+        </b-link>
+
+        
+      
+      </template>
+
+
 
     </b-table>
 
@@ -223,7 +273,19 @@
 
 
       info(item,index,producto){
+        
         this.$refs.modal.info(item,index,producto);
+       
+      
+      },
+
+       
+      makeToast(variant = null) {
+        this.$bvToast.show('Toast body content', {
+          title: `Variant ${variant || 'default'}`,
+          variant: variant,
+          solid: true
+        })
       },
       
       
@@ -298,11 +360,11 @@
       this.producto = value;
 
       if(value == 'equipos'){
-        this.fetchUrl = '/get/imeis/';
+        this.fetchUrl = '/post/imeis/';
         
       }
       else{
-        this.fetchUrl ='/get/iccs/';
+        this.fetchUrl ='/post/iccs/';
         
       }
       if(this.actualSucursal != ""){

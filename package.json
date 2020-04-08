@@ -18,15 +18,16 @@
         "lodash": "^4.17.13",
         "popper.js": "^1.12",
         "resolve-url-loader": "^2.3.1",
-        "sass": "^1.20.1",
+        "sass": "^1.26.3",
         "sass-loader": "7.*",
         "vue": "^2.5.17",
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "bootstrap-vue": "^2.5.0",
+        "bootstrap-icons": "^1.0.0-alpha3",
+        "bootstrap-vue": "^2.10.1",
         "funding": "^1.0.9",
         "node-sass": "^4.13.1",
-        "webpack": "^4.41.5"
+        "webpack": "^4.42.1"
     }
 }

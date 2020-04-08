@@ -30,6 +30,8 @@ Vue.component('radio-producto', require('./components/RadioProductoComponent.vue
 Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
 Vue.component('table-component', require('./components/TableComponent.vue').default);
 Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
+Vue.component('select-status', require('./components/SelectStatusComponent.vue').default);
+Vue.component('select-equipo', require('./components/SelectEquipoComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

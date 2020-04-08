@@ -25,4 +25,10 @@ class Imei extends Model
     public function status(){
         return $this->belongsTo('App\Status');
     }
+    public function comment(){
+        return $this->morphOne('App\Comment', 'commentable');
+
+        
+    }
+
 }

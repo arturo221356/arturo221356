@@ -59,24 +59,37 @@ class InventarioController extends Controller
 
         $statusArray = $request->status;
  
-        
+
          
         
  
                  if($sucursal == 'all'){
- 
-                     return ImeiResource::collection(Imei::whereIn('status_id',$statusArray)->get());
- 
+
+                     return ImeiResource::collection(Imei::whereIn('status_id',$statusArray)->get());  
+                    
                  }else{
                      
                      return ImeiResource::collection(Imei::where('sucursal_id','=', $sucursal)->whereIn('status_id',$statusArray)->get());
  
                  }
+                
+                
                      
  
                     
  
     }
+    //para prueba 
+    public function getimeisss(Request $request){
+        return ImeiResource::collection(Imei::all());
+    }
+
+
+
+
+
+
+
 
     public function geticcs(Request $request){
 

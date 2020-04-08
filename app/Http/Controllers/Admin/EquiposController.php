@@ -106,4 +106,12 @@ class EquiposController extends Controller
         $equipo->delete();
         return redirect("/admin/productos/equipos");
     }
+
+    public function getEquipos()
+    {
+        $data = Equipo::get();
+   
+        return response()->json($data);
+    }
+
 }

@@ -83,4 +83,10 @@ class StatusController extends Controller
     {
         //
     }
+
+    public function getStatus(){
+        $data = Status::get();
+   
+        return response()->json($data);
+    }
 }

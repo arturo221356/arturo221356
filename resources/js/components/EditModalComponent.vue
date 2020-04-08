@@ -1,5 +1,7 @@
 <template>
         <!-- Info modal -->
+    
+    
     <b-modal 
       
       :id="infoModal.id" 
@@ -11,22 +13,44 @@
       
       ref="modal"
       >
-      
+     
       <pre>{{ infoModal.content.id_sucursal }}</pre>
 
 
+
+
+
+     
         <form ref="form" @submit.stop.prevent="handleSubmit">
+          
+          <b-form-group
+            v-if="producto == 'equipos'"
+            label="Equipo"
+          >
+          <select-equipo
+          
+            :seleccionado="equipo"
+         
+          >
+          </select-equipo>
+            
+          </b-form-group>
+          
+          
+          
+          
+          
           <b-form-group
             
             label="Sucursal"
-            label-for="name-input"
-            invalid-feedback="Name is required"
+          
           >
            <select-sucursal
-           :seleccionado="infoModal.content.id_sucursal"
+           :seleccionado="sucursal"
            :todas="false"
            >
-           </select-sucursal>
+           </select-sucursal
+           >
           
           </b-form-group>
 
@@ -37,14 +61,26 @@
 
           > 
 
-          <b-form-select  :options="options"></b-form-select>
+          <select-status
+          
+          :seleccionado="status"
+          
+          >
+          </select-status>
           
           </b-form-group>
+
+          <div class="form-group">
+            <label for="">Comentario</label>
+            <!-- <input type="text" name="" id="" class="form-control" placeholder="" aria-describedby="helpId" :value="comentario"> -->
+            <b-form-textarea :value="comentario" placeholder="Inserta un comentario"></b-form-textarea>
+            <small id="helpId" class="text-muted">Eliminar comentario</small>
+          </div>
 
 
 
         </form>
-    
+       
         <!-- Footer del modal Botones -->
         
         <template v-slot:modal-footer="{ ok, cancel,  }">
@@ -55,7 +91,7 @@
         </b-button>
 
         <!-- Button with custom close trigger value -->
-        <b-button :disabled="loading" size="sm" variant="outline-danger" @click="deleteItem(infoModal.itemId)">
+        <b-button  size="sm" variant="outline-danger" @click="deleteItem(infoModal.itemId)">
           Eliminar
         </b-button>
 
@@ -76,6 +112,7 @@
     
     
     </b-modal>
+    
 </template>
 
 <script>
@@ -84,7 +121,7 @@ export default {
     data(){
         return{
          
-         loading : false,
+         
          infoModal: {
             
             id: 'info-modal',
@@ -92,15 +129,18 @@ export default {
             content: '',
             itemId: '',
             
+            
             },
 
-          options: [
-          { value: null, text: 'Please select an option' },
-          { value: 'a', text: 'This is First option' },
-          { value: 'b', text: 'Selected Option' },
-          { value: { C: '3PO' }, text: 'This is an option with object value' },
-          { value: 'd', text: 'This one is disabled', disabled: true }
-        ],
+        comentario: "",
+
+        sucursal: "",
+
+        status: "",
+
+        producto: "",
+
+        equipo: "",
 
 
 
@@ -111,9 +151,10 @@ export default {
     methods:{
     
     //manda la informacion al modal
+      
       info(item, index,producto, button) {
 
-        
+        this.$root.$emit('bv::show::modal', this.infoModal.id, button)
         
         if(producto =='equipos'){
            this.infoModal.title = `Editar Imei: ${item.imei}`;
@@ -125,21 +166,39 @@ export default {
         }
 
         this.infoModal.itemId = item.id;
-        this.infoModal.content = item;
         
-        this.$root.$emit('bv::show::modal', this.infoModal.id, button)
+        this.infoModal.content = item;
+
+        if(item.comment){
+        this.comentario = item.comment.comment;
+        }
+
+        this.status = item.status_id;
+
+        this.sucursal = item.id_sucursal;
+
+        this.producto = producto;
+
+        this.equipo = item.equipo_id;
+
+        
+
+        
       },
       //resetea los valores del modal
       resetInfoModal() {
         this.infoModal.title = ''
         this.infoModal.content = {}
         this.infoModal.itemId = ''
+        this.comentario = ''
+        this.status = ''
+        this.sucursal = ''
       },
 
      
      deleteItem(id){
 
-        this.loading = true;
+       
 
         axios.delete(`/admin/imei/${id}`)
           .then(()=>{
@@ -152,7 +211,7 @@ export default {
 
             this.$parent.loadData();
 
-            this.loading = false;
+            
 
           })
 
