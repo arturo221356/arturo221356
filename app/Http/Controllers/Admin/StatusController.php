@@ -85,7 +85,7 @@ class StatusController extends Controller
     }
 
     public function getStatus(){
-        $data = Status::get();
+        $data = Status::where('id','!=',5)->get();
    
         return response()->json($data);
     }

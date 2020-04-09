@@ -9,6 +9,8 @@
         v-model="selected"
         :options="options"
         @input="emitToParent"
+        value-field="id"
+        text-field="status"
        
       ></b-form-checkbox-group>
    
@@ -24,7 +26,7 @@ export default {
     
     data() {
       return {
-        selected: ['5'], // Must be an array reference!
+        selected: ['1'], // Must be an array reference!
         options: [],
         allSelected: false,
        
@@ -46,13 +48,27 @@ export default {
         producto(){
         
         
-          this.selected= ['5'],      
-          this.options = [
-          { text: 'Disponible' , value: '5'},
-          { text: 'En Transito', value: '3' },
-          { text: 'Perdido', value: '2' },
-          { text: 'Incompleto', value: '6' },
-        ]
+
+        
+            
+            
+        axios.get('/get/status')
+        .then(function (response) {
+           
+           
+           this.selected = this.seleccionado;
+           
+           this.options= response.data;
+
+           this.selected = ['1'];  
+
+            
+        }.bind(this));
+
+
+
+
+       
 
         
         
@@ -77,6 +93,7 @@ export default {
 
     created: function(){
                     this.emitToParent();
+                    
                 }
 
     

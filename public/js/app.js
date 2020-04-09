@@ -3055,11 +3055,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['producto'],
   data: function data() {
     return {
-      selected: ['5'],
+      selected: ['1'],
       // Must be an array reference!
       options: [],
       allSelected: false
@@ -3072,19 +3074,11 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     producto: function producto() {
-      this.selected = ['5'], this.options = [{
-        text: 'Disponible',
-        value: '5'
-      }, {
-        text: 'En Transito',
-        value: '3'
-      }, {
-        text: 'Perdido',
-        value: '2'
-      }, {
-        text: 'Incompleto',
-        value: '6'
-      }];
+      axios.get('/get/status').then(function (response) {
+        this.selected = this.seleccionado;
+        this.options = response.data;
+        this.selected = ['1'];
+      }.bind(this));
     }
   },
   methods: {
@@ -79548,7 +79542,13 @@ var render = function() {
     "div",
     [
       _c("b-form-checkbox-group", {
-        attrs: { switches: "", size: "sm", options: _vm.options },
+        attrs: {
+          switches: "",
+          size: "sm",
+          options: _vm.options,
+          "value-field": "id",
+          "text-field": "status"
+        },
         on: { input: _vm.emitToParent },
         model: {
           value: _vm.selected,
