@@ -30,7 +30,7 @@
           <select-equipo
           
             :seleccionado="equipo"
-         
+            v-on:equipo="equipoChange"
           >
           </select-equipo>
             
@@ -48,6 +48,7 @@
            <select-sucursal
            :seleccionado="sucursal"
            :todas="false"
+           v-on:sucursal="sucursalChange"
            >
            </select-sucursal
            >
@@ -73,7 +74,7 @@
           <div class="form-group">
             <label for="">Comentario</label>
             <!-- <input type="text" name="" id="" class="form-control" placeholder="" aria-describedby="helpId" :value="comentario"> -->
-            <b-form-textarea :value="comentario" placeholder="Inserta un comentario"></b-form-textarea>
+            <b-form-textarea  placeholder="Inserta un comentario" v-model.lazy="comentario"></b-form-textarea>
             <small id="helpId" class="text-muted">Eliminar comentario</small>
           </div>
 
@@ -86,7 +87,7 @@
         <template v-slot:modal-footer="{ ok, cancel,  }">
         <b>Custom Footer</b>
         <!-- Emulate built in modal footer ok and cancel button actions -->
-        <b-button size="sm" variant="success" @click="ok()">
+        <b-button size="sm" variant="success" @click="updateItem(infoModal.itemId)">
           Guardar
         </b-button>
 
@@ -140,8 +141,9 @@ export default {
 
         producto: "",
 
-        equipo: "",
+        equipo: {id:"",},
 
+        fetchUrl:"",
 
 
         }
@@ -150,7 +152,22 @@ export default {
     
     methods:{
     
+    
     //manda la informacion al modal
+      sucursalChange(value){
+
+        this.sucursal = value;
+
+        console.log(this.sucursal);
+
+      },
+      equipoChange(value){
+        this.equipo = value;
+        console.log(this.equipo);
+
+        console.log(this.comentario);
+      },
+
       
       info(item, index,producto, button) {
 
@@ -158,11 +175,12 @@ export default {
         
         if(producto =='equipos'){
            this.infoModal.title = `Editar Imei: ${item.imei}`;
-          
+          this.fetchUrl = "/admin/imei/";
+          this.equipo = item.equipo_id;
         }
         else if(producto =='sims'){
           this.infoModal.title = `Editar Icc: ${item.icc}`;
-          
+          this.fetchUrl = "/admin/icc/";
         }
 
         this.infoModal.itemId = item.id;
@@ -179,12 +197,44 @@ export default {
 
         this.producto = producto;
 
-        this.equipo = item.equipo_id;
+        
 
         
 
         
       },
+
+      updateItem(id){
+              
+        const params = {
+          sucursal_id: this.sucursal.id,
+          equipo_id: this.equipo.id,
+          comment: this.comentario,
+        };
+
+        axios.patch(this.fetchUrl+id,params).then(res=>{
+
+            alert(res.data);
+
+            this.$refs['modal'].hide();
+
+            this.$parent.loadData();
+        }).catch(function(error) {
+         console.log(error);
+      });
+
+      },
+     
+     
+     passwordValidation(){
+              
+        this.passwordValidation();
+
+        
+      },
+
+
+
       //resetea los valores del modal
       resetInfoModal() {
         this.infoModal.title = ''
@@ -200,7 +250,7 @@ export default {
 
        
 
-        axios.delete(`/admin/imei/${id}`)
+        axios.delete(this.fetchUrl+id)
           .then(()=>{
 
             alert('eliminado');

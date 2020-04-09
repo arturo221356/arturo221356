@@ -2025,6 +2025,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2038,18 +2039,33 @@ __webpack_require__.r(__webpack_exports__);
       sucursal: "",
       status: "",
       producto: "",
-      equipo: ""
+      equipo: {
+        id: ""
+      },
+      fetchUrl: ""
     };
   },
   methods: {
     //manda la informacion al modal
+    sucursalChange: function sucursalChange(value) {
+      this.sucursal = value;
+      console.log(this.sucursal);
+    },
+    equipoChange: function equipoChange(value) {
+      this.equipo = value;
+      console.log(this.equipo);
+      console.log(this.comentario);
+    },
     info: function info(item, index, producto, button) {
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
 
       if (producto == 'equipos') {
         this.infoModal.title = "Editar Imei: ".concat(item.imei);
+        this.fetchUrl = "/admin/imei/";
+        this.equipo = item.equipo_id;
       } else if (producto == 'sims') {
         this.infoModal.title = "Editar Icc: ".concat(item.icc);
+        this.fetchUrl = "/admin/icc/";
       }
 
       this.infoModal.itemId = item.id;
@@ -2062,7 +2078,27 @@ __webpack_require__.r(__webpack_exports__);
       this.status = item.status_id;
       this.sucursal = item.id_sucursal;
       this.producto = producto;
-      this.equipo = item.equipo_id;
+    },
+    updateItem: function updateItem(id) {
+      var _this = this;
+
+      var params = {
+        sucursal_id: this.sucursal.id,
+        equipo_id: this.equipo.id,
+        comment: this.comentario
+      };
+      axios.patch(this.fetchUrl + id, params).then(function (res) {
+        alert(res.data);
+
+        _this.$refs['modal'].hide();
+
+        _this.$parent.loadData();
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    passwordValidation: function passwordValidation() {
+      this.passwordValidation();
     },
     //resetea los valores del modal
     resetInfoModal: function resetInfoModal() {
@@ -2074,14 +2110,14 @@ __webpack_require__.r(__webpack_exports__);
       this.sucursal = '';
     },
     deleteItem: function deleteItem(id) {
-      var _this = this;
+      var _this2 = this;
 
-      axios["delete"]("/admin/imei/".concat(id)).then(function () {
+      axios["delete"](this.fetchUrl + id).then(function () {
         alert('eliminado');
 
-        _this.$refs['modal'].hide();
+        _this2.$refs['modal'].hide();
 
-        _this.$parent.loadData();
+        _this2.$parent.loadData();
       });
     }
   }
@@ -2825,6 +2861,9 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       equipos: [],
+      equipo: {
+        id: 0
+      },
       selected: null
     };
   },
@@ -2833,6 +2872,12 @@ __webpack_require__.r(__webpack_exports__);
       this.selected = this.seleccionado;
       this.equipos = response.data;
     }.bind(this));
+  },
+  methods: {
+    emitToParent: function emitToParent(event) {
+      this.equipo.id = this.selected;
+      this.$emit('equipo', this.equipo);
+    }
   }
 });
 
@@ -78864,7 +78909,7 @@ var render = function() {
                   attrs: { size: "sm", variant: "success" },
                   on: {
                     click: function($event) {
-                      return ok()
+                      return _vm.updateItem(_vm.infoModal.itemId)
                     }
                   }
                 },
@@ -78921,7 +78966,12 @@ var render = function() {
             ? _c(
                 "b-form-group",
                 { attrs: { label: "Equipo" } },
-                [_c("select-equipo", { attrs: { seleccionado: _vm.equipo } })],
+                [
+                  _c("select-equipo", {
+                    attrs: { seleccionado: _vm.equipo },
+                    on: { equipo: _vm.equipoChange }
+                  })
+                ],
                 1
               )
             : _vm._e(),
@@ -78931,7 +78981,8 @@ var render = function() {
             { attrs: { label: "Sucursal" } },
             [
               _c("select-sucursal", {
-                attrs: { seleccionado: _vm.sucursal, todas: false }
+                attrs: { seleccionado: _vm.sucursal, todas: false },
+                on: { sucursal: _vm.sucursalChange }
               })
             ],
             1
@@ -78951,9 +79002,13 @@ var render = function() {
               _c("label", { attrs: { for: "" } }, [_vm._v("Comentario")]),
               _vm._v(" "),
               _c("b-form-textarea", {
-                attrs: {
+                attrs: { placeholder: "Inserta un comentario" },
+                model: {
                   value: _vm.comentario,
-                  placeholder: "Inserta un comentario"
+                  callback: function($$v) {
+                    _vm.comentario = $$v
+                  },
+                  expression: "comentario"
                 }
               }),
               _vm._v(" "),
@@ -79326,21 +79381,23 @@ var render = function() {
         }
       ],
       staticClass: "form-control",
-      attrs: { name: "equipo", id: "equipo" },
       on: {
-        change: function($event) {
-          var $$selectedVal = Array.prototype.filter
-            .call($event.target.options, function(o) {
-              return o.selected
-            })
-            .map(function(o) {
-              var val = "_value" in o ? o._value : o.value
-              return val
-            })
-          _vm.selected = $event.target.multiple
-            ? $$selectedVal
-            : $$selectedVal[0]
-        }
+        change: [
+          function($event) {
+            var $$selectedVal = Array.prototype.filter
+              .call($event.target.options, function(o) {
+                return o.selected
+              })
+              .map(function(o) {
+                var val = "_value" in o ? o._value : o.value
+                return val
+              })
+            _vm.selected = $event.target.multiple
+              ? $$selectedVal
+              : $$selectedVal[0]
+          },
+          _vm.emitToParent
+        ]
       }
     },
     _vm._l(_vm.equipos, function(equipo) {

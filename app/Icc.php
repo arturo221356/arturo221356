@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Icc extends Model
 {
     protected $dates = ['deleted_at'];
+
+    protected $fillable = ["icc","sucursal_id","status_id"];
     
     public function sucursal(){
         return $this->belongsTo('App\Sucursal');

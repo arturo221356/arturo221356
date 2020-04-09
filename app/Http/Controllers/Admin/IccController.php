@@ -77,9 +77,22 @@ class IccController extends Controller
      * @param  \App\Icc  $icc
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Icc $icc)
+    public function update(Request $request, $id)
     {
-        //
+        $icc = Icc::findorfail($id);
+
+
+        $icc->update($request->all());
+        
+        
+        if ($request->comment !=NULL) {
+            
+            $icc->comment()->updateOrCreate([],['comment' => $request->comment]);
+
+        } else {
+            
+            $icc->comment()->delete();
+        }
     }
 
     /**
@@ -90,6 +103,6 @@ class IccController extends Controller
      */
     public function destroy(Icc $icc)
     {
-        //
+        $icc->delete();
     }
 }

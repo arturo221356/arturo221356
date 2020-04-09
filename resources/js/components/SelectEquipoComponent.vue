@@ -1,5 +1,5 @@
 <template>
-        <select v-model="selected" name="equipo" id="equipo" class="form-control">
+        <select v-model="selected"  class="form-control" @change='emitToParent'>
 
         <option v-for="(equipo) in equipos" :key="equipo.id" :value="equipo.id">{{ equipo.marca }}-{{equipo.modelo}}  ${{equipo.precio}}</option>
 
@@ -18,6 +18,7 @@ export default {
             
         equipos: [],
         
+        equipo: {id:0},
 
         selected:null,
 
@@ -42,6 +43,23 @@ export default {
 
 
 
-        }    
+        },
+    methods:{
+
+
+      emitToParent (event) {
+      
+
+      this.equipo.id = this.selected;
+
+
+
+      
+      
+      this.$emit('equipo', this.equipo);
+      
+      
+      }
+    }    
 }
 </script>

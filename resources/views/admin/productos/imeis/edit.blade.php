@@ -25,7 +25,7 @@
 
                         <!--select de sucursal -->
 
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="sucursal">Sucursal:</label>
                             <select id="sucursal" class="form-control" name="sucursal_id">
                                 
@@ -35,12 +35,12 @@
                                     <option value="{{$sucursal->id}}">{{$sucursal->nombre_sucursal}}</option>                                               
                                 @endforeach
                             </select>
-                        </div>   
+                        </div>    --}}
                         
                         
                         <!--select de rol -->
         
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="equipo">Equipo:</label>
                             <select id="equipo" class="form-control" name="equipo_id">
                             <option selected value="{{$imei->equipo->id}}">{{$imei->equipo->marca}} {{$imei->equipo->modelo}}</option>
@@ -48,11 +48,11 @@
                                 <option value="{{$equipo->id}}">{{$equipo->marca}} {{$equipo->modelo}}</option>
                                 @endforeach
                             </select>
-                            </div>
+                            </div> --}}
                             
                         <!--select de status -->
         
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="status">Estatus:</label>
                             <select id="status" class="form-control" name="status_id">
                             <option selected value="{{$imei->status->id}}">{{$imei->status->status}}</option>
@@ -60,7 +60,9 @@
                                     <option value="{{$statu->id}}">{{$statu->status}}</option>
                                 @endforeach
                             </select>
-                        </div> 
+                        </div>  --}}
+
+                    <textarea name="comment">{{$imei->comment->comment}}</textarea>
                 
                 
                 

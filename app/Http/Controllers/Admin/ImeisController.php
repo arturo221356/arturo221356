@@ -8,6 +8,7 @@ use App\Imei;
 use App\Sucursal;
 use App\Equipo;
 use App\Status;
+use App\Comment;
 use Dotenv\Regex\Success;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -135,14 +136,13 @@ class ImeisController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($imei)
+    public function edit(Request $request, $id)
     {
-        $imei = Imei::findorfail($imei);
-        $sucursales = Sucursal::all()->sortBy('nombre_sucursal');
-        $status = Status::all()->sortBy('status');
-        $equipos = Equipo::all()->sortby('marca');
-        return view('admin.productos.imeis.edit',compact("imei","sucursales","equipos","status"));
+        $imei = Imei::findorfail($id);
 
+        $sucursales = Sucursal::all();
+
+        return view("admin.productos.imeis.edit", compact("imei"))->with("sucursales");
     }
 
     /**
@@ -154,11 +154,25 @@ class ImeisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,['imei'=>'numeric|digits:15', Rule::unique('imei')->ignore($request->id),]);
         
-        $imei = Imei::findOrFail($id);
+        $imei = Imei::findorfail($id);
+
+
         $imei->update($request->all());
-        return redirect("/inventario");
+        
+        
+        if ($request->comment !=NULL) {
+            
+            $imei->comment()->updateOrCreate([],['comment' => $request->comment]);
+
+        } else {
+            
+            $imei->comment()->delete();
+        }
+
+        
+
+        
       
         
     }
