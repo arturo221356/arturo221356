@@ -2026,6 +2026,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2037,11 +2038,11 @@ __webpack_require__.r(__webpack_exports__);
       },
       comentario: "",
       sucursal: "",
-      status: "",
-      producto: "",
       equipo: {
         id: ""
       },
+      producto: "",
+      status: 0,
       fetchUrl: ""
     };
   },
@@ -2055,6 +2056,11 @@ __webpack_require__.r(__webpack_exports__);
       this.equipo = value;
       console.log(this.equipo);
       console.log(this.comentario);
+    },
+    statusChange: function statusChange(value) {
+      this.status = value;
+      console.log(this.status);
+      console.log(this.status);
     },
     info: function info(item, index, producto, button) {
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
@@ -2085,7 +2091,8 @@ __webpack_require__.r(__webpack_exports__);
       var params = {
         sucursal_id: this.sucursal.id,
         equipo_id: this.equipo.id,
-        comment: this.comentario
+        comment: this.comentario,
+        status_id: this.status
       };
       axios.patch(this.fetchUrl + id, params).then(function (res) {
         alert(res.data);
@@ -2912,15 +2919,22 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      status: [],
-      selected: null
+      options: [],
+      selected: null,
+      status: 0
     };
   },
   created: function created() {
     axios.get('/get/status').then(function (response) {
       this.selected = this.seleccionado;
-      this.status = response.data;
+      this.options = response.data;
     }.bind(this));
+  },
+  methods: {
+    emitToParent: function emitToParent(event) {
+      this.status = this.selected;
+      this.$emit('status', this.status);
+    }
   }
 });
 
@@ -78991,7 +79005,12 @@ var render = function() {
           _c(
             "b-form-group",
             { attrs: { label: "Estatus" } },
-            [_c("select-status", { attrs: { seleccionado: _vm.status } })],
+            [
+              _c("select-status", {
+                attrs: { seleccionado: _vm.status },
+                on: { status: _vm.statusChange }
+              })
+            ],
             1
           ),
           _vm._v(" "),
@@ -79010,13 +79029,7 @@ var render = function() {
                   },
                   expression: "comentario"
                 }
-              }),
-              _vm._v(" "),
-              _c(
-                "small",
-                { staticClass: "text-muted", attrs: { id: "helpId" } },
-                [_vm._v("Eliminar comentario")]
-              )
+              })
             ],
             1
           )
@@ -79437,7 +79450,12 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("b-form-select", {
-    attrs: { options: _vm.status, "value-field": "id", "text-field": "status" },
+    attrs: {
+      options: _vm.options,
+      "value-field": "id",
+      "text-field": "status"
+    },
+    on: { change: _vm.emitToParent },
     model: {
       value: _vm.selected,
       callback: function($$v) {

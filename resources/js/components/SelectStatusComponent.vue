@@ -2,13 +2,13 @@
     <b-form-select 
     v-model="selected" 
     
-    :options="status"
+    :options="options"
               
     value-field="id"
 
     text-field="status"
 
-    
+    @change='emitToParent'
     
     ></b-form-select>
 </template>
@@ -24,10 +24,12 @@ export default {
     data(){
         return{
             
-        status: [],
+        options: [],
         
 
         selected:null,
+
+        status: 0,
 
         }
 
@@ -44,7 +46,7 @@ export default {
            
            this.selected = this.seleccionado;
            
-           this.status= response.data;
+           this.options= response.data;
 
             
         }.bind(this));
@@ -52,6 +54,23 @@ export default {
 
 
 
-        }
+        },
+    methods:{
+
+
+    emitToParent (event) {
+      
+
+      this.status = this.selected;
+
+
+
+      
+      
+      this.$emit('status', this.status);
+      
+      
+      }
+    }
 }
 </script>

@@ -66,6 +66,7 @@
           
           :seleccionado="status"
           
+          v-on:status="statusChange"
           >
           </select-status>
           
@@ -75,7 +76,7 @@
             <label for="">Comentario</label>
             <!-- <input type="text" name="" id="" class="form-control" placeholder="" aria-describedby="helpId" :value="comentario"> -->
             <b-form-textarea  placeholder="Inserta un comentario" v-model.lazy="comentario"></b-form-textarea>
-            <small id="helpId" class="text-muted">Eliminar comentario</small>
+            
           </div>
 
 
@@ -137,11 +138,11 @@ export default {
 
         sucursal: "",
 
-        status: "",
+        equipo: {id:"",},
 
         producto: "",
 
-        equipo: {id:"",},
+        status: 0,
 
         fetchUrl:"",
 
@@ -161,11 +162,20 @@ export default {
         console.log(this.sucursal);
 
       },
+     
       equipoChange(value){
         this.equipo = value;
         console.log(this.equipo);
 
         console.log(this.comentario);
+      },
+      
+      statusChange(value){
+        
+        this.status = value;
+        console.log(this.status);
+
+        console.log(this.status);
       },
 
       
@@ -174,13 +184,17 @@ export default {
         this.$root.$emit('bv::show::modal', this.infoModal.id, button)
         
         if(producto =='equipos'){
-           this.infoModal.title = `Editar Imei: ${item.imei}`;
+          
+          this.infoModal.title = `Editar Imei: ${item.imei}`;
           this.fetchUrl = "/admin/imei/";
           this.equipo = item.equipo_id;
+        
         }
         else if(producto =='sims'){
+          
           this.infoModal.title = `Editar Icc: ${item.icc}`;
           this.fetchUrl = "/admin/icc/";
+        
         }
 
         this.infoModal.itemId = item.id;
@@ -210,6 +224,7 @@ export default {
           sucursal_id: this.sucursal.id,
           equipo_id: this.equipo.id,
           comment: this.comentario,
+          status_id: this.status,
         };
 
         axios.patch(this.fetchUrl+id,params).then(res=>{
