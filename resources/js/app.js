@@ -32,7 +32,7 @@ Vue.component('table-component', require('./components/TableComponent.vue').defa
 Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
 Vue.component('select-status', require('./components/SelectStatusComponent.vue').default);
 Vue.component('select-equipo', require('./components/SelectEquipoComponent.vue').default);
-
+Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -184,7 +184,7 @@ export default {
                     this.options = [
                     { text: 'Equipos', value: 'equipos', disabled: this.busy },
                     { text: 'Sims', value: 'sims', disabled: this.busy},
-                    { text: 'Prom', value: 'radio3', disabled: true },
+                    { text: 'Otros', value: 'otros', disabled: true },
                     ]
 
                 }

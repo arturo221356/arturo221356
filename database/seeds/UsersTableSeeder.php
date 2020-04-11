@@ -35,14 +35,14 @@ class UsersTableSeeder extends Seeder
 
         $supervisor = User::create([
             'name' => 'supervisor User',
-            'email' => 'supervisor@admin.com',
+            'email' => 'supervisor@supervisor.com',
             'password' => Hash::make('password')
           ]);
 
           $seller = User::create([
             'name' => 'seller User',
             'email' => 'seller@seller.com',
-            'password' => Hash::make('pasword')
+            'password' => Hash::make('password')
           ]);
 
           $externo = User::create([

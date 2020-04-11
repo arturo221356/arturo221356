@@ -18,14 +18,8 @@ use App\Http\Resources\IccResource as IccResource;
 
 class InventarioController extends Controller
 {
-    public function index()
-    {
-        
-        
 
-        
-    }
-    public function Inventario()
+    public function Index()
     {
        $user = Auth::User();
        $userRole= $user->Rolename();
