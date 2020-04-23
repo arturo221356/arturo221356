@@ -53,7 +53,6 @@
                             label-size="lg"
                         >
                             <select-sucursal
-                                :seleccionado="item.sucursal"
                                 v-on:sucursal="sucursalChange"
                             ></select-sucursal>
                         </b-form-group>
@@ -68,6 +67,7 @@
                                     :placeholder="`Ingresa 1 ${producto}`"
                                     name="serie"
                                     v-model="item.serie"
+                                    autocomplete="off"
                                 ></b-input>
 
                                 <b-input-group-append>

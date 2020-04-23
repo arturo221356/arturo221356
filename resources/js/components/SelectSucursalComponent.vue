@@ -1,20 +1,16 @@
 <template>
-    <b-form-select
-        v-model="selected"
-        :options="sucursales"
-        @input="emitToParent"
-        value-field="id"
-        text-field="nombre_sucursal"
-    >
-        <template v-slot:first>
-            <b-form-select-option :value="null">
-                Seleccionar sucursal
-            </b-form-select-option>
-            <b-form-select-option value="all" v-if="todas == true">
-                Todas
-            </b-form-select-option>
-        </template>
-    </b-form-select>
+    <div>
+
+        <multiselect
+            v-model="selected"
+            :options="options"
+            placeholder="Seleccionar Sucursal"
+            label="nombre_sucursal"
+            track-by="id"
+            :allow-empty="false"
+            :loading="isLoading"
+        ></multiselect>
+    </div>
 </template>
 
 <script>
@@ -22,11 +18,12 @@ export default {
     props: {
         todas: Boolean,
 
-        seleccionado: "",
+        seleccionado: Number,
     },
     mounted() {},
     data() {
         return {
+            isLoading: false,
             sucursal: {
                 id: 0,
                 text: "",
@@ -37,34 +34,49 @@ export default {
         };
     },
     methods: {
-        getSucursales: function () {
-            axios.get("/get/sucursales").then(
-                function (response) {
-                    this.selected = this.seleccionado;
+        emitToParent() {
+            this.sucursal.id = this.selected.id;
 
-                    this.sucursales = response.data;
-                }.bind(this)
-            );
-        },
-
-        emitToParent(event) {
-            this.sucursal.id = this.selected;
-
-            if (this.sucursal.id == "all") {
-                this.sucursal.text = "Todas";
-            } else {
-                var i = event - 1;
-
-                this.sucursal.text = this.sucursales[i].nombre_sucursal;
-            }
+            this.sucursal.text = this.selected.nombre_sucursal;
 
             this.$emit("sucursal", this.sucursal);
         },
     },
-    mounted: function () {},
+    watch: {
+        selected: function () {
+            console.log(this.sucursal);
+            this.emitToParent();
+        },
+        sucursales: function () {},
+    },
 
     created: function () {
-        this.getSucursales();
+        this.isLoading = true;
+        axios.get("/get/sucursales").then(
+            function (response) {
+                this.sucursales = response.data;
+
+                this.isLoading = false;
+
+                if (this.seleccionado) {
+                    this.selected = this.sucursales[this.seleccionado - 1];
+                }
+            }.bind(this)
+        );
+    },
+    computed: {
+        options: function () {
+            var options = [];
+            options = this.sucursales;
+            if (this.todas === true) {
+                options.unshift({
+                    id: "all",
+                    nombre_sucursal: "-----Todas-----",
+                });
+            }
+            return options;
+        },
     },
 };
 </script>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
