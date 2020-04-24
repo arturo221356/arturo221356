@@ -51,10 +51,10 @@ class ImeisController extends Controller
         $errores = [];
         $exitosos = [];
         foreach ($request->data as $data) {
-
-            $prueba = [];
             
-            $prueba = ['imei' => $data['serie']];
+            $serie = [];
+            
+            $serie = ['imei' => $data['serie']];
 
             $imei = new Imei([
                 'imei' => $data['serie'],
@@ -64,20 +64,21 @@ class ImeisController extends Controller
 
             ]);
 
-            $validator = Validator::make($prueba, [
+            $validator = Validator::make($serie, [
                 'imei' => 'unique:imeis,imei|digits:15',
 
 
 
             ]);
             if ($validator->fails()) {
-
-                array_push($errores,$prueba);
+                $errors = $validator->errors();
+                array_push($errores,([$serie['imei'],$errors]));
 
                
             } else {
 
                 $imei->save();
+                array_push($exitosos,$serie);
                 
             }
             

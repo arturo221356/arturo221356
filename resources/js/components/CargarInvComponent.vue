@@ -141,6 +141,8 @@ export default {
         return {
             producto: "Imei",
 
+            errores:[],
+
             postUrl: "/admin/imei",
 
             lengthRequired: 15,
