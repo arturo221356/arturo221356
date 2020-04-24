@@ -47,7 +47,6 @@
           >
            <select-sucursal
            :seleccionado="sucursal"
-           :todas="false"
            v-on:sucursal="sucursalChange"
            >
            </select-sucursal
@@ -159,23 +158,19 @@ export default {
 
         this.sucursal = value;
 
-        console.log(this.sucursal);
+        
 
       },
      
       equipoChange(value){
         this.equipo = value;
-        console.log(this.equipo);
 
-        console.log(this.comentario);
       },
       
       statusChange(value){
         
         this.status = value;
-        console.log(this.status);
 
-        console.log(this.status);
       },
 
       
@@ -211,7 +206,7 @@ export default {
 
         this.producto = producto;
 
-        
+        console.log(this.sucursal);
 
         
 
@@ -235,7 +230,7 @@ export default {
 
             this.$parent.loadData();
         }).catch(function(error) {
-         console.log(error);
+         
       });
 
       },

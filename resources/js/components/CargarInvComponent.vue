@@ -30,15 +30,18 @@
             </b-navbar>
 
             <div class="jumbotron">
-                <div class="col-md-6 mx-auto">
+                <div class="col-md-11 mx-auto">
                     <h1>Agregar {{ producto }}:</h1>
 
                     <b-form @submit="agregarserie">
+                        <!-- grupo para producto -->
                         <b-form-group
                             v-if="producto === 'Imei'"
                             label="Equipo"
                             label-for="select-equipo"
                             label-size="lg"
+                            :invalid-feedback="equipoValidation.message"
+                            :state="false"
                         >
                             <select-equipo
                                 seleccionado=""
@@ -46,21 +49,26 @@
                                 v-on:equipo="equipoChange"
                             ></select-equipo>
                         </b-form-group>
-
+                        <!-- grupo para sucursal -->
                         <b-form-group
                             label="Sucursal"
                             label-for="select-sucursal"
                             label-size="lg"
+                            :invalid-feedback="sucursalValidation.message"
+                            :state="false"
                         >
                             <select-sucursal
+                                name="select-sucursal"
                                 v-on:sucursal="sucursalChange"
                             ></select-sucursal>
                         </b-form-group>
-
+                        <!-- gurpo para serie -->
                         <b-form-group
                             :label="producto"
                             label-for="serie"
                             label-size="lg"
+                            :invalid-feedback="serieValidation.message"
+                            :state="serieValidation.input"
                         >
                             <b-input-group>
                                 <b-input
@@ -68,12 +76,14 @@
                                     name="serie"
                                     v-model="item.serie"
                                     autocomplete="off"
+                                    :state="serieValidation.input"
                                 ></b-input>
 
                                 <b-input-group-append>
                                     <b-button
                                         variant="outline-success"
                                         type="submit"
+                                        :disabled="validationFails"
                                         >Agregar</b-button
                                     >
                                 </b-input-group-append>
@@ -100,16 +110,20 @@
 
                     <b-list-group class="d-flex justify-content-between">
                         <b-list-group-item
-                            v-for="(item, index) in items"
+                            v-for="(articulo, index) in items"
                             :key="index"
                         >
-                            {{ index + 1 }}: {{ item.serie }}
-                            {{ item.sucursalText }}
+                            {{ index + 1 }} :
+                            <strong>{{ articulo.serie }}</strong>
+                            <small>{{ articulo.sucursalText }}</small>
+                            <small v-if="producto === 'Imei'">{{
+                                articulo.equipoText
+                            }}</small>
                             <b-button
                                 size="sm"
                                 class="float-right"
                                 variant="danger"
-                                @click="eliminarSerie(item, index)"
+                                @click="eliminarSerie(articulo, index)"
                                 >Eliminar</b-button
                             >
                         </b-list-group-item>
@@ -128,7 +142,13 @@ export default {
 
             busy: false,
 
-            item: { serie: "", sucursal: 1, sucursalText: "", equipo: "" },
+            item: {
+                serie: null,
+                sucursal: null,
+                sucursalText: null,
+                equipo: null,
+                equipoText: null,
+            },
 
             items: [],
 
@@ -143,8 +163,6 @@ export default {
     },
     methods: {
         productoChange() {
-            console.log(this.producto);
-
             this.items = [];
         },
 
@@ -152,12 +170,14 @@ export default {
             this.item.sucursal = value.id;
 
             this.item.sucursalText = value.text;
-
-            console.log(this.item);
         },
 
         equipoChange(value) {
             this.item.equipo = value.id;
+
+            this.item.equipoText = value.text;
+
+            console.log(this.item);
         },
 
         agregarserie(evt) {
@@ -165,16 +185,17 @@ export default {
 
             const nuevoItem = this.item;
 
-            this.items.push(nuevoItem);
-
-            console.log(this.items);
+            this.items.unshift(nuevoItem);
 
             this.item = {
                 serie: "",
                 sucursal: this.item.sucursal,
                 equipo: this.item.equipo,
                 sucursalText: this.item.sucursalText,
+                equipoText: this.item.equipoText,
             };
+
+            console.log(this.items);
         },
 
         eliminarSerie(item, index) {
@@ -182,8 +203,75 @@ export default {
         },
     },
     computed: {
-        seriesOrdenadas() {
-            return this.items.reverse();
+        //validacion general del formulario para bloquear el boton agregar serie
+        validationFails() {
+            if (
+                this.serieValidation.validation == true ||
+                this.sucursalValidation.validation == true
+            ) {
+                return true;
+            } else {
+                if (this.producto === "Imei" && this.equipoValidation.validation == true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        },
+        //validacion de el campo sucursal que no este vacio
+        sucursalValidation() {
+            var validationFails = {
+                validation: true,
+                message: "Sucursal requerida",
+            };
+            if (this.item.sucursal) {
+                validationFails = false;
+            }
+            return validationFails;
+        },
+        equipoValidation() {
+            var validationFails = {
+                validation: true,
+                message: "Equipo requerida",
+            };
+            if (this.item.equipo) {
+                validationFails = false;
+            }
+            return validationFails;
+        },
+
+        //valida que las series de icc o de imei tengan los caracteres necesarios y que no esten repetidos dentro del array de objetos
+        serieValidation() {
+            //true for error
+            var validationFails = {
+                input: null,
+                validation: true,
+                message: "",
+            };
+            var lengthRequired = 0;
+
+            if (this.producto == "Imei") {
+                lengthRequired = 15;
+            } else if (this.producto == "Icc") {
+                lengthRequired = 20;
+            }
+            if (this.item.serie) {
+                if (this.item.serie.length != lengthRequired) {
+                    validationFails.input = false;
+                    validationFails.message = `${this.producto} debe ser de ${lengthRequired} digitos`;
+                } else {
+                    if (this.items.some((e) => e.serie === this.item.serie)) {
+                        validationFails.input = false;
+                        validationFails.validation = true;
+                        validationFails.message = `${this.producto} repetido`;
+                    } else {
+                        validationFails.input = true;
+                        validationFails.validation = false;
+                    }
+                }
+            }
+
+            return validationFails;
         },
     },
 };

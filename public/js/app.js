@@ -2030,16 +2030,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       producto: "Imei",
       busy: false,
       item: {
-        serie: "",
-        sucursal: 1,
-        sucursalText: "",
-        equipo: ""
+        serie: null,
+        sucursal: null,
+        sucursalText: null,
+        equipo: null,
+        equipoText: null
       },
       items: [],
       file: null,
@@ -2060,36 +2075,109 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     productoChange: function productoChange() {
-      console.log(this.producto);
       this.items = [];
     },
     sucursalChange: function sucursalChange(value) {
       this.item.sucursal = value.id;
       this.item.sucursalText = value.text;
-      console.log(this.item);
     },
     equipoChange: function equipoChange(value) {
       this.item.equipo = value.id;
+      this.item.equipoText = value.text;
+      console.log(this.item);
     },
     agregarserie: function agregarserie(evt) {
       evt.preventDefault();
       var nuevoItem = this.item;
-      this.items.push(nuevoItem);
-      console.log(this.items);
+      this.items.unshift(nuevoItem);
       this.item = {
         serie: "",
         sucursal: this.item.sucursal,
         equipo: this.item.equipo,
-        sucursalText: this.item.sucursalText
+        sucursalText: this.item.sucursalText,
+        equipoText: this.item.equipoText
       };
+      console.log(this.items);
     },
     eliminarSerie: function eliminarSerie(item, index) {
       this.items.splice(index, 1);
     }
   },
   computed: {
-    seriesOrdenadas: function seriesOrdenadas() {
-      return this.items.reverse();
+    //validacion general del formulario para bloquear el boton agregar serie
+    validationFails: function validationFails() {
+      if (this.serieValidation.validation == true || this.sucursalValidation.validation == true) {
+        return true;
+      } else {
+        if (this.producto === "Imei" && this.equipoValidation.validation == true) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+    //validacion de el campo sucursal que no este vacio
+    sucursalValidation: function sucursalValidation() {
+      var validationFails = {
+        validation: true,
+        message: "Sucursal requerida"
+      };
+
+      if (this.item.sucursal) {
+        validationFails = false;
+      }
+
+      return validationFails;
+    },
+    equipoValidation: function equipoValidation() {
+      var validationFails = {
+        validation: true,
+        message: "Equipo requerida"
+      };
+
+      if (this.item.equipo) {
+        validationFails = false;
+      }
+
+      return validationFails;
+    },
+    //valida que las series de icc o de imei tengan los caracteres necesarios y que no esten repetidos dentro del array de objetos
+    serieValidation: function serieValidation() {
+      var _this = this;
+
+      //true for error
+      var validationFails = {
+        input: null,
+        validation: true,
+        message: ""
+      };
+      var lengthRequired = 0;
+
+      if (this.producto == "Imei") {
+        lengthRequired = 15;
+      } else if (this.producto == "Icc") {
+        lengthRequired = 20;
+      }
+
+      if (this.item.serie) {
+        if (this.item.serie.length != lengthRequired) {
+          validationFails.input = false;
+          validationFails.message = "".concat(this.producto, " debe ser de ").concat(lengthRequired, " digitos");
+        } else {
+          if (this.items.some(function (e) {
+            return e.serie === _this.item.serie;
+          })) {
+            validationFails.input = false;
+            validationFails.validation = true;
+            validationFails.message = "".concat(this.producto, " repetido");
+          } else {
+            validationFails.input = true;
+            validationFails.validation = false;
+          }
+        }
+      }
+
+      return validationFails;
     }
   }
 });
@@ -2105,7 +2193,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
 //
 //
 //
@@ -2247,17 +2334,12 @@ __webpack_require__.r(__webpack_exports__);
     //manda la informacion al modal
     sucursalChange: function sucursalChange(value) {
       this.sucursal = value;
-      console.log(this.sucursal);
     },
     equipoChange: function equipoChange(value) {
       this.equipo = value;
-      console.log(this.equipo);
-      console.log(this.comentario);
     },
     statusChange: function statusChange(value) {
       this.status = value;
-      console.log(this.status);
-      console.log(this.status);
     },
     info: function info(item, index, producto, button) {
       this.$root.$emit('bv::show::modal', this.infoModal.id, button);
@@ -2281,6 +2363,7 @@ __webpack_require__.r(__webpack_exports__);
       this.status = item.status_id;
       this.sucursal = item.id_sucursal;
       this.producto = producto;
+      console.log(this.sucursal);
     },
     updateItem: function updateItem(id) {
       var _this = this;
@@ -2297,9 +2380,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.$refs['modal'].hide();
 
         _this.$parent.loadData();
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      })["catch"](function (error) {});
     },
     passwordValidation: function passwordValidation() {
       this.passwordValidation();
@@ -3015,32 +3096,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
-    seleccionado: ""
+    todas: Boolean,
+    seleccionado: null
   },
+  mounted: function mounted() {},
   data: function data() {
     return {
-      equipos: [],
+      isLoading: false,
       equipo: {
         id: 0,
         text: ""
       },
+      equipos: [],
       selected: null
     };
   },
+  methods: {
+    emitToParent: function emitToParent() {
+      this.equipo.id = this.selected.id;
+      this.equipo.text = "".concat(this.selected.marca, "--").concat(this.selected.modelo);
+      this.$emit("equipo", this.equipo);
+    },
+    marcaWithModelo: function marcaWithModelo(_ref) {
+      var marca = _ref.marca,
+          modelo = _ref.modelo;
+      return "".concat(marca, "--").concat(modelo);
+    }
+  },
+  watch: {
+    selected: function selected() {
+      this.emitToParent();
+      console.log(this.equipo);
+    }
+  },
   created: function created() {
+    this.isLoading = true;
     axios.get("/get/equipos").then(function (response) {
-      this.selected = this.seleccionado;
       this.equipos = response.data;
+      this.isLoading = false;
+
+      if (this.seleccionado) {
+        this.selected = this.equipos[this.seleccionado - 1];
+      }
     }.bind(this));
   },
-  methods: {
-    emitToParent: function emitToParent(event) {
-      this.equipo.id = this.selected; //   var i = event-1;
-      //   this.equipo.text = this.equipos[i].marca+' '+this.equipos[i].modelo
-
-      this.$emit("equipo", this.equipo);
+  computed: {
+    options: function options() {
+      var options = [];
+      options = this.equipos;
+      return options;
     }
   }
 });
@@ -3124,7 +3245,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todas: Boolean,
-    seleccionado: Number
+    seleccionado: null
   },
   mounted: function mounted() {},
   data: function data() {
@@ -3147,7 +3268,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     selected: function selected() {
-      console.log(this.sucursal);
       this.emitToParent();
     },
     sucursales: function sucursales() {}
@@ -79759,7 +79879,7 @@ var render = function() {
           _c("div", { staticClass: "jumbotron" }, [
             _c(
               "div",
-              { staticClass: "col-md-6 mx-auto" },
+              { staticClass: "col-md-11 mx-auto" },
               [
                 _c("h1", [_vm._v("Agregar " + _vm._s(_vm.producto) + ":")]),
                 _vm._v(" "),
@@ -79774,7 +79894,9 @@ var render = function() {
                             attrs: {
                               label: "Equipo",
                               "label-for": "select-equipo",
-                              "label-size": "lg"
+                              "label-size": "lg",
+                              "invalid-feedback": _vm.equipoValidation.message,
+                              state: false
                             }
                           },
                           [
@@ -79796,11 +79918,14 @@ var render = function() {
                         attrs: {
                           label: "Sucursal",
                           "label-for": "select-sucursal",
-                          "label-size": "lg"
+                          "label-size": "lg",
+                          "invalid-feedback": _vm.sucursalValidation.message,
+                          state: false
                         }
                       },
                       [
                         _c("select-sucursal", {
+                          attrs: { name: "select-sucursal" },
                           on: { sucursal: _vm.sucursalChange }
                         })
                       ],
@@ -79813,7 +79938,9 @@ var render = function() {
                         attrs: {
                           label: _vm.producto,
                           "label-for": "serie",
-                          "label-size": "lg"
+                          "label-size": "lg",
+                          "invalid-feedback": _vm.serieValidation.message,
+                          state: _vm.serieValidation.input
                         }
                       },
                       [
@@ -79824,7 +79951,8 @@ var render = function() {
                               attrs: {
                                 placeholder: "Ingresa 1 " + _vm.producto,
                                 name: "serie",
-                                autocomplete: "off"
+                                autocomplete: "off",
+                                state: _vm.serieValidation.input
                               },
                               model: {
                                 value: _vm.item.serie,
@@ -79843,7 +79971,8 @@ var render = function() {
                                   {
                                     attrs: {
                                       variant: "outline-success",
-                                      type: "submit"
+                                      type: "submit",
+                                      disabled: _vm.validationFails
                                     }
                                   },
                                   [_vm._v("Agregar")]
@@ -79901,7 +80030,7 @@ var render = function() {
                 _c(
                   "b-list-group",
                   { staticClass: "d-flex justify-content-between" },
-                  _vm._l(_vm.items, function(item, index) {
+                  _vm._l(_vm.items, function(articulo, index) {
                     return _c(
                       "b-list-group-item",
                       { key: index },
@@ -79909,12 +80038,16 @@ var render = function() {
                         _vm._v(
                           "\n                        " +
                             _vm._s(index + 1) +
-                            ": " +
-                            _vm._s(item.serie) +
-                            "\n                        " +
-                            _vm._s(item.sucursalText) +
-                            "\n                        "
+                            " :\n                        "
                         ),
+                        _c("strong", [_vm._v(_vm._s(articulo.serie))]),
+                        _vm._v(" "),
+                        _c("small", [_vm._v(_vm._s(articulo.sucursalText))]),
+                        _vm._v(" "),
+                        _vm.producto === "Imei"
+                          ? _c("small", [_vm._v(_vm._s(articulo.equipoText))])
+                          : _vm._e(),
+                        _vm._v(" "),
                         _c(
                           "b-button",
                           {
@@ -79922,7 +80055,7 @@ var render = function() {
                             attrs: { size: "sm", variant: "danger" },
                             on: {
                               click: function($event) {
-                                return _vm.eliminarSerie(item, index)
+                                return _vm.eliminarSerie(articulo, index)
                               }
                             }
                           },
@@ -80060,7 +80193,7 @@ var render = function() {
             { attrs: { label: "Sucursal" } },
             [
               _c("select-sucursal", {
-                attrs: { seleccionado: _vm.sucursal, todas: false },
+                attrs: { seleccionado: _vm.sucursal },
                 on: { sucursal: _vm.sucursalChange }
               })
             ],
@@ -80452,57 +80585,28 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "select",
-    {
-      directives: [
-        {
-          name: "model",
-          rawName: "v-model",
+    "div",
+    [
+      _c("multiselect", {
+        attrs: {
+          options: _vm.options,
+          placeholder: "Seleccionar Equipo",
+          label: "marca",
+          "track-by": "id",
+          "allow-empty": false,
+          loading: _vm.isLoading,
+          "custom-label": _vm.marcaWithModelo
+        },
+        model: {
           value: _vm.selected,
+          callback: function($$v) {
+            _vm.selected = $$v
+          },
           expression: "selected"
         }
-      ],
-      staticClass: "form-control",
-      attrs: { required: "" },
-      on: {
-        change: [
-          function($event) {
-            var $$selectedVal = Array.prototype.filter
-              .call($event.target.options, function(o) {
-                return o.selected
-              })
-              .map(function(o) {
-                var val = "_value" in o ? o._value : o.value
-                return val
-              })
-            _vm.selected = $event.target.multiple
-              ? $$selectedVal
-              : $$selectedVal[0]
-          },
-          _vm.emitToParent
-        ]
-      }
-    },
-    [
-      _c("option", { attrs: { value: "" } }, [_vm._v("Seleccionar equipo")]),
-      _vm._v(" "),
-      _vm._l(_vm.equipos, function(equipo) {
-        return _c(
-          "option",
-          { key: equipo.id, domProps: { value: equipo.id } },
-          [
-            _vm._v(
-              _vm._s(equipo.marca) +
-                "-" +
-                _vm._s(equipo.modelo) +
-                " $" +
-                _vm._s(equipo.precio)
-            )
-          ]
-        )
       })
     ],
-    2
+    1
   )
 }
 var staticRenderFns = []
@@ -93403,7 +93507,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SelectEquipoComponent_vue_vue_type_template_id_0b6c1e87___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectEquipoComponent.vue?vue&type=template&id=0b6c1e87& */ "./resources/js/components/SelectEquipoComponent.vue?vue&type=template&id=0b6c1e87&");
 /* harmony import */ var _SelectEquipoComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SelectEquipoComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/SelectEquipoComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var vue_multiselect_dist_vue_multiselect_min_css_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css& */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -93411,7 +93517,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _SelectEquipoComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _SelectEquipoComponent_vue_vue_type_template_id_0b6c1e87___WEBPACK_IMPORTED_MODULE_0__["render"],
   _SelectEquipoComponent_vue_vue_type_template_id_0b6c1e87___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],

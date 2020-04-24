@@ -18,7 +18,7 @@ export default {
     props: {
         todas: Boolean,
 
-        seleccionado: Number,
+        seleccionado:null,
     },
     mounted() {},
     data() {
@@ -44,7 +44,7 @@ export default {
     },
     watch: {
         selected: function () {
-            console.log(this.sucursal);
+            
             this.emitToParent();
         },
         sucursales: function () {},
