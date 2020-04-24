@@ -2044,11 +2044,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       producto: "Imei",
-      busy: false,
+      postUrl: "/admin/imei",
+      lengthRequired: 15,
+      isLoading: false,
       item: {
         serie: null,
         sucursal: null,
@@ -2060,22 +2063,27 @@ __webpack_require__.r(__webpack_exports__);
       file: null,
       options: [{
         text: "Imeis",
-        value: "Imei",
-        disabled: this.busy
+        value: "Imei"
       }, {
         text: "Icc",
-        value: "Icc",
-        disabled: this.busy
+        value: "Icc"
       }, {
         text: "Otros",
-        value: "otros",
-        disabled: this.busy
+        value: "otros"
       }]
     };
   },
   methods: {
     productoChange: function productoChange() {
       this.items = [];
+
+      if (this.producto == "Imei") {
+        this.lengthRequired = 15;
+        this.postUrl = "/admin/imei";
+      } else if (this.producto == "Icc") {
+        this.lengthRequired = 20;
+        this.postUrl = "/admin/icc";
+      }
     },
     sucursalChange: function sucursalChange(value) {
       this.item.sucursal = value.id;
@@ -2101,6 +2109,19 @@ __webpack_require__.r(__webpack_exports__);
     },
     eliminarSerie: function eliminarSerie(item, index) {
       this.items.splice(index, 1);
+    },
+    //envia los datos a laravel para su almacenamiento
+    sendData: function sendData() {
+      this.isLoading = true;
+      var postData = {
+        data: this.items
+      };
+      var self = this;
+      axios.post(this.postUrl, postData).then(function (response) {
+        console.log(response.data);
+        self.isLoading = false;
+      });
+      this.items = [];
     }
   },
   computed: {
@@ -2151,18 +2172,11 @@ __webpack_require__.r(__webpack_exports__);
         validation: true,
         message: ""
       };
-      var lengthRequired = 0;
-
-      if (this.producto == "Imei") {
-        lengthRequired = 15;
-      } else if (this.producto == "Icc") {
-        lengthRequired = 20;
-      }
 
       if (this.item.serie) {
-        if (this.item.serie.length != lengthRequired) {
+        if (this.item.serie.length != this.lengthRequired) {
           validationFails.input = false;
-          validationFails.message = "".concat(this.producto, " debe ser de ").concat(lengthRequired, " digitos");
+          validationFails.message = "".concat(this.producto, " debe ser de ").concat(this.lengthRequired, " digitos");
         } else {
           if (this.items.some(function (e) {
             return e.serie === _this.item.serie;
@@ -79821,7 +79835,7 @@ var render = function() {
     [
       _c(
         "b-overlay",
-        { attrs: { show: _vm.busy, rounded: "sm" } },
+        { attrs: { show: _vm.isLoading, rounded: "sm" } },
         [
           _c(
             "b-navbar",
@@ -80020,7 +80034,18 @@ var render = function() {
                   [
                     _c(
                       "b-button",
-                      { attrs: { block: "", variant: "primary" } },
+                      {
+                        attrs: {
+                          block: "",
+                          variant: "primary",
+                          disabled: _vm.items.length > 0 ? false : true
+                        },
+                        on: {
+                          click: function($event) {
+                            return _vm.sendData()
+                          }
+                        }
+                      },
                       [_vm._v("Agregar a Inventario")]
                     )
                   ],

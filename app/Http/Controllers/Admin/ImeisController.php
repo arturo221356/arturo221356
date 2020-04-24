@@ -26,7 +26,6 @@ class ImeisController extends Controller
      */
     public function index()
     {
-
     }
 
     /**
@@ -38,7 +37,7 @@ class ImeisController extends Controller
     {
         $sucursales = Sucursal::all()->sortBy('nombre_sucursal');
         $equipos = Equipo::all()->sortby('marca');
-        return view('admin.productos.imeis.create' , compact("sucursales","equipos"));
+        return view('admin.productos.imeis.create', compact("sucursales", "equipos"));
     }
 
     /**
@@ -49,74 +48,44 @@ class ImeisController extends Controller
      */
     public function store(request $request)
     {
+        $errores = [];
+        $exitosos = [];
+        foreach ($request->data as $data) {
 
-       
-         $imeis = explode("\n", str_replace("\r", null, $request['imei']));
-
-         
-
-         $imeis = explode("\r\n", trim( $request['imei']));
-
-
-        
-        $errorMsgs = [];
-        
-        
-        foreach($imeis as $imei){
-            //$data = [];
+            $prueba = [];
             
-            $data = ['imei' => $imei];
+            $prueba = ['imei' => $data['serie']];
 
-            //var_dump($data);
-            
-            $newImei = new Imei;
+            $imei = new Imei([
+                'imei' => $data['serie'],
+                'status_id' => 1,
+                'sucursal_id' => $data['sucursal'],
+                'equipo_id' => $data['equipo']
 
-            $newImei->imei = $imei;
-            
-            $newImei->status_id = 5;
-            
-            $newImei->sucursal_id = $request->sucursal;
-            
-            $newImei->equipo_id = $request->equipo;    
-           
-            
+            ]);
 
-            $validator = Validator::make($data, [
-                'imei' => 'numeric|unique:imeis,imei|digits:15',
-                
-                
+            $validator = Validator::make($prueba, [
+                'imei' => 'unique:imeis,imei|digits:15',
+
+
 
             ]);
             if ($validator->fails()) {
-                
-                
-                $errorMsgs[$imei]= $imei;
-                
-               
 
-                
-                
-            }else{
-                
-                
-                $newImei->save();
-                
+                array_push($errores,$prueba);
+
+               
+            } else {
+
+                $imei->save();
                 
             }
             
-            
-            
-            
 
-        
         }
 
-       return redirect('/inventario')->withErrors($errorMsgs);
 
-       
-
-        
-
+        return $errores;
     }
 
     /**
@@ -127,7 +96,6 @@ class ImeisController extends Controller
      */
     public function show(Imei $imei)
     {
-
     }
 
     /**
@@ -154,27 +122,20 @@ class ImeisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $imei = Imei::findorfail($id);
 
 
         $imei->update($request->all());
-        
-        
-        if ($request->comment !=NULL) {
-            
-            $imei->comment()->updateOrCreate([],['comment' => $request->comment]);
 
+
+        if ($request->comment != NULL) {
+
+            $imei->comment()->updateOrCreate([], ['comment' => $request->comment]);
         } else {
-            
+
             $imei->comment()->delete();
         }
-
-        
-
-        
-      
-        
     }
 
     /**
@@ -186,15 +147,7 @@ class ImeisController extends Controller
     public function destroy(imei $imei)
     {
 
-        
+
         $imei->delete();
-        
     }
-
-        
-
-
-
-
-
 }

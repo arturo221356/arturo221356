@@ -19,8 +19,6 @@ class CreateImeisTable extends Migration
             $table->integer('status_id')->nullable();
             $table->integer('sucursal_id');
             $table->integer('equipo_id');
-            $table->integer('venta_id')->nullable();
-            $table->integer('precio_vendido')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

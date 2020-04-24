@@ -45,7 +45,21 @@ class IccController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        foreach ($request->data as $data) {
+
+            $imei = new Icc([
+                'icc' => $data['serie'],
+                'status_id' => 1,
+                'sucursal_id' => $data['sucursal'],
+
+
+            ]);
+
+            $imei->save();
+        }
+
+
+        return response()->json('Successfully added');
     }
 
     /**

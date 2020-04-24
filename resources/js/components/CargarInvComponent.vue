@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-overlay :show="busy" rounded="sm">
+        <b-overlay :show="isLoading" rounded="sm">
             <b-navbar
                 toggleable="lg"
                 type="light"
@@ -103,7 +103,8 @@
                     </b-form>
 
                     <b-form-group :description="`Cantidad: ${items.length}`">
-                        <b-button block variant="primary"
+                        <b-button block variant="primary" @click="sendData()"
+                        :disabled="items.length > 0? false :true"
                             >Agregar a Inventario</b-button
                         >
                     </b-form-group>
@@ -140,7 +141,11 @@ export default {
         return {
             producto: "Imei",
 
-            busy: false,
+            postUrl: "/admin/imei",
+
+            lengthRequired: 15,
+
+            isLoading: false,
 
             item: {
                 serie: null,
@@ -155,15 +160,23 @@ export default {
             file: null,
 
             options: [
-                { text: "Imeis", value: "Imei", disabled: this.busy },
-                { text: "Icc", value: "Icc", disabled: this.busy },
-                { text: "Otros", value: "otros", disabled: this.busy },
+                { text: "Imeis", value: "Imei",  },
+                { text: "Icc", value: "Icc",  },
+                { text: "Otros", value: "otros",  },
             ],
         };
     },
     methods: {
         productoChange() {
             this.items = [];
+
+            if (this.producto == "Imei") {
+                this.lengthRequired = 15;
+                this.postUrl = "/admin/imei";
+            } else if (this.producto == "Icc") {
+                this.lengthRequired = 20;
+                this.postUrl = "/admin/icc";
+            }
         },
 
         sucursalChange(value) {
@@ -201,6 +214,22 @@ export default {
         eliminarSerie(item, index) {
             this.items.splice(index, 1);
         },
+        //envia los datos a laravel para su almacenamiento
+        sendData() {
+            this.isLoading = true;
+            const postData = {
+                data: this.items,
+                
+            };
+            var self = this;
+            axios.post(this.postUrl, postData).then(function (response) {
+                console.log(response.data);
+
+               self.isLoading = false;
+            });
+
+            this.items = [];
+        },
     },
     computed: {
         //validacion general del formulario para bloquear el boton agregar serie
@@ -211,7 +240,10 @@ export default {
             ) {
                 return true;
             } else {
-                if (this.producto === "Imei" && this.equipoValidation.validation == true) {
+                if (
+                    this.producto === "Imei" &&
+                    this.equipoValidation.validation == true
+                ) {
                     return true;
                 } else {
                     return false;
@@ -248,17 +280,11 @@ export default {
                 validation: true,
                 message: "",
             };
-            var lengthRequired = 0;
 
-            if (this.producto == "Imei") {
-                lengthRequired = 15;
-            } else if (this.producto == "Icc") {
-                lengthRequired = 20;
-            }
             if (this.item.serie) {
-                if (this.item.serie.length != lengthRequired) {
+                if (this.item.serie.length != this.lengthRequired) {
                     validationFails.input = false;
-                    validationFails.message = `${this.producto} debe ser de ${lengthRequired} digitos`;
+                    validationFails.message = `${this.producto} debe ser de ${this.lengthRequired} digitos`;
                 } else {
                     if (this.items.some((e) => e.serie === this.item.serie)) {
                         validationFails.input = false;
