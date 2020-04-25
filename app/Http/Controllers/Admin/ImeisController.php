@@ -48,7 +48,7 @@ class ImeisController extends Controller
      */
     public function store(request $request)
     {
-        $errores = [];
+        $errores =[];
         $exitosos = [];
         foreach ($request->data as $data) {
             
@@ -71,10 +71,26 @@ class ImeisController extends Controller
 
             ]);
             if ($validator->fails()) {
-                $errors = $validator->errors();
-                array_push($errores,([$serie['imei'],$errors]));
 
-               
+                $err = [];
+
+                $errorList = [];
+
+                $err['serie'] = $data['serie'];
+
+                
+
+                foreach ($validator->errors()->toArray() as $error)  {
+                    
+                
+                    
+                    foreach($error as $sub_error) {
+                           array_push($errorList, $sub_error);
+                        }
+                    
+                  }
+                  $err['errores'] = $errorList;
+                  array_push($errores,$err);
             } else {
 
                 $imei->save();
@@ -86,7 +102,7 @@ class ImeisController extends Controller
         }
 
 
-        return $errores;
+        return ['errors'=>$errores,'success'=>$exitosos];
     }
 
     /**
