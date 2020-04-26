@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Icc;
 use App\IccProduct;
-// use App\Sucursal;
-// use App\Icc_status;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class IccController extends Controller
 {
@@ -45,21 +45,60 @@ class IccController extends Controller
      */
     public function store(Request $request)
     {
+        $errores =[];
+        $exitosos = [];
         foreach ($request->data as $data) {
+            
+            $serie = [];
+            
+            $serie = ['serie' => $data['serie']];
 
-            $imei = new Icc([
+            $icc = new Icc([
                 'icc' => $data['serie'],
                 'status_id' => 1,
                 'sucursal_id' => $data['sucursal'],
 
-
             ]);
 
-            $imei->save();
+            $validator = Validator::make($serie, [
+                'serie' => 'unique:iccs,icc|digits:20',
+
+
+
+            ]);
+            if ($validator->fails()) {
+
+                $err = [];
+
+                $errorList = [];
+
+                $err['serie'] = $data['serie'];
+
+                
+
+                foreach ($validator->errors()->toArray() as $error)  {
+                    
+                
+                    
+                    foreach($error as $sub_error) {
+                           array_push($errorList, $sub_error);
+                        }
+                    
+                  }
+                  $err['errores'] = $errorList;
+                  array_push($errores,$err);
+            } else {
+
+                $icc->save();
+                array_push($exitosos,$serie);
+                
+            }
+            
+
         }
 
 
-        return response()->json('Successfully added');
+        return ['errors'=>$errores,'success'=>$exitosos];
     }
 
     /**

@@ -26,11 +26,49 @@
 
                     <!-- Right aligned nav items -->
                     <b-navbar-nav class="ml-auto"> </b-navbar-nav>
+                    <div>
+                        <b-button
+                            variant="danger"
+                            size="sm"
+                            @click="erroresButton"
+                            v-if="errores.length > 0"
+                            >Errores
+                            <b-badge variant="light">{{
+                                countErrors
+                            }}</b-badge></b-button
+                        >
+
+                        <b-button
+                            variant="success"
+                            size="sm"
+                            @click="exitososButton"
+                            v-if="exitosos.length > 0"
+                            >Exitosos
+                            <b-badge variant="light">{{
+                                countSuccess
+                            }}</b-badge></b-button
+                        >
+                    </div>
                 </b-collapse>
             </b-navbar>
 
             <div class="jumbotron">
                 <div class="col-md-11 mx-auto">
+                    <b-alert
+                        dismissible
+                        v-model="alert.show"
+                        :variant="alert.variant"
+                    >
+                        <h4 class="alert-heading">{{ alert.title}}</h4>
+
+                        {{ alert.message }}
+
+                        <ol v-if="alert.list.length >0">
+                           
+                            <li v-for="(detail,index) in alert.list" :key="index">{{detail.serie}}</li>
+                        </ol>
+                    </b-alert>
+
                     <h1>Agregar {{ producto }}:</h1>
 
                     <b-form @submit="agregarserie">
@@ -103,8 +141,11 @@
                     </b-form>
 
                     <b-form-group :description="`Cantidad: ${items.length}`">
-                        <b-button block variant="primary" @click="sendData()"
-                        :disabled="items.length > 0? false :true"
+                        <b-button
+                            block
+                            variant="primary"
+                            @click="sendData()"
+                            :disabled="items.length > 0 ? false : true"
                             >Agregar a Inventario</b-button
                         >
                     </b-form-group>
@@ -141,7 +182,18 @@ export default {
         return {
             producto: "Imei",
 
-            errores:[],
+            alert: {
+                show: false,
+                title: "",
+                variant: "",
+                list: [],
+            },
+
+           
+
+            exitosos: [],
+
+            errores: [],
 
             postUrl: "/admin/imei",
 
@@ -162,9 +214,9 @@ export default {
             file: null,
 
             options: [
-                { text: "Imeis", value: "Imei",  },
-                { text: "Icc", value: "Icc",  },
-                { text: "Otros", value: "otros",  },
+                { text: "Imeis", value: "Imei" },
+                { text: "Icc", value: "Icc" },
+                { text: "Otros", value: "otros" },
             ],
         };
     },
@@ -179,6 +231,20 @@ export default {
                 this.lengthRequired = 20;
                 this.postUrl = "/admin/icc";
             }
+        },
+        erroresButton() {
+            this.alert.show = true;
+            this.alert.title = "Errores";
+            this.alert.variant = "danger";
+           
+            if(this.errores.length > 0){this.alert.list= this.errores;}else{this.alert.list =[]}
+        },
+        exitososButton() {
+            this.alert.show = true;
+            this.alert.variant = "success";
+           
+            this.alert.title = "Exitosos";
+           if(this.exitosos.length > 0){ this.alert.list= this.exitosos;}else{this.alert.list =[]}
         },
 
         sucursalChange(value) {
@@ -221,13 +287,16 @@ export default {
             this.isLoading = true;
             const postData = {
                 data: this.items,
-                
             };
             var self = this;
             axios.post(this.postUrl, postData).then(function (response) {
                 console.log(response.data);
 
-               self.isLoading = false;
+                self.isLoading = false;
+
+                self.errores = response.data.errors;
+
+                self.exitosos = response.data.success;
             });
 
             this.items = [];
@@ -252,6 +321,18 @@ export default {
                 }
             }
         },
+        //cuenta los errores
+        countErrors() {
+            if (this.errores) {
+                return this.errores.length;
+            }
+        },
+        countSuccess() {
+            if (this.exitosos) {
+                return this.exitosos.length;
+            }
+        },
+
         //validacion de el campo sucursal que no este vacio
         sucursalValidation() {
             var validationFails = {

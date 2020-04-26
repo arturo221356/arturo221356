@@ -35,9 +35,7 @@ class ImeisController extends Controller
      */
     public function create()
     {
-        $sucursales = Sucursal::all()->sortBy('nombre_sucursal');
-        $equipos = Equipo::all()->sortby('marca');
-        return view('admin.productos.imeis.create', compact("sucursales", "equipos"));
+
     }
 
     /**
@@ -54,7 +52,7 @@ class ImeisController extends Controller
             
             $serie = [];
             
-            $serie = ['imei' => $data['serie']];
+            $serie = ['serie' => $data['serie']];
 
             $imei = new Imei([
                 'imei' => $data['serie'],
@@ -65,7 +63,7 @@ class ImeisController extends Controller
             ]);
 
             $validator = Validator::make($serie, [
-                'imei' => 'unique:imeis,imei|digits:15',
+                'serie' => 'unique:imeis,imei|digits:15',
 
 
 
@@ -123,11 +121,7 @@ class ImeisController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $imei = Imei::findorfail($id);
 
-        $sucursales = Sucursal::all();
-
-        return view("admin.productos.imeis.edit", compact("imei"))->with("sucursales");
     }
 
     /**

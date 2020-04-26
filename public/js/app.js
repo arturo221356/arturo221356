@@ -2045,10 +2045,59 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       producto: "Imei",
+      alert: {
+        show: false,
+        title: "",
+        variant: "",
+        list: []
+      },
+      exitosos: [],
+      errores: [],
       postUrl: "/admin/imei",
       lengthRequired: 15,
       isLoading: false,
@@ -2083,6 +2132,28 @@ __webpack_require__.r(__webpack_exports__);
       } else if (this.producto == "Icc") {
         this.lengthRequired = 20;
         this.postUrl = "/admin/icc";
+      }
+    },
+    erroresButton: function erroresButton() {
+      this.alert.show = true;
+      this.alert.title = "Errores";
+      this.alert.variant = "danger";
+
+      if (this.errores.length > 0) {
+        this.alert.list = this.errores;
+      } else {
+        this.alert.list = [];
+      }
+    },
+    exitososButton: function exitososButton() {
+      this.alert.show = true;
+      this.alert.variant = "success";
+      this.alert.title = "Exitosos";
+
+      if (this.exitosos.length > 0) {
+        this.alert.list = this.exitosos;
+      } else {
+        this.alert.list = [];
       }
     },
     sucursalChange: function sucursalChange(value) {
@@ -2120,6 +2191,8 @@ __webpack_require__.r(__webpack_exports__);
       axios.post(this.postUrl, postData).then(function (response) {
         console.log(response.data);
         self.isLoading = false;
+        self.errores = response.data.errors;
+        self.exitosos = response.data.success;
       });
       this.items = [];
     }
@@ -2135,6 +2208,17 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           return false;
         }
+      }
+    },
+    //cuenta los errores
+    countErrors: function countErrors() {
+      if (this.errores) {
+        return this.errores.length;
+      }
+    },
+    countSuccess: function countSuccess() {
+      if (this.exitosos) {
+        return this.exitosos.length;
       }
     },
     //validacion de el campo sucursal que no este vacio
@@ -79882,7 +79966,47 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _c("b-navbar-nav", { staticClass: "ml-auto" })
+                  _c("b-navbar-nav", { staticClass: "ml-auto" }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    [
+                      _vm.errores.length > 0
+                        ? _c(
+                            "b-button",
+                            {
+                              attrs: { variant: "danger", size: "sm" },
+                              on: { click: _vm.erroresButton }
+                            },
+                            [
+                              _vm._v("Errores\n                        "),
+                              _c("b-badge", { attrs: { variant: "light" } }, [
+                                _vm._v(_vm._s(_vm.countErrors))
+                              ])
+                            ],
+                            1
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.exitosos.length > 0
+                        ? _c(
+                            "b-button",
+                            {
+                              attrs: { variant: "success", size: "sm" },
+                              on: { click: _vm.exitososButton }
+                            },
+                            [
+                              _vm._v("Exitosos\n                        "),
+                              _c("b-badge", { attrs: { variant: "light" } }, [
+                                _vm._v(_vm._s(_vm.countSuccess))
+                              ])
+                            ],
+                            1
+                          )
+                        : _vm._e()
+                    ],
+                    1
+                  )
                 ],
                 1
               )
@@ -79895,6 +80019,41 @@ var render = function() {
               "div",
               { staticClass: "col-md-11 mx-auto" },
               [
+                _c(
+                  "b-alert",
+                  {
+                    attrs: { dismissible: "", variant: _vm.alert.variant },
+                    model: {
+                      value: _vm.alert.show,
+                      callback: function($$v) {
+                        _vm.$set(_vm.alert, "show", $$v)
+                      },
+                      expression: "alert.show"
+                    }
+                  },
+                  [
+                    _c("h4", { staticClass: "alert-heading" }, [
+                      _vm._v(_vm._s(_vm.alert.title))
+                    ]),
+                    _vm._v(
+                      "\n\n                    " +
+                        _vm._s(_vm.alert.message) +
+                        "\n\n                    "
+                    ),
+                    _vm.alert.list.length > 0
+                      ? _c(
+                          "ol",
+                          _vm._l(_vm.alert.list, function(detail, index) {
+                            return _c("li", { key: index }, [
+                              _vm._v(_vm._s(detail.serie))
+                            ])
+                          }),
+                          0
+                        )
+                      : _vm._e()
+                  ]
+                ),
+                _vm._v(" "),
                 _c("h1", [_vm._v("Agregar " + _vm._s(_vm.producto) + ":")]),
                 _vm._v(" "),
                 _c(
