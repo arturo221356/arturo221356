@@ -35,7 +35,6 @@ class ImeisController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -46,12 +45,12 @@ class ImeisController extends Controller
      */
     public function store(request $request)
     {
-        $errores =[];
+        $errores = [];
         $exitosos = [];
         foreach ($request->data as $data) {
-            
+
             $serie = [];
-            
+
             $serie = ['serie' => $data['serie']];
 
             $imei = new Imei([
@@ -62,12 +61,19 @@ class ImeisController extends Controller
 
             ]);
 
+            // Crea la matriz de mensajes.
+            $mensajes = array(
+                'unique' => 'ya existe en la base de datos.',
+                'digits' => 'La serie tiene que se numerica y de 15 digitos'
+            );
+
+
             $validator = Validator::make($serie, [
-                'serie' => 'unique:imeis,imei|digits:15',
+                'serie' => 'required|unique:imeis,imei|digits:15',
 
 
 
-            ]);
+            ],$mensajes);
             if ($validator->fails()) {
 
                 $err = [];
@@ -76,31 +82,27 @@ class ImeisController extends Controller
 
                 $err['serie'] = $data['serie'];
 
-                
 
-                foreach ($validator->errors()->toArray() as $error)  {
-                    
-                
-                    
-                    foreach($error as $sub_error) {
-                           array_push($errorList, $sub_error);
-                        }
-                    
-                  }
-                  $err['errores'] = $errorList;
-                  array_push($errores,$err);
+
+                foreach ($validator->errors()->toArray() as $error) {
+
+
+
+                    foreach ($error as $sub_error) {
+                        array_push($errorList, $sub_error);
+                    }
+                }
+                $err['errores'] = $errorList;
+                array_push($errores, $err);
             } else {
 
                 $imei->save();
-                array_push($exitosos,$serie);
-                
+                array_push($exitosos, $serie);
             }
-            
-
         }
 
 
-        return ['errors'=>$errores,'success'=>$exitosos];
+        return ['errors' => $errores, 'success' => $exitosos];
     }
 
     /**
@@ -121,7 +123,6 @@ class ImeisController extends Controller
      */
     public function edit(Request $request, $id)
     {
-
     }
 
     /**

@@ -59,13 +59,17 @@ class IccController extends Controller
                 'sucursal_id' => $data['sucursal'],
 
             ]);
+            $mensajes = array(
+                'unique' => 'ya existe en la base de datos.',
+                'digits' => 'La serie tiene que se numerica y de 19 digitos'
+            );
 
             $validator = Validator::make($serie, [
-                'serie' => 'unique:iccs,icc|digits:20',
+                'serie' => 'unique:iccs,icc|digits:19',
 
 
 
-            ]);
+            ],$mensajes);
             if ($validator->fails()) {
 
                 $err = [];

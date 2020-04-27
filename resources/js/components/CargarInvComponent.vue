@@ -65,7 +65,7 @@
 
                         <ol v-if="alert.list.length >0">
                            
-                            <li v-for="(detail,index) in alert.list" :key="index">{{detail.serie}}</li>
+                            <li v-for="(detail,index) in alert.list" :key="index">{{detail.serie}}  <em v-for="(errs,index) in detail.errores" :key="index">-- {{errs}}</em></li>
                         </ol>
                     </b-alert>
 
@@ -115,6 +115,7 @@
                                     v-model="item.serie"
                                     autocomplete="off"
                                     :state="serieValidation.input"
+                                    type="number"
                                 ></b-input>
 
                                 <b-input-group-append>
@@ -228,7 +229,7 @@ export default {
                 this.lengthRequired = 15;
                 this.postUrl = "/admin/imei";
             } else if (this.producto == "Icc") {
-                this.lengthRequired = 20;
+                this.lengthRequired = 19;
                 this.postUrl = "/admin/icc";
             }
         },

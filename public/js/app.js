@@ -2086,6 +2086,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2130,7 +2131,7 @@ __webpack_require__.r(__webpack_exports__);
         this.lengthRequired = 15;
         this.postUrl = "/admin/imei";
       } else if (this.producto == "Icc") {
-        this.lengthRequired = 20;
+        this.lengthRequired = 19;
         this.postUrl = "/admin/icc";
       }
     },
@@ -80044,9 +80045,19 @@ var render = function() {
                       ? _c(
                           "ol",
                           _vm._l(_vm.alert.list, function(detail, index) {
-                            return _c("li", { key: index }, [
-                              _vm._v(_vm._s(detail.serie))
-                            ])
+                            return _c(
+                              "li",
+                              { key: index },
+                              [
+                                _vm._v(_vm._s(detail.serie) + "  "),
+                                _vm._l(detail.errores, function(errs, index) {
+                                  return _c("em", { key: index }, [
+                                    _vm._v("-- " + _vm._s(errs))
+                                  ])
+                                })
+                              ],
+                              2
+                            )
                           }),
                           0
                         )
@@ -80125,7 +80136,8 @@ var render = function() {
                                 placeholder: "Ingresa 1 " + _vm.producto,
                                 name: "serie",
                                 autocomplete: "off",
-                                state: _vm.serieValidation.input
+                                state: _vm.serieValidation.input,
+                                type: "number"
                               },
                               model: {
                                 value: _vm.item.serie,
@@ -94047,8 +94059,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/Code/promoviles/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/Code/promoviles/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

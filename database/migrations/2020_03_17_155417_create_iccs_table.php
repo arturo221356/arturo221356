@@ -15,7 +15,7 @@ class CreateIccsTable extends Migration
     {
         Schema::create('iccs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->char('icc', 20)->unique();
+            $table->char('icc', 19)->unique();
             $table->integer('sucursal_id');
             $table->integer('status_id');    
             $table->timestamps();
