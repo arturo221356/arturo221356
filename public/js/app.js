@@ -1908,6 +1908,32 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2089,7 +2115,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    return {
+    var _ref;
+
+    return _ref = {
       producto: "Imei",
       alert: {
         show: false,
@@ -2097,6 +2125,8 @@ __webpack_require__.r(__webpack_exports__);
         variant: "",
         list: []
       },
+      excelMode: false,
+      file: null,
       exitosos: [],
       errores: [],
       postUrl: "/admin/imei",
@@ -2109,19 +2139,17 @@ __webpack_require__.r(__webpack_exports__);
         equipo: null,
         equipoText: null
       },
-      items: [],
-      file: null,
-      options: [{
-        text: "Imeis",
-        value: "Imei"
-      }, {
-        text: "Icc",
-        value: "Icc"
-      }, {
-        text: "Otros",
-        value: "otros"
-      }]
-    };
+      items: []
+    }, _defineProperty(_ref, "file", null), _defineProperty(_ref, "options", [{
+      text: "Imeis",
+      value: "Imei"
+    }, {
+      text: "Icc",
+      value: "Icc"
+    }, {
+      text: "Otros",
+      value: "otros"
+    }]), _ref;
   },
   methods: {
     productoChange: function productoChange() {
@@ -2185,9 +2213,18 @@ __webpack_require__.r(__webpack_exports__);
     //envia los datos a laravel para su almacenamiento
     sendData: function sendData() {
       this.isLoading = true;
-      var postData = {
-        data: this.items
-      };
+      var postData = null;
+
+      if (this.excelMode == false) {
+        postData = {
+          data: this.items
+        };
+      } else {
+        postData = {
+          file: this.file
+        };
+      }
+
       var self = this;
       axios.post(this.postUrl, postData).then(function (response) {
         console.log(response.data);
@@ -79962,6 +79999,29 @@ var render = function() {
                           })
                         ],
                         1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-nav-item",
+                        [
+                          _c(
+                            "b-button",
+                            {
+                              attrs: {
+                                variant: "outline-success",
+                                squared: "",
+                                pressed: _vm.excelMode
+                              },
+                              on: {
+                                "update:pressed": function($event) {
+                                  _vm.excelMode = $event
+                                }
+                              }
+                            },
+                            [_vm._v("Importar de Excel")]
+                          )
+                        ],
+                        1
                       )
                     ],
                     1
@@ -80049,7 +80109,11 @@ var render = function() {
                               "li",
                               { key: index },
                               [
-                                _vm._v(_vm._s(detail.serie) + "  "),
+                                _vm._v(
+                                  "\n                            " +
+                                    _vm._s(detail.serie) +
+                                    "\n                            "
+                                ),
                                 _vm._l(detail.errores, function(errs, index) {
                                   return _c("em", { key: index }, [
                                     _vm._v("-- " + _vm._s(errs))
@@ -80116,51 +80180,55 @@ var render = function() {
                       1
                     ),
                     _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      {
-                        attrs: {
-                          label: _vm.producto,
-                          "label-for": "serie",
-                          "label-size": "lg",
-                          "invalid-feedback": _vm.serieValidation.message,
-                          state: _vm.serieValidation.input
-                        }
-                      },
-                      [
-                        _c(
-                          "b-input-group",
+                    _vm.excelMode === false
+                      ? _c(
+                          "b-form-group",
+                          {
+                            attrs: {
+                              label: _vm.producto,
+                              "label-for": "serie",
+                              "label-size": "lg",
+                              "invalid-feedback": _vm.serieValidation.message,
+                              state: _vm.serieValidation.input
+                            }
+                          },
                           [
-                            _c("b-input", {
-                              attrs: {
-                                placeholder: "Ingresa 1 " + _vm.producto,
-                                name: "serie",
-                                autocomplete: "off",
-                                state: _vm.serieValidation.input,
-                                type: "number"
-                              },
-                              model: {
-                                value: _vm.item.serie,
-                                callback: function($$v) {
-                                  _vm.$set(_vm.item, "serie", $$v)
-                                },
-                                expression: "item.serie"
-                              }
-                            }),
-                            _vm._v(" "),
                             _c(
-                              "b-input-group-append",
+                              "b-input-group",
                               [
-                                _c(
-                                  "b-button",
-                                  {
-                                    attrs: {
-                                      variant: "outline-success",
-                                      type: "submit",
-                                      disabled: _vm.validationFails
-                                    }
+                                _c("b-input", {
+                                  attrs: {
+                                    placeholder: "Ingresa 1 " + _vm.producto,
+                                    name: "serie",
+                                    autocomplete: "off",
+                                    state: _vm.serieValidation.input,
+                                    type: "number"
                                   },
-                                  [_vm._v("Agregar")]
+                                  model: {
+                                    value: _vm.item.serie,
+                                    callback: function($$v) {
+                                      _vm.$set(_vm.item, "serie", $$v)
+                                    },
+                                    expression: "item.serie"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "b-input-group-append",
+                                  [
+                                    _c(
+                                      "b-button",
+                                      {
+                                        attrs: {
+                                          variant: "outline-success",
+                                          type: "submit",
+                                          disabled: _vm.validationFails
+                                        }
+                                      },
+                                      [_vm._v("Agregar")]
+                                    )
+                                  ],
+                                  1
                                 )
                               ],
                               1
@@ -80168,33 +80236,33 @@ var render = function() {
                           ],
                           1
                         )
-                      ],
-                      1
-                    ),
+                      : _vm._e(),
                     _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Excel", "label-size": "lg" } },
-                      [
-                        _c("b-form-file", {
-                          attrs: {
-                            state: Boolean(_vm.file),
-                            placeholder: "Agregar archivo Excel",
-                            "drop-placeholder": "Arrastra el archivo aqui",
-                            "browse-text": "Excel",
-                            accept: ".xlsx, .csv"
-                          },
-                          model: {
-                            value: _vm.file,
-                            callback: function($$v) {
-                              _vm.file = $$v
-                            },
-                            expression: "file"
-                          }
-                        })
-                      ],
-                      1
-                    )
+                    _vm.excelMode === true
+                      ? _c(
+                          "b-form-group",
+                          { attrs: { label: "Excel", "label-size": "lg" } },
+                          [
+                            _c("b-form-file", {
+                              attrs: {
+                                state: Boolean(_vm.file),
+                                placeholder: "Agregar archivo Excel",
+                                "drop-placeholder": "Arrastra el archivo aqui",
+                                "browse-text": "Excel",
+                                accept: ".xlsx, .csv"
+                              },
+                              model: {
+                                value: _vm.file,
+                                callback: function($$v) {
+                                  _vm.file = $$v
+                                },
+                                expression: "file"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      : _vm._e()
                   ],
                   1
                 ),
@@ -80206,11 +80274,7 @@ var render = function() {
                     _c(
                       "b-button",
                       {
-                        attrs: {
-                          block: "",
-                          variant: "primary",
-                          disabled: _vm.items.length > 0 ? false : true
-                        },
+                        attrs: { block: "", variant: "primary" },
                         on: {
                           click: function($event) {
                             return _vm.sendData()
@@ -94059,8 +94123,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/Code/promoviles/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/Code/promoviles/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

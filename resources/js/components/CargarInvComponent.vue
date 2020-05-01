@@ -22,6 +22,15 @@
                             >
                             </b-form-radio-group>
                         </b-nav-form>
+
+                        <b-nav-item>
+                            <b-button
+                                variant="outline-success"
+                                squared
+                                :pressed.sync="excelMode"
+                                >Importar de Excel</b-button
+                            >
+                        </b-nav-item>
                     </b-navbar-nav>
 
                     <!-- Right aligned nav items -->
@@ -59,13 +68,22 @@
                         v-model="alert.show"
                         :variant="alert.variant"
                     >
-                        <h4 class="alert-heading">{{ alert.title}}</h4>
+                        <h4 class="alert-heading">{{ alert.title }}</h4>
 
                         {{ alert.message }}
 
-                        <ol v-if="alert.list.length >0">
-                           
-                            <li v-for="(detail,index) in alert.list" :key="index">{{detail.serie}}  <em v-for="(errs,index) in detail.errores" :key="index">-- {{errs}}</em></li>
+                        <ol v-if="alert.list.length > 0">
+                            <li
+                                v-for="(detail, index) in alert.list"
+                                :key="index"
+                            >
+                                {{ detail.serie }}
+                                <em
+                                    v-for="(errs, index) in detail.errores"
+                                    :key="index"
+                                    >-- {{ errs }}</em
+                                >
+                            </li>
                         </ol>
                     </b-alert>
 
@@ -107,6 +125,7 @@
                             label-size="lg"
                             :invalid-feedback="serieValidation.message"
                             :state="serieValidation.input"
+                            v-if="excelMode === false"
                         >
                             <b-input-group>
                                 <b-input
@@ -129,7 +148,11 @@
                             </b-input-group>
                         </b-form-group>
 
-                        <b-form-group label="Excel" label-size="lg">
+                        <b-form-group
+                            label="Excel"
+                            label-size="lg"
+                            v-if="excelMode === true"
+                        >
                             <b-form-file
                                 v-model="file"
                                 :state="Boolean(file)"
@@ -137,6 +160,7 @@
                                 drop-placeholder="Arrastra el archivo aqui"
                                 browse-text="Excel"
                                 accept=".xlsx, .csv"
+                                
                             ></b-form-file>
                         </b-form-group>
                     </b-form>
@@ -146,7 +170,7 @@
                             block
                             variant="primary"
                             @click="sendData()"
-                            :disabled="items.length > 0 ? false : true"
+                           
                             >Agregar a Inventario</b-button
                         >
                     </b-form-group>
@@ -189,8 +213,9 @@ export default {
                 variant: "",
                 list: [],
             },
+            excelMode: false,
 
-           
+            file: null,
 
             exitosos: [],
 
@@ -233,19 +258,29 @@ export default {
                 this.postUrl = "/admin/icc";
             }
         },
+
+
         erroresButton() {
             this.alert.show = true;
             this.alert.title = "Errores";
             this.alert.variant = "danger";
-           
-            if(this.errores.length > 0){this.alert.list= this.errores;}else{this.alert.list =[]}
+
+            if (this.errores.length > 0) {
+                this.alert.list = this.errores;
+            } else {
+                this.alert.list = [];
+            }
         },
         exitososButton() {
             this.alert.show = true;
             this.alert.variant = "success";
-           
+
             this.alert.title = "Exitosos";
-           if(this.exitosos.length > 0){ this.alert.list= this.exitosos;}else{this.alert.list =[]}
+            if (this.exitosos.length > 0) {
+                this.alert.list = this.exitosos;
+            } else {
+                this.alert.list = [];
+            }
         },
 
         sucursalChange(value) {
@@ -286,9 +321,17 @@ export default {
         //envia los datos a laravel para su almacenamiento
         sendData() {
             this.isLoading = true;
-            const postData = {
-                data: this.items,
-            };
+            var postData =null;
+            if (this.excelMode == false) {
+                postData = {
+                    data: this.items,
+                };
+            } else {
+                 postData = {
+                    file: this.file,
+                };
+            }
+
             var self = this;
             axios.post(this.postUrl, postData).then(function (response) {
                 console.log(response.data);

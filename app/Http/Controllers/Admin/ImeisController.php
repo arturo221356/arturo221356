@@ -13,6 +13,8 @@ use Dotenv\Regex\Success;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ImeiResource as ImeiResource;
+use App\Imports\ImeiImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImeisController extends Controller
 {
@@ -47,7 +49,25 @@ class ImeisController extends Controller
     {
         $errores = [];
         $exitosos = [];
-        foreach ($request->data as $data) {
+        $series = $request->data;
+
+        if($request->hasFile('file')) 
+        { 
+            
+        $data = [
+            'sucursal_id' => 50,
+            'equipo_id' => 10,
+            'status_id' => 1,
+            // other data here
+        ]; 
+            $file = $request->file('file');
+            
+            Excel::import(new ImeiImport($data), $file);
+    
+            return ['message' => 'Excel has been succesfully uploaded'];
+    }
+        
+        foreach ($series as $data) {
 
             $serie = [];
 
