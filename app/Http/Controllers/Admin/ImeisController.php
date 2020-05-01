@@ -47,26 +47,46 @@ class ImeisController extends Controller
      */
     public function store(request $request)
     {
+        //array de mensajes de error y exitosos
         $errores = [];
+        
         $exitosos = [];
+        
         $series = $request->data;
 
-        if($request->hasFile('file')) 
-        { 
-            
-        $data = [
-            'sucursal_id' => 50,
-            'equipo_id' => 10,
-            'status_id' => 1,
-            // other data here
-        ]; 
+        //si el request contiene un archivo excel procede con esta funcion 
+        if ($request->hasFile('file')) {
+
             $file = $request->file('file');
+
+            //datos enviados al import que vienen desde la request
+            $data = [
+                'sucursal_id' => 50,
+                'equipo_id' => 10,
+                'status_id' => 1,
+                
+            ];
+
             
-            Excel::import(new ImeiImport($data), $file);
-    
-            return ['message' => 'Excel has been succesfully uploaded'];
-    }
-        
+            $imeiImport = new ImeiImport($data);
+            $imeiImport->import($file);
+
+            //obtiene los los mensales de error
+            $imeiValidationErrors = $imeiImport->getErrors();
+            $imeiValidationSuccess = $imeiImport->getsuccess();
+            
+            //pushea los mensajes a los arrays
+            $errors = array_push($errores, $imeiValidationErrors);
+            $success = array_push($exitosos, $imeiValidationSuccess);
+        } else {
+            $imeiValidationErrors = [];
+            $imeiValidationSuccess = [];
+        }
+
+
+
+        if($series){
+
         foreach ($series as $data) {
 
             $serie = [];
@@ -93,7 +113,7 @@ class ImeisController extends Controller
 
 
 
-            ],$mensajes);
+            ], $mensajes);
             if ($validator->fails()) {
 
                 $err = [];
@@ -120,8 +140,9 @@ class ImeisController extends Controller
                 array_push($exitosos, $serie);
             }
         }
+    }
 
-
+        //regresa los mensajes de errores y exitosos
         return ['errors' => $errores, 'success' => $exitosos];
     }
 
