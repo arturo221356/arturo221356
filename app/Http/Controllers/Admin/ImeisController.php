@@ -54,15 +54,23 @@ class ImeisController extends Controller
         
         $series = $request->data;
 
+        $sucursal = $request->input('sucursal_id');
+
+        $equipo = $request->input('equipo_id');
+
+        
+
         //si el request contiene un archivo excel procede con esta funcion 
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
 
+
+
             //datos enviados al import que vienen desde la request
             $data = [
-                'sucursal_id' => 50,
-                'equipo_id' => 10,
+                'sucursal_id' => $sucursal,
+                'equipo_id' => $equipo,
                 'status_id' => 1,
                 
             ];
@@ -76,12 +84,15 @@ class ImeisController extends Controller
             $imeiValidationSuccess = $imeiImport->getsuccess();
             
             //pushea los mensajes a los arrays
-            $errors = array_push($errores, $imeiValidationErrors);
-            $success = array_push($exitosos, $imeiValidationSuccess);
-        } else {
-            $imeiValidationErrors = [];
-            $imeiValidationSuccess = [];
-        }
+            foreach($imeiValidationErrors as $validationErr){
+                $errors = array_push($errores, $validationErr);
+            }
+            foreach($imeiValidationSuccess as $validationSucc){
+                $errors = array_push($exitosos, $validationSucc);
+            }
+            
+            
+        } 
 
 
 

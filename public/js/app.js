@@ -2108,11 +2108,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     var _ref;
@@ -2213,26 +2208,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     //envia los datos a laravel para su almacenamiento
     sendData: function sendData() {
       this.isLoading = true;
-      var postData = null;
 
-      if (this.excelMode == false) {
-        postData = {
+      if (this.items.length > 0) {
+        var postData = {
           data: this.items
         };
-      } else {
-        postData = {
-          file: this.file
-        };
+        var self = this;
+        axios.post(this.postUrl, postData).then(function (response) {
+          console.log(response.data);
+          self.isLoading = false;
+          self.errores = response.data.errors;
+          self.exitosos = response.data.success;
+        });
+        this.items = [];
       }
 
-      var self = this;
-      axios.post(this.postUrl, postData).then(function (response) {
-        console.log(response.data);
-        self.isLoading = false;
-        self.errores = response.data.errors;
-        self.exitosos = response.data.success;
-      });
-      this.items = [];
+      if (this.file) {
+        var formData = new FormData();
+        formData.append("file", this.file);
+        formData.set("sucursal_id", this.item.sucursal);
+        formData.set("equipo_id", this.item.equipo);
+        var settings = {
+          headers: {
+            "content-type": "multipart/form-data"
+          }
+        };
+        var self = this;
+        axios.post(this.postUrl, formData, settings).then(function (response) {
+          console.log(response.data);
+          self.isLoading = false;
+          self.errores = response.data.errors;
+          self.exitosos = response.data.success;
+        });
+        this.file = null;
+      }
     }
   },
   computed: {

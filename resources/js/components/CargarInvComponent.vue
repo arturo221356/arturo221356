@@ -160,17 +160,12 @@
                                 drop-placeholder="Arrastra el archivo aqui"
                                 browse-text="Excel"
                                 accept=".xlsx, .csv"
-                                
                             ></b-form-file>
                         </b-form-group>
                     </b-form>
 
                     <b-form-group :description="`Cantidad: ${items.length}`">
-                        <b-button
-                            block
-                            variant="primary"
-                            @click="sendData()"
-                           
+                        <b-button block variant="primary" @click="sendData()"
                             >Agregar a Inventario</b-button
                         >
                     </b-form-group>
@@ -259,7 +254,6 @@ export default {
             }
         },
 
-
         erroresButton() {
             this.alert.show = true;
             this.alert.title = "Errores";
@@ -321,29 +315,50 @@ export default {
         //envia los datos a laravel para su almacenamiento
         sendData() {
             this.isLoading = true;
-            var postData =null;
-            if (this.excelMode == false) {
-                postData = {
+
+            if (this.items.length > 0) {
+                var postData = {
                     data: this.items,
                 };
-            } else {
-                 postData = {
-                    file: this.file,
-                };
+                var self = this;
+                axios.post(this.postUrl, postData).then(function (response) {
+                    console.log(response.data);
+
+                    self.isLoading = false;
+
+                    self.errores = response.data.errors;
+
+                    self.exitosos = response.data.success; 
+                });
+
+                this.items = [];
             }
 
-            var self = this;
-            axios.post(this.postUrl, postData).then(function (response) {
-                console.log(response.data);
+            if (this.file) {
+                const formData = new FormData();
+                formData.append("file", this.file);
+                formData.set("sucursal_id", this.item.sucursal);
+                formData.set("equipo_id", this.item.equipo);
 
-                self.isLoading = false;
+                let settings = {
+                    headers: { "content-type": "multipart/form-data" },
+                };
 
-                self.errores = response.data.errors;
+                var self = this;
+                axios
+                    .post(this.postUrl, formData, settings)
+                    .then(function (response) {
+                        console.log(response.data);
 
-                self.exitosos = response.data.success;
-            });
+                        self.isLoading = false;
 
-            this.items = [];
+                        self.errores = response.data.errors;
+
+                        self.exitosos = response.data.success;
+                    });
+                
+                this.file = null;
+            }
         },
     },
     computed: {

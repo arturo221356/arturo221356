@@ -2,8 +2,8 @@
 
 @section('content')
 
-<!-- <cargar-inventario>
-</cargar-inventario> -->
+<cargar-inventario>
+</cargar-inventario> 
 
 <form action="/admin/imei" method="post" enctype="multipart/form-data">
     <input type="file" name="file" id="file" >
