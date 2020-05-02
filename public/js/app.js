@@ -1908,18 +1908,6 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -2110,9 +2098,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    var _ref;
-
-    return _ref = {
+    return {
       producto: "Imei",
       alert: {
         show: false,
@@ -2120,13 +2106,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         variant: "",
         list: []
       },
-      excelMode: false,
-      file: null,
+      //array con respuesta del servidor con las series exitosas
       exitosos: [],
+      //array con respuesta del servidor con las series erroneas
       errores: [],
       postUrl: "/admin/imei",
+      //variable de los caracteres minimos requeridos para la serie
       lengthRequired: 15,
       isLoading: false,
+      //valores actuales del formulario
       item: {
         serie: null,
         sucursal: null,
@@ -2134,19 +2122,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         equipo: null,
         equipoText: null
       },
-      items: []
-    }, _defineProperty(_ref, "file", null), _defineProperty(_ref, "options", [{
-      text: "Imeis",
-      value: "Imei"
-    }, {
-      text: "Icc",
-      value: "Icc"
-    }, {
-      text: "Otros",
-      value: "otros"
-    }]), _ref;
+      items: [],
+      //Archivo de excel
+      file: null,
+      //opciones del radio de productos
+      options: [{
+        text: "Imeis",
+        value: "Imei"
+      }, {
+        text: "Icc",
+        value: "Icc"
+      }, {
+        text: "Otros",
+        value: "otros"
+      }]
+    };
   },
   methods: {
+    //detecta el cambio de producto a trabajar
     productoChange: function productoChange() {
       this.items = [];
 
@@ -2158,6 +2151,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.postUrl = "/admin/icc";
       }
     },
+    //crea el boton de errores y regresa un alert con los valores
     erroresButton: function erroresButton() {
       this.alert.show = true;
       this.alert.title = "Errores";
@@ -2169,6 +2163,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.alert.list = [];
       }
     },
+    //crea el boton de exitosos y regresa un alert con los valores
     exitososButton: function exitososButton() {
       this.alert.show = true;
       this.alert.variant = "success";
@@ -2180,15 +2175,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.alert.list = [];
       }
     },
+    //detecta el cambio del select de sucursal
     sucursalChange: function sucursalChange(value) {
       this.item.sucursal = value.id;
       this.item.sucursalText = value.text;
     },
+    //detecta el cambio del select de equipo
     equipoChange: function equipoChange(value) {
       this.item.equipo = value.id;
       this.item.equipoText = value.text;
-      console.log(this.item);
     },
+    //agrega serie a array items
     agregarserie: function agregarserie(evt) {
       evt.preventDefault();
       var nuevoItem = this.item;
@@ -2202,28 +2199,30 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };
       console.log(this.items);
     },
+    //elimina la serie del array items
     eliminarSerie: function eliminarSerie(item, index) {
       this.items.splice(index, 1);
     },
     //envia los datos a laravel para su almacenamiento
     sendData: function sendData() {
       this.isLoading = true;
-      var obj = this.file;
       var self = this;
-      var json = JSON.stringify(obj);
-      var blob = new Blob([json], {
-        type: "application/json"
-      });
+      var settings = {
+        headers: {
+          "content-type": "multipart/form-data"
+        }
+      }; //  const obj = this.file;
+      // const json = JSON.stringify(obj);
+      // const blob = new Blob([json], {
+      //     type: "application/json",
+      // });
+
       var data = new FormData();
       data.append("data", JSON.stringify(this.items));
       data.append("file", this.file);
       data.set("sucursal_id", this.item.sucursal);
       data.set("equipo_id", this.item.equipo);
-      axios.post(this.postUrl, data, {
-        headers: {
-          "content-type": "multipart/form-data"
-        }
-      }).then(function (response) {
+      axios.post(this.postUrl, data, settings).then(function (response) {
         console.log(response.data);
         self.isLoading = false;
         self.errores = response.data.errors;
@@ -2234,6 +2233,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   computed: {
+    //bloquea el boton de aregar inventario si el excel y el array de items estan vacios
+    btnAgregarInventario: function btnAgregarInventario() {
+      if (this.items.length == 0 && this.file == null || this.sucursalValidation.validation == true) {
+        return true;
+      } else {
+        if (this.producto == "Imei" && this.equipoValidation.validation == true) {
+          return true;
+        } else {
+          return false;
+        }
+
+        return false;
+      }
+    },
     //validacion general del formulario para bloquear el boton agregar serie
     validationFails: function validationFails() {
       if (this.serieValidation.validation == true || this.sucursalValidation.validation == true) {
@@ -2246,12 +2259,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       }
     },
-    //cuenta los errores
+    //cuenta los errores de la peticion send data
     countErrors: function countErrors() {
       if (this.errores) {
         return this.errores.length;
       }
     },
+    //cuenta los valores exitosos de la peticion send data
     countSuccess: function countSuccess() {
       if (this.exitosos) {
         return this.exitosos.length;
@@ -2270,10 +2284,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return validationFails;
     },
+    //valida que el campo equipo tenga valos
     equipoValidation: function equipoValidation() {
       var validationFails = {
         validation: true,
-        message: "Equipo requerida"
+        message: "Equipo requerido"
       };
 
       if (this.item.equipo) {
@@ -79997,29 +80012,6 @@ var render = function() {
                           })
                         ],
                         1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "b-nav-item",
-                        [
-                          _c(
-                            "b-button",
-                            {
-                              attrs: {
-                                variant: "outline-success",
-                                squared: "",
-                                pressed: _vm.excelMode
-                              },
-                              on: {
-                                "update:pressed": function($event) {
-                                  _vm.excelMode = $event
-                                }
-                              }
-                            },
-                            [_vm._v("Importar de Excel")]
-                          )
-                        ],
-                        1
                       )
                     ],
                     1
@@ -80178,55 +80170,51 @@ var render = function() {
                       1
                     ),
                     _vm._v(" "),
-                    _vm.excelMode === false
-                      ? _c(
-                          "b-form-group",
-                          {
-                            attrs: {
-                              label: _vm.producto,
-                              "label-for": "serie",
-                              "label-size": "lg",
-                              "invalid-feedback": _vm.serieValidation.message,
-                              state: _vm.serieValidation.input
-                            }
-                          },
+                    _c(
+                      "b-form-group",
+                      {
+                        attrs: {
+                          label: _vm.producto,
+                          "label-for": "serie",
+                          "label-size": "lg",
+                          "invalid-feedback": _vm.serieValidation.message,
+                          state: _vm.serieValidation.input
+                        }
+                      },
+                      [
+                        _c(
+                          "b-input-group",
                           [
+                            _c("b-input", {
+                              attrs: {
+                                placeholder: "Ingresa 1 " + _vm.producto,
+                                name: "serie",
+                                autocomplete: "off",
+                                state: _vm.serieValidation.input,
+                                type: "number"
+                              },
+                              model: {
+                                value: _vm.item.serie,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.item, "serie", $$v)
+                                },
+                                expression: "item.serie"
+                              }
+                            }),
+                            _vm._v(" "),
                             _c(
-                              "b-input-group",
+                              "b-input-group-append",
                               [
-                                _c("b-input", {
-                                  attrs: {
-                                    placeholder: "Ingresa 1 " + _vm.producto,
-                                    name: "serie",
-                                    autocomplete: "off",
-                                    state: _vm.serieValidation.input,
-                                    type: "number"
-                                  },
-                                  model: {
-                                    value: _vm.item.serie,
-                                    callback: function($$v) {
-                                      _vm.$set(_vm.item, "serie", $$v)
-                                    },
-                                    expression: "item.serie"
-                                  }
-                                }),
-                                _vm._v(" "),
                                 _c(
-                                  "b-input-group-append",
-                                  [
-                                    _c(
-                                      "b-button",
-                                      {
-                                        attrs: {
-                                          variant: "outline-success",
-                                          type: "submit",
-                                          disabled: _vm.validationFails
-                                        }
-                                      },
-                                      [_vm._v("Agregar")]
-                                    )
-                                  ],
-                                  1
+                                  "b-button",
+                                  {
+                                    attrs: {
+                                      variant: "success",
+                                      type: "submit",
+                                      disabled: _vm.validationFails
+                                    }
+                                  },
+                                  [_vm._v("Agregar")]
                                 )
                               ],
                               1
@@ -80234,33 +80222,33 @@ var render = function() {
                           ],
                           1
                         )
-                      : _vm._e(),
+                      ],
+                      1
+                    ),
                     _vm._v(" "),
-                    _vm.excelMode === true
-                      ? _c(
-                          "b-form-group",
-                          { attrs: { label: "Excel", "label-size": "lg" } },
-                          [
-                            _c("b-form-file", {
-                              attrs: {
-                                state: Boolean(_vm.file),
-                                placeholder: "Agregar archivo Excel",
-                                "drop-placeholder": "Arrastra el archivo aqui",
-                                "browse-text": "Excel",
-                                accept: ".xlsx, .csv"
-                              },
-                              model: {
-                                value: _vm.file,
-                                callback: function($$v) {
-                                  _vm.file = $$v
-                                },
-                                expression: "file"
-                              }
-                            })
-                          ],
-                          1
-                        )
-                      : _vm._e()
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "Excel", "label-size": "lg" } },
+                      [
+                        _c("b-form-file", {
+                          attrs: {
+                            state: Boolean(_vm.file),
+                            placeholder: "Agregar archivo Excel",
+                            "drop-placeholder": "Arrastra el archivo aqui",
+                            "browse-text": "Excel",
+                            accept: ".xlsx, .csv"
+                          },
+                          model: {
+                            value: _vm.file,
+                            callback: function($$v) {
+                              _vm.file = $$v
+                            },
+                            expression: "file"
+                          }
+                        })
+                      ],
+                      1
+                    )
                   ],
                   1
                 ),
@@ -80272,7 +80260,11 @@ var render = function() {
                     _c(
                       "b-button",
                       {
-                        attrs: { block: "", variant: "primary" },
+                        attrs: {
+                          block: "",
+                          variant: "primary",
+                          disabled: _vm.btnAgregarInventario
+                        },
                         on: {
                           click: function($event) {
                             return _vm.sendData()

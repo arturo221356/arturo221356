@@ -129,7 +129,7 @@
 
                                 <b-input-group-append>
                                     <b-button
-                                        variant="outline-success"
+                                        variant="success"
                                         type="submit"
                                         :disabled="validationFails"
                                         >Agregar</b-button
@@ -151,7 +151,11 @@
                     </b-form>
 
                     <b-form-group :description="`Cantidad: ${items.length}`">
-                        <b-button block variant="primary" @click="sendData()"
+                        <b-button
+                            block
+                            variant="primary"
+                            @click="sendData()"
+                            :disabled="btnAgregarInventario"
                             >Agregar a Inventario</b-button
                         >
                     </b-form-group>
@@ -194,19 +198,19 @@ export default {
                 variant: "",
                 list: [],
             },
-
-            file: null,
-
+            //array con respuesta del servidor con las series exitosas
             exitosos: [],
-
+            //array con respuesta del servidor con las series erroneas
             errores: [],
 
             postUrl: "/admin/imei",
 
+            //variable de los caracteres minimos requeridos para la serie
             lengthRequired: 15,
 
             isLoading: false,
 
+            //valores actuales del formulario
             item: {
                 serie: null,
                 sucursal: null,
@@ -216,9 +220,9 @@ export default {
             },
 
             items: [],
-
+            //Archivo de excel
             file: null,
-
+            //opciones del radio de productos
             options: [
                 { text: "Imeis", value: "Imei" },
                 { text: "Icc", value: "Icc" },
@@ -227,6 +231,7 @@ export default {
         };
     },
     methods: {
+        //detecta el cambio de producto a trabajar
         productoChange() {
             this.items = [];
 
@@ -238,7 +243,7 @@ export default {
                 this.postUrl = "/admin/icc";
             }
         },
-
+        //crea el boton de errores y regresa un alert con los valores
         erroresButton() {
             this.alert.show = true;
             this.alert.title = "Errores";
@@ -250,6 +255,7 @@ export default {
                 this.alert.list = [];
             }
         },
+        //crea el boton de exitosos y regresa un alert con los valores
         exitososButton() {
             this.alert.show = true;
             this.alert.variant = "success";
@@ -261,21 +267,19 @@ export default {
                 this.alert.list = [];
             }
         },
-
+        //detecta el cambio del select de sucursal
         sucursalChange(value) {
             this.item.sucursal = value.id;
 
             this.item.sucursalText = value.text;
         },
-
+        //detecta el cambio del select de equipo
         equipoChange(value) {
             this.item.equipo = value.id;
 
             this.item.equipoText = value.text;
-
-            console.log(this.item);
         },
-
+        //agrega serie a array items
         agregarserie(evt) {
             evt.preventDefault();
 
@@ -293,7 +297,7 @@ export default {
 
             console.log(this.items);
         },
-
+        //elimina la serie del array items
         eliminarSerie(item, index) {
             this.items.splice(index, 1);
         },
@@ -334,6 +338,25 @@ export default {
         },
     },
     computed: {
+        //bloquea el boton de aregar inventario si el excel y el array de items estan vacios
+        btnAgregarInventario() {
+            if (
+                (this.items.length == 0 && this.file == null) ||
+                this.sucursalValidation.validation == true
+            ) {
+                return true;
+            } else {
+                if (
+                    this.producto == "Imei" &&
+                    this.equipoValidation.validation == true
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+                return false;
+            }
+        },
         //validacion general del formulario para bloquear el boton agregar serie
         validationFails() {
             if (
@@ -352,12 +375,13 @@ export default {
                 }
             }
         },
-        //cuenta los errores
+        //cuenta los errores de la peticion send data
         countErrors() {
             if (this.errores) {
                 return this.errores.length;
             }
         },
+        //cuenta los valores exitosos de la peticion send data
         countSuccess() {
             if (this.exitosos) {
                 return this.exitosos.length;
@@ -375,10 +399,11 @@ export default {
             }
             return validationFails;
         },
+        //valida que el campo equipo tenga valos
         equipoValidation() {
             var validationFails = {
                 validation: true,
-                message: "Equipo requerida",
+                message: "Equipo requerido",
             };
             if (this.item.equipo) {
                 validationFails = false;
