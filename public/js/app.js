@@ -2208,40 +2208,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     //envia los datos a laravel para su almacenamiento
     sendData: function sendData() {
       this.isLoading = true;
-
-      if (this.items.length > 0) {
-        var postData = {
-          data: this.items
-        };
-        var self = this;
-        axios.post(this.postUrl, postData).then(function (response) {
-          console.log(response.data);
-          self.isLoading = false;
-          self.errores = response.data.errors;
-          self.exitosos = response.data.success;
-        });
-        this.items = [];
-      }
-
-      if (this.file) {
-        var formData = new FormData();
-        formData.append("file", this.file);
-        formData.set("sucursal_id", this.item.sucursal);
-        formData.set("equipo_id", this.item.equipo);
-        var settings = {
-          headers: {
-            "content-type": "multipart/form-data"
-          }
-        };
-        var self = this;
-        axios.post(this.postUrl, formData, settings).then(function (response) {
-          console.log(response.data);
-          self.isLoading = false;
-          self.errores = response.data.errors;
-          self.exitosos = response.data.success;
-        });
-        this.file = null;
-      }
+      var obj = this.file;
+      var self = this;
+      var json = JSON.stringify(obj);
+      var blob = new Blob([json], {
+        type: "application/json"
+      });
+      var data = new FormData();
+      data.append("data", JSON.stringify(this.items));
+      data.append("file", this.file);
+      data.set("sucursal_id", this.item.sucursal);
+      data.set("equipo_id", this.item.equipo);
+      axios.post(this.postUrl, data, {
+        headers: {
+          "content-type": "multipart/form-data"
+        }
+      }).then(function (response) {
+        console.log(response.data);
+        self.isLoading = false;
+        self.errores = response.data.errors;
+        self.exitosos = response.data.success;
+      });
+      this.items = [];
+      this.file = null;
     }
   },
   computed: {

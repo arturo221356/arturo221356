@@ -316,49 +316,35 @@ export default {
         sendData() {
             this.isLoading = true;
 
-            if (this.items.length > 0) {
-                var postData = {
-                    data: this.items,
-                };
-                var self = this;
-                axios.post(this.postUrl, postData).then(function (response) {
+            var self = this;
+            
+            //  const obj = this.file;
+            // const json = JSON.stringify(obj);
+            // const blob = new Blob([json], {
+            //     type: "application/json",
+            // });
+            const data = new FormData();
+            data.append("data", JSON.stringify(this.items));
+            data.append("file", this.file);
+            data.set("sucursal_id", this.item.sucursal);
+            data.set("equipo_id", this.item.equipo);
+            axios
+                .post(this.postUrl, data, {
+                    headers: {
+                        "content-type": "multipart/form-data",
+                    },
+                })
+                .then(function (response) {
                     console.log(response.data);
 
                     self.isLoading = false;
 
                     self.errores = response.data.errors;
 
-                    self.exitosos = response.data.success; 
+                    self.exitosos = response.data.success;
                 });
-
-                this.items = [];
-            }
-
-            if (this.file) {
-                const formData = new FormData();
-                formData.append("file", this.file);
-                formData.set("sucursal_id", this.item.sucursal);
-                formData.set("equipo_id", this.item.equipo);
-
-                let settings = {
-                    headers: { "content-type": "multipart/form-data" },
-                };
-
-                var self = this;
-                axios
-                    .post(this.postUrl, formData, settings)
-                    .then(function (response) {
-                        console.log(response.data);
-
-                        self.isLoading = false;
-
-                        self.errores = response.data.errors;
-
-                        self.exitosos = response.data.success;
-                    });
-                
-                this.file = null;
-            }
+            this.items = [];
+            this.file = null;
         },
     },
     computed: {

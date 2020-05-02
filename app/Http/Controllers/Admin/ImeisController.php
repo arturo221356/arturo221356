@@ -52,7 +52,7 @@ class ImeisController extends Controller
         
         $exitosos = [];
         
-        $series = $request->data;
+        $series = json_decode($request->data);
 
         $sucursal = $request->input('sucursal_id');
 
@@ -102,13 +102,13 @@ class ImeisController extends Controller
 
             $serie = [];
 
-            $serie = ['serie' => $data['serie']];
+            $serie = ['serie' => $data->serie];
 
             $imei = new Imei([
-                'imei' => $data['serie'],
+                'imei' => $data->serie,
                 'status_id' => 1,
-                'sucursal_id' => $data['sucursal'],
-                'equipo_id' => $data['equipo']
+                'sucursal_id' => $data->sucursal,
+                'equipo_id' => $data->equipo
 
             ]);
 
@@ -131,7 +131,7 @@ class ImeisController extends Controller
 
                 $errorList = [];
 
-                $err['serie'] = $data['serie'];
+                $err['serie'] = $data->serie;
 
 
 
@@ -155,6 +155,7 @@ class ImeisController extends Controller
 
         //regresa los mensajes de errores y exitosos
         return ['errors' => $errores, 'success' => $exitosos];
+     
     }
 
     /**
