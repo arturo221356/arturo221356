@@ -8,6 +8,8 @@ use App\IccProduct;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\Imports\IccsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class IccController extends Controller
 {
@@ -21,10 +23,10 @@ class IccController extends Controller
         $iccs = Icc::find(1)->get();
 
         $products = IccProduct::all();
-       
-       
 
-        return view('admin.index', compact("iccs","products"));
+
+
+        return view('admin.index', compact("iccs", "products"));
     }
 
     /**
@@ -45,65 +47,172 @@ class IccController extends Controller
      */
     public function store(Request $request)
     {
-        $errores =[];
+        // $errores =[];
+        // $exitosos = [];
+        // foreach ($request->data as $data) {
+
+        //     $serie = [];
+
+        //     $serie = ['serie' => $data['serie']];
+
+        //     $icc = new Icc([
+        //         'icc' => $data['serie'],
+        //         'status_id' => 1,
+        //         'sucursal_id' => $data['sucursal'],
+
+        //     ]);
+        //     $mensajes = array(
+        //         'unique' => 'ya existe en la base de datos.',
+        //         'digits' => 'La serie tiene que se numerica y de 19 digitos'
+        //     );
+
+        //     $validator = Validator::make($serie, [
+        //         'serie' => 'unique:iccs,icc|digits:19',
+
+
+
+        //     ],$mensajes);
+        //     if ($validator->fails()) {
+
+        //         $err = [];
+
+        //         $errorList = [];
+
+        //         $err['serie'] = $data['serie'];
+
+
+
+        //         foreach ($validator->errors()->toArray() as $error)  {
+
+
+
+        //             foreach($error as $sub_error) {
+        //                    array_push($errorList, $sub_error);
+        //                 }
+
+        //           }
+        //           $err['errores'] = $errorList;
+        //           array_push($errores,$err);
+        //     } else {
+
+        //         $icc->save();
+        //         array_push($exitosos,$serie);
+
+        //     }
+
+
+        // }
+
+
+        // return ['errors'=>$errores,'success'=>$exitosos];
+
+
+        //array de mensajes de error y exitosos
+        $errores = [];
+
         $exitosos = [];
-        foreach ($request->data as $data) {
-            
-            $serie = [];
-            
-            $serie = ['serie' => $data['serie']];
 
-            $icc = new Icc([
-                'icc' => $data['serie'],
+        $series = json_decode($request->data);
+
+        $sucursal = $request->input('sucursal_id');
+
+
+
+
+        //si el request contiene un archivo excel procede con esta funcion 
+        if ($request->hasFile('file')) {
+
+            $file = $request->file('file');
+
+
+
+            //datos enviados al import que vienen desde la request
+            $data = [
+                'sucursal_id' => $sucursal,
                 'status_id' => 1,
-                'sucursal_id' => $data['sucursal'],
 
-            ]);
-            $mensajes = array(
-                'unique' => 'ya existe en la base de datos.',
-                'digits' => 'La serie tiene que se numerica y de 19 digitos'
-            );
-
-            $validator = Validator::make($serie, [
-                'serie' => 'unique:iccs,icc|digits:19',
+            ];
 
 
+            $imeiImport = new IccsImport($data);
+            $imeiImport->import($file);
 
-            ],$mensajes);
-            if ($validator->fails()) {
+            //obtiene los los mensales de error
+            $imeiValidationErrors = $imeiImport->getErrors();
+            $imeiValidationSuccess = $imeiImport->getsuccess();
 
-                $err = [];
-
-                $errorList = [];
-
-                $err['serie'] = $data['serie'];
-
-                
-
-                foreach ($validator->errors()->toArray() as $error)  {
-                    
-                
-                    
-                    foreach($error as $sub_error) {
-                           array_push($errorList, $sub_error);
-                        }
-                    
-                  }
-                  $err['errores'] = $errorList;
-                  array_push($errores,$err);
-            } else {
-
-                $icc->save();
-                array_push($exitosos,$serie);
-                
+            //pushea los mensajes a los arrays
+            foreach ($imeiValidationErrors as $validationErr) {
+                $errors = array_push($errores, $validationErr);
             }
-            
-
+            foreach ($imeiValidationSuccess as $validationSucc) {
+                $errors = array_push($exitosos, $validationSucc);
+            }
         }
 
 
-        return ['errors'=>$errores,'success'=>$exitosos];
+
+        if ($series) {
+
+            foreach ($series as $data) {
+
+                $serie = [];
+
+                $serie = ['serie' => $data->serie];
+
+                $imei = new Icc([
+                    'imei' => $data->serie,
+                    'status_id' => 1,
+                    'sucursal_id' => $data->sucursal,
+
+
+                ]);
+
+                // Crea la matriz de mensajes.
+                $mensajes = array(
+                    'unique' => 'ya existe en la base de datos.',
+                    'digits' => 'La serie tiene que se numerica y de 19 digitos'
+                );
+
+
+                $validator = Validator::make($serie, [
+                    'serie' => 'required|unique:iccs,icc|digits:19',
+
+
+
+                ], $mensajes);
+                if ($validator->fails()) {
+
+                    $err = [];
+
+                    $errorList = [];
+
+                    $err['serie'] = $data->serie;
+
+
+
+                    foreach ($validator->errors()->toArray() as $error) {
+
+
+
+                        foreach ($error as $sub_error) {
+                            array_push($errorList, $sub_error);
+                        }
+                    }
+                    $err['errores'] = $errorList;
+                    array_push($errores, $err);
+                } else {
+
+                    $imei->save();
+                    array_push($exitosos, $serie);
+                }
+            }
+        }
+
+        //regresa los mensajes de errores y exitosos
+        return ['errors' => $errores, 'success' => $exitosos];
     }
+
 
     /**
      * Display the specified resource.
@@ -140,14 +249,13 @@ class IccController extends Controller
 
 
         $icc->update($request->all());
-        
-        
-        if ($request->comment !=NULL) {
-            
-            $icc->comment()->updateOrCreate([],['comment' => $request->comment]);
 
+
+        if ($request->comment != NULL) {
+
+            $icc->comment()->updateOrCreate([], ['comment' => $request->comment]);
         } else {
-            
+
             $icc->comment()->delete();
         }
     }

@@ -316,8 +316,13 @@ export default {
         sendData() {
             this.isLoading = true;
 
-            var self = this;
-            
+            const self = this;
+
+            const settings = {
+                headers: {
+                    "content-type": "multipart/form-data",
+                },
+            };
             //  const obj = this.file;
             // const json = JSON.stringify(obj);
             // const blob = new Blob([json], {
@@ -328,22 +333,18 @@ export default {
             data.append("file", this.file);
             data.set("sucursal_id", this.item.sucursal);
             data.set("equipo_id", this.item.equipo);
-            axios
-                .post(this.postUrl, data, {
-                    headers: {
-                        "content-type": "multipart/form-data",
-                    },
-                })
-                .then(function (response) {
-                    console.log(response.data);
+            axios.post(this.postUrl, data, settings).then(function (response) {
+                console.log(response.data);
 
-                    self.isLoading = false;
+                self.isLoading = false;
 
-                    self.errores = response.data.errors;
+                self.errores = response.data.errors;
 
-                    self.exitosos = response.data.success;
-                });
+                self.exitosos = response.data.success;
+            });
+
             this.items = [];
+
             this.file = null;
         },
     },

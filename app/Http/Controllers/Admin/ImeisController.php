@@ -5,15 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Imei;
-use App\Sucursal;
-use App\Equipo;
-use App\Status;
-use App\Comment;
 use Dotenv\Regex\Success;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ImeiResource as ImeiResource;
-use App\Imports\ImeiImport;
+use App\Imports\ImeisImport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ImeisController extends Controller
@@ -76,7 +72,7 @@ class ImeisController extends Controller
             ];
 
             
-            $imeiImport = new ImeiImport($data);
+            $imeiImport = new ImeisImport($data);
             $imeiImport->import($file);
 
             //obtiene los los mensales de error
