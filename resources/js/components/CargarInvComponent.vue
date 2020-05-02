@@ -22,15 +22,6 @@
                             >
                             </b-form-radio-group>
                         </b-nav-form>
-
-                        <b-nav-item>
-                            <b-button
-                                variant="outline-success"
-                                squared
-                                :pressed.sync="excelMode"
-                                >Importar de Excel</b-button
-                            >
-                        </b-nav-item>
                     </b-navbar-nav>
 
                     <!-- Right aligned nav items -->
@@ -125,7 +116,6 @@
                             label-size="lg"
                             :invalid-feedback="serieValidation.message"
                             :state="serieValidation.input"
-                            v-if="excelMode === false"
                         >
                             <b-input-group>
                                 <b-input
@@ -148,11 +138,7 @@
                             </b-input-group>
                         </b-form-group>
 
-                        <b-form-group
-                            label="Excel"
-                            label-size="lg"
-                            v-if="excelMode === true"
-                        >
+                        <b-form-group label="Excel" label-size="lg">
                             <b-form-file
                                 v-model="file"
                                 :state="Boolean(file)"
@@ -208,7 +194,6 @@ export default {
                 variant: "",
                 list: [],
             },
-            excelMode: false,
 
             file: null,
 
