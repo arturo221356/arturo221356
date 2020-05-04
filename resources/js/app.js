@@ -42,6 +42,7 @@ Vue.component('edit-modal', require('./components/EditModalComponent.vue').defau
 Vue.component('select-status', require('./components/SelectStatusComponent.vue').default);
 Vue.component('select-equipo', require('./components/SelectEquipoComponent.vue').default);
 Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
+Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
