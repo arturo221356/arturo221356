@@ -28,7 +28,7 @@ class RoleMiddleware
                 return $next($request);
         }
         
-        $redir = Auth::user()->roleName();
+        $redir = Auth::user()->role->name;
         
         return redirect("$redir/");
         

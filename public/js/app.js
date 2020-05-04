@@ -3645,9 +3645,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({});
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      items: [],
+      fields: []
+    };
+  },
+  methods: {
+    loadData: function loadData() {
+      var _this = this;
+
+      axios.get("/admin/users").then(function (response) {
+        console.log(response.data);
+        _this.items = response.data;
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -81189,7 +81207,15 @@ var render = function() {
             "b-collapse",
             { attrs: { id: "nav-collapse", "is-nav": "" } },
             [
-              _c("b-navbar-nav", [_c("a", [_vm._v("Agregar usuario")])]),
+              _c(
+                "b-navbar-nav",
+                [
+                  _c("b-link", { on: { click: _vm.loadData } }, [
+                    _vm._v("Agregar usuario")
+                  ])
+                ],
+                1
+              ),
               _vm._v(" "),
               _c(
                 "b-navbar-nav",
@@ -81200,6 +81226,21 @@ var render = function() {
             ],
             1
           )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        [
+          _c("b-table", {
+            attrs: {
+              striped: "",
+              hover: "",
+              items: _vm.items,
+              fields: _vm.fields
+            }
+          })
         ],
         1
       )
@@ -94284,8 +94325,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/Code/promoviles/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/Code/promoviles/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -13,19 +13,19 @@
 
 use App\Http\Controllers\Admin\RecargasController;
 use App\Sucursal;
-
+use Illuminate\Support\Facades\Auth;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
 Route::get('/home', function () {
 
-    $redir = Auth::user()->roleName();
+    $redir = Auth::user()->role->name;
     return redirect("$redir/");
 })->name('home');
 
 Route::get('/', function () {
 
-    $redir = Auth::user()->roleName();
+    $redir = Auth::user()->role->name;
     return redirect("$redir/");
 })->name('home')->middleware('auth');
 

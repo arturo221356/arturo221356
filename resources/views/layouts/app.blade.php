@@ -40,7 +40,7 @@
 
                            
                         
-                        @if (Auth::user()->roleName()=='admin')
+                        @if (Auth::user()->role->name =='admin')
                         @include('admin.adminNavbar')
                         @else
                         

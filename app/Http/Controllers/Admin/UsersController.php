@@ -8,6 +8,7 @@ use App\User;
 use App\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource as UserResource;
 
 class UsersController extends Controller
 {
@@ -19,11 +20,17 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //$sucursales = Sucursal::all();
-        $users = User::all();
-        return view('admin.users.index')->with('users',$users);
+       
+       
+        if($request->ajax()){
+            $users = User::all();
+            return UserResource::collection(User::all());
+        }else{
+            return view('admin.users.index');
+        }
     }
 
     /**

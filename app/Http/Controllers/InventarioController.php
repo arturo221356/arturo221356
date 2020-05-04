@@ -21,60 +21,52 @@ class InventarioController extends Controller
 
     public function Index()
     {
-       $user = Auth::User();
-       $userRole= $user->Rolename();
+        $user = Auth::User();
+        $userRole = $user->role->name;
 
-       
-       if($userRole == 'seller'){
-       $userSucursal = $user->sucursalId();
-      return view('inventario.index',compact('userRole','userSucursal'));
-       }
-       else{
 
-        return view('inventario.index',compact('userRole')); 
-       
+        if ($userRole == 'seller') {
+            $userSucursal = $user->sucursal;
+            return view('inventario.index', compact('userRole', 'userSucursal'));
+        } else {
+
+            return view('inventario.index', compact('userRole'));
         }
     }
-    
-    
-    
+
+
+
     public function Sims()
     {
         $imeis = Imei::all();
-        return view('inventario.index',compact('imeis'));
+        return view('inventario.index', compact('imeis'));
     }
 
-    
 
-    
-    public function getimeis(Request $request){
+
+
+    public function getimeis(Request $request)
+    {
 
         $sucursal = $request->sucursal_id;
 
         $statusArray = $request->status;
- 
 
-         
-        
- 
-                 if($sucursal == 'all'){
 
-                     return ImeiResource::collection(Imei::whereIn('status_id',$statusArray)->get());  
-                    
-                 }else{
-                     
-                     return ImeiResource::collection(Imei::where('sucursal_id','=', $sucursal)->whereIn('status_id',$statusArray)->get());
- 
-                 }
-                
-                
-                     
- 
-                    
- 
+
+
+
+        if ($sucursal == 'all') {
+
+            return ImeiResource::collection(Imei::whereIn('status_id', $statusArray)->get());
+        } else {
+
+            return ImeiResource::collection(Imei::where('sucursal_id', '=', $sucursal)->whereIn('status_id', $statusArray)->get());
+        }
     }
     //para prueba 
-    public function getimeisss(Request $request){
+    public function getimeisss(Request $request)
+    {
         return ImeiResource::collection(Imei::all());
     }
 
@@ -85,33 +77,27 @@ class InventarioController extends Controller
 
 
 
-    public function geticcs(Request $request){
+    public function geticcs(Request $request)
+    {
 
         $sucursal = $request->sucursal_id;
 
         $statusArray = $request->status;
- 
-        
-         
-        
- 
-                 if($sucursal == 'all'){
- 
-                     return IccResource::collection(Icc::whereIn('status_id',$statusArray)->get());
- 
-                 }else{
-                     
-                     return IccResource::collection(Icc::where('sucursal_id','=', $sucursal)->whereIn('status_id',$statusArray)->get());
- 
-                 }
-                     
- 
-                    
- 
+
+
+
+
+
+        if ($sucursal == 'all') {
+
+            return IccResource::collection(Icc::whereIn('status_id', $statusArray)->get());
+        } else {
+
+            return IccResource::collection(Icc::where('sucursal_id', '=', $sucursal)->whereIn('status_id', $statusArray)->get());
+        }
     }
 
 
-    
 
 
 
@@ -119,28 +105,22 @@ class InventarioController extends Controller
 
 
 
-    public function exportImei(Request $request) 
-{
-    $sucursal = $request->sucursal_id;
 
-    $status = $request->status_id;
-    
-    return Excel::download(new ImeiExport ($sucursal,$status), 'invoices.xlsx');
- 
+    public function exportImei(Request $request)
+    {
+        $sucursal = $request->sucursal_id;
 
-}
+        $status = $request->status_id;
 
-public function exportIcc(Request $request) 
-{
-    $sucursal = $request->sucursal_id;
+        return Excel::download(new ImeiExport($sucursal, $status), 'invoices.xlsx');
+    }
 
-    $status = $request->status_id;
-    
-    return Excel::download(new IccExport ($sucursal,$status), 'invoices.xlsx');
- 
+    public function exportIcc(Request $request)
+    {
+        $sucursal = $request->sucursal_id;
 
-}
+        $status = $request->status_id;
 
-
-
+        return Excel::download(new IccExport($sucursal, $status), 'invoices.xlsx');
+    }
 }

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('TableNavbarName', 'Usuarios')
+{{-- @section('TableNavbarName', 'Usuarios')
 @section('TableNavbarButtons')
     <li class="nav-item active">
     <a class="nav-link" href="/admin/users/create">Nuevo Usuario<span class="sr-only">(current)</span></a>
     </li>
-@endsection
+@endsection --}}
 
 
 @section('container')
@@ -14,8 +14,10 @@
 
 
     @section('content')
+
+        <usuarios-component></usuarios-component>
         
-        @include('layout.tablesearch') 
+        {{-- @include('layout.tablesearch') 
 
 
         
@@ -49,7 +51,7 @@
         @stop
         @include('layout.table')
      
-        @endsection
+        @endsection --}}
 
 
 

@@ -39,25 +39,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function roles(){
-        return $this->belongsToMany('App\Role');
+    public function role(){
+        return $this->belongsTo('App\Role','role_id');
     }
     public function sucursal(){
-        return $this->belongsToMany('App\Sucursal');
-    }
-    public function sucursalName(){
-        return User::sucursal()->pluck('nombre_sucursal')->first();
-    }
-    public function sucursalId(){
-        return User::sucursal()->pluck('sucursal_id')->first();
+        return $this->belongsTo('App\Sucursal');
     }
     public function hasRole($role){
-        return User::roles()->where('name', $role)->first();
+        return User::role()->where('name', $role)->get();
        
     }
-    public function roleName(){
-        return User::roles()->pluck('name')->first();
-       
-    }
+
     
 }
