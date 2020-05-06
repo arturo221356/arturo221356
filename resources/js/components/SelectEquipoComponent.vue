@@ -63,7 +63,7 @@ export default {
         selected: function () {
             
             this.emitToParent();
-            console.log(this.equipo)
+            
         },
         
     },

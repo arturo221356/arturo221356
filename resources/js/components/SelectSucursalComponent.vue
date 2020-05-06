@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <multiselect
             v-model="selected"
             :options="options"
@@ -18,7 +17,7 @@ export default {
     props: {
         todas: Boolean,
 
-        seleccionado:null,
+        seleccionado: null,
     },
     mounted() {},
     data() {
@@ -31,6 +30,7 @@ export default {
             sucursales: [],
 
             selected: null,
+            cosa: null,
         };
     },
     methods: {
@@ -44,7 +44,6 @@ export default {
     },
     watch: {
         selected: function () {
-            
             this.emitToParent();
         },
         sucursales: function () {},
@@ -52,17 +51,24 @@ export default {
 
     created: function () {
         this.isLoading = true;
-        axios.get("/get/sucursales").then(
-            function (response) {
+
+        axios
+            .get("/get/sucursales")
+            .then((response) => {
                 this.sucursales = response.data;
-
-                this.isLoading = false;
-
                 if (this.seleccionado) {
-                    this.selected = this.sucursales[this.seleccionado - 1];
+                    this.selected = response.data.find(
+                        (option) => option.id === this.seleccionado
+                    );
+                   
+                   
                 }
-            }.bind(this)
-        );
+                 this.isLoading = false;
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            });
     },
     computed: {
         options: function () {
@@ -71,12 +77,13 @@ export default {
             if (this.todas === true) {
                 options.unshift({
                     id: "all",
-                    nombre_sucursal: "-----Todas-----",
+                    nombre_sucursal: "Todas",
                 });
             }
             return options;
         },
     },
+
 };
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

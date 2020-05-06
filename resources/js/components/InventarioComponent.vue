@@ -177,7 +177,7 @@ export default {
 
     mounted() {
         if (this.userSucursal) {
-            console.log("loading datadfdf");
+           
             this.sucursalid = this.userSucursal;
             this.loadData();
         }
@@ -194,10 +194,30 @@ export default {
                 solid: true,
             });
         },
+             deleteItem(id){
+
+       
+
+        axios.delete(`/admin/users/${id}`)
+          .then(()=>{
+
+            alert('eliminado');
+
+            
+
+            this.$refs['modal'].hide();
+
+            this.$parent.loadData();
+
+            
+
+          })
+
+      },
 
         //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
         loadData() {
-            console.log(this.sucursal);
+            
 
             this.isBusy = true;
 
@@ -214,7 +234,7 @@ export default {
 
                     this.isBusy = false;
 
-                    console.log(this.totalRows);
+                    
                 });
         },
 

@@ -9,6 +9,7 @@ use App\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource as UserResource;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -24,10 +25,10 @@ class UsersController extends Controller
     {
         //$sucursales = Sucursal::all();
        
-       
+        $userDistribution = Auth::User()->distribution->id;
         if($request->ajax()){
             $users = User::all();
-            return UserResource::collection(User::all());
+            return UserResource::collection(User::where('distribution_id','=',$userDistribution)->get());
         }else{
             return view('admin.users.index');
         }
@@ -125,11 +126,8 @@ class UsersController extends Controller
     {
        // $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
         $user = User::findOrFail($id);
-        $user->roles()->sync($request->rol);
-        $user->sucursal()->sync($request->sucursal);
         $user->update($request->all());
-        
-        return redirect("/admin/users");   
+
     }
 
     /**
@@ -140,9 +138,8 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->roles()->detach();
-        $user->sucursal()->detach();
+
         $user->delete();
-        return redirect("/admin/users");
+      
     }
 }

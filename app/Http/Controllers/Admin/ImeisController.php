@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ImeiResource as ImeiResource;
 use App\Imports\ImeisImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
+
 
 class ImeisController extends Controller
 {
@@ -54,20 +56,21 @@ class ImeisController extends Controller
 
         $equipo = $request->input('equipo_id');
 
-        
+
 
         //si el request contiene un archivo excel procede con esta funcion 
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
 
-
+            
 
             //datos enviados al import que vienen desde la request
             $data = [
                 'sucursal_id' => $sucursal,
                 'equipo_id' => $equipo,
                 'status_id' => 1,
+               
                 
             ];
 
@@ -104,7 +107,8 @@ class ImeisController extends Controller
                 'imei' => $data->serie,
                 'status_id' => 1,
                 'sucursal_id' => $data->sucursal,
-                'equipo_id' => $data->equipo
+                'equipo_id' => $data->equipo,
+                'distribution_id' => Auth::user()->distribution->id,
 
             ]);
 

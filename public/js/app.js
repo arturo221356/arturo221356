@@ -2419,55 +2419,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: '',
-        itemId: ''
+        id: "info-modal",
+        title: "",
+        content: "",
+        itemId: ""
       },
       comentario: "",
       sucursal: "",
@@ -2491,13 +2450,13 @@ __webpack_require__.r(__webpack_exports__);
       this.status = value;
     },
     info: function info(item, index, producto, button) {
-      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
 
-      if (producto == 'equipos') {
+      if (producto == "equipos") {
         this.infoModal.title = "Editar Imei: ".concat(item.imei);
         this.fetchUrl = "/admin/imei/";
         this.equipo = item.equipo_id;
-      } else if (producto == 'sims') {
+      } else if (producto == "sims") {
         this.infoModal.title = "Editar Icc: ".concat(item.icc);
         this.fetchUrl = "/admin/icc/";
       }
@@ -2512,7 +2471,6 @@ __webpack_require__.r(__webpack_exports__);
       this.status = item.status_id;
       this.sucursal = item.id_sucursal;
       this.producto = producto;
-      console.log(this.sucursal);
     },
     updateItem: function updateItem(id) {
       var _this = this;
@@ -2526,7 +2484,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.patch(this.fetchUrl + id, params).then(function (res) {
         alert(res.data);
 
-        _this.$refs['modal'].hide();
+        _this.$refs["modal"].hide();
 
         _this.$parent.loadData();
       })["catch"](function (error) {});
@@ -2536,20 +2494,20 @@ __webpack_require__.r(__webpack_exports__);
     },
     //resetea los valores del modal
     resetInfoModal: function resetInfoModal() {
-      this.infoModal.title = '';
+      this.infoModal.title = "";
       this.infoModal.content = {};
-      this.infoModal.itemId = '';
-      this.comentario = '';
-      this.status = '';
-      this.sucursal = '';
+      this.infoModal.itemId = "";
+      this.comentario = "";
+      this.status = "";
+      this.sucursal = "";
     },
     deleteItem: function deleteItem(id) {
       var _this2 = this;
 
       axios["delete"](this.fetchUrl + id).then(function () {
-        alert('eliminado');
+        alert("eliminado");
 
-        _this2.$refs['modal'].hide();
+        _this2.$refs["modal"].hide();
 
         _this2.$parent.loadData();
       });
@@ -2818,7 +2776,6 @@ __webpack_require__.r(__webpack_exports__);
   watch: {},
   mounted: function mounted() {
     if (this.userSucursal) {
-      console.log("loading datadfdf");
       this.sucursalid = this.userSucursal;
       this.loadData();
     }
@@ -2835,20 +2792,29 @@ __webpack_require__.r(__webpack_exports__);
         solid: true
       });
     },
-    //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
-    loadData: function loadData() {
+    deleteItem: function deleteItem(id) {
       var _this = this;
 
-      console.log(this.sucursal);
+      axios["delete"]("/admin/users/".concat(id)).then(function () {
+        alert('eliminado');
+
+        _this.$refs['modal'].hide();
+
+        _this.$parent.loadData();
+      });
+    },
+    //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
+    loadData: function loadData() {
+      var _this2 = this;
+
       this.isBusy = true;
       axios.post(this.fetchUrl, {
         sucursal_id: this.sucursalid,
         status: this.status
       }).then(function (response) {
-        _this.items = response.data.data;
-        _this.countItems = _this.items.length;
-        _this.isBusy = false;
-        console.log(_this.totalRows);
+        _this2.items = response.data.data;
+        _this2.countItems = _this2.items.length;
+        _this2.isBusy = false;
       });
     },
     //detecta el cambio de sucursal
@@ -3292,7 +3258,6 @@ __webpack_require__.r(__webpack_exports__);
   watch: {
     selected: function selected() {
       this.emitToParent();
-      console.log(this.equipo);
     }
   },
   created: function created() {
@@ -3390,7 +3355,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todas: Boolean,
@@ -3405,7 +3369,8 @@ __webpack_require__.r(__webpack_exports__);
         text: ""
       },
       sucursales: [],
-      selected: null
+      selected: null,
+      cosa: null
     };
   },
   methods: {
@@ -3422,15 +3387,23 @@ __webpack_require__.r(__webpack_exports__);
     sucursales: function sucursales() {}
   },
   created: function created() {
+    var _this = this;
+
     this.isLoading = true;
     axios.get("/get/sucursales").then(function (response) {
-      this.sucursales = response.data;
-      this.isLoading = false;
+      _this.sucursales = response.data;
 
-      if (this.seleccionado) {
-        this.selected = this.sucursales[this.seleccionado - 1];
+      if (_this.seleccionado) {
+        _this.selected = response.data.find(function (option) {
+          return option.id === _this.seleccionado;
+        });
       }
-    }.bind(this));
+
+      _this.isLoading = false;
+    })["catch"](function (error) {
+      // handle error
+      console.log(error);
+    });
   },
   computed: {
     options: function options() {
@@ -3440,7 +3413,7 @@ __webpack_require__.r(__webpack_exports__);
       if (this.todas === true) {
         options.unshift({
           id: "all",
-          nombre_sucursal: "-----Todas-----"
+          nombre_sucursal: "Todas"
         });
       }
 
@@ -3645,11 +3618,140 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       items: [],
-      fields: []
+      editMode: false,
+      user: {
+        name: "",
+        role: null,
+        email: "",
+        sucursal: null
+      },
+      fields: [{
+        key: "id",
+        label: "#",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "name",
+        label: "Nombre",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "email",
+        label: "Email",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "role",
+        label: "Rol",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "sucursal",
+        label: "Sucursal",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "editar",
+        label: "Editar"
+      }],
+      infoModal: {
+        id: "info-modal",
+        title: "",
+        content: {},
+        string: ""
+      },
+      countItems: 0
     };
   },
   methods: {
@@ -3658,12 +3760,64 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get("/admin/users").then(function (response) {
         console.log(response.data);
-        _this.items = response.data;
+        _this.items = response.data.data;
+        _this.countItems = _this.items.length;
       })["catch"](function (error) {
         // handle error
         console.log(error);
       });
+    },
+    info: function info(item, index, button) {
+      this.infoModal.string = JSON.stringify(item, null, 2);
+      this.infoModal.content.id = item.id;
+      this.infoModal.title = "Row index: ".concat(this.infoModal.content.id);
+      this.user.name = item.name;
+      this.user.email = item.email;
+      this.user.sucursal = item.sucursal_id;
+      this.user.role = item.role_id;
+      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      console.log(this.infoModal.content);
+    },
+    resetInfoModal: function resetInfoModal() {
+      this.infoModal.title = "";
+      this.infoModal.content = {};
+      this.infoModal.string = "";
+      this.user.name = "";
+      this.user.role = null;
+      this.user.email = "";
+      this.user.sucursal = null;
+    },
+    deleteUser: function deleteUser(id) {
+      var _this2 = this;
+
+      axios["delete"]("/admin/users/".concat(id)).then(function (res) {
+        alert("eliminado");
+
+        _this2.$refs["modal"].hide();
+
+        _this2.loadData();
+      });
+    },
+    updateUser: function updateUser(id) {
+      var _this3 = this;
+
+      var params = {
+        sucursal_id: this.user.sucursal,
+        name: this.user.name,
+        email: this.user.email,
+        role_id: 1
+      };
+      axios.put("/admin/users/".concat(id), params).then(function (res) {
+        alert("Editado");
+
+        _this3.$refs["modal"].hide();
+
+        _this3.loadData();
+      });
     }
+  },
+  created: function created() {
+    this.loadData();
   }
 });
 
@@ -80436,7 +80590,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("\n      Guardar\n    ")]
+                [_vm._v("\n            Guardar\n        ")]
               ),
               _vm._v(" "),
               _c(
@@ -80449,7 +80603,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("\n      Eliminar\n    ")]
+                [_vm._v("\n            Eliminar\n        ")]
               ),
               _vm._v(" "),
               _c(
@@ -80462,7 +80616,7 @@ var render = function() {
                     }
                   }
                 },
-                [_vm._v("\n      Cancelar\n    ")]
+                [_vm._v("\n            Cancelar\n        ")]
               )
             ]
           }
@@ -81239,8 +81393,193 @@ var render = function() {
               hover: "",
               items: _vm.items,
               fields: _vm.fields
-            }
-          })
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "table-busy",
+                fn: function() {
+                  return [
+                    _c(
+                      "div",
+                      { staticClass: "text-center text-primary my-2" },
+                      [
+                        _c("b-spinner", { staticClass: "align-middle" }),
+                        _vm._v(" "),
+                        _c("strong", [_vm._v("Cargando...")])
+                      ],
+                      1
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "table-caption",
+                fn: function() {
+                  return [
+                    _vm._v(
+                      "Resultado: - " +
+                        _vm._s(_vm.countItems) +
+                        "\n            "
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "cell(editar)",
+                fn: function(row) {
+                  return [
+                    _c(
+                      "b-button",
+                      {
+                        on: {
+                          click: function($event) {
+                            return _vm.info(row.item, row.index)
+                          }
+                        }
+                      },
+                      [_vm._v("\n                    Editar")]
+                    )
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c(
+            "b-modal",
+            {
+              ref: "modal",
+              attrs: {
+                id: _vm.infoModal.id,
+                title: _vm.infoModal.title,
+                "ok-only": ""
+              },
+              on: { hide: _vm.resetInfoModal },
+              scopedSlots: _vm._u([
+                {
+                  key: "modal-footer",
+                  fn: function(ref) {
+                    var ok = ref.ok
+                    var cancel = ref.cancel
+                    return [
+                      _c("b", [_vm._v("Custom Footer")]),
+                      _vm._v(" "),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { size: "sm", variant: "success" },
+                          on: {
+                            click: function($event) {
+                              return _vm.updateUser(_vm.infoModal.content.id)
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    Guardar\n                "
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { size: "sm", variant: "outline-danger" },
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteUser(_vm.infoModal.content.id)
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    Eliminar\n                "
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { size: "sm" },
+                          on: {
+                            click: function($event) {
+                              return cancel()
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    Cancelar\n                "
+                          )
+                        ]
+                      )
+                    ]
+                  }
+                }
+              ])
+            },
+            [
+              _c("pre", [_vm._v(_vm._s(_vm.infoModal.string))]),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                { attrs: { label: "Nombre" } },
+                [
+                  _c("b-form-input", {
+                    attrs: { type: "text", placeholder: "Nombre" },
+                    model: {
+                      value: _vm.user.name,
+                      callback: function($$v) {
+                        _vm.$set(_vm.user, "name", $$v)
+                      },
+                      expression: "user.name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                { attrs: { label: "Email" } },
+                [
+                  _c("b-form-input", {
+                    attrs: { type: "email", placeholder: "Email" },
+                    model: {
+                      value: _vm.user.email,
+                      callback: function($$v) {
+                        _vm.$set(_vm.user, "email", $$v)
+                      },
+                      expression: "user.email"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                { attrs: { label: "Sucursal" } },
+                [
+                  _c("select-sucursal", {
+                    attrs: { seleccionado: _vm.user.sucursal }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                { attrs: { label: "Rol" } },
+                [_c("select-sucursal", { attrs: { seleccionado: 2 } })],
+                1
+              )
+            ],
+            1
+          )
         ],
         1
       )

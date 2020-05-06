@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class IccsImport implements ToCollection
 {
@@ -53,6 +54,7 @@ class IccsImport implements ToCollection
                 'icc' => $formatedSerie,
                 'status_id' => 1,
                 'sucursal_id' => $this->data['sucursal_id'],
+                'distribution_id' => Auth::user()->distribution->id,
 
             ]);
 

@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\IccsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 
 class IccController extends Controller
 {
@@ -160,10 +161,13 @@ class IccController extends Controller
 
                 $serie = ['serie' => $data->serie];
 
+                
+
                 $imei = new Icc([
                     'imei' => $data->serie,
                     'status_id' => 1,
                     'sucursal_id' => $data->sucursal,
+                    'distribution_id' => Auth::user()->distribution->id,
 
 
                 ]);

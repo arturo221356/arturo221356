@@ -55,6 +55,11 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
 Route::get('/inventario', 'InventarioController@index')->middleware('auth');
 
 
+// Route::get('/inventario', function()
+// {
+//     return Auth::user()->distribution->id;
+// });
+
 
 //apissssss
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');

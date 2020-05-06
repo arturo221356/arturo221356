@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Sucursal;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SucursalController extends Controller
 {
@@ -104,7 +105,10 @@ class SucursalController extends Controller
         return redirect("/admin/sucursales");
     }
     public function getSucursales(){
-        $data = Sucursal::get();
+
+        $userDistribution = Auth::User()->distribution->id;
+
+        $data = Sucursal::where('distribution_id','=',$userDistribution)->get();
    
         return response()->json($data);
     }

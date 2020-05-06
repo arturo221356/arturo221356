@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class ImeisImport implements ToCollection, WithValidation, SkipsOnFailure
 {
@@ -51,7 +52,8 @@ class ImeisImport implements ToCollection, WithValidation, SkipsOnFailure
                 'imei' => $row[0],
                 'status_id' => 1,
                 'sucursal_id' => $this->data['sucursal_id'],
-                'equipo_id' => $this->data['equipo_id']
+                'equipo_id' => $this->data['equipo_id'],
+                'distribution_id' => Auth::user()->distribution->id,
 
             ]);
 

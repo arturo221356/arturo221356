@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','role_name',
+        'name', 'email', 'sucursal_id','role_id',
     ];
 
     /**
@@ -40,15 +40,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     public function role(){
-        return $this->belongsTo('App\Role','role_id');
+        return $this->belongsTo('App\Role');
     }
     public function sucursal(){
         return $this->belongsTo('App\Sucursal');
+    }
+    public function distribution(){
+        return $this->belongsTo('App\Distribution');
+       
     }
     public function hasRole($role){
         return User::role()->where('name', $role)->get();
        
     }
+
 
     
 }

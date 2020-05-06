@@ -17,7 +17,14 @@ use App\Http\Resources\IccResource as IccResource;
 
 
 class InventarioController extends Controller
+
 {
+    
+
+      
+    
+        
+   
 
     public function Index()
     {
@@ -36,11 +43,11 @@ class InventarioController extends Controller
 
 
 
-    public function Sims()
-    {
-        $imeis = Imei::all();
-        return view('inventario.index', compact('imeis'));
-    }
+    // public function Sims()
+    // {
+    //     $imeis = Imei::all();
+    //     return view('inventario.index', compact('imeis'));
+    // }
 
 
 
@@ -52,23 +59,21 @@ class InventarioController extends Controller
 
         $statusArray = $request->status;
 
+        $userDistribution = Auth::User()->distribution->id;
 
 
 
 
         if ($sucursal == 'all') {
 
-            return ImeiResource::collection(Imei::whereIn('status_id', $statusArray)->get());
+            return ImeiResource::collection(Imei::where('distribution_id','=',$userDistribution)->whereIn('status_id', $statusArray)->get());
         } else {
 
-            return ImeiResource::collection(Imei::where('sucursal_id', '=', $sucursal)->whereIn('status_id', $statusArray)->get());
+            return ImeiResource::collection(Imei::where([['distribution_id','=',$userDistribution],['sucursal_id', '=', $sucursal]])->whereIn('status_id', $statusArray)->get());
         }
     }
-    //para prueba 
-    public function getimeisss(Request $request)
-    {
-        return ImeiResource::collection(Imei::all());
-    }
+
+
 
 
 
@@ -80,20 +85,21 @@ class InventarioController extends Controller
     public function geticcs(Request $request)
     {
 
+        
         $sucursal = $request->sucursal_id;
 
         $statusArray = $request->status;
 
-
+        $userDistribution = Auth::User()->distribution->id;
 
 
 
         if ($sucursal == 'all') {
 
-            return IccResource::collection(Icc::whereIn('status_id', $statusArray)->get());
+            return IccResource::collection(Icc::where('distribution_id','=',$userDistribution)->whereIn('status_id', $statusArray)->get());
         } else {
 
-            return IccResource::collection(Icc::where('sucursal_id', '=', $sucursal)->whereIn('status_id', $statusArray)->get());
+            return IccResource::collection(Icc::where([['distribution_id','=',$userDistribution],['sucursal_id', '=', $sucursal]])->whereIn('status_id', $statusArray)->get());
         }
     }
 
