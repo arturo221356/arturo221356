@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
 
 
 
-         $imeis = factory(App\Imei::class, 100)->create();
-         $equipo = factory(App\Equipo::class, 50)->create();
-         $sucursal = factory(App\Sucursal::class, 50)->create();
-         $icc = factory(App\Icc::class, 50)->create();
+         $imeis = factory(App\Imei::class, 1000)->create();
+         $equipo = factory(App\Equipo::class, 10)->create();
+         $sucursal = factory(App\Sucursal::class, 10)->create();
+         $icc = factory(App\Icc::class, 1000)->create();
     }
 }

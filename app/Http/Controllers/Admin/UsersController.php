@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Sucursal;
+use App\Distribution;
 use App\User;
 use App\Role;
 use Illuminate\Support\Facades\Hash;
@@ -25,10 +26,21 @@ class UsersController extends Controller
     {
         //$sucursales = Sucursal::all();
 
-        $userDistribution = Auth::User()->distribution->id;
+        // $userDistribution = Auth::User()->distribution->id;
+        // if ($request->ajax()) {
+        //     $users = User::all();
+        //     return UserResource::collection(User::where('distribution_id', '=', $userDistribution)->get());
+        // } else {
+        //     return view('admin.users.index');
+        // }
         if ($request->ajax()) {
-            $users = User::all();
-            return UserResource::collection(User::where('distribution_id', '=', $userDistribution)->get());
+            $userDistribution = Auth::User()->distribution()->id;
+
+            $distribution = Distribution::find($userDistribution);
+
+            $users = $distribution->users()->get();
+
+            return UserResource::collection($users);
         } else {
             return view('admin.users.index');
         }
@@ -41,18 +53,18 @@ class UsersController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
+        // $roles = Role::all();
 
-        $sucursales = Sucursal::all();
+        // $sucursales = Sucursal::all();
 
-        return view("admin.users.create")->with([
-
-
-            'roles' => $roles,
-            'sucursales' => $sucursales
+        // return view("admin.users.create")->with([
 
 
-        ]);
+        //     'roles' => $roles,
+        //     'sucursales' => $sucursales
+
+
+        // ]);
     }
 
     /**
@@ -70,7 +82,7 @@ class UsersController extends Controller
         $user->password = Hash::make($request->password);
         $user->sucursal_id = $request->sucursal_id;
         $user->role_id = $request->role_id;
-        $user->distribution_id = Auth::User()->distribution->id;
+        // $user->distribution_id = Auth::User()->distribution->id;
         $user->save();
     }
 

@@ -8,9 +8,9 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    
-    
-    
+
+
+
     use Notifiable;
 
     /**
@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'sucursal_id','role_id', 
+        'name', 'email', 'sucursal_id', 'role_id',
     ];
 
     /**
@@ -39,21 +39,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function role(){
+    public function role()
+    {
         return $this->belongsTo('App\Role');
     }
-    public function sucursal(){
+    public function sucursal()
+    {
         return $this->belongsTo('App\Sucursal');
     }
-    public function distribution(){
-        return $this->belongsTo('App\Distribution');
-       
+    public function distribution()
+    {
+
+        return $this->sucursal->distribution;
     }
-    public function hasRole($role){
+    public function hasRole($role)
+    {
         return User::role()->where('name', $role)->get();
-       
     }
-
-
-    
 }

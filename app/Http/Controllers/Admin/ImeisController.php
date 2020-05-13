@@ -108,7 +108,7 @@ class ImeisController extends Controller
                 'status_id' => 1,
                 'sucursal_id' => $data->sucursal,
                 'equipo_id' => $data->equipo,
-                'distribution_id' => Auth::user()->distribution->id,
+                
 
             ]);
 

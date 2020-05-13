@@ -17,8 +17,7 @@ class CreateIccsTable extends Migration
             $table->bigIncrements('id');
             $table->char('icc', 19)->unique();
             $table->integer('sucursal_id');
-            $table->integer('status_id');
-            $table->integer('distribution_id');     
+            $table->integer('status_id');   
             $table->timestamps();
             $table->softDeletes();
             

@@ -9,8 +9,7 @@ $factory->define(Imei::class, function (Faker $faker) {
     return [
         'imei' => $faker->numberBetween($min = 111111111111111, $max = 999999999999999),
         'status_id' => $faker->numberBetween($min = 1, $max = 5),
-        'sucursal_id' => $faker->numberBetween($min = 1, $max = 50),
-        'equipo_id' => $faker->numberBetween($min = 1, $max = 50),
-        'distribution_id' => $faker->numberBetween($min = 1, $max = 2),
+        'sucursal_id' => $faker->numberBetween($min = 1, $max = 10),
+        'equipo_id' => $faker->numberBetween($min = 1, $max = 10),
     ];
 });

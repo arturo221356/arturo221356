@@ -10,6 +10,7 @@ use App\Icc;
 use App\Sucursal;
 use App\Role;
 use App\User;
+use App\Distribution;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ImeiResource as ImeiResource;
@@ -55,22 +56,30 @@ class InventarioController extends Controller
     public function getimeis(Request $request)
     {
 
-        $sucursal = $request->sucursal_id;
+        $sucursal_id = $request->sucursal_id;
 
         $statusArray = $request->status;
 
-        $userDistribution = Auth::User()->distribution->id;
+        $userDistribution = Auth::User()->distribution()->id;
+
+        $distribution = Distribution::find($userDistribution);
 
 
+        if ($sucursal_id == 'all') {
+           
+            $imeis = $distribution->imeis()->whereIn('status_id', $statusArray)->get();
+    
+            return ImeiResource::collection($imeis);
 
-
-        if ($sucursal == 'all') {
-
-            return ImeiResource::collection(Imei::where('distribution_id','=',$userDistribution)->whereIn('status_id', $statusArray)->get());
         } else {
 
-            return ImeiResource::collection(Imei::where([['distribution_id','=',$userDistribution],['sucursal_id', '=', $sucursal]])->whereIn('status_id', $statusArray)->get());
-        }
+            $sucursal = Sucursal::find($sucursal_id);
+
+            $imeis = $sucursal->imeis()->whereIn('status_id',$statusArray)->get();
+
+            return ImeiResource::collection($imeis);
+
+         }
     }
 
 
@@ -86,21 +95,39 @@ class InventarioController extends Controller
     {
 
         
-        $sucursal = $request->sucursal_id;
+
+        $sucursal_id = $request->sucursal_id;
 
         $statusArray = $request->status;
 
-        $userDistribution = Auth::User()->distribution->id;
+        $userDistribution = Auth::User()->distribution()->id;
+
+        $distribution = Distribution::find($userDistribution);
 
 
 
-        if ($sucursal == 'all') {
+        if ($sucursal_id == 'all') {
 
-            return IccResource::collection(Icc::where('distribution_id','=',$userDistribution)->whereIn('status_id', $statusArray)->get());
+            $iccs = $distribution->iccs()->whereIn('status_id', $statusArray)->get();
+    
+            return IccResource::collection($iccs);
+
         } else {
 
-            return IccResource::collection(Icc::where([['distribution_id','=',$userDistribution],['sucursal_id', '=', $sucursal]])->whereIn('status_id', $statusArray)->get());
+
+            $sucursal = Sucursal::find($sucursal_id);
+
+            $iccs = $sucursal->iccs()->whereIn('status_id',$statusArray)->get();
+
+            return IccResource::collection($iccs);
         }
+        // if ($sucursal_id == 'all') {
+
+        //     return IccResource::collection(Icc::where('distribution_id','=',$userDistribution)->whereIn('status_id', $statusArray)->get());
+        // } else {
+
+        //     return IccResource::collection(Icc::where([['distribution_id','=',$userDistribution],['sucursal_id', '=', $sucursal_id]])->whereIn('status_id', $statusArray)->get());
+        // }
     }
 
 

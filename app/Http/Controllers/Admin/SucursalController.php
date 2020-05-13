@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Sucursal;
 use App\User;
+use App\Distribution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -106,10 +107,12 @@ class SucursalController extends Controller
     }
     public function getSucursales(){
 
-        $userDistribution = Auth::User()->distribution->id;
+        $userDistribution = Auth::User()->distribution()->id;
 
-        $data = Sucursal::where('distribution_id','=',$userDistribution)->get();
+        $distribution = Distribution::find($userDistribution);
+
+        $sucursales = $distribution->sucursales()->get();
    
-        return response()->json($data);
+        return response()->json($sucursales);
     }
 }

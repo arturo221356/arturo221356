@@ -54,7 +54,7 @@ class IccsImport implements ToCollection
                 'icc' => $formatedSerie,
                 'status_id' => 1,
                 'sucursal_id' => $this->data['sucursal_id'],
-                'distribution_id' => Auth::user()->distribution->id,
+               
 
             ]);
 

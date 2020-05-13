@@ -11,6 +11,8 @@
 |
 */
 
+use App\Distribution;
+use App\User;
 use App\Http\Controllers\Admin\RecargasController;
 use App\Sucursal;
 use Illuminate\Support\Facades\Auth;
@@ -55,10 +57,18 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
 Route::get('/inventario', 'InventarioController@index')->middleware('auth');
 
 
-// Route::get('/inventario', function()
-// {
-//     return Auth::user()->distribution->id;
-// });
+Route::get('/pruebas', function()
+{
+    // $distribution = Distribution::find(1);
+    // $usuarios = $distribution->users()->find(1);
+    // return $usuarios;
+
+    $sucursal = Sucursal::find(1);
+
+    $iccs = $sucursal->iccs()->whereIn('status_id',[1,2,3,4,5])->get();
+
+    return $iccs;
+});
 
 
 //apissssss

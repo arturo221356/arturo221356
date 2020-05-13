@@ -53,7 +53,7 @@ class ImeisImport implements ToCollection, WithValidation, SkipsOnFailure
                 'status_id' => 1,
                 'sucursal_id' => $this->data['sucursal_id'],
                 'equipo_id' => $this->data['equipo_id'],
-                'distribution_id' => Auth::user()->distribution->id,
+               
 
             ]);
 

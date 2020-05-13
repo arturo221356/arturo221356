@@ -48,67 +48,7 @@ class IccController extends Controller
      */
     public function store(Request $request)
     {
-        // $errores =[];
-        // $exitosos = [];
-        // foreach ($request->data as $data) {
-
-        //     $serie = [];
-
-        //     $serie = ['serie' => $data['serie']];
-
-        //     $icc = new Icc([
-        //         'icc' => $data['serie'],
-        //         'status_id' => 1,
-        //         'sucursal_id' => $data['sucursal'],
-
-        //     ]);
-        //     $mensajes = array(
-        //         'unique' => 'ya existe en la base de datos.',
-        //         'digits' => 'La serie tiene que se numerica y de 19 digitos'
-        //     );
-
-        //     $validator = Validator::make($serie, [
-        //         'serie' => 'unique:iccs,icc|digits:19',
-
-
-
-        //     ],$mensajes);
-        //     if ($validator->fails()) {
-
-        //         $err = [];
-
-        //         $errorList = [];
-
-        //         $err['serie'] = $data['serie'];
-
-
-
-        //         foreach ($validator->errors()->toArray() as $error)  {
-
-
-
-        //             foreach($error as $sub_error) {
-        //                    array_push($errorList, $sub_error);
-        //                 }
-
-        //           }
-        //           $err['errores'] = $errorList;
-        //           array_push($errores,$err);
-        //     } else {
-
-        //         $icc->save();
-        //         array_push($exitosos,$serie);
-
-        //     }
-
-
-        // }
-
-
-        // return ['errors'=>$errores,'success'=>$exitosos];
-
-
-        //array de mensajes de error y exitosos
+       //array de mensajes de error y exitosos
         $errores = [];
 
         $exitosos = [];
@@ -163,11 +103,11 @@ class IccController extends Controller
 
                 
 
-                $imei = new Icc([
-                    'imei' => $data->serie,
+                $icc = new Icc([
+                    'icc' => $data->serie,
                     'status_id' => 1,
                     'sucursal_id' => $data->sucursal,
-                    'distribution_id' => Auth::user()->distribution->id,
+                   
 
 
                 ]);
@@ -207,7 +147,7 @@ class IccController extends Controller
                     array_push($errores, $err);
                 } else {
 
-                    $imei->save();
+                    $icc->save();
                     array_push($exitosos, $serie);
                 }
             }
