@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Distribution;
 
-class DistributionSeeder extends Seeder
+class DistributionTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,5 @@ class DistributionSeeder extends Seeder
         Distribution::truncate();
         Distribution::create(['name'=>'promoviles 1']);
         Distribution::create(['name'=>'promoviles 2']);
-
     }
 }
