@@ -1,19 +1,6 @@
 <template>
-<div>
-    <!-- <select
-        v-model="selected"
-        class="form-control"
-        @change="emitToParent"
-        required
-    >
-        <option value="">Seleccionar equipo</option>
-
-        <option v-for="equipo in equipos" :key="equipo.id" :value="equipo.id"
-            >{{ equipo.marca }}-{{ equipo.modelo }} ${{ equipo.precio }}</option
-        >
-    </select> -->
-
-            <multiselect
+    <div>
+        <multiselect
             v-model="selected"
             :options="options"
             placeholder="Seleccionar Equipo"
@@ -23,16 +10,15 @@
             :loading="isLoading"
             :custom-label="marcaWithModelo"
         ></multiselect>
-</div>
+    </div>
 </template>
-
 
 <script>
 export default {
     props: {
         todas: Boolean,
 
-        seleccionado:null,
+        seleccionado: null,
     },
     mounted() {},
     data() {
@@ -55,17 +41,14 @@ export default {
 
             this.$emit("equipo", this.equipo);
         },
-        marcaWithModelo({marca,modelo}){
-            return `${marca}--${modelo}`
-        }
+        marcaWithModelo({ marca, modelo }) {
+            return `${marca}--${modelo}`;
+        },
     },
     watch: {
         selected: function () {
-            
             this.emitToParent();
-            
         },
-        
     },
 
     created: function () {
@@ -75,9 +58,10 @@ export default {
                 this.equipos = response.data;
 
                 this.isLoading = false;
-
                 if (this.seleccionado) {
-                    this.selected = this.equipos[this.seleccionado - 1];
+                    this.selected = response.data.find(
+                        (option) => option.id === this.seleccionado
+                    );
                 }
             }.bind(this)
         );

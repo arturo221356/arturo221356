@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Auth;
 class UsersController extends Controller
 {
 
-    
-    
+
+
     /**
      * Display a listing of the resource.
      *
@@ -24,12 +24,12 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         //$sucursales = Sucursal::all();
-       
+
         $userDistribution = Auth::User()->distribution->id;
-        if($request->ajax()){
+        if ($request->ajax()) {
             $users = User::all();
-            return UserResource::collection(User::where('distribution_id','=',$userDistribution)->get());
-        }else{
+            return UserResource::collection(User::where('distribution_id', '=', $userDistribution)->get());
+        } else {
             return view('admin.users.index');
         }
     }
@@ -44,15 +44,15 @@ class UsersController extends Controller
         $roles = Role::all();
 
         $sucursales = Sucursal::all();
-        
+
         return view("admin.users.create")->with([
-            
-          
+
+
             'roles' => $roles,
             'sucursales' => $sucursales
 
 
-        ]);   
+        ]);
     }
 
     /**
@@ -63,20 +63,15 @@ class UsersController extends Controller
      */
     public function store(request $request)
     {
-        //$this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
-        
-        $admin = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-          ]);
-          $userRole = Role::where('id',$request['rol'])->first();
-          $userSucursal = Sucursal::where('id',$request['sucursal'])->first();
 
-          $admin->roles()->attach($userRole);
-          $admin->sucursal()->attach($userSucursal);
-
-          return redirect("/admin/users");
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->sucursal_id = $request->sucursal_id;
+        $user->role_id = $request->role_id;
+        $user->distribution_id = Auth::User()->distribution->id;
+        $user->save();
     }
 
     /**
@@ -98,21 +93,21 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        // $user = User::findOrFail($id);
 
-        $roles = Role::all();
+        // $roles = Role::all();
 
-        $sucursales = Sucursal::all();
-      
-        return view("admin.users.edit", compact("user"))->with([
-            
-          
-            'roles' => $roles,
-            'sucursales' => $sucursales
+        // $sucursales = Sucursal::all();
+
+        // return view("admin.users.edit", compact("user"))->with([
 
 
-        ]);   
-       
+        //     'roles' => $roles,
+        //     'sucursales' => $sucursales
+
+
+        // ]);   
+
     }
 
     /**
@@ -124,10 +119,9 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-       // $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
+        // $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
         $user = User::findOrFail($id);
         $user->update($request->all());
-
     }
 
     /**
@@ -140,6 +134,5 @@ class UsersController extends Controller
     {
 
         $user->delete();
-      
     }
 }

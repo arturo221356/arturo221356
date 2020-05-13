@@ -66,7 +66,7 @@ Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middlew
 
 Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth');
 
-Route::get('/get/equipos', 'Admin\EquiposController@getEquipos')->middleware('auth');
+Route::get('/get/equipos', 'Admin\EquiposController@index')->middleware('auth');
 
 Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');
 

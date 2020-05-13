@@ -45,11 +45,11 @@ class SucursalController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
+        $this->validate($request,['name'=>'required','address'=>'required','email'=>'required',]);
         $sucursal=new Sucursal;
-        $sucursal->nombre_sucursal=$request->nombre_sucursal;
-        $sucursal->direccion_sucursal=$request->direccion_sucursal;
-        $sucursal->email_sucursal=$request->email_sucursal;
+        $sucursal->name=$request->nombre_sucursal;
+        $sucursal->address=$request->direccion_sucursal;
+        $sucursal->email=$request->email_sucursal;
         $sucursal->save();
         return redirect("/admin/sucursales");
     }
@@ -86,7 +86,7 @@ class SucursalController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,['nombre_sucursal'=>'required','direccion_sucursal'=>'required','email_sucursal'=>'required',]);
+        $this->validate($request,['name'=>'required','address'=>'required','email'=>'required',]);
         $sucursal = Sucursal::findOrFail($id);
         $sucursal->update($request->all());
         return redirect("/admin/sucursales");

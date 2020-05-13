@@ -9,7 +9,7 @@ class Sucursal extends Model
     //
     protected $table = "sucursales";
 
-    protected $fillable = ["nombre_sucursal", "direccion_sucursal", "email_sucursal"];
+    protected $fillable = ["name", "address", "email"];
 
     public function users()
     {

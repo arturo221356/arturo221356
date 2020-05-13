@@ -3212,20 +3212,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todas: Boolean,
@@ -3263,11 +3249,15 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.isLoading = true;
     axios.get("/get/equipos").then(function (response) {
+      var _this = this;
+
       this.equipos = response.data;
       this.isLoading = false;
 
       if (this.seleccionado) {
-        this.selected = this.equipos[this.seleccionado - 1];
+        this.selected = response.data.find(function (option) {
+          return option.id === _this.seleccionado;
+        });
       }
     }.bind(this));
   },
@@ -3376,7 +3366,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     emitToParent: function emitToParent() {
       this.sucursal.id = this.selected.id;
-      this.sucursal.text = this.selected.nombre_sucursal;
+      this.sucursal.text = this.selected.name;
       this.$emit("sucursal", this.sucursal);
     }
   },
@@ -3413,7 +3403,7 @@ __webpack_require__.r(__webpack_exports__);
       if (this.todas === true) {
         options.unshift({
           id: "all",
-          nombre_sucursal: "Todas"
+          name: "Todas"
         });
       }
 
@@ -3705,16 +3695,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       items: [],
-      editMode: false,
+      formErrors: [],
+      editMode: null,
       user: {
         name: "",
         role: null,
         email: "",
-        sucursal: null
+        sucursal: null,
+        password: null
       },
       fields: [{
         key: "id",
@@ -3767,7 +3768,22 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    info: function info(item, index, button) {
+    sucursalChange: function sucursalChange(value) {
+      this.user.sucursal = value.id;
+    },
+    chekForm: function chekForm(id) {
+      if (this.user.name && this.user.email // this.user.role &&
+      // this.user.sucursal
+      ) {
+          if (this.editMode == true) {
+            this.updateUser(id);
+          } else if (this.editMode == false) {
+            this.storeUser();
+          } else {}
+        }
+    },
+    editUser: function editUser(item, index, button) {
+      this.editMode = true;
       this.infoModal.string = JSON.stringify(item, null, 2);
       this.infoModal.content.id = item.id;
       this.infoModal.title = "Row index: ".concat(this.infoModal.content.id);
@@ -3805,7 +3821,7 @@ __webpack_require__.r(__webpack_exports__);
         sucursal_id: this.user.sucursal,
         name: this.user.name,
         email: this.user.email,
-        role_id: 1
+        role: 1
       };
       axios.put("/admin/users/".concat(id), params).then(function (res) {
         alert("Editado");
@@ -3814,6 +3830,29 @@ __webpack_require__.r(__webpack_exports__);
 
         _this3.loadData();
       });
+    },
+    storeUser: function storeUser() {
+      var _this4 = this;
+
+      var params = {
+        sucursal_id: this.user.sucursal,
+        name: this.user.name,
+        password: this.user.password,
+        email: this.user.email,
+        role_id: 1
+      };
+      axios.post("/admin/users/", params).then(function (res) {
+        alert("nuevo usuario agregado");
+
+        _this4.$refs["modal"].hide();
+
+        _this4.loadData();
+      });
+    },
+    newUser: function newUser() {
+      this.editMode = false;
+      this.$refs["modal"].show();
+      console.log("editmode ".concat(this.editMode));
     }
   },
   created: function created() {
@@ -81141,7 +81180,7 @@ var render = function() {
         attrs: {
           options: _vm.options,
           placeholder: "Seleccionar Sucursal",
-          label: "nombre_sucursal",
+          label: "name",
           "track-by": "id",
           "allow-empty": false,
           loading: _vm.isLoading
@@ -81364,7 +81403,7 @@ var render = function() {
               _c(
                 "b-navbar-nav",
                 [
-                  _c("b-link", { on: { click: _vm.loadData } }, [
+                  _c("b-link", { on: { click: _vm.newUser } }, [
                     _vm._v("Agregar usuario")
                   ])
                 ],
@@ -81435,7 +81474,7 @@ var render = function() {
                       {
                         on: {
                           click: function($event) {
-                            return _vm.info(row.item, row.index)
+                            return _vm.editUser(row.item, row.index)
                           }
                         }
                       },
@@ -81472,7 +81511,7 @@ var render = function() {
                           attrs: { size: "sm", variant: "success" },
                           on: {
                             click: function($event) {
-                              return _vm.updateUser(_vm.infoModal.content.id)
+                              return _vm.chekForm(_vm.infoModal.content.id)
                             }
                           }
                         },
@@ -81562,10 +81601,29 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "b-form-group",
+                { attrs: { label: "Contraseña" } },
+                [
+                  _c("b-form-input", {
+                    attrs: { type: "password", placeholder: "Contraseña" },
+                    model: {
+                      value: _vm.user.password,
+                      callback: function($$v) {
+                        _vm.$set(_vm.user, "password", $$v)
+                      },
+                      expression: "user.password"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
                 { attrs: { label: "Sucursal" } },
                 [
                   _c("select-sucursal", {
-                    attrs: { seleccionado: _vm.user.sucursal }
+                    attrs: { seleccionado: _vm.user.sucursal },
+                    on: { sucursal: _vm.sucursalChange }
                   })
                 ],
                 1
@@ -81574,7 +81632,11 @@ var render = function() {
               _c(
                 "b-form-group",
                 { attrs: { label: "Rol" } },
-                [_c("select-sucursal", { attrs: { seleccionado: 2 } })],
+                [
+                  _c("select-sucursal", {
+                    attrs: { seleccionado: _vm.user.role }
+                  })
+                ],
                 1
               )
             ],
@@ -94664,8 +94726,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/Code/promoviles/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/Code/promoviles/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

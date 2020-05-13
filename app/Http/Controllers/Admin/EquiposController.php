@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Equipo;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EquiposController extends Controller
 {
@@ -15,8 +16,13 @@ class EquiposController extends Controller
      */
     public function index()
     {
-        $equipos = Equipo::all();
-        return view('admin.productos.equipos.index',compact('equipos'));
+        // $equipos = Equipo::all();
+        // return view('admin.productos.equipos.index',compact('equipos'));
+        $userDistribution = Auth::User()->distribution->id;
+        $data = Equipo::where('distribution_id', '=', $userDistribution)->get();
+   
+        return response()->json($data);
+        
     }
 
     /**

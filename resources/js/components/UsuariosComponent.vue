@@ -11,7 +11,7 @@
 
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
-                    <b-link @click="loadData">Agregar usuario</b-link>
+                    <b-link @click="newUser">Agregar usuario</b-link>
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
@@ -37,7 +37,7 @@
 
                 <!--boton de editar -->
                 <template v-slot:cell(editar)="row">
-                    <b-button @click="info(row.item, row.index)">
+                    <b-button @click="editUser(row.item, row.index)">
                         Editar</b-button
                     >
                 </template>
@@ -69,15 +69,24 @@
                     >
                     </b-form-input>
                 </b-form-group>
+                <b-form-group label="Contraseña">
+                    <b-form-input
+                        type="password"
+                        v-model="user.password"
+                        placeholder="Contraseña"
+                    >
+                    </b-form-input>
+                </b-form-group>
                 <b-form-group label="Sucursal">
                     <select-sucursal
+                        v-on:sucursal="sucursalChange"
                         :seleccionado="user.sucursal"
                     ></select-sucursal>
                 </b-form-group>
 
                 <b-form-group label="Rol">
                     <select-sucursal
-                        :seleccionado="2"
+                        :seleccionado="user.role"
                     ></select-sucursal>
                 </b-form-group>
 
@@ -89,7 +98,7 @@
                     <b-button
                         size="sm"
                         variant="success"
-                        @click="updateUser(infoModal.content.id)"
+                        @click="chekForm(infoModal.content.id)"
                     >
                         Guardar
                     </b-button>
@@ -119,13 +128,16 @@ export default {
         return {
             items: [],
 
-            editMode: false,
+            formErrors: [],
+
+            editMode: null,
 
             user: {
                 name: "",
                 role: null,
                 email: "",
                 sucursal: null,
+                password: null,
             },
             fields: [
                 {
@@ -183,7 +195,26 @@ export default {
                     console.log(error);
                 });
         },
-        info(item, index, button) {
+        sucursalChange(value) {
+            this.user.sucursal = value.id;
+        },
+        chekForm(id) {
+            if (
+                this.user.name &&
+                this.user.email
+                // this.user.role &&
+                // this.user.sucursal
+            ) {
+                if (this.editMode == true) {
+                    this.updateUser(id);
+                } else if (this.editMode == false) {
+                    this.storeUser();
+                } else {
+                }
+            }
+        },
+        editUser(item, index, button) {
+            this.editMode = true;
             this.infoModal.string = JSON.stringify(item, null, 2);
             this.infoModal.content.id = item.id;
             this.infoModal.title = `Row index: ${this.infoModal.content.id}`;
@@ -209,7 +240,6 @@ export default {
 
                 this.$refs["modal"].hide();
 
-
                 this.loadData();
             });
         },
@@ -218,15 +248,36 @@ export default {
                 sucursal_id: this.user.sucursal,
                 name: this.user.name,
                 email: this.user.email,
-                role_id: 1,
+                role: 1,
             };
-            axios.put(`/admin/users/${id}`,params).then((res) => {
+            axios.put(`/admin/users/${id}`, params).then((res) => {
                 alert("Editado");
 
                 this.$refs["modal"].hide();
 
                 this.loadData();
             });
+        },
+        storeUser() {
+            const params = {
+                sucursal_id: this.user.sucursal,
+                name: this.user.name,
+                password: this.user.password,
+                email: this.user.email,
+                role_id: 1,
+            };
+            axios.post(`/admin/users/`, params).then((res) => {
+                alert("nuevo usuario agregado");
+
+                this.$refs["modal"].hide();
+
+                this.loadData();
+            });
+        },
+        newUser() {
+            this.editMode = false;
+            this.$refs["modal"].show();
+            console.log(`editmode ${this.editMode}`);
         },
     },
     created() {

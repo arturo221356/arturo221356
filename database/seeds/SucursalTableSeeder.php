@@ -14,8 +14,8 @@ class SucursalTableSeeder extends Seeder
     {
         Sucursal::truncate();
 
-        Sucursal::create(['Nombre_sucursal' => 'Bodega', 'direccion_sucursal' => 'madero 110', 'email_sucursal' => 'bodega@promoviles.com', 'distribution_id' => 1]);
-        Sucursal::create(['Nombre_sucursal' => 'Tlaquepaque', 'direccion_sucursal' => 'niños heroes 54', 'email_sucursal' => 'tlaqeupaque@promoviles.com', 'distribution_id' => 2]);
-        Sucursal::create(['Nombre_sucursal' => 'Tonala', 'direccion_sucursal' => 'niños heroes 54', 'email_sucursal' => 'tlaqeupaque@promoviles.com', 'distribution_id' => 1]);
+        Sucursal::create(['name' => 'Bodega', 'address' => 'madero 110', 'email' => 'bodega@promoviles.com', 'distribution_id' => 1]);
+        Sucursal::create(['name' => 'Tlaquepaque', 'address' => 'niños heroes 54', 'email' => 'tlaqeupaque@promoviles.com', 'distribution_id' => 2]);
+        Sucursal::create(['name' => 'Tonala', 'address' => 'niños heroes 54', 'email' => 'tlaqeupaque@promoviles.com', 'distribution_id' => 1]);
     }
 }

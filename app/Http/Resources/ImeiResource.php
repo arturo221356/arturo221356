@@ -19,7 +19,7 @@ class ImeiResource extends JsonResource
             'id'       => $this->id,
             'imei'      => $this->imei,
             'id_sucursal' =>$this->sucursal_id,
-            'sucursal'    => $this->sucursal->nombre_sucursal,
+            'sucursal'    => $this->sucursal->name,
             'marca'    => $this->equipo->marca,
             'modelo'    => $this->equipo->modelo,
             'precio'     => $this->equipo->precio,

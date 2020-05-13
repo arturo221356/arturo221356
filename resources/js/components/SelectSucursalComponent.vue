@@ -4,7 +4,7 @@
             v-model="selected"
             :options="options"
             placeholder="Seleccionar Sucursal"
-            label="nombre_sucursal"
+            label="name"
             track-by="id"
             :allow-empty="false"
             :loading="isLoading"
@@ -37,7 +37,7 @@ export default {
         emitToParent() {
             this.sucursal.id = this.selected.id;
 
-            this.sucursal.text = this.selected.nombre_sucursal;
+            this.sucursal.text = this.selected.name;
 
             this.$emit("sucursal", this.sucursal);
         },
@@ -77,7 +77,7 @@ export default {
             if (this.todas === true) {
                 options.unshift({
                     id: "all",
-                    nombre_sucursal: "Todas",
+                    name: "Todas",
                 });
             }
             return options;
