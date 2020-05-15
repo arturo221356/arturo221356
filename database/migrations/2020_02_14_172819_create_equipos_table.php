@@ -21,7 +21,7 @@ class CreateEquiposTable extends Migration
             $table->string('modelo');
             $table->integer('precio');
             $table->integer('costo')->nulleable();
-            $table->integer('precio_promocion')->nullable();
+            $table->softDeletes();
         });
     }
 

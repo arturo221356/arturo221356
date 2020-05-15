@@ -6,6 +6,7 @@ use App\Equipo;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Distribution;
 
 class EquiposController extends Controller
 {
@@ -14,14 +15,22 @@ class EquiposController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $equipos = Equipo::all();
-        // return view('admin.productos.equipos.index',compact('equipos'));
-        $userDistribution = Auth::User()->distribution->id;
-        $data = Equipo::where('distribution_id', '=', $userDistribution)->get();
-   
-        return response()->json($data);
+        if ($request->ajax()) {
+
+            $userDistribution = Auth::User()->distribution()->id;
+
+            $distribution = Distribution::find($userDistribution);
+        
+            $equipos = $distribution->equipos()->get();
+        
+            return response()->json($equipos);
+
+        } else {
+            return view('admin.productos.equipos.index');
+        }
+
         
     }
 
@@ -113,11 +122,6 @@ class EquiposController extends Controller
         return redirect("/admin/productos/equipos");
     }
 
-    public function getEquipos()
-    {
-        $data = Equipo::get();
-   
-        return response()->json($data);
-    }
+
 
 }

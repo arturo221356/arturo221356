@@ -3,7 +3,7 @@
         <multiselect
             v-model="selected"
             :options="options"
-            placeholder="Seleccionar Sucursal"
+            placeholder="Seleccionar rol"
             label="name"
             track-by="id"
             :allow-empty="false"
@@ -15,7 +15,7 @@
 <script>
 export default {
     props: {
-        todas: Boolean,
+       
 
         seleccionado: null,
     },
@@ -23,11 +23,11 @@ export default {
     data() {
         return {
             isLoading: false,
-            sucursal: {
+            role: {
                 id: 0,
                 text: "",
             },
-            sucursales: [],
+            roles: [],
 
             selected: null,
            
@@ -35,27 +35,27 @@ export default {
     },
     methods: {
         emitToParent() {
-            this.sucursal.id = this.selected.id;
+            this.role.id = this.selected.id;
 
-            this.sucursal.text = this.selected.name;
+            this.role.text = this.selected.name;
 
-            this.$emit("sucursal", this.sucursal);
+            this.$emit("role", this.role);
         },
     },
     watch: {
         selected: function () {
             this.emitToParent();
         },
-        sucursales: function () {},
+       
     },
 
     created: function () {
         this.isLoading = true;
 
         axios
-            .get("/get/sucursales")
+            .get("/admin/roles")
             .then((response) => {
-                this.sucursales = response.data;
+                this.roles = response.data;
                 if (this.seleccionado) {
                     this.selected = response.data.find(
                         (option) => option.id === this.seleccionado
@@ -73,13 +73,8 @@ export default {
     computed: {
         options: function () {
             var options = [];
-            options = this.sucursales;
-            if (this.todas === true) {
-                options.unshift({
-                    id: "all",
-                    name: "Todas",
-                });
-            }
+            options = this.roles;
+
             return options;
         },
     },

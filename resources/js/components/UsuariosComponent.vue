@@ -16,12 +16,13 @@
 
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
-                    <b-form-input type="search"></b-form-input>
+                    <b-form-input type="search" v-model="filter" placeholder="Buscar"></b-form-input>
+
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
         <div>
-            <b-table striped hover :items="items" :fields="fields">
+            <b-table striped hover :items="items" :fields="fields" :busy="isBusy" :filter="filter">
                 <!--busy template-->
                 <template v-slot:table-busy>
                     <div class="text-center text-primary my-2">
@@ -36,7 +37,7 @@
                 </template>
 
                 <!--boton de editar -->
-                <template v-slot:cell(editar)="row">
+                <template v-slot:cell(editar)="row" >
                     <b-button @click="editUser(row.item, row.index)">
                         Editar</b-button
                     >
@@ -69,9 +70,9 @@
                     >
                     </b-form-input>
                 </b-form-group>
-                <b-form-group label="Contraseña">
+                <b-form-group label="Contraseña" v-if="editMode == false">
                     <b-form-input
-                        type="password"
+                        type="text"
                         v-model="user.password"
                         placeholder="Contraseña"
                     >
@@ -85,9 +86,10 @@
                 </b-form-group>
 
                 <b-form-group label="Rol">
-                    <select-sucursal
+                    <select-role
                         :seleccionado="user.role"
-                    ></select-sucursal>
+                        v-on:role="roleChange"
+                    ></select-role>
                 </b-form-group>
 
                 <!-- Footer del modal Botones -->
@@ -108,6 +110,7 @@
                         size="sm"
                         variant="outline-danger"
                         @click="deleteUser(infoModal.content.id)"
+                        v-if="user.role != 1"
                     >
                         Eliminar
                     </b-button>
@@ -131,6 +134,10 @@ export default {
             formErrors: [],
 
             editMode: null,
+
+            isBusy:false,
+
+            filter: null,
 
             user: {
                 name: "",
@@ -183,20 +190,29 @@ export default {
     },
     methods: {
         loadData() {
+             this.isBusy = true;
             axios
                 .get("/admin/users")
                 .then((response) => {
+                   
                     console.log(response.data);
                     this.items = response.data.data;
                     this.countItems = this.items.length;
+
+                    this.isBusy = false;
+                    
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 });
+            
         },
         sucursalChange(value) {
             this.user.sucursal = value.id;
+        },
+        roleChange(value) {
+            this.user.role = value.id;
         },
         chekForm(id) {
             if (
@@ -236,11 +252,18 @@ export default {
         },
         deleteUser(id) {
             axios.delete(`/admin/users/${id}`).then((res) => {
-                alert("eliminado");
-
                 this.$refs["modal"].hide();
-
                 this.loadData();
+                console.log(res.data);
+
+                this.$bvToast.toast(`${res.data.message}`, {
+                title: res.data.title,
+                autoHideDelay: 5000,
+                appendToast: true,
+                solid: true,
+                variant: res.data.variant,
+                toaster: 'b-toaster-bottom-full',
+            });
             });
         },
         updateUser(id) {
@@ -248,7 +271,7 @@ export default {
                 sucursal_id: this.user.sucursal,
                 name: this.user.name,
                 email: this.user.email,
-                role: 1,
+                role_id: this.user.role,
             };
             axios.put(`/admin/users/${id}`, params).then((res) => {
                 alert("Editado");
@@ -264,16 +287,25 @@ export default {
                 name: this.user.name,
                 password: this.user.password,
                 email: this.user.email,
-                role_id: 1,
+                role_id: this.user.role,
             };
             axios.post(`/admin/users/`, params).then((res) => {
-                alert("nuevo usuario agregado");
 
                 this.$refs["modal"].hide();
 
                 this.loadData();
+
+                this.$bvToast.toast(`Usuario Agregado con exito`, {
+                title: 'Exito',
+                autoHideDelay: 5000,
+                appendToast: true,
+                solid: true,
+                variant: 'success',
+                toaster: 'b-toaster-bottom-full',
+            });
             });
         },
+
         newUser() {
             this.editMode = false;
             this.$refs["modal"].show();

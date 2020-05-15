@@ -19,6 +19,7 @@ class CreateSucursalesTable extends Migration
             $table->string("address");
             $table->string("email");
             $table->integer('distribution_id');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

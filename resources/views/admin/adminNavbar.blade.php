@@ -42,15 +42,10 @@
                           </div>
                         </li>
                   
-                        <li class="nav-item dropdown {{ Request::is('sucursales') ? 'active' : '' }}">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <li class="nav-item  {{ Request::is('sucursales') ? 'active' : '' }}">
+                            <a class="nav-link" href="/admin/users"  role="button">
                               Usuarios
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/admin/users">Lista de Usuarios</a>
-                              <a class="dropdown-item" href="/admin/users/create">Nuevo Usuario</a>
-
-                            </div>
                           </li>
 
                           <li class="nav-item dropdown {{ Request::is('sucursales') ? 'active' : '' }}">

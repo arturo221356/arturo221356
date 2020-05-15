@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\IccStatus;
 use Illuminate\Http\Request;
+use App\Role;
 
-class IccStatusController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,8 @@ class IccStatusController extends Controller
      */
     public function index()
     {
-        //
+        $roles = Role::all();
+        return $roles;
     }
 
     /**
@@ -42,10 +43,10 @@ class IccStatusController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\IccStatus  $iccStatus
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(IccStatus $iccStatus)
+    public function show($id)
     {
         //
     }
@@ -53,10 +54,10 @@ class IccStatusController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\IccStatus  $iccStatus
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(IccStatus $iccStatus)
+    public function edit($id)
     {
         //
     }
@@ -65,10 +66,10 @@ class IccStatusController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\IccStatus  $iccStatus
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, IccStatus $iccStatus)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -76,10 +77,10 @@ class IccStatusController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\IccStatus  $iccStatus
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(IccStatus $iccStatus)
+    public function destroy($id)
     {
         //
     }

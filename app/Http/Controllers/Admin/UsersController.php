@@ -24,15 +24,7 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        //$sucursales = Sucursal::all();
 
-        // $userDistribution = Auth::User()->distribution->id;
-        // if ($request->ajax()) {
-        //     $users = User::all();
-        //     return UserResource::collection(User::where('distribution_id', '=', $userDistribution)->get());
-        // } else {
-        //     return view('admin.users.index');
-        // }
         if ($request->ajax()) {
             $userDistribution = Auth::User()->distribution()->id;
 
@@ -82,8 +74,8 @@ class UsersController extends Controller
         $user->password = Hash::make($request->password);
         $user->sucursal_id = $request->sucursal_id;
         $user->role_id = $request->role_id;
-        // $user->distribution_id = Auth::User()->distribution->id;
         $user->save();
+
     }
 
     /**
@@ -144,7 +136,25 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
+        $message = '';
 
-        $user->delete();
+        $variant = '';
+
+        $title = '';
+
+        if($user->role_id == 1){
+            $message = "No es posible eliminar administradores";
+            $variant = "danger";
+            $title = 'Error';
+        }else{
+            $user->delete();
+            $message = "$user->name Eliminado con exito";
+            $variant = "warning";
+            $title = 'Exito';
+        
+        }
+        
+        return ['message'=>$message,'variant' => $variant,'title'=>$title];
+        
     }
 }

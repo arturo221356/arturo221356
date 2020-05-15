@@ -24,5 +24,9 @@ class Distribution extends Model
     {
         return $this->hasManyThrough('App\Icc', 'App\Sucursal');
     }
+    public function equipos()
+    {
+        return $this->hasMany('App\Equipo');
+    }
 
 }

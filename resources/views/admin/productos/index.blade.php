@@ -3,7 +3,6 @@
 @section('content')
 
 
-<table-component>
-</table-component>
+<productos-component></productos-component>
 
 @endsection
