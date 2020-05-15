@@ -2526,6 +2526,81 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2592,6 +2667,13 @@ __webpack_require__.r(__webpack_exports__);
       items: [],
       countItems: 0,
       isBusy: false,
+      editMode: false,
+      equipo: {
+        marca: "",
+        modelo: null,
+        precio: null,
+        costo: null
+      },
       fields: [{
         key: "id",
         label: "#",
@@ -2620,10 +2702,16 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         key: "editar",
         label: "Editar"
-      }]
+      }],
+      infoModal: {
+        id: "info-modal",
+        title: "",
+        content: {},
+        string: ""
+      }
     };
   },
-  methods: {
+  methods: _defineProperty({
     newEquipo: function newEquipo() {
       alert("nuevo equipo");
     },
@@ -2640,8 +2728,104 @@ __webpack_require__.r(__webpack_exports__);
         // handle error
         console.log(error);
       });
+    },
+    editEquipo: function editEquipo(item, index, button) {
+      this.editMode = true;
+      this.infoModal.string = JSON.stringify(item, null, 2);
+      this.infoModal.content.id = item.id;
+      this.infoModal.title = "Row index: ".concat(this.infoModal.content.id);
+      this.equipo.marca = item.marca;
+      this.equipo.modelo = item.modelo;
+      this.equipo.precio = item.precio;
+      this.equipo.costo = item.costo;
+      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      console.log(this.infoModal.content);
+    },
+    deleteEquipo: function deleteEquipo(id) {
+      var _this2 = this;
+
+      axios["delete"]("/admin/productos/equipos/".concat(id)).then(function (res) {
+        _this2.$refs["modal"].hide();
+
+        _this2.loadData(); // console.log(res.data);
+        // this.$bvToast.toast(`${res.data.message}`, {
+        //     title: res.data.title,
+        //     autoHideDelay: 5000,
+        //     appendToast: true,
+        //     solid: true,
+        //     variant: res.data.variant,
+        //     toaster: "b-toaster-bottom-full",
+        // });
+
+      });
+    },
+    updateEquipo: function updateEquipo(id) {
+      var _this3 = this;
+
+      var params = {
+        marca: this.equipo.marca,
+        modelo: this.equipo.modelo,
+        precio: this.equipo.precio,
+        costo: this.equipo.costo
+      };
+      axios.put("/admin/productos/equipos/".concat(id), params).then(function (res) {
+        alert("Editado");
+
+        _this3.$refs["modal"].hide();
+
+        _this3.loadData();
+      });
+    },
+    storeEquipo: function storeEquipo() {
+      var _this4 = this;
+
+      var params = {
+        marca: this.equipo.marca,
+        modelo: this.equipo.modelo,
+        precio: this.equipo.precio,
+        costo: this.equipo.costo
+      };
+      axios.post("/admin/productos/equipos/", params).then(function (res) {
+        _this4.$refs["modal"].hide();
+
+        _this4.loadData();
+
+        _this4.$bvToast.toast("Equipo Agregado con exito", {
+          title: "Exito",
+          autoHideDelay: 5000,
+          appendToast: true,
+          solid: true,
+          variant: "success",
+          toaster: "b-toaster-bottom-full"
+        });
+      });
+      console.log(params);
+    },
+    resetInfoModal: function resetInfoModal() {
+      this.infoModal.title = "";
+      this.infoModal.content = {};
+      this.infoModal.string = "";
+      this.equipo.marca = "";
+      this.equipo.modelo = "";
+      this.equipo.precio = "";
+      this.equipo.costo = "";
+    },
+    chekForm: function chekForm(id) {
+      if (this.equipo.marca && this.equipo.modelo // this.user.role &&
+      // this.user.sucursal
+      ) {
+          if (this.editMode == true) {
+            this.updateEquipo(id);
+          } else if (this.editMode == false) {
+            this.storeEquipo();
+          } else {}
+        }
     }
-  },
+  }, "newEquipo", function newEquipo() {
+    this.editMode = false;
+    this.$refs["modal"].show();
+    console.log("editmode ".concat(this.editMode));
+  }),
   created: function created() {
     this.loadData();
   },
@@ -81029,7 +81213,7 @@ var render = function() {
               _c(
                 "b-navbar-nav",
                 [
-                  _c("b-link", { on: { click: _vm.loadData } }, [
+                  _c("b-link", { on: { click: _vm.newEquipo } }, [
                     _vm._v("Agregar Equipo")
                   ])
                 ],
@@ -81053,6 +81237,146 @@ var render = function() {
                 ],
                 1
               )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "b-modal",
+        {
+          ref: "modal",
+          attrs: {
+            id: _vm.infoModal.id,
+            title: _vm.infoModal.title,
+            "ok-only": ""
+          },
+          on: { hide: _vm.resetInfoModal },
+          scopedSlots: _vm._u([
+            {
+              key: "modal-footer",
+              fn: function(ref) {
+                var ok = ref.ok
+                var cancel = ref.cancel
+                return [
+                  _c("b", [_vm._v("Custom Footer")]),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    {
+                      attrs: { size: "sm", variant: "success" },
+                      on: {
+                        click: function($event) {
+                          return _vm.chekForm(_vm.infoModal.content.id)
+                        }
+                      }
+                    },
+                    [_vm._v("\n                Guardar\n            ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    {
+                      attrs: { size: "sm", variant: "outline-danger" },
+                      on: {
+                        click: function($event) {
+                          return _vm.deleteEquipo(_vm.infoModal.content.id)
+                        }
+                      }
+                    },
+                    [_vm._v("\n                Eliminar\n            ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    {
+                      attrs: { size: "sm" },
+                      on: {
+                        click: function($event) {
+                          return cancel()
+                        }
+                      }
+                    },
+                    [_vm._v("\n                Cancelar\n            ")]
+                  )
+                ]
+              }
+            }
+          ])
+        },
+        [
+          _c("pre", [_vm._v(_vm._s(_vm.infoModal.string))]),
+          _vm._v(" "),
+          _c(
+            "b-form-group",
+            { attrs: { label: "Marca" } },
+            [
+              _c("b-form-input", {
+                attrs: { type: "text", placeholder: "Marca" },
+                model: {
+                  value: _vm.equipo.marca,
+                  callback: function($$v) {
+                    _vm.$set(_vm.equipo, "marca", $$v)
+                  },
+                  expression: "equipo.marca"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "b-form-group",
+            { attrs: { label: "Modelo" } },
+            [
+              _c("b-form-input", {
+                attrs: { type: "text", placeholder: "Modelo" },
+                model: {
+                  value: _vm.equipo.modelo,
+                  callback: function($$v) {
+                    _vm.$set(_vm.equipo, "modelo", $$v)
+                  },
+                  expression: "equipo.modelo"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "b-form-group",
+            { attrs: { label: "Precio" } },
+            [
+              _c("b-form-input", {
+                attrs: { type: "number", placeholder: "Precio" },
+                model: {
+                  value: _vm.equipo.precio,
+                  callback: function($$v) {
+                    _vm.$set(_vm.equipo, "precio", $$v)
+                  },
+                  expression: "equipo.precio"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "b-form-group",
+            { attrs: { label: "Costo" } },
+            [
+              _c("b-form-input", {
+                attrs: { type: "number", placeholder: "Costo" },
+                model: {
+                  value: _vm.equipo.costo,
+                  callback: function($$v) {
+                    _vm.$set(_vm.equipo, "costo", $$v)
+                  },
+                  expression: "equipo.costo"
+                }
+              })
             ],
             1
           )
@@ -81106,7 +81430,7 @@ var render = function() {
                   {
                     on: {
                       click: function($event) {
-                        return _vm.editUser(row.item, row.index)
+                        return _vm.editEquipo(row.item, row.index)
                       }
                     }
                   },

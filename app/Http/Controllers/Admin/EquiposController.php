@@ -52,18 +52,19 @@ class EquiposController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,
-        ['marca_equipo'=>'required',
-        'modelo_equipo'=>'required',
-        'precio_equipo'=>'required|numeric',
-        'costo_equipo'=>'required|numeric',
+        // $this->validate($request,
+        // ['marca_equipo'=>'required',
+        // 'modelo_equipo'=>'required',
+        // 'precio_equipo'=>'required|numeric',
+        // 'costo_equipo'=>'required|numeric',
 
-        ]);
+        //]);
         $equipo =new Equipo;
-        $equipo->marca=$request->marca_equipo;
-        $equipo->modelo=$request->modelo_equipo;
-        $equipo->precio=$request->precio_equipo;
-        $equipo->costo=$request->costo_equipo;
+        $equipo->marca=$request->marca;
+        $equipo->modelo=$request->modelo;
+        $equipo->precio=$request->precio;
+        $equipo->costo=$request->costo;
+        $equipo->distribution_id = Auth::user()->distribution()->id;
         $equipo->save();
         return redirect("/admin/productos/equipos");
     }
@@ -107,7 +108,7 @@ class EquiposController extends Controller
 
         ]);
         $equipo->update($request->all());
-        return redirect("/admin/productos/equipos");
+       
     }
 
     /**
@@ -119,7 +120,7 @@ class EquiposController extends Controller
     public function destroy(Equipo $equipo)
     {
         $equipo->delete();
-        return redirect("/admin/productos/equipos");
+       
     }
 
 
