@@ -12,7 +12,7 @@ class SucursalTableSeeder extends Seeder
      */
     public function run()
     {
-        Sucursal::truncate();
+        // Sucursal::truncate();
 
         Sucursal::create(['name' => 'Bodega', 'address' => 'madero 110', 'email' => 'bodega@promoviles.com', 'distribution_id' => 1]);
         Sucursal::create(['name' => 'Tlaquepaque', 'address' => 'niños heroes 54', 'email' => 'tlaqeupaque@promoviles.com', 'distribution_id' => 2]);

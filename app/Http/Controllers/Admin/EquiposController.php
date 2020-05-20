@@ -52,13 +52,13 @@ class EquiposController extends Controller
      */
     public function store(Request $request)
     {
-        // $this->validate($request,
-        // ['marca_equipo'=>'required',
-        // 'modelo_equipo'=>'required',
-        // 'precio_equipo'=>'required|numeric',
-        // 'costo_equipo'=>'required|numeric',
+        $this->validate($request,
+        ['marca'=>'required',
+        'modelo'=>'required',
+        'precio'=>'required|numeric',
+        'costo'=>'required|numeric',
 
-        //]);
+        ]);
         $equipo =new Equipo;
         $equipo->marca=$request->marca;
         $equipo->modelo=$request->modelo;
@@ -66,7 +66,7 @@ class EquiposController extends Controller
         $equipo->costo=$request->costo;
         $equipo->distribution_id = Auth::user()->distribution()->id;
         $equipo->save();
-        return redirect("/admin/productos/equipos");
+        
     }
 
     /**
@@ -119,8 +119,38 @@ class EquiposController extends Controller
      */
     public function destroy(Equipo $equipo)
     {
-        $equipo->delete();
-       
+
+        $message = '';
+
+        $variant = '';
+
+        $title = '';
+
+        //verifica que no existan series con este equipo anted de eliminarlos 
+        $seriesHijas = $equipo->imeis()->count();
+        if($seriesHijas){
+
+            $message = "$equipo->marca $equipo->modelo tiene $seriesHijas series, eliminalas antes !!";
+            
+            $variant = "danger";
+            
+            $title = 'Error';
+
+        }else{
+            
+            $equipo->delete();
+            
+            $message = "$equipo->name Eliminado con exito";
+            
+            $variant = "warning";
+            
+            $title = 'Exito';
+
+        }
+
+        
+        
+       return ['message'=>$message,'variant' => $variant,'title'=>$title];
     }
 
 

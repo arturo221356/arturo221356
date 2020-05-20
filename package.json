@@ -32,6 +32,7 @@
         "bootstrap-vue": "^2.10.1",
         "funding": "^1.0.9",
         "node-sass": "^4.13.1",
+        "vee-validate": "^3.3.0",
         "vue-multiselect": "^2.1.6",
         "webpack": "^4.42.1"
     }

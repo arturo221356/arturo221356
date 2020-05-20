@@ -12,7 +12,7 @@ class DistributionTableSeeder extends Seeder
      */
     public function run()
     {
-        Distribution::truncate();
+        // Distribution::truncate();
         Distribution::create(['name'=>'promoviles 1']);
         Distribution::create(['name'=>'promoviles 2']);
     }

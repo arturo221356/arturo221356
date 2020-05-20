@@ -16,13 +16,23 @@
 
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
-                    <b-form-input type="search" v-model="filter" placeholder="Buscar"></b-form-input>
-
+                    <b-form-input
+                        type="search"
+                        v-model="filter"
+                        placeholder="Buscar"
+                    ></b-form-input>
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
         <div>
-            <b-table striped hover :items="items" :fields="fields" :busy="isBusy" :filter="filter">
+            <b-table
+                striped
+                hover
+                :items="items"
+                :fields="fields"
+                :busy="isBusy"
+                :filter="filter"
+            >
                 <!--busy template-->
                 <template v-slot:table-busy>
                     <div class="text-center text-primary my-2">
@@ -37,7 +47,7 @@
                 </template>
 
                 <!--boton de editar -->
-                <template v-slot:cell(editar)="row" >
+                <template v-slot:cell(editar)="row">
                     <b-button @click="editUser(row.item, row.index)">
                         Editar</b-button
                     >
@@ -52,69 +62,128 @@
                 @hide="resetInfoModal"
                 ref="modal"
             >
-                <pre>{{ infoModal.string }}</pre>
+                <b-overlay
+                    :show="modalLoading"
+                    blur="1px"
+                    rounded="sm"
+                    variant="transparent"
+                >
+                    <validation-observer
+                        ref="observer"
+                        v-slot="{ handleSubmit }"
+                    >
+                        <b-form @submit.prevent="handleSubmit(onSubmit)">
+                            <!-- nombre -->
+                            <ValidationProvider
+                                name="nombre"
+                                v-slot="validationContext"
+                                rules="required|min:4"
+                                autocomplete="off"
+                            >
+                                <b-form-group label="Nombre">
+                                    <b-form-input
+                                        type="text"
+                                        v-model="user.name"
+                                        placeholder="Nombre"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    >
+                                    </b-form-input>
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
 
-                <b-form-group label="Nombre">
-                    <b-form-input
-                        type="text"
-                        v-model="user.name"
-                        placeholder="Nombre"
-                    >
-                    </b-form-input>
-                </b-form-group>
-                <b-form-group label="Email">
-                    <b-form-input
-                        type="email"
-                        v-model="user.email"
-                        placeholder="Email"
-                    >
-                    </b-form-input>
-                </b-form-group>
-                <b-form-group label="Contraseña" v-if="editMode == false">
-                    <b-form-input
-                        type="text"
-                        v-model="user.password"
-                        placeholder="Contraseña"
-                    >
-                    </b-form-input>
-                </b-form-group>
-                <b-form-group label="Sucursal">
-                    <select-sucursal
-                        v-on:sucursal="sucursalChange"
-                        :seleccionado="user.sucursal"
-                    ></select-sucursal>
-                </b-form-group>
+                            <!-- email -->
+                            <ValidationProvider
+                                name="email"
+                                v-slot="validationContext"
+                                rules="required|email"
+                            >
+                                <b-form-group label="Email">
+                                    <b-form-input
+                                        type="email"
+                                        v-model="user.email"
+                                        placeholder="Email"
+                                        autocomplete="off"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    >
+                                    </b-form-input>
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
 
-                <b-form-group label="Rol">
-                    <select-role
-                        :seleccionado="user.role"
-                        v-on:role="roleChange"
-                    ></select-role>
-                </b-form-group>
+                            <!-- password -->
+                            <ValidationProvider
+                                name="contraseña"
+                                v-slot="validationContext"
+                                rules="min:5|required"
+                                autocomplete="off"
+                            >
+                                <b-form-group
+                                    label="Contraseña"
+                                    v-if="editMode == false"
+                                >
+                                    <b-form-input
+                                        type="text"
+                                        v-model="user.password"
+                                        placeholder="Contraseña"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    >
+                                    </b-form-input>
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
+
+                            <b-form-group label="Sucursal">
+                                <select-sucursal
+                                    v-on:sucursal="sucursalChange"
+                                    :seleccionado="user.sucursal"
+                                ></select-sucursal>
+                            </b-form-group>
+
+                            <b-form-group label="Rol">
+                                <select-role
+                                    :seleccionado="user.role"
+                                    v-on:role="roleChange"
+                                ></select-role>
+                            </b-form-group>
+                            <b-button size="sm" variant="primary" type="submit">
+                                Guardar
+                            </b-button>
+
+                            <!-- Button with custom close trigger value -->
+                            <b-button
+                                size="sm"
+                                variant="outline-danger"
+                                @click="deleteUser(infoModal.content.id)"
+                                v-if="user.role != 1 && editMode == true"
+                            >
+                                Eliminar
+                            </b-button>
+                        </b-form>
+                    </validation-observer>
+                </b-overlay>
 
                 <!-- Footer del modal Botones -->
 
                 <template v-slot:modal-footer="{ ok, cancel }">
-                    <b>Custom Footer</b>
-                    <!-- Emulate built in modal footer ok and cancel button actions -->
-                    <b-button
-                        size="sm"
-                        variant="success"
-                        @click="chekForm(infoModal.content.id)"
-                    >
-                        Guardar
-                    </b-button>
-
-                    <!-- Button with custom close trigger value -->
-                    <b-button
-                        size="sm"
-                        variant="outline-danger"
-                        @click="deleteUser(infoModal.content.id)"
-                        v-if="user.role != 1"
-                    >
-                        Eliminar
-                    </b-button>
-
                     <b-button size="sm" @click="cancel()">
                         Cancelar
                     </b-button>
@@ -131,11 +200,13 @@ export default {
         return {
             items: [],
 
+            modalLoading: false,
+
             formErrors: [],
 
             editMode: null,
 
-            isBusy:false,
+            isBusy: false,
 
             filter: null,
 
@@ -189,24 +260,24 @@ export default {
         };
     },
     methods: {
+        getValidationState({ dirty, validated, valid = null }) {
+            return dirty || validated ? valid : null;
+        },
         loadData() {
-             this.isBusy = true;
+            this.isBusy = true;
             axios
                 .get("/admin/users")
                 .then((response) => {
-                   
                     console.log(response.data);
                     this.items = response.data.data;
                     this.countItems = this.items.length;
 
                     this.isBusy = false;
-                    
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 });
-            
         },
         sucursalChange(value) {
             this.user.sucursal = value.id;
@@ -214,19 +285,13 @@ export default {
         roleChange(value) {
             this.user.role = value.id;
         },
-        chekForm(id) {
-            if (
-                this.user.name &&
-                this.user.email
-                // this.user.role &&
-                // this.user.sucursal
-            ) {
-                if (this.editMode == true) {
-                    this.updateUser(id);
-                } else if (this.editMode == false) {
-                    this.storeUser();
-                } else {
-                }
+        onSubmit() {
+            this.modalLoading = true;
+
+            if (this.editMode == true) {
+                this.updateUser();
+            } else if (this.editMode == false) {
+                this.storeUser();
             }
         },
         editUser(item, index, button) {
@@ -248,7 +313,9 @@ export default {
             this.user.name = "";
             this.user.role = null;
             this.user.email = "";
+            this.user.password = null;
             this.user.sucursal = null;
+            this.modalLoading = false;
         },
         deleteUser(id) {
             axios.delete(`/admin/users/${id}`).then((res) => {
@@ -257,16 +324,17 @@ export default {
                 console.log(res.data);
 
                 this.$bvToast.toast(`${res.data.message}`, {
-                title: res.data.title,
-                autoHideDelay: 5000,
-                appendToast: true,
-                solid: true,
-                variant: res.data.variant,
-                toaster: 'b-toaster-bottom-full',
-            });
+                    title: res.data.title,
+                    autoHideDelay: 5000,
+                    appendToast: true,
+                    solid: true,
+                    variant: res.data.variant,
+                    toaster: "b-toaster-bottom-full",
+                });
             });
         },
-        updateUser(id) {
+        updateUser() {
+            const id = this.infoModal.content.id;
             const params = {
                 sucursal_id: this.user.sucursal,
                 name: this.user.name,
@@ -290,19 +358,18 @@ export default {
                 role_id: this.user.role,
             };
             axios.post(`/admin/users/`, params).then((res) => {
-
                 this.$refs["modal"].hide();
 
                 this.loadData();
 
                 this.$bvToast.toast(`Usuario Agregado con exito`, {
-                title: 'Exito',
-                autoHideDelay: 5000,
-                appendToast: true,
-                solid: true,
-                variant: 'success',
-                toaster: 'b-toaster-bottom-full',
-            });
+                    title: "Exito",
+                    autoHideDelay: 5000,
+                    appendToast: true,
+                    solid: true,
+                    variant: "success",
+                    toaster: "b-toaster-bottom-full",
+                });
             });
         },
 

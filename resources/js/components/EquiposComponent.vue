@@ -29,72 +29,127 @@
         <b-modal
             :id="infoModal.id"
             :title="infoModal.title"
-            ok-only
             @hide="resetInfoModal"
             ref="modal"
         >
-            <pre>{{ infoModal.string }}</pre>
+            <b-overlay :show="modalLoading" blur="1px" rounded="sm" variant="transparent">
+                <validation-observer ref="observer" v-slot="{ handleSubmit }">
+                    <b-form @submit.prevent="handleSubmit(onSubmit)">
+                        <!-- marca  -->
+                        <ValidationProvider
+                            name="marca"
+                            v-slot="validationContext"
+                            rules="required"
+                        >
+                            <b-form-group label="Marca">
+                                <b-form-input
+                                    type="text"
+                                    v-model="equipo.marca"
+                                    placeholder="Marca"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                >
+                                </b-form-input>
+                                <b-form-invalid-feedback
+                                    >{{ validationContext.errors[0] }}
+                                </b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
 
-            <b-form-group label="Marca">
-                <b-form-input
-                    type="text"
-                    v-model="equipo.marca"
-                    placeholder="Marca"
-                >
-                </b-form-input>
-            </b-form-group>
-            <b-form-group label="Modelo">
-                <b-form-input
-                    type="text"
-                    v-model="equipo.modelo"
-                    placeholder="Modelo"
-                >
-                </b-form-input>
-            </b-form-group>
+                        <!-- modelo -->
+                        <ValidationProvider
+                            name="modelo"
+                            v-slot="validationContext"
+                            rules="required"
+                        >
+                            <b-form-group label="Modelo">
+                                <b-form-input
+                                    type="text"
+                                    v-model="equipo.modelo"
+                                    placeholder="Modelo"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                >
+                                </b-form-input>
+                                <b-form-invalid-feedback
+                                    >{{ validationContext.errors[0] }}
+                                </b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
 
-            <b-form-group label="Precio">
-                <b-form-input
-                    type="number"
-                    v-model="equipo.precio"
-                    placeholder="Precio"
-                >
-                </b-form-input>
-            </b-form-group>
-            <b-form-group label="Costo">
-                <b-form-input
-                    type="number"
-                    v-model="equipo.costo"
-                    placeholder="Costo"
-                >
-                </b-form-input>
-            </b-form-group>
+                        <!-- precio -->
+                        <ValidationProvider
+                            name="precio"
+                            v-slot="validationContext"
+                            rules="integer|required|numeric|positive|max_value:999999"
+                        >
+                            <b-form-group label="Precio">
+                                <b-form-input
+                                    type="number"
+                                    v-model="equipo.precio"
+                                    placeholder="Precio"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                >
+                                </b-form-input>
+                                <b-form-invalid-feedback>{{
+                                    validationContext.errors[0]
+                                }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
 
+                        <!-- costo -->
+                        <ValidationProvider
+                            name="costo"
+                            v-slot="validationContext"
+                            rules="integer|required|numeric|positive|max_value:999999"
+                        >
+                            <b-form-group label="Costo">
+                                <b-form-input
+                                    type="number"
+                                    v-model="equipo.costo"
+                                    placeholder="Costo"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                >
+                                </b-form-input>
+                                <b-form-invalid-feedback
+                                    id="input-1-live-feedback"
+                                    >{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback
+                                >
+                            </b-form-group>
+                        </ValidationProvider>
+
+                        <!-- botones de guardar -->
+                        <b-button size="sm" variant="primary" type="submit">
+                            Guardar
+                        </b-button>
+
+                        <b-button
+                            size="sm"
+                            variant="outline-danger"
+                            @click="deleteEquipo(infoModal.content.id)"
+                            v-if="editMode == true"
+                        >
+                            Eliminar
+                        </b-button>
+                    </b-form>
+                </validation-observer>
+                
+            </b-overlay>
             <!-- Footer del modal Botones -->
 
-            <template v-slot:modal-footer="{ ok, cancel }">
-                <b>Custom Footer</b>
-                <!-- Emulate built in modal footer ok and cancel button actions -->
-                <b-button
-                    size="sm"
-                    variant="success"
-                    @click="chekForm(infoModal.content.id)"
-                >
-                    Guardar
-                </b-button>
-
-                <!-- Button with custom close trigger value -->
-                <b-button
-                    size="sm"
-                    variant="outline-danger"
-                    @click="deleteEquipo(infoModal.content.id)"
-                >
-                    Eliminar
-                </b-button>
-
-                <b-button size="sm" @click="cancel()">
-                    Cancelar
-                </b-button>
-            </template>
+                <template v-slot:modal-footer="{ cancel }">
+                    <b-button size="sm" @click="cancel()">
+                        Cancelar
+                    </b-button>
+                </template>
         </b-modal>
         <!-- info modal -->
 
@@ -134,6 +189,7 @@ export default {
     data() {
         return {
             filter: null,
+            modalLoading: false,
             isLoading: false,
             items: [],
             countItems: 0,
@@ -189,8 +245,8 @@ export default {
         };
     },
     methods: {
-        newEquipo() {
-            alert("nuevo equipo");
+        getValidationState({ dirty, validated, valid = null }) {
+            return dirty || validated ? valid : null;
         },
 
         loadData() {
@@ -198,7 +254,7 @@ export default {
             axios
                 .get("/get/equipos")
                 .then((response) => {
-                    console.log(response.data);
+                    
                     this.items = response.data;
                     this.countItems = this.items.length;
 
@@ -219,26 +275,28 @@ export default {
             this.equipo.precio = item.precio;
             this.equipo.costo = item.costo;
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
-            console.log(this.infoModal.content);
+            
         },
 
         deleteEquipo(id) {
             axios.delete(`/admin/productos/equipos/${id}`).then((res) => {
                 this.$refs["modal"].hide();
                 this.loadData();
-                // console.log(res.data);
+                
+                console.log(res.data);
 
-                // this.$bvToast.toast(`${res.data.message}`, {
-                //     title: res.data.title,
-                //     autoHideDelay: 5000,
-                //     appendToast: true,
-                //     solid: true,
-                //     variant: res.data.variant,
-                //     toaster: "b-toaster-bottom-full",
-                // });
+                this.$bvToast.toast(`${res.data.message}`, {
+                    title: res.data.title,
+                    autoHideDelay: 5000,
+                    appendToast: true,
+                    solid: true,
+                    variant: res.data.variant,
+                    toaster: "b-toaster-bottom-full",
+                });
             });
         },
-        updateEquipo(id) {
+        updateEquipo() {
+            const id = this.infoModal.content.id;
             const params = {
                 marca: this.equipo.marca,
                 modelo: this.equipo.modelo,
@@ -251,6 +309,8 @@ export default {
                 this.$refs["modal"].hide();
 
                 this.loadData();
+
+                
             });
         },
         storeEquipo() {
@@ -261,7 +321,10 @@ export default {
                 costo: this.equipo.costo,
             };
             axios.post(`/admin/productos/equipos/`, params).then((res) => {
+                
                 this.$refs["modal"].hide();
+
+                
 
                 this.loadData();
 
@@ -274,7 +337,7 @@ export default {
                     toaster: "b-toaster-bottom-full",
                 });
             });
-            console.log(params)
+            console.log(params);
         },
         resetInfoModal() {
             this.infoModal.title = "";
@@ -284,26 +347,26 @@ export default {
             this.equipo.modelo = "";
             this.equipo.precio = "";
             this.equipo.costo = "";
+            this.modalLoading = false;
         },
-        chekForm(id) {
-            if (
-                this.equipo.marca &&
-                this.equipo.modelo
-                // this.user.role &&
-                // this.user.sucursal
-            ) {
-                if (this.editMode == true) {
-                    this.updateEquipo(id);
-                } else if (this.editMode == false) {
-                    this.storeEquipo();
-                } else {
-                }
+        onSubmit() {
+            
+            this.modalLoading = true;
+
+            if (this.editMode == true) {
+                this.updateEquipo();
+                
+            } else if (this.editMode == false) {
+                this.storeEquipo();
+                
             }
+            
+            
         },
         newEquipo() {
             this.editMode = false;
             this.$refs["modal"].show();
-            console.log(`editmode ${this.editMode}`);
+           
         },
     },
     created() {

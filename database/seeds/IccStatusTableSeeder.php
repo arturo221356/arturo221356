@@ -12,7 +12,7 @@ class IccStatusTableSeeder extends Seeder
      */
     public function run()
     {
-        IccStatus::truncate();
+        // IccStatus::truncate();
         IccStatus::create(['status'=>'Vendido']);
         IccStatus::create(['status'=>'Perdido']);
         IccStatus::create(['status'=>'En transito']);

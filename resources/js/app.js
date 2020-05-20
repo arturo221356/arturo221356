@@ -12,11 +12,21 @@ import BootstrapVue from 'bootstrap-vue' //Importing
 
 Vue.use(BootstrapVue) 
 
+
 import Multiselect from 'vue-multiselect'
 
-// register globally
-Vue.component('multiselect', Multiselect)
+Vue.component('multiselect', Multiselect);
 
+
+
+
+import { ValidationObserver, ValidationProvider} from 'vee-validate';
+
+Vue.component('ValidationProvider', ValidationProvider);
+
+Vue.component("ValidationObserver", ValidationObserver);
+
+require('./validation');
 
 
 // Telling Vue to use this in whole applicat

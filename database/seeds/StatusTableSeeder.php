@@ -12,7 +12,7 @@ class StatusTableSeeder extends Seeder
      */
     public function run()
     {
-        Status::truncate();
+        // Status::truncate();
         Status::create(['status'=>'Disponible']);
         Status::create(['status'=>'Incompleto']);
         Status::create(['status'=>'En transito']);
