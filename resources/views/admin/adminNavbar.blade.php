@@ -30,7 +30,7 @@
                         </li>
                   
                   
-                        <li class="nav-item dropdown {{ Request::is('sucursales') ? 'active' : '' }}">
+                        {{-- <li class="nav-item dropdown {{ Request::is('sucursales') ? 'active' : '' }}">
                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Sucursales
                           </a>
@@ -40,12 +40,20 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Productos</a>
                           </div>
-                        </li>
+                        </li> --}}
                   
-                        <li class="nav-item  {{ Request::is('sucursales') ? 'active' : '' }}">
-                            <a class="nav-link" href="/admin/users"  role="button">
+                        <li class="nav-item  dropdown {{ Request::is('sucursales') ? 'active' : '' }}">
+                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Distribucion
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/admin/users"  >
                               Usuarios
                             </a>
+                            <a class="dropdown-item" href="/admin/sucursales"  >
+                              Sucursales
+                            </a>
+                          </div>
                           </li>
 
                           <li class="nav-item dropdown {{ Request::is('sucursales') ? 'active' : '' }}">

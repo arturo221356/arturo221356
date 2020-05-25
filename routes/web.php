@@ -14,7 +14,6 @@
 use App\Distribution;
 use App\Sucursal;
 use App\Role;
-//////////////
 use Illuminate\Support\Facades\Auth;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);

@@ -100,6 +100,7 @@ class EquiposController extends Controller
      */
     public function update(Request $request, Equipo $equipo)
     {
+        
         $this->validate($request,
         ['marca'=>'required',
         'modelo'=>'required',

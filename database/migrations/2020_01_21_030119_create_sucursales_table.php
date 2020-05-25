@@ -17,7 +17,6 @@ class CreateSucursalesTable extends Migration
             $table->bigIncrements("id");
             $table->string("name");
             $table->string("address");
-            $table->string("email");
             $table->integer('distribution_id');
             $table->softDeletes();
             $table->timestamps();

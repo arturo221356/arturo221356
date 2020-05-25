@@ -24,8 +24,8 @@ class SucursalController extends Controller
      */
     public function index()
     {
-        $sucursales= Sucursal::all();
-        return view("../admin/sucursales/index",compact("sucursales"));
+        
+        return view("../admin/sucursales/index");
     }
 
     /**
@@ -46,13 +46,13 @@ class SucursalController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,['name'=>'required','address'=>'required','email'=>'required',]);
+        $this->validate($request,['name'=>'required','address'=>'required',]);
         $sucursal=new Sucursal;
-        $sucursal->name=$request->nombre_sucursal;
-        $sucursal->address=$request->direccion_sucursal;
-        $sucursal->email=$request->email_sucursal;
+        $sucursal->name = $request->name;
+        $sucursal->address = $request->address;
+        $sucursal->distribution_id = Auth::user()->distribution()->id;
         $sucursal->save();
-        return redirect("/admin/sucursales");
+       
     }
 
     /**
@@ -75,7 +75,7 @@ class SucursalController extends Controller
     public function edit($id)
     {
         $sucursal = Sucursal::findOrFail($id);
-        return view("admin.sucursales.edit", compact("sucursal"));   
+         
     }
 
     /**
@@ -87,10 +87,10 @@ class SucursalController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,['name'=>'required','address'=>'required','email'=>'required',]);
+        $this->validate($request,['name'=>'required','address'=>'required',]);
         $sucursal = Sucursal::findOrFail($id);
         $sucursal->update($request->all());
-        return redirect("/admin/sucursales");
+       
     }
 
     /**
@@ -103,7 +103,7 @@ class SucursalController extends Controller
     {
         $sucursal = Sucursal::findOrFail($id);
         $sucursal->delete();
-        return redirect("/admin/sucursales");
+        
     }
     public function getSucursales(){
 
