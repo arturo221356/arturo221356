@@ -28,5 +28,9 @@ class Distribution extends Model
     {
         return $this->hasMany('App\Equipo');
     }
+    public function recargas()
+    {
+        return $this->hasMany('App\Recarga');
+    }
 
 }

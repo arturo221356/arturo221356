@@ -5,13 +5,13 @@
             type="light"
             style="background-color: #dedede;"
         >
-            <b-navbar-brand href="#">Sucursales</b-navbar-brand>
+            <b-navbar-brand href="#">Recargas</b-navbar-brand>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
-                    <b-link @click="newSucursal">Agregar Sucursal</b-link>
+                    <b-link @click="newRecarga">Agregar Recarga</b-link>
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
@@ -48,7 +48,7 @@
 
                 <!--boton de editar -->
                 <template v-slot:cell(editar)="row">
-                    <b-button @click="editSucursal(row.item, row.index)">
+                    <b-button @click="editRecarga(row.item, row.index)">
                         Editar</b-button
                     >
                 </template>
@@ -74,16 +74,17 @@
                     >
                         <b-form @submit.prevent="handleSubmit(onSubmit)">
                             <!-- nombre -->
+
                             <ValidationProvider
                                 name="nombre"
                                 v-slot="validationContext"
-                                rules="required|min:4"
+                                rules="required"
                                 autocomplete="off"
                             >
                                 <b-form-group label="Nombre">
                                     <b-form-input
                                         type="text"
-                                        v-model="sucursal.name"
+                                        v-model="recarga.name"
                                         placeholder="Nombre"
                                         :state="
                                             getValidationState(
@@ -98,17 +99,17 @@
                                 </b-form-group>
                             </ValidationProvider>
 
-                            <!-- direccion -->
+                            <!-- monto -->
                             <ValidationProvider
-                                name="address"
+                                name="monto"
                                 v-slot="validationContext"
-                                rules="required"
+                                rules="required|integer|max_value:9999"
                             >
-                                <b-form-group label="Direccion">
+                                <b-form-group label="Monto">
                                     <b-form-input
-                                        type="text"
-                                        v-model="sucursal.address"
-                                        placeholder="Direccion"
+                                        type="number"
+                                        v-model="recarga.monto"
+                                        placeholder="Monto"
                                         autocomplete="off"
                                         :state="
                                             getValidationState(
@@ -128,13 +129,13 @@
                             </b-button>
 
                             <!-- Button with custom close trigger value -->
-                            <!-- <b-button
+                            <b-button
                                 size="sm"
                                 variant="outline-danger"
-                                @click="deleteSucursal(infoModal.content.id)"
+                                @click="deleteRecarga(infoModal.content.id)"
                             >
                                 Eliminar
-                            </b-button> -->
+                            </b-button>
                         </b-form>
                     </validation-observer>
                 </b-overlay>
@@ -158,8 +159,6 @@ export default {
         return {
             items: [],
 
-            countItems: 0,
-
             modalLoading: false,
 
             editMode: null,
@@ -168,9 +167,11 @@ export default {
 
             filter: null,
 
-            sucursal: {
-                name: "",
-                address: "",
+            countItems:0,
+
+            recarga: {
+                name: null,
+                monto: null,
             },
             fields: [
                 {
@@ -179,15 +180,15 @@ export default {
                     sortable: true,
                     sortDirection: "desc",
                 },
-                                {
+                {
                     key: "name",
                     label: "Nombre",
                     sortable: true,
                     sortDirection: "desc",
                 },
                 {
-                    key: "address",
-                    label: "Direccion",
+                    key: "monto",
+                    label: "Monto",
                     sortable: true,
                     sortDirection: "desc",
                 },
@@ -199,7 +200,6 @@ export default {
                 content: {},
                 string: "",
             },
-            
         };
     },
     methods: {
@@ -209,10 +209,10 @@ export default {
         loadData() {
             this.isBusy = true;
             axios
-                .get("/get/sucursales")
+                .get("/get/recargas")
                 .then((response) => {
                     console.log(response.data);
-                    this.items = response.data;
+                    this.items = response.data.data;
                     this.countItems = this.items.length;
 
                     this.isBusy = false;
@@ -226,18 +226,18 @@ export default {
             this.modalLoading = true;
 
             if (this.editMode == true) {
-                this.updateSucursal();
+                this.updateRecarga();
             } else if (this.editMode == false) {
-                this.storeSucursal();
+                this.storeRecarga();
             }
         },
-        editSucursal(item, index, button) {
+        editRecarga(item, index, button) {
             this.editMode = true;
             this.infoModal.string = JSON.stringify(item, null, 2);
             this.infoModal.content.id = item.id;
             this.infoModal.title = `Row index: ${this.infoModal.content.id}`;
-            this.sucursal.name = item.name;
-            this.sucursal.address = item.address;
+            this.recarga.name = item.name;
+            this.recarga.monto = item.monto;
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
             console.log(this.infoModal.content);
         },
@@ -245,12 +245,12 @@ export default {
             this.infoModal.title = "";
             this.infoModal.content = {};
             this.infoModal.string = "";
-            this.sucursal.name = "";
-            this.sucursal.address = "";
+            this.recarga.name = "";
+            this.recarga.monto = "";
             this.modalLoading = false;
         },
-        deleteSucursal(id) {
-            axios.delete(`/admin/sucursales/${id}`).then((res) => {
+        deleteRecarga(id) {
+            axios.delete(`/admin/productos/recargas/${id}`).then((res) => {
                 this.$refs["modal"].hide();
                 this.loadData();
                 console.log(res.data);
@@ -265,13 +265,13 @@ export default {
                 });
             });
         },
-        updateSucursal() {
+        updateRecarga() {
             const id = this.infoModal.content.id;
             const params = {
-                name: this.sucursal.name,
-                address: this.sucursal.address,
+                name: this.recarga.name,
+                monto: this.recarga.monto,
             };
-            axios.put(`/admin/sucursales/${id}`, params).then((res) => {
+            axios.put(`/admin/productos/recargas/${id}`, params).then((res) => {
                 alert("Editado");
 
                 this.$refs["modal"].hide();
@@ -279,17 +279,17 @@ export default {
                 this.loadData();
             });
         },
-        storeSucursal() {
+        storeRecarga() {
             const params = {
-                name: this.sucursal.name,
-                address: this.sucursal.address,
+                name: this.recarga.name,
+                monto: this.recarga.monto,
             };
-            axios.post(`/admin/sucursales/`, params).then((res) => {
+            axios.post(`/admin/productos/recargas/`, params).then((res) => {
                 this.$refs["modal"].hide();
 
                 this.loadData();
 
-                this.$bvToast.toast(`Sucursal Agregada con exito`, {
+                this.$bvToast.toast(`Recarga Agregada con exito`, {
                     title: "Exito",
                     autoHideDelay: 5000,
                     appendToast: true,
@@ -300,16 +300,17 @@ export default {
             });
         },
 
-        newSucursal() {
+        newRecarga() {
             this.editMode = false;
+            this.recarga.name = 'Recarga Tiempo Aire';
             this.$refs["modal"].show();
             console.log(`editmode ${this.editMode}`);
         },
     },
-    created() {
+    created(){
         this.loadData();
-    },
+    }
 };
 </script>
 
-
+<style></style>

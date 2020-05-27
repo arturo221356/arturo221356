@@ -78,6 +78,8 @@ Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth'
 
 Route::get('/get/equipos', 'Admin\EquiposController@index')->middleware('auth');
 
+Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
+
 Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');
 
 Route::get('/export/imeis/', 'InventarioController@exportImei')->middleware('auth');

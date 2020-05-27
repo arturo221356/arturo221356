@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Recarga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Distribution;
+use App\Http\Resources\RecargaResource as RecargaResource;
 
 class RecargasController extends Controller
 {
@@ -13,10 +16,20 @@ class RecargasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $recargas= Recarga::all();
-        return view("admin.productos.recargas.index",compact('recargas'));
+
+        if ($request->ajax()) {
+            $userDistribution = Auth::User()->distribution()->id;
+
+            $distribution = Distribution::find($userDistribution);
+
+            $recargas = $distribution->recargas()->get();
+
+            return RecargaResource::collection($recargas);
+        } else {
+            return view('admin.productos.recargas.index');
+        }
     }
 
     /**
@@ -26,7 +39,7 @@ class RecargasController extends Controller
      */
     public function create()
     {
-        return view("admin.productos.recargas.create");
+       
     }
 
     /**
@@ -37,12 +50,13 @@ class RecargasController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,['nombre_recarga'=>'required','monto_recarga'=>'required|max:1000|integer|unique:recargas,monto',]);
+        $this->validate($request,['name'=>'required','monto'=>'required|max:9999|integer',]);
         $recarga=new Recarga;
-        $recarga->nombre=$request->nombre_recarga;
-        $recarga->monto=$request->monto_recarga;
+        $recarga->name=$request->name;
+        $recarga->monto=$request->monto;
+        $recarga->distribution_id = Auth::user()->distribution()->id;
         $recarga->save();
-        return redirect("/admin/productos/recargas");
+        
     }
 
     /**
@@ -76,7 +90,8 @@ class RecargasController extends Controller
      */
     public function update(Request $request, Recarga $recarga)
     {
-        //
+        $this->validate($request,['name'=>'required','monto'=>'required|max:9999|integer',]);
+        $recarga->update($request->all());
     }
 
     /**
@@ -87,8 +102,21 @@ class RecargasController extends Controller
      */
     public function destroy(Recarga $recarga)
     {
+        $message = '';
+
+        $variant = '';
+
+        $title = '';
+
         $recarga->delete();
-        return redirect("/admin/productos/recargas");
+            
+        $message = "$recarga->name Eliminado con exito";
+        
+        $variant = "warning";
+        
+        $title = 'Exito';
+
+        return ['message'=>$message,'variant' => $variant,'title'=>$title];
     }
 
 }

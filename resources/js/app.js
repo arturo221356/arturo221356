@@ -56,6 +56,7 @@ Vue.component('usuarios-component', require('./components/UsuariosComponent.vue'
 Vue.component('select-role', require('./components/SelectRoleComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
 Vue.component('sucursales-component', require('./components/SucursalesComponent.vue').default);
+Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -3569,6 +3569,331 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RecargasComponent.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RecargasComponent.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      items: [],
+      modalLoading: false,
+      editMode: null,
+      isBusy: false,
+      filter: null,
+      countItems: 0,
+      recarga: {
+        name: null,
+        monto: null
+      },
+      fields: [{
+        key: "id",
+        label: "#",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "name",
+        label: "Nombre",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "monto",
+        label: "Monto",
+        sortable: true,
+        sortDirection: "desc"
+      }, {
+        key: "editar",
+        label: "Editar"
+      }],
+      infoModal: {
+        id: "info-modal",
+        title: "",
+        content: {},
+        string: ""
+      }
+    };
+  },
+  methods: {
+    getValidationState: function getValidationState(_ref) {
+      var dirty = _ref.dirty,
+          validated = _ref.validated,
+          _ref$valid = _ref.valid,
+          valid = _ref$valid === void 0 ? null : _ref$valid;
+      return dirty || validated ? valid : null;
+    },
+    loadData: function loadData() {
+      var _this = this;
+
+      this.isBusy = true;
+      axios.get("/get/recargas").then(function (response) {
+        console.log(response.data);
+        _this.items = response.data.data;
+        _this.countItems = _this.items.length;
+        _this.isBusy = false;
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      });
+    },
+    onSubmit: function onSubmit() {
+      this.modalLoading = true;
+
+      if (this.editMode == true) {
+        this.updateRecarga();
+      } else if (this.editMode == false) {
+        this.storeRecarga();
+      }
+    },
+    editRecarga: function editRecarga(item, index, button) {
+      this.editMode = true;
+      this.infoModal.string = JSON.stringify(item, null, 2);
+      this.infoModal.content.id = item.id;
+      this.infoModal.title = "Row index: ".concat(this.infoModal.content.id);
+      this.recarga.name = item.name;
+      this.recarga.monto = item.monto;
+      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+      console.log(this.infoModal.content);
+    },
+    resetInfoModal: function resetInfoModal() {
+      this.infoModal.title = "";
+      this.infoModal.content = {};
+      this.infoModal.string = "";
+      this.recarga.name = "";
+      this.recarga.monto = "";
+      this.modalLoading = false;
+    },
+    deleteRecarga: function deleteRecarga(id) {
+      var _this2 = this;
+
+      axios["delete"]("/admin/productos/recargas/".concat(id)).then(function (res) {
+        _this2.$refs["modal"].hide();
+
+        _this2.loadData();
+
+        console.log(res.data);
+
+        _this2.$bvToast.toast("".concat(res.data.message), {
+          title: res.data.title,
+          autoHideDelay: 5000,
+          appendToast: true,
+          solid: true,
+          variant: res.data.variant,
+          toaster: "b-toaster-bottom-full"
+        });
+      });
+    },
+    updateRecarga: function updateRecarga() {
+      var _this3 = this;
+
+      var id = this.infoModal.content.id;
+      var params = {
+        name: this.recarga.name,
+        monto: this.recarga.monto
+      };
+      axios.put("/admin/productos/recargas/".concat(id), params).then(function (res) {
+        alert("Editado");
+
+        _this3.$refs["modal"].hide();
+
+        _this3.loadData();
+      });
+    },
+    storeRecarga: function storeRecarga() {
+      var _this4 = this;
+
+      var params = {
+        name: this.recarga.name,
+        monto: this.recarga.monto
+      };
+      axios.post("/admin/productos/recargas/", params).then(function (res) {
+        _this4.$refs["modal"].hide();
+
+        _this4.loadData();
+
+        _this4.$bvToast.toast("Recarga Agregada con exito", {
+          title: "Exito",
+          autoHideDelay: 5000,
+          appendToast: true,
+          solid: true,
+          variant: "success",
+          toaster: "b-toaster-bottom-full"
+        });
+      });
+    },
+    newRecarga: function newRecarga() {
+      this.editMode = false;
+      this.recarga.name = 'Recarga Tiempo Aire';
+      this.$refs["modal"].show();
+      console.log("editmode ".concat(this.editMode));
+    }
+  },
+  created: function created() {
+    this.loadData();
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectEquipoComponent.vue?vue&type=script&lang=js&":
 /*!********************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectEquipoComponent.vue?vue&type=script&lang=js& ***!
@@ -4108,8 +4433,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       items: [],
+      countItems: 0,
       modalLoading: false,
-      formErrors: [],
       editMode: null,
       isBusy: false,
       filter: null,
@@ -4141,8 +4466,7 @@ __webpack_require__.r(__webpack_exports__);
         title: "",
         content: {},
         string: ""
-      },
-      countItems: 0
+      }
     };
   },
   methods: {
@@ -85146,6 +85470,386 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RecargasComponent.vue?vue&type=template&id=a7d4a7ec&":
+/*!********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RecargasComponent.vue?vue&type=template&id=a7d4a7ec& ***!
+  \********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "b-navbar",
+        {
+          staticStyle: { "background-color": "#dedede" },
+          attrs: { toggleable: "lg", type: "light" }
+        },
+        [
+          _c("b-navbar-brand", { attrs: { href: "#" } }, [_vm._v("Recargas")]),
+          _vm._v(" "),
+          _c("b-navbar-toggle", { attrs: { target: "nav-collapse" } }),
+          _vm._v(" "),
+          _c(
+            "b-collapse",
+            { attrs: { id: "nav-collapse", "is-nav": "" } },
+            [
+              _c(
+                "b-navbar-nav",
+                [
+                  _c("b-link", { on: { click: _vm.newRecarga } }, [
+                    _vm._v("Agregar Recarga")
+                  ])
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-navbar-nav",
+                { staticClass: "ml-auto" },
+                [
+                  _c("b-form-input", {
+                    attrs: { type: "search", placeholder: "Buscar" },
+                    model: {
+                      value: _vm.filter,
+                      callback: function($$v) {
+                        _vm.filter = $$v
+                      },
+                      expression: "filter"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        [
+          _c("b-table", {
+            attrs: {
+              striped: "",
+              hover: "",
+              items: _vm.items,
+              fields: _vm.fields,
+              busy: _vm.isBusy,
+              filter: _vm.filter
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "table-busy",
+                fn: function() {
+                  return [
+                    _c(
+                      "div",
+                      { staticClass: "text-center text-primary my-2" },
+                      [
+                        _c("b-spinner", { staticClass: "align-middle" }),
+                        _vm._v(" "),
+                        _c("strong", [_vm._v("Cargando...")])
+                      ],
+                      1
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "table-caption",
+                fn: function() {
+                  return [
+                    _vm._v(
+                      "Resultado: - " +
+                        _vm._s(_vm.countItems) +
+                        "\n            "
+                    )
+                  ]
+                },
+                proxy: true
+              },
+              {
+                key: "cell(editar)",
+                fn: function(row) {
+                  return [
+                    _c(
+                      "b-button",
+                      {
+                        on: {
+                          click: function($event) {
+                            return _vm.editRecarga(row.item, row.index)
+                          }
+                        }
+                      },
+                      [_vm._v("\n                    Editar")]
+                    )
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c(
+            "b-modal",
+            {
+              ref: "modal",
+              attrs: {
+                id: _vm.infoModal.id,
+                title: _vm.infoModal.title,
+                "ok-only": ""
+              },
+              on: { hide: _vm.resetInfoModal },
+              scopedSlots: _vm._u([
+                {
+                  key: "modal-footer",
+                  fn: function(ref) {
+                    var ok = ref.ok
+                    var cancel = ref.cancel
+                    return [
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { size: "sm" },
+                          on: {
+                            click: function($event) {
+                              return cancel()
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    Cancelar\n                "
+                          )
+                        ]
+                      )
+                    ]
+                  }
+                }
+              ])
+            },
+            [
+              _c(
+                "b-overlay",
+                {
+                  attrs: {
+                    show: _vm.modalLoading,
+                    blur: "1px",
+                    rounded: "sm",
+                    variant: "transparent"
+                  }
+                },
+                [
+                  _c("validation-observer", {
+                    ref: "observer",
+                    scopedSlots: _vm._u([
+                      {
+                        key: "default",
+                        fn: function(ref) {
+                          var handleSubmit = ref.handleSubmit
+                          return [
+                            _c(
+                              "b-form",
+                              {
+                                on: {
+                                  submit: function($event) {
+                                    $event.preventDefault()
+                                    return handleSubmit(_vm.onSubmit)
+                                  }
+                                }
+                              },
+                              [
+                                _c("ValidationProvider", {
+                                  attrs: {
+                                    name: "nombre",
+                                    rules: "required",
+                                    autocomplete: "off"
+                                  },
+                                  scopedSlots: _vm._u(
+                                    [
+                                      {
+                                        key: "default",
+                                        fn: function(validationContext) {
+                                          return [
+                                            _c(
+                                              "b-form-group",
+                                              { attrs: { label: "Nombre" } },
+                                              [
+                                                _c("b-form-input", {
+                                                  attrs: {
+                                                    type: "text",
+                                                    placeholder: "Nombre",
+                                                    state: _vm.getValidationState(
+                                                      validationContext
+                                                    )
+                                                  },
+                                                  model: {
+                                                    value: _vm.recarga.name,
+                                                    callback: function($$v) {
+                                                      _vm.$set(
+                                                        _vm.recarga,
+                                                        "name",
+                                                        $$v
+                                                      )
+                                                    },
+                                                    expression: "recarga.name"
+                                                  }
+                                                }),
+                                                _vm._v(" "),
+                                                _c("b-form-invalid-feedback", [
+                                                  _vm._v(
+                                                    _vm._s(
+                                                      validationContext
+                                                        .errors[0]
+                                                    )
+                                                  )
+                                                ])
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    null,
+                                    true
+                                  )
+                                }),
+                                _vm._v(" "),
+                                _c("ValidationProvider", {
+                                  attrs: {
+                                    name: "monto",
+                                    rules: "required|integer|max_value:9999"
+                                  },
+                                  scopedSlots: _vm._u(
+                                    [
+                                      {
+                                        key: "default",
+                                        fn: function(validationContext) {
+                                          return [
+                                            _c(
+                                              "b-form-group",
+                                              { attrs: { label: "Monto" } },
+                                              [
+                                                _c("b-form-input", {
+                                                  attrs: {
+                                                    type: "number",
+                                                    placeholder: "Monto",
+                                                    autocomplete: "off",
+                                                    state: _vm.getValidationState(
+                                                      validationContext
+                                                    )
+                                                  },
+                                                  model: {
+                                                    value: _vm.recarga.monto,
+                                                    callback: function($$v) {
+                                                      _vm.$set(
+                                                        _vm.recarga,
+                                                        "monto",
+                                                        $$v
+                                                      )
+                                                    },
+                                                    expression: "recarga.monto"
+                                                  }
+                                                }),
+                                                _vm._v(" "),
+                                                _c("b-form-invalid-feedback", [
+                                                  _vm._v(
+                                                    _vm._s(
+                                                      validationContext
+                                                        .errors[0]
+                                                    )
+                                                  )
+                                                ])
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    null,
+                                    true
+                                  )
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "b-button",
+                                  {
+                                    attrs: {
+                                      size: "sm",
+                                      variant: "primary",
+                                      type: "submit"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Guardar\n                        "
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "b-button",
+                                  {
+                                    attrs: {
+                                      size: "sm",
+                                      variant: "outline-danger"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.deleteRecarga(
+                                          _vm.infoModal.content.id
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Eliminar\n                        "
+                                    )
+                                  ]
+                                )
+                              ],
+                              1
+                            )
+                          ]
+                        }
+                      }
+                    ])
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectEquipoComponent.vue?vue&type=template&id=0b6c1e87&":
 /*!************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectEquipoComponent.vue?vue&type=template&id=0b6c1e87& ***!
@@ -98564,6 +99268,7 @@ Vue.component('usuarios-component', __webpack_require__(/*! ./components/Usuario
 Vue.component('select-role', __webpack_require__(/*! ./components/SelectRoleComponent.vue */ "./resources/js/components/SelectRoleComponent.vue")["default"]);
 Vue.component('equipos-component', __webpack_require__(/*! ./components/EquiposComponent.vue */ "./resources/js/components/EquiposComponent.vue")["default"]);
 Vue.component('sucursales-component', __webpack_require__(/*! ./components/SucursalesComponent.vue */ "./resources/js/components/SucursalesComponent.vue")["default"]);
+Vue.component('recargas-component', __webpack_require__(/*! ./components/RecargasComponent.vue */ "./resources/js/components/RecargasComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -99030,6 +99735,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RadioProductoComponent_vue_vue_type_template_id_952ba026___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RadioProductoComponent_vue_vue_type_template_id_952ba026___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/RecargasComponent.vue":
+/*!*******************************************************!*\
+  !*** ./resources/js/components/RecargasComponent.vue ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _RecargasComponent_vue_vue_type_template_id_a7d4a7ec___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RecargasComponent.vue?vue&type=template&id=a7d4a7ec& */ "./resources/js/components/RecargasComponent.vue?vue&type=template&id=a7d4a7ec&");
+/* harmony import */ var _RecargasComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RecargasComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/RecargasComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _RecargasComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _RecargasComponent_vue_vue_type_template_id_a7d4a7ec___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _RecargasComponent_vue_vue_type_template_id_a7d4a7ec___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/RecargasComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/RecargasComponent.vue?vue&type=script&lang=js&":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/RecargasComponent.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_RecargasComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./RecargasComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RecargasComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_RecargasComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/RecargasComponent.vue?vue&type=template&id=a7d4a7ec&":
+/*!**************************************************************************************!*\
+  !*** ./resources/js/components/RecargasComponent.vue?vue&type=template&id=a7d4a7ec& ***!
+  \**************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RecargasComponent_vue_vue_type_template_id_a7d4a7ec___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./RecargasComponent.vue?vue&type=template&id=a7d4a7ec& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RecargasComponent.vue?vue&type=template&id=a7d4a7ec&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RecargasComponent_vue_vue_type_template_id_a7d4a7ec___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RecargasComponent_vue_vue_type_template_id_a7d4a7ec___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
