@@ -24,7 +24,7 @@ class Icc extends Model
     }
     public function subproduct()
     {
-        return $this->belongsTo('App\IccSubProduct', 'sub_product_id');
+        return $this->belongsTo('App\IccSubProduct', 'subproduct_id');
     }
     public function comment()
     {
@@ -34,4 +34,5 @@ class Icc extends Model
     {
         return $this->belongsTo('App\Distribution');
     }
+
 }

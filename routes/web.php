@@ -16,6 +16,9 @@ use App\Sucursal;
 use App\Role;
 use Illuminate\Support\Facades\Auth;
 
+//borrar
+use App\IccProduct;
+
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
 Route::get('/home', function () {
@@ -65,9 +68,12 @@ Route::get('/pruebas', function()
 
     $distribution = Distribution::find($userDistribution);
 
-    $equipos = $distribution->equipos()->get();
+    $iccProductos = $distribution->iccSubProducts()->get();
 
-    return response()->json($equipos);
+    
+    $product = IccProduct::find(2);
+    $product1 = $product->iccs()->get();
+    return response()->json($product1);
 });
 
 

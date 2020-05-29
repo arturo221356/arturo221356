@@ -32,5 +32,13 @@ class Distribution extends Model
     {
         return $this->hasMany('App\Recarga');
     }
+    public function iccProducts()
+    {
+        return $this->hasMany('App\IccProduct');
+    }
+    public function iccSubProducts()
+    {
+        return $this->hasManyThrough('App\IccSubProduct','App\IccProduct');
+    }
 
 }
