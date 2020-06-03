@@ -34,5 +34,9 @@ class Icc extends Model
     {
         return $this->belongsTo('App\Distribution');
     }
+    public function details()
+    {
+        return $this->hasOne('App\IccDetail')->withDefault();
+    }
 
 }

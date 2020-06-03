@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 
 //borrar
 use App\IccProduct;
+use App\Icc;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
@@ -43,6 +44,7 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
     Route::resource('/sucursales', 'SucursalController');
     Route::resource('/productos/recargas', 'RecargasController');
     Route::resource('/productos/equipos', 'EquiposController');
+    Route::resource('/productos/sims', 'IccProductController');
     Route::resource('/imei', 'ImeisController');
     Route::resource('/icc', 'IccController');
     Route::resource('/roles', 'RoleController');
@@ -64,16 +66,16 @@ Route::get('/inventario', 'InventarioController@index')->middleware('auth');
 Route::get('/pruebas', function()
 {
 
-    $userDistribution = Auth::User()->distribution()->id;
 
-    $distribution = Distribution::find($userDistribution);
-
-    $iccProductos = $distribution->iccSubProducts()->get();
 
     
-    $product = IccProduct::find(2);
-    $product1 = $product->iccs()->get();
-    return response()->json($product1);
+    $icc = Icc::findOrFail(13);
+    
+    $comment = $icc->details()->updateOrCreate([], ['dn' => 5454]);
+
+    $posts = $icc->details->dn;
+
+    return response()->json($posts);
 });
 
 

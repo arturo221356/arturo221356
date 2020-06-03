@@ -17,6 +17,10 @@ class CreateIccProductsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->unsignedInteger('distribution_id');
+            $table->boolean('recarga_required')->default(false);
+            $table->boolean('initial_price')->default(false);
+            $table->boolean('sim_cost')->default(false);
+            $table->boolean('recarga_externa')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

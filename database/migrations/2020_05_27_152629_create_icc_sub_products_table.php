@@ -18,8 +18,10 @@ class CreateIccSubProductsTable extends Migration
             $table->string('name');
             $table->integer('icc_product_id');
             $table->integer('precio');
-            $table->boolean('recarga_is_required')->default(false);
-            $table->boolean('recarga_required')->nullable();
+            $table->integer('recarga_requerida')->nullable();
+            $table->integer('recarga_externa')->nullable();
+            $table->integer('costo_sim')->default(0);
+            $table->integer('precio_inicial')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

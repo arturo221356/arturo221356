@@ -212,6 +212,9 @@ class IccController extends Controller
      */
     public function destroy(Icc $icc)
     {
+        $icc->details()->delete();
+
         $icc->delete();
+       
     }
 }

@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+<iccproduct-component></iccproduct-component>
 
 
 @endsection
