@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Support\Facades\Auth;
+
 class IccProduct extends Model
 {
     use SoftDeletes;
@@ -16,7 +18,7 @@ class IccProduct extends Model
 
     public function subproducts()
     {
-        return $this->hasMany('App\IccSubProduct','icc_product_id');
+        return $this->hasMany('App\IccSubProduct','icc_product_id')->where('distribution_id', Auth::User()->distribution()->id);
     }
     public function distribution()
     {

@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+<venta-component></venta-component>
 
 
 @endsection

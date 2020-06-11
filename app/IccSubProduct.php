@@ -22,4 +22,12 @@ class IccSubProduct extends Model
     {
         return $this->hasMany('App\icc','subproduct_id');
     }
+    public function distribution()
+    {
+        return $this->belongsTo('App\Distribution');
+    }
+    public function precio()
+    {
+        return ($this->costo_sim + $this->initial_price );
+    }
 }

@@ -50,7 +50,9 @@
                 :key="product.id"
                 :title="product.name"
             >
-                <iccsubproduct-component :product_id="product.id"></iccsubproduct-component>
+                <iccsubproduct-component
+                    :product_id="product.id"
+                ></iccsubproduct-component>
             </b-tab>
         </b-tabs>
 
@@ -115,7 +117,7 @@
                                 name="radios-btn-default"
                             ></b-form-radio-group>
                         </b-form-group> -->
-                    </ValidationProvider> 
+                    </ValidationProvider>
 
                     <b-button size="sm" variant="primary" type="submit">
                         Guardar
@@ -136,6 +138,8 @@ export default {
 
             products: [],
 
+            subProducts:[],
+
             createMode: false,
 
             infoModal: {
@@ -147,14 +151,13 @@ export default {
             producto: {
                 name: null,
                 recarga_required: false,
-                initial_price:false,
-                sim_cost:false,
+                initial_price: false,
+                sim_cost: false,
             },
             YesOrNo: [
                 { text: "No", value: false },
                 { text: "Si", value: true },
             ],
-           
         };
     },
     methods: {
@@ -182,7 +185,6 @@ export default {
                 recarga_required: this.producto.recarga_required,
                 initial_price: this.producto.initial_price,
                 sim_cost: this.producto.sim_cost,
-
             };
             axios.post(`/admin/productos/sims`, params).then((res) => {
                 this.loadProductos();

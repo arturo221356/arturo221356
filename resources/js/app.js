@@ -59,6 +59,7 @@ Vue.component('sucursales-component', require('./components/SucursalesComponent.
 Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);
 Vue.component('iccproduct-component', require('./components/IccProductComponent.vue').default);
 Vue.component('iccsubproduct-component', require('./components/IccSubProductComponent.vue').default);
+Vue.component('venta-component', require('./components/VentaComponent.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
