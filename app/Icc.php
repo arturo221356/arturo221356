@@ -6,13 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Icc extends Model
+use Spatie\Searchable\Searchable;
+
+use Spatie\Searchable\SearchResult;
+
+class Icc extends Model implements Searchable
 {
     use SoftDeletes;
     
     protected $dates = ['deleted_at'];
 
     protected $fillable = ["icc", "sucursal_id", "status_id","distribution_id"];
+
+    public function getSearchResult(): SearchResult
+     {
+        // $url = route('blogPost.show', $this->slug);
+     
+         return new \Spatie\Searchable\SearchResult(
+            $this,
+            $this->icc,
+            // $url
+         );
+     }
 
     public function sucursal()
     {

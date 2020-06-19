@@ -5430,47 +5430,119 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      buscarProducto: "",
-      recargas: [],
-      planes: [],
-      portas: [],
-      lineasNuevas: [],
-      otros: [],
-      generales: [],
-      listItems: [{
-        title: "Linea Nueva",
+      searchValue: "",
+      searchResults: [],
+      articulos: [],
+      articulo: {
+        title: "",
         content: {
-          dn: "3310512007",
-          dn_temporal: "3921106507"
+          description: ""
         },
-        precio: 99
-      }, {
-        title: "Portabilidad",
-        content: {
-          icc: "89520384464646464454f"
-        },
-        precio: 20
-      }, {
-        title: "Plan",
-        content: "2",
-        precio: 30
-      }, {
-        title: "Recarga",
-        content: "2",
-        precio: 50
-      }]
+        precio: null,
+        type: ""
+      }
     };
   },
   computed: {
     totalVenta: function totalVenta() {
       var sum = 0;
-      this.listItems.forEach(function (item) {
+      this.articulos.forEach(function (item) {
         sum += item.precio;
       });
       return sum;
+    }
+  },
+  methods: {
+    searchProduct: function searchProduct() {
+      var self = this;
+
+      if (this.searchValue.length >= 5) {
+        axios.get("/pruebas", {
+          params: {
+            search: this.searchValue
+          }
+        }).then(function (response) {
+          console.log(response.data);
+          self.searchResults = response.data;
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      } else {
+        self.searchResults = [];
+      }
+    },
+    eliminarItem: function eliminarItem(item, index) {
+      this.articulos.splice(index, 1);
+    },
+    agregarGeneral: function agregarGeneral(evt) {
+      evt.preventDefault();
+      this.articulo.type = "general";
+      this.articulo.content.dn = "3310512007 ";
+      var nuevoItem = this.articulo;
+      this.articulos.unshift(nuevoItem);
+      this.articulo = {
+        title: "",
+        content: {
+          description: ""
+        },
+        precio: 0,
+        type: ""
+      };
+      console.log(this.articulos);
     }
   }
 });
@@ -87831,18 +87903,32 @@ var render = function() {
                       _c("b-form-input", {
                         staticClass: "mb-2 mr-sm-2 mb-sm-0",
                         attrs: {
+                          autocomplete: "off",
                           placeholder: "Buscar Producto",
                           "aria-describedby": "password-help-block",
-                          id: "text-password"
+                          id: "text-password",
+                          list: "search-results"
                         },
+                        on: { keyup: _vm.searchProduct },
                         model: {
-                          value: _vm.buscarProducto,
+                          value: _vm.searchValue,
                           callback: function($$v) {
-                            _vm.buscarProducto = $$v
+                            _vm.searchValue = $$v
                           },
-                          expression: "buscarProducto"
+                          expression: "searchValue"
                         }
                       }),
+                      _vm._v(" "),
+                      _c(
+                        "datalist",
+                        { attrs: { id: "search-results" } },
+                        _vm._l(_vm.searchResults, function(list, index) {
+                          return _c("option", { key: index }, [
+                            _vm._v(_vm._s(list.title))
+                          ])
+                        }),
+                        0
+                      ),
                       _vm._v(" "),
                       _c("b-button", { attrs: { variant: "success" } }, [
                         _vm._v("Agregar")
@@ -87883,45 +87969,124 @@ var render = function() {
       _vm._v(" "),
       _c(
         "b-list-group",
-        _vm._l(_vm.listItems, function(item) {
+        _vm._l(_vm.articulos, function(item, index) {
           return _c(
             "b-list-group-item",
             {
-              key: item.id,
+              key: index,
               staticClass: "flex-column align-items-start",
               attrs: { href: "#" }
             },
             [
               _c("div", { staticClass: "d-flex" }, [
-                _c("div", { staticClass: "col-8  justify-content-start" }, [
+                _c("div", { staticClass: "col-4 justify-content-start" }, [
                   _c("h3", { staticClass: "mb-1" }, [
                     _vm._v(_vm._s(item.title))
                   ]),
                   _vm._v(" "),
                   item.content.icc
-                    ? _c("h5", [_vm._v("ICC:  " + _vm._s(item.content.icc))])
+                    ? _c("h5", [
+                        _vm._v(
+                          "\n                        ICC: " +
+                            _vm._s(item.content.icc) +
+                            "\n                    "
+                        )
+                      ])
                     : _vm._e(),
                   _vm._v(" "),
                   item.content.dn
-                    ? _c("h5", [_vm._v("DN:  " + _vm._s(item.content.dn))])
+                    ? _c("h5", [
+                        _vm._v(
+                          "\n                        DN: " +
+                            _vm._s(item.content.dn) +
+                            "\n\n                        "
+                        ),
+                        item.content.recargaDn
+                          ? _c(
+                              "div",
+                              {
+                                staticClass: "badge badge-primary text-wrap",
+                                staticStyle: { width: "6rem" }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                            Recarga $" +
+                                    _vm._s(item.content.recargaDn) +
+                                    "\n                        "
+                                )
+                              ]
+                            )
+                          : _vm._e()
+                      ])
                     : _vm._e(),
                   _vm._v(" "),
                   item.content.dn_temporal
                     ? _c("h5", [
                         _vm._v(
-                          "DN TEMPORAL:  " + _vm._s(item.content.dn_temporal)
+                          "\n                        DN TEMPORAL: " +
+                            _vm._s(item.content.dn_temporal) +
+                            "\n                        "
+                        ),
+                        item.content.recargaDnTemporal
+                          ? _c(
+                              "div",
+                              {
+                                staticClass: "badge badge-primary text-wrap",
+                                staticStyle: { width: "6rem" }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                            Recarga $" +
+                                    _vm._s(item.content.recargaDnTemporal) +
+                                    "\n                        "
+                                )
+                              ]
+                            )
+                          : _vm._e()
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  item.content.description
+                    ? _c("h5", [
+                        _vm._v(
+                          "\n                        " +
+                            _vm._s(item.content.description) +
+                            "\n                    "
                         )
                       ])
                     : _vm._e()
                 ]),
                 _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col-4 row justify-content-md-cente" },
+                  [
+                    _c("p", { staticClass: "text-xl-left" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(item.content.description) +
+                          "\n                    "
+                      )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
                 _c("div", { staticClass: "col-4 row justify-content-end" }, [
                   _c(
                     "small",
                     [
-                      _c("b-button", { attrs: { variant: "danger" } }, [
-                        _vm._v("Eliminar")
-                      ]),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { variant: "danger" },
+                          on: {
+                            click: function($event) {
+                              return _vm.eliminarItem(item, index)
+                            }
+                          }
+                        },
+                        [_vm._v("Eliminar")]
+                      ),
                       _vm._v(" "),
                       _c("h5", { staticClass: "mt-3" }, [
                         _vm._v(
@@ -87948,7 +88113,41 @@ var render = function() {
         [
           _c(
             "b-form",
+            { on: { submit: _vm.agregarGeneral } },
             [
+              _c("b-form-input", {
+                attrs: { placeholder: "Nombre" },
+                model: {
+                  value: _vm.articulo.title,
+                  callback: function($$v) {
+                    _vm.$set(_vm.articulo, "title", $$v)
+                  },
+                  expression: "articulo.title"
+                }
+              }),
+              _vm._v(" "),
+              _c("b-form-input", {
+                attrs: { placeholder: "Descripcion" },
+                model: {
+                  value: _vm.articulo.content.description,
+                  callback: function($$v) {
+                    _vm.$set(_vm.articulo.content, "description", $$v)
+                  },
+                  expression: "articulo.content.description"
+                }
+              }),
+              _vm._v(" "),
+              _c("b-form-input", {
+                attrs: { placeholder: "precio", type: "number" },
+                model: {
+                  value: _vm.articulo.precio,
+                  callback: function($$v) {
+                    _vm.$set(_vm.articulo, "precio", _vm._n($$v))
+                  },
+                  expression: "articulo.precio"
+                }
+              }),
+              _vm._v(" "),
               _c(
                 "b-button",
                 { attrs: { type: "submit", variant: "primary" } },

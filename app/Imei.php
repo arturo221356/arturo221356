@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Imei extends Model
+use Spatie\Searchable\Searchable;
+
+use Spatie\Searchable\SearchResult;
+
+class Imei extends Model implements Searchable
 {
     use SoftDeletes;
     
@@ -14,7 +18,16 @@ class Imei extends Model
 
     protected $dates = ['deleted_at'];
     
+    public function getSearchResult(): SearchResult
+    {
+       // $url = route('blogPost.show', $this->slug);
     
+        return new \Spatie\Searchable\SearchResult(
+           $this,
+           $this->imei,
+           // $url
+        );
+    }
     
     public function sucursal(){
         return $this->belongsTo('App\Sucursal');

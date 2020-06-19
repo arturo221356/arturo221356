@@ -17,8 +17,12 @@ use App\Role;
 use Illuminate\Support\Facades\Auth;
 
 //borrar
+use Spatie\Searchable\Search;
 use App\IccProduct;
 use App\Icc;
+use App\Imei;
+use App\Recarga;
+use Illuminate\Http\Request;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
@@ -63,19 +67,25 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
 Route::get('/inventario', 'InventarioController@index')->middleware('auth');
 
 
-Route::get('/pruebas', function()
-{
+Route::get('/pruebas', function (Request $request) {
 
+    $searchResults = (new Search())
+        ->registerModel(Icc::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+               
+                ->limit(5)
+                ->addSearchableAttribute('icc');
+        })
+        ->registerModel(Imei::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+               
+                ->limit(5)
+                ->addSearchableAttribute('imei');
+        })
+        ->search($request->search);
+        
 
-
-    
-    $icc = Icc::findOrFail(13);
-    
-    $comment = $icc->details()->updateOrCreate([], ['dn' => 5454]);
-
-    $posts = $icc->details->dn;
-
-    return response()->json($posts);
+    return $searchResults;
 });
 
 

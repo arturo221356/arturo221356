@@ -11,7 +11,7 @@ $factory->define(Icc::class, function (Faker $faker) {
 
     return [
 
-        'icc' => $faker->shuffle('qwertyuiopasdfghjkl'),
+        'icc' => $faker->numerify('895203#############'),
         'status_id' => $faker->numberBetween($min = 1, $max = 5),
         'sucursal_id' => $faker->numberBetween($min = 1, $max = 10),
 
