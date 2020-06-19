@@ -10,18 +10,20 @@
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
             <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav>
-                    <b-nav-form inline>
+                
+               
+                    <b-row>
+                        <b-col  sm="8">
                         <b-form-input
                             v-model="searchValue"
                             autocomplete="off"
                             placeholder="Buscar Producto"
-                            class="mb-2 mr-sm-2 mb-sm-0"
-                            aria-describedby="password-help-block"
-                            id="text-password"
+                          
                             list="search-results"
                             @keyup="searchProduct"
+                            
                         ></b-form-input>
+                       
                         <datalist id="search-results" >
                             <option
                                 v-for="(list, index) in searchResults"
@@ -30,17 +32,18 @@
                             >
                             
                         </datalist>
+                        </b-col>
 
-                        <b-button variant="success">Agregar</b-button>
-                    </b-nav-form>
-                </b-navbar-nav>
-
+                
+                
+                
                 <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto">
+                <b-col sm="4">
                     <b-button v-b-modal.modal-producto-general
                         >Agregar venta general</b-button
                     >
-                </b-navbar-nav>
+                </b-col>
+                </b-row>
             </b-collapse>
         </b-navbar>
         <!-- cards -->

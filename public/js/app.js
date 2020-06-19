@@ -5481,6 +5481,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -87894,19 +87897,16 @@ var render = function() {
             { attrs: { id: "nav-collapse", "is-nav": "" } },
             [
               _c(
-                "b-navbar-nav",
+                "b-row",
                 [
                   _c(
-                    "b-nav-form",
-                    { attrs: { inline: "" } },
+                    "b-col",
+                    { attrs: { sm: "8" } },
                     [
                       _c("b-form-input", {
-                        staticClass: "mb-2 mr-sm-2 mb-sm-0",
                         attrs: {
                           autocomplete: "off",
                           placeholder: "Buscar Producto",
-                          "aria-describedby": "password-help-block",
-                          id: "text-password",
                           list: "search-results"
                         },
                         on: { keyup: _vm.searchProduct },
@@ -87928,34 +87928,30 @@ var render = function() {
                           ])
                         }),
                         0
-                      ),
-                      _vm._v(" "),
-                      _c("b-button", { attrs: { variant: "success" } }, [
-                        _vm._v("Agregar")
-                      ])
+                      )
                     ],
                     1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "b-navbar-nav",
-                { staticClass: "ml-auto" },
-                [
+                  ),
+                  _vm._v(" "),
                   _c(
-                    "b-button",
-                    {
-                      directives: [
+                    "b-col",
+                    { attrs: { sm: "4" } },
+                    [
+                      _c(
+                        "b-button",
                         {
-                          name: "b-modal",
-                          rawName: "v-b-modal.modal-producto-general",
-                          modifiers: { "modal-producto-general": true }
-                        }
-                      ]
-                    },
-                    [_vm._v("Agregar venta general")]
+                          directives: [
+                            {
+                              name: "b-modal",
+                              rawName: "v-b-modal.modal-producto-general",
+                              modifiers: { "modal-producto-general": true }
+                            }
+                          ]
+                        },
+                        [_vm._v("Agregar venta general")]
+                      )
+                    ],
+                    1
                   )
                 ],
                 1
