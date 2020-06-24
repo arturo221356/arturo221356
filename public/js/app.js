@@ -5484,10 +5484,58 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       searchValue: "",
+      showList: true,
+      newIccMode: false,
       searchResults: [],
       articulos: [],
       articulo: {
@@ -5497,7 +5545,8 @@ __webpack_require__.r(__webpack_exports__);
         },
         precio: null,
         type: ""
-      }
+      },
+      nuevoIcc: {}
     };
   },
   computed: {
@@ -5514,7 +5563,7 @@ __webpack_require__.r(__webpack_exports__);
       var self = this;
 
       if (this.searchValue.length >= 5) {
-        axios.get("/pruebas", {
+        axios.get("/search/venta-prediction", {
           params: {
             search: this.searchValue
           }
@@ -5528,13 +5577,55 @@ __webpack_require__.r(__webpack_exports__);
         self.searchResults = [];
       }
     },
+    agregarSerie: function agregarSerie() {
+      var self = this;
+      axios.get("/search/exact-search", {
+        params: {
+          search: this.searchValue
+        }
+      }).then(function (response) {
+        console.log(response.data[0]);
+        var item = response.data[0];
+        var nuevaSerie = {};
+
+        switch (item.type) {
+          case "iccs":
+            self.newIcc(item.searchable.icc);
+            break;
+
+          case "imeis":
+            nuevaSerie = {
+              title: "".concat(item.searchable.equipo.marca, "  ").concat(item.searchable.equipo.modelo),
+              content: {
+                imei: item.searchable.imei
+              },
+              precio: item.searchable.equipo.precio,
+              type: item.type
+            };
+            self.articulos.unshift(nuevaSerie);
+            break;
+        } // console.log(nuevaSerie);
+
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
     eliminarItem: function eliminarItem(item, index) {
       this.articulos.splice(index, 1);
+    },
+    newIcc: function newIcc(icc) {
+      this.showList = false;
+      this.newIccMode = true;
+      this.nuevoIcc.icc = icc;
+    },
+    resetNewIcc: function resetNewIcc() {
+      this.nuevoIcc = {};
+      this.newIccMode = false;
+      this.showList = true;
     },
     agregarGeneral: function agregarGeneral(evt) {
       evt.preventDefault();
       this.articulo.type = "general";
-      this.articulo.content.dn = "3310512007 ";
       var nuevoItem = this.articulo;
       this.articulos.unshift(nuevoItem);
       this.articulo = {
@@ -87897,11 +87988,11 @@ var render = function() {
             { attrs: { id: "nav-collapse", "is-nav": "" } },
             [
               _c(
-                "b-row",
+                "b-col",
+                { attrs: { sm: "8" } },
                 [
                   _c(
-                    "b-col",
-                    { attrs: { sm: "8" } },
+                    "b-input-group",
                     [
                       _c("b-form-input", {
                         attrs: {
@@ -87909,7 +88000,7 @@ var render = function() {
                           placeholder: "Buscar Producto",
                           list: "search-results"
                         },
-                        on: { keyup: _vm.searchProduct },
+                        on: { update: _vm.searchProduct },
                         model: {
                           value: _vm.searchValue,
                           callback: function($$v) {
@@ -87928,30 +88019,45 @@ var render = function() {
                           ])
                         }),
                         0
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "b-col",
-                    { attrs: { sm: "4" } },
-                    [
+                      ),
+                      _vm._v(" "),
                       _c(
-                        "b-button",
-                        {
-                          directives: [
+                        "b-input-group-append",
+                        [
+                          _c(
+                            "b-button",
                             {
-                              name: "b-modal",
-                              rawName: "v-b-modal.modal-producto-general",
-                              modifiers: { "modal-producto-general": true }
-                            }
-                          ]
-                        },
-                        [_vm._v("Agregar venta general")]
+                              attrs: { variant: "success" },
+                              on: { click: _vm.agregarSerie }
+                            },
+                            [_vm._v("Agregar")]
+                          )
+                        ],
+                        1
                       )
                     ],
                     1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-col",
+                { attrs: { sm: "4" } },
+                [
+                  _c(
+                    "b-button",
+                    {
+                      directives: [
+                        {
+                          name: "b-modal",
+                          rawName: "v-b-modal.modal-producto-general",
+                          modifiers: { "modal-producto-general": true }
+                        }
+                      ]
+                    },
+                    [_vm._v("Agregar venta general")]
                   )
                 ],
                 1
@@ -87963,145 +88069,242 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c(
-        "b-list-group",
-        _vm._l(_vm.articulos, function(item, index) {
-          return _c(
-            "b-list-group-item",
-            {
-              key: index,
-              staticClass: "flex-column align-items-start",
-              attrs: { href: "#" }
-            },
-            [
-              _c("div", { staticClass: "d-flex" }, [
-                _c("div", { staticClass: "col-4 justify-content-start" }, [
-                  _c("h3", { staticClass: "mb-1" }, [
-                    _vm._v(_vm._s(item.title))
-                  ]),
-                  _vm._v(" "),
-                  item.content.icc
-                    ? _c("h5", [
-                        _vm._v(
-                          "\n                        ICC: " +
-                            _vm._s(item.content.icc) +
-                            "\n                    "
-                        )
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  item.content.dn
-                    ? _c("h5", [
-                        _vm._v(
-                          "\n                        DN: " +
-                            _vm._s(item.content.dn) +
-                            "\n\n                        "
-                        ),
-                        item.content.recargaDn
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "badge badge-primary text-wrap",
-                                staticStyle: { width: "6rem" }
-                              },
-                              [
-                                _vm._v(
-                                  "\n                            Recarga $" +
-                                    _vm._s(item.content.recargaDn) +
-                                    "\n                        "
-                                )
-                              ]
-                            )
-                          : _vm._e()
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  item.content.dn_temporal
-                    ? _c("h5", [
-                        _vm._v(
-                          "\n                        DN TEMPORAL: " +
-                            _vm._s(item.content.dn_temporal) +
-                            "\n                        "
-                        ),
-                        item.content.recargaDnTemporal
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "badge badge-primary text-wrap",
-                                staticStyle: { width: "6rem" }
-                              },
-                              [
-                                _vm._v(
-                                  "\n                            Recarga $" +
-                                    _vm._s(item.content.recargaDnTemporal) +
-                                    "\n                        "
-                                )
-                              ]
-                            )
-                          : _vm._e()
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  item.content.description
-                    ? _c("h5", [
-                        _vm._v(
-                          "\n                        " +
-                            _vm._s(item.content.description) +
-                            "\n                    "
-                        )
-                      ])
-                    : _vm._e()
-                ]),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "col-4 row justify-content-md-cente" },
-                  [
-                    _c("p", { staticClass: "text-xl-left" }, [
-                      _vm._v(
-                        "\n                        " +
-                          _vm._s(item.content.description) +
-                          "\n                    "
-                      )
-                    ])
-                  ]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-4 row justify-content-end" }, [
-                  _c(
-                    "small",
-                    [
-                      _c(
-                        "b-button",
-                        {
-                          attrs: { variant: "danger" },
-                          on: {
-                            click: function($event) {
-                              return _vm.eliminarItem(item, index)
-                            }
-                          }
-                        },
-                        [_vm._v("Eliminar")]
-                      ),
+      _vm.showList == true
+        ? _c(
+            "b-list-group",
+            _vm._l(_vm.articulos, function(item, index) {
+              return _c(
+                "b-list-group-item",
+                {
+                  key: index,
+                  staticClass: "flex-column align-items-start",
+                  attrs: { href: "#" }
+                },
+                [
+                  _c("div", { staticClass: "d-flex" }, [
+                    _c("div", { staticClass: "col-4 justify-content-start" }, [
+                      _c("h3", { staticClass: "mb-1" }, [
+                        _vm._v(_vm._s(item.title))
+                      ]),
                       _vm._v(" "),
-                      _c("h5", { staticClass: "mt-3" }, [
-                        _vm._v(
-                          "\n                            Precio: $" +
-                            _vm._s(item.precio) +
-                            "\n                        "
+                      item.content.icc
+                        ? _c("h5", [
+                            _vm._v(
+                              "\n                        ICC: " +
+                                _vm._s(item.content.icc) +
+                                "\n                    "
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      item.content.imei
+                        ? _c("h5", [
+                            _vm._v(
+                              "\n                        Imei: " +
+                                _vm._s(item.content.imei) +
+                                "\n                    "
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      item.content.dn
+                        ? _c("h5", [
+                            _vm._v(
+                              "\n                        DN: " +
+                                _vm._s(item.content.dn) +
+                                "\n\n                        "
+                            ),
+                            item.content.recargaDn
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "badge badge-primary text-wrap",
+                                    staticStyle: { width: "6rem" }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Recarga $" +
+                                        _vm._s(item.content.recargaDn) +
+                                        "\n                        "
+                                    )
+                                  ]
+                                )
+                              : _vm._e()
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      item.content.dn_temporal
+                        ? _c("h5", [
+                            _vm._v(
+                              "\n                        DN TEMPORAL: " +
+                                _vm._s(item.content.dn_temporal) +
+                                "\n                        "
+                            ),
+                            item.content.recargaDnTemporal
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "badge badge-primary text-wrap",
+                                    staticStyle: { width: "6rem" }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Recarga $" +
+                                        _vm._s(item.content.recargaDnTemporal) +
+                                        "\n                        "
+                                    )
+                                  ]
+                                )
+                              : _vm._e()
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      item.content.description
+                        ? _c("h5", [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(item.content.description) +
+                                "\n                    "
+                            )
+                          ])
+                        : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-4 row justify-content-md-cente" },
+                      [
+                        _c("p", { staticClass: "text-xl-left" }, [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(item.content.description) +
+                              "\n                    "
+                          )
+                        ])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-4 row justify-content-end" },
+                      [
+                        _c(
+                          "small",
+                          [
+                            _c(
+                              "b-button",
+                              {
+                                attrs: { variant: "danger" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.eliminarItem(item, index)
+                                  }
+                                }
+                              },
+                              [_vm._v("Eliminar")]
+                            ),
+                            _vm._v(" "),
+                            _c("h5", { staticClass: "mt-3" }, [
+                              _vm._v(
+                                "\n                            Precio: $" +
+                                  _vm._s(item.precio) +
+                                  "\n                        "
+                              )
+                            ])
+                          ],
+                          1
                         )
-                      ])
-                    ],
-                    1
-                  )
-                ])
-              ])
-            ]
+                      ]
+                    )
+                  ])
+                ]
+              )
+            }),
+            1
           )
-        }),
-        1
-      ),
-      _vm._v("\n    " + _vm._s(_vm.totalVenta) + "\n\n    "),
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.newIccMode
+        ? _c(
+            "b-form",
+            { on: { reset: _vm.resetNewIcc } },
+            [
+              _c(
+                "b-form-group",
+                {
+                  attrs: {
+                    id: "input-group-1",
+                    label: "Icc:",
+                    "label-for": "icc"
+                  }
+                },
+                [
+                  _c("b-form-input", {
+                    attrs: {
+                      id: "icc",
+                      type: "text",
+                      readonly: "",
+                      value: _vm.nuevoIcc.icc
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                {
+                  attrs: {
+                    id: "input-group-2",
+                    label: "Your Name:",
+                    "label-for": "input-2"
+                  }
+                },
+                [
+                  _c("b-form-input", {
+                    attrs: {
+                      id: "input-2",
+                      required: "",
+                      placeholder: "Enter name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                {
+                  attrs: {
+                    id: "input-group-3",
+                    label: "Food:",
+                    "label-for": "input-3"
+                  }
+                },
+                [
+                  _c("b-form-select", {
+                    attrs: { id: "input-3", required: "" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-button",
+                { attrs: { type: "submit", variant: "primary" } },
+                [_vm._v("Agregar")]
+              ),
+              _vm._v(" "),
+              _c("b-button", { attrs: { type: "reset", variant: "danger" } }, [
+                _vm._v("Cancelar")
+              ])
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v("\n\n    " + _vm._s(_vm.totalVenta) + "\n\n    "),
       _vm._v(" "),
       _c(
         "b-modal",

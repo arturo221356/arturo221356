@@ -17,10 +17,8 @@ use App\Role;
 use Illuminate\Support\Facades\Auth;
 
 //borrar
-use Spatie\Searchable\Search;
+
 use App\IccProduct;
-use App\Icc;
-use App\Imei;
 use App\Recarga;
 use Illuminate\Http\Request;
 
@@ -69,25 +67,13 @@ Route::get('/inventario', 'InventarioController@index')->middleware('auth');
 
 Route::get('/pruebas', function (Request $request) {
 
-    $searchResults = (new Search())
-        ->registerModel(Icc::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-               
-                ->limit(5)
-                ->addSearchableAttribute('icc');
-        })
-        ->registerModel(Imei::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-               
-                ->limit(5)
-                ->addSearchableAttribute('imei');
-        })
-        ->search($request->search);
-        
 
-    return $searchResults;
 });
+// searchs
 
+Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
+
+Route::get('/search/exact-search', 'SearchController@exactSearch')->middleware('auth');
 
 //apissssss
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');
