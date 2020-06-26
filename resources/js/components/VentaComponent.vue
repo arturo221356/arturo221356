@@ -116,7 +116,7 @@
 
         <!-- formulario de icc -->
 
-        <b-form v-if="newIccMode" @reset="resetNewIcc">
+        <b-form  @reset="resetNewIcc">
             <b-form-group
                 id="input-group-1"
                 label="Icc:"
@@ -136,19 +136,15 @@
                 label="Your Name:"
                 label-for="input-2"
             >
-                <b-form-input
-                    id="input-2"
-                    required
-                    placeholder="Enter name"
-                ></b-form-input>
+                <select-iccproduct v-on:action="productChange"></select-iccproduct>
             </b-form-group>
 
-            <b-form-group id="input-group-3" label="Food:" label-for="input-3">
-                <b-form-select
-                    id="input-3"
-                    
-                    required
-                ></b-form-select>
+
+
+            <b-form-group id="input-group-3" label="Food:" label-for="input-3" v-if="selectedIccProduct">
+
+                    <select-iccsubproduct :parentProduct="selectedIccProduct"  v-on:iccsubproducto="subproductChange"></select-iccsubproduct>
+
             </b-form-group>
 
             <b-button type="submit" variant="primary">Agregar</b-button>
@@ -187,6 +183,8 @@ export default {
     data() {
         return {
             searchValue: "",
+
+            selectedIccProduct: null,
 
             showList: true,
 
@@ -239,7 +237,7 @@ export default {
             }
         },
         agregarSerie() {
-            const self = this;
+            
 
             axios
                 .get("/search/exact-search", {
@@ -254,7 +252,7 @@ export default {
 
                     switch (item.type) {
                         case "iccs":
-                            self.newIcc(item.searchable.icc);
+                            this.newIcc(item.searchable.icc);
 
                             break;
 
@@ -270,11 +268,12 @@ export default {
 
                                 type: item.type,
                             };
-                            self.articulos.unshift(nuevaSerie);
+                            this.articulos.unshift(nuevaSerie);
                             break;
                     }
                     // console.log(nuevaSerie);
-                })
+                }.bind(this)
+                )
                 .catch(function (error) {
                     console.log(error);
                 });
@@ -317,6 +316,13 @@ export default {
 
             console.log(this.articulos);
         },
+        productChange(value){
+            
+            this.selectedIccProduct = value.id;
+        },
+        subproductChange(value){
+            console.log(value);
+        }
     },
 };
 </script>

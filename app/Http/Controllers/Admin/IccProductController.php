@@ -17,19 +17,19 @@ class IccProductController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        // if ($request->ajax()) {
 
             // $userDistribution = Auth::User()->distribution()->id;
 
             // $distribution = Distribution::find($userDistribution);
         
             // $productos = $distribution->IccProducts()->get();
-            $productos = IccProduct::all();
+            $productos = IccProduct::with('subproducts')->get();
             return response()->json($productos);
 
-        } else {
-            return view('admin.productos.sims.index');
-        }
+        // } else {
+        //     return view('admin.productos.sims.index');
+        // }
     }
 
     /**

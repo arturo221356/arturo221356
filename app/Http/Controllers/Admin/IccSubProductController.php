@@ -16,14 +16,9 @@ class IccSubProductController extends Controller
     public function index(Request $request)
     {
         
-
-            // $userDistribution = Auth::User()->distribution()->id;
-
-            // $distribution = Distribution::find($userDistribution);
-        
-            // $productos = $distribution->IccProducts()->get();
-            $productos = IccSubProduct::all();
-            return response()->json($productos);
+            $subProductos = IccSubProduct::where('icc_product_id','=',$request->icc_product_id)->get();
+            
+            return response()->json($subProductos);
 
     }
 

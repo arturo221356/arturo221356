@@ -78,6 +78,10 @@ Route::get('/search/exact-search', 'SearchController@exactSearch')->middleware('
 //apissssss
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');
 
+Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
+
+Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
+
 Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth');
 
 Route::get('/get/equipos', 'Admin\EquiposController@index')->middleware('auth');
