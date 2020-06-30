@@ -3225,6 +3225,13 @@ __webpack_require__.r(__webpack_exports__);
     emitToParent: function emitToParent() {
       this.producto.id = this.selected.id;
       this.producto.text = "".concat(this.selected.name, " ");
+      this.producto.settings = {
+        dnRequired: this.selected.dn_required,
+        dnTemporalRequired: this.selected.dn_temporal_required,
+        nipRequired: this.selected.nip_required,
+        recargaRequired: this.selected.costo_sim_required,
+        initialPriceRequired: this.selected.initial_price_required
+      };
       this.$emit("action", this.producto);
     }
   },
@@ -5700,13 +5707,101 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       searchValue: "",
-      selectedIccProduct: null,
+      recargasList: [],
       showList: true,
       newIccMode: false,
+      cliente: {
+        name: null,
+        lastName: null,
+        curp: null,
+        referencia: null,
+        email: null,
+        rfc: null
+      },
+      newIccSettings: {
+        dnRequired: false,
+        dnTemporalRequired: false,
+        nipRequired: false,
+        recargaRequired: false,
+        initialPriceRequired: false
+      },
       searchResults: [],
       articulos: [],
       articulo: {
@@ -5717,7 +5812,20 @@ __webpack_require__.r(__webpack_exports__);
         precio: null,
         type: ""
       },
-      nuevoIcc: {}
+      nuevoIcc: {
+        title: "",
+        content: {
+          icc: null,
+          iccProductId: null,
+          iccSubProductId: null,
+          dn: null,
+          dnTemporal: null,
+          nip: null,
+          costoSim: null
+        },
+        precio: null,
+        type: "iccs"
+      }
     };
   },
   computed: {
@@ -5727,6 +5835,15 @@ __webpack_require__.r(__webpack_exports__);
         sum += item.precio;
       });
       return sum;
+    },
+    nuevaIccPrecio: function nuevaIccPrecio() {
+      var precio = 0;
+
+      if (this.nuevoIcc.content.costoSim) {
+        precio += this.nuevoIcc.content.costoSim;
+      }
+
+      return precio;
     }
   },
   methods: {
@@ -5774,6 +5891,18 @@ __webpack_require__.r(__webpack_exports__);
             };
             this.articulos.unshift(nuevaSerie);
             break;
+
+          case "recargas":
+            nuevaSerie = {
+              title: "".concat(item.searchable.name),
+              content: {
+                dn: "3921106507"
+              },
+              precio: item.searchable.monto,
+              type: item.type
+            };
+            this.articulos.unshift(nuevaSerie);
+            break;
         } // console.log(nuevaSerie);
 
       }.bind(this))["catch"](function (error) {
@@ -5783,21 +5912,37 @@ __webpack_require__.r(__webpack_exports__);
     eliminarItem: function eliminarItem(item, index) {
       this.articulos.splice(index, 1);
     },
+    addIcc: function addIcc() {
+      this.nuevoIcc.precio = this.nuevaIccPrecio;
+      console.log(this.nuevoIcc);
+      this.articulos.unshift(this.nuevoIcc);
+      this.newIccMode = false;
+      this.showList = true;
+      this.resetNewIcc();
+    },
     newIcc: function newIcc(icc) {
       this.showList = false;
       this.newIccMode = true;
-      this.nuevoIcc.icc = icc;
+      this.nuevoIcc.content.icc = icc;
     },
     resetNewIcc: function resetNewIcc() {
-      this.nuevoIcc = {};
+      this.nuevoIcc = {
+        title: "",
+        content: {
+          iccProductId: null,
+          iccSubProductId: null,
+          dn: null,
+          dnTemporal: null,
+          nip: null,
+          costoSim: null
+        },
+        precio: null,
+        type: ""
+      };
       this.newIccMode = false;
       this.showList = true;
     },
-    agregarGeneral: function agregarGeneral(evt) {
-      evt.preventDefault();
-      this.articulo.type = "general";
-      var nuevoItem = this.articulo;
-      this.articulos.unshift(nuevoItem);
+    resetArticulo: function resetArticulo() {
       this.articulo = {
         title: "",
         content: {
@@ -5806,13 +5951,26 @@ __webpack_require__.r(__webpack_exports__);
         precio: 0,
         type: ""
       };
+    },
+    agregarGeneral: function agregarGeneral(evt) {
+      evt.preventDefault();
+      this.articulo.type = "general";
+      var nuevoItem = this.articulo;
+      this.articulos.unshift(nuevoItem);
+      this.resetArticulo();
       console.log(this.articulos);
     },
     productChange: function productChange(value) {
-      this.selectedIccProduct = value.id;
+      this.nuevoIcc.content.iccProductId = value.id;
+      this.nuevoIcc.title = value.text;
+      this.newIccSettings.dnRequired = value.settings.dnRequired;
+      this.newIccSettings.dnTemporalRequired = value.settings.dnTemporalRequired;
+      this.newIccSettings.nipRequired = value.settings.nipRequired;
+      this.newIccSettings.recargaRequired = value.settings.recargaRequired;
+      this.newIccSettings.initialPriceRequired = value.settings.initialPriceRequired;
     },
     subproductChange: function subproductChange(value) {
-      console.log(value);
+      this.nuevoIcc.content.iccSubProductId = value.id;
     }
   }
 });
@@ -88402,11 +88560,11 @@ var render = function() {
                           ])
                         : _vm._e(),
                       _vm._v(" "),
-                      item.content.dn_temporal
+                      item.content.dnTemporal
                         ? _c("h5", [
                             _vm._v(
                               "\n                        DN TEMPORAL: " +
-                                _vm._s(item.content.dn_temporal) +
+                                _vm._s(item.content.dnTemporal) +
                                 "\n                        "
                             ),
                             item.content.recargaDnTemporal
@@ -88494,71 +88652,228 @@ var render = function() {
           )
         : _vm._e(),
       _vm._v(" "),
-      _c(
-        "b-form",
-        { on: { reset: _vm.resetNewIcc } },
-        [
-          _c(
-            "b-form-group",
+      _vm.newIccMode
+        ? _c(
+            "b-form",
             {
-              attrs: { id: "input-group-1", label: "Icc:", "label-for": "icc" }
-            },
-            [
-              _c("b-form-input", {
-                attrs: {
-                  id: "icc",
-                  type: "text",
-                  readonly: "",
-                  value: _vm.nuevoIcc.icc
+              on: {
+                reset: _vm.resetNewIcc,
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.addIcc($event)
                 }
-              })
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "b-form-group",
-            {
-              attrs: {
-                id: "input-group-2",
-                label: "Your Name:",
-                "label-for": "input-2"
               }
             },
-            [_c("select-iccproduct", { on: { action: _vm.productChange } })],
-            1
-          ),
-          _vm._v(" "),
-          _vm.selectedIccProduct
-            ? _c(
+            [
+              _c(
                 "b-form-group",
-                {
-                  attrs: {
-                    id: "input-group-3",
-                    label: "Food:",
-                    "label-for": "input-3"
-                  }
-                },
+                { attrs: { label: "Icc:" } },
                 [
-                  _c("select-iccsubproduct", {
-                    attrs: { parentProduct: _vm.selectedIccProduct },
-                    on: { iccsubproducto: _vm.subproductChange }
+                  _c("b-form-input", {
+                    attrs: {
+                      id: "icc",
+                      type: "text",
+                      readonly: "",
+                      value: _vm.nuevoIcc.content.icc
+                    }
                   })
                 ],
                 1
-              )
-            : _vm._e(),
-          _vm._v(" "),
-          _c("b-button", { attrs: { type: "submit", variant: "primary" } }, [
-            _vm._v("Agregar")
-          ]),
-          _vm._v(" "),
-          _c("b-button", { attrs: { type: "reset", variant: "danger" } }, [
-            _vm._v("Cancelar")
-          ])
-        ],
-        1
-      ),
+              ),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                { attrs: { label: "Producto:" } },
+                [
+                  _c("select-iccproduct", { on: { action: _vm.productChange } })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _vm.nuevoIcc.content.iccProductId
+                ? _c(
+                    "b-form-group",
+                    { attrs: { label: "Sub producto:" } },
+                    [
+                      _c("select-iccsubproduct", {
+                        attrs: {
+                          parentProduct: _vm.nuevoIcc.content.iccProductId
+                        },
+                        on: { iccsubproducto: _vm.subproductChange }
+                      })
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.newIccSettings.dnRequired
+                ? _c(
+                    "b-form-group",
+                    { attrs: { label: "DN:", "label-for": "dn" } },
+                    [
+                      _c("b-form-input", {
+                        attrs: {
+                          id: "dn",
+                          type: "number",
+                          required: "",
+                          autocomplete: "off",
+                          max: "999999999"
+                        },
+                        model: {
+                          value: _vm.nuevoIcc.content.dn,
+                          callback: function($$v) {
+                            _vm.$set(_vm.nuevoIcc.content, "dn", $$v)
+                          },
+                          expression: "nuevoIcc.content.dn"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.newIccSettings.dnTemporalRequired
+                ? _c(
+                    "b-form-group",
+                    {
+                      attrs: {
+                        label: "DN temporal:",
+                        "label-for": "dn_temporal"
+                      }
+                    },
+                    [
+                      _c(
+                        "b-input-group",
+                        {
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "append",
+                                fn: function() {
+                                  return [
+                                    _c(
+                                      "b-dropdown",
+                                      {
+                                        attrs: {
+                                          text: "Recargar",
+                                          variant: "primary"
+                                        }
+                                      },
+                                      [
+                                        _c("b-dropdown-item", [
+                                          _vm._v("Action C")
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("b-dropdown-item", [
+                                          _vm._v("Action D")
+                                        ])
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            2001531557
+                          )
+                        },
+                        [
+                          _c("b-form-input", {
+                            attrs: {
+                              id: "dn_temporal",
+                              type: "number",
+                              autocomplete: "off",
+                              max: "999999999"
+                            },
+                            model: {
+                              value: _vm.nuevoIcc.content.dnTemporal,
+                              callback: function($$v) {
+                                _vm.$set(
+                                  _vm.nuevoIcc.content,
+                                  "dnTemporal",
+                                  $$v
+                                )
+                              },
+                              expression: "nuevoIcc.content.dnTemporal"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.newIccSettings.nipRequired
+                ? _c(
+                    "b-form-group",
+                    { attrs: { label: "NIP:", "label-for": "nip" } },
+                    [
+                      _c("b-form-input", {
+                        attrs: {
+                          id: "nip",
+                          type: "number",
+                          autocomplete: "off",
+                          max: "9999"
+                        },
+                        model: {
+                          value: _vm.nuevoIcc.content.nip,
+                          callback: function($$v) {
+                            _vm.$set(_vm.nuevoIcc.content, "nip", $$v)
+                          },
+                          expression: "nuevoIcc.content.nip"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                { attrs: { label: "Costo sim:", "label-for": "costo_sim" } },
+                [
+                  _c("b-form-input", {
+                    attrs: {
+                      id: "costo_sim",
+                      type: "number",
+                      autocomplete: "off",
+                      max: "9999",
+                      placeholder: "Costo de la tarjeta sim"
+                    },
+                    model: {
+                      value: _vm.nuevoIcc.content.costoSim,
+                      callback: function($$v) {
+                        _vm.$set(_vm.nuevoIcc.content, "costoSim", _vm._n($$v))
+                      },
+                      expression: "nuevoIcc.content.costoSim"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("b-form-input", {
+                attrs: { readonly: "", value: _vm.nuevaIccPrecio }
+              }),
+              _vm._v(" "),
+              _c(
+                "b-button",
+                { attrs: { type: "submit", variant: "primary" } },
+                [_vm._v("Agregar")]
+              ),
+              _vm._v(" "),
+              _c("b-button", { attrs: { type: "reset", variant: "danger" } }, [
+                _vm._v("Cancelar")
+              ])
+            ],
+            1
+          )
+        : _vm._e(),
       _vm._v("\n\n    " + _vm._s(_vm.totalVenta) + "\n\n    "),
       _vm._v(" "),
       _c(

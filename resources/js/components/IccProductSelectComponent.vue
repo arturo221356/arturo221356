@@ -39,6 +39,19 @@ export default {
 
             this.producto.text = `${this.selected.name} `;
 
+            this.producto.settings = {
+                
+                dnRequired: this.selected.dn_required,
+
+                dnTemporalRequired: this.selected.dn_temporal_required,
+
+                nipRequired: this.selected.nip_required,
+
+                recargaRequired: this.selected.costo_sim_required,
+
+                initialPriceRequired: this.selected.initial_price_required,
+
+            }
             this.$emit("action", this.producto);
         },
     },

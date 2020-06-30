@@ -16,6 +16,7 @@ class CreateRecargasTable extends Migration
         Schema::create('recargas', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
+            $table->char('codigo')->unique();
             $table->char('name');
             $table->integer('monto');
             $table->integer('distribution_id');

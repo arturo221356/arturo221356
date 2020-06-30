@@ -6,6 +6,7 @@ use App\Icc;
 
 use App\Imei;
 
+use App\Recarga;
 
 use Illuminate\Http\Request;
 
@@ -31,6 +32,12 @@ class SearchController extends Controller
                 ->limit(5)
                 ->addSearchableAttribute('imei');
         })
+        ->registerModel(Recarga::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+               
+                ->limit(5)
+                ->addSearchableAttribute('codigo');
+        })
         ->search($request->search);
         
 
@@ -52,6 +59,11 @@ class SearchController extends Controller
             ->with('equipo')
                 
                 ->addExactSearchableAttribute('imei');
+        })
+        ->registerModel(Recarga::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+
+                ->addExactSearchableAttribute('codigo');
         })
         ->search($request->search);
         
