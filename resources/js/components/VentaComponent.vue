@@ -176,17 +176,12 @@
                     ></b-form-input>
 
                     <template v-slot:append>
-                        <b-dropdown
-                            text="Recargar"
-                            variant="primary"
-                           
-                        >
-                            <b-dropdown-item >Action C</b-dropdown-item>
+                        <b-dropdown text="Recargar" variant="primary">
+                            <b-dropdown-item>Action C</b-dropdown-item>
                             <b-dropdown-item>Action D</b-dropdown-item>
                         </b-dropdown>
                     </template>
                 </b-input-group>
-                
             </b-form-group>
 
             <!-- insertar nip -->
@@ -256,8 +251,6 @@ export default {
     data() {
         return {
             searchValue: "",
-
-            recargasList:[],
 
             showList: true,
 
@@ -329,8 +322,8 @@ export default {
         },
         nuevaIccPrecio: function () {
             var precio = 0;
-            if(this.nuevoIcc.content.costoSim){
-                precio += this.nuevoIcc.content.costoSim; 
+            if (this.nuevoIcc.content.costoSim) {
+                precio += this.nuevoIcc.content.costoSim;
             }
             return precio;
         },
@@ -389,18 +382,7 @@ export default {
                                 this.articulos.unshift(nuevaSerie);
                                 break;
                             case "recargas":
-                                nuevaSerie = {
-                                    title: `${item.searchable.name}`,
-
-                                    content: {
-                                        dn: "3921106507",
-                                    },
-
-                                    precio: item.searchable.monto,
-
-                                    type: item.type,
-                                };
-                                this.articulos.unshift(nuevaSerie);
+                                this.addRecarga(item);
 
                                 break;
                         }
@@ -410,18 +392,41 @@ export default {
                 .catch(function (error) {
                     console.log(error);
                 });
+                this.searchValue = null;
         },
         eliminarItem(item, index) {
             this.articulos.splice(index, 1);
         },
-        addIcc(){
-            
+        addIcc() {
             this.nuevoIcc.precio = this.nuevaIccPrecio;
             console.log(this.nuevoIcc);
-             this.articulos.unshift(this.nuevoIcc);
-             this.newIccMode = false;
-             this.showList = true;
-             this.resetNewIcc();
+            this.articulos.unshift(this.nuevoIcc);
+            this.newIccMode = false;
+            this.showList = true;
+            this.resetNewIcc();
+        },
+        addRecarga(item, numero) {
+            
+            var dn = null;
+
+            if(!numero){
+                dn = prompt("Please enter your name", "Harry Potter");
+            }
+            else{ dn = numero; }
+
+            const nuevaRecarga = {
+                title: `${item.searchable.name}`,
+
+                content: {
+                    dn: dn,
+                },
+
+                precio: item.searchable.monto,
+
+                type: item.type,
+            };
+             this.articulos.unshift(nuevaRecarga);
+
         },
         newIcc(icc) {
             this.showList = false;
@@ -447,8 +452,7 @@ export default {
             this.newIccMode = false;
             this.showList = true;
         },
-        resetArticulo(){
-            
+        resetArticulo() {
             this.articulo = {
                 title: "",
                 content: {
@@ -468,7 +472,7 @@ export default {
 
             this.articulos.unshift(nuevoItem);
 
-           this.resetArticulo();
+            this.resetArticulo();
 
             console.log(this.articulos);
         },

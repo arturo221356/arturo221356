@@ -5775,16 +5775,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       searchValue: "",
-      recargasList: [],
       showList: true,
       newIccMode: false,
       cliente: {
@@ -5893,21 +5887,14 @@ __webpack_require__.r(__webpack_exports__);
             break;
 
           case "recargas":
-            nuevaSerie = {
-              title: "".concat(item.searchable.name),
-              content: {
-                dn: "3921106507"
-              },
-              precio: item.searchable.monto,
-              type: item.type
-            };
-            this.articulos.unshift(nuevaSerie);
+            this.addRecarga(item);
             break;
         } // console.log(nuevaSerie);
 
       }.bind(this))["catch"](function (error) {
         console.log(error);
       });
+      this.searchValue = null;
     },
     eliminarItem: function eliminarItem(item, index) {
       this.articulos.splice(index, 1);
@@ -5919,6 +5906,25 @@ __webpack_require__.r(__webpack_exports__);
       this.newIccMode = false;
       this.showList = true;
       this.resetNewIcc();
+    },
+    addRecarga: function addRecarga(item, numero) {
+      var dn = null;
+
+      if (!numero) {
+        dn = prompt("Please enter your name", "Harry Potter");
+      } else {
+        dn = numero;
+      }
+
+      var nuevaRecarga = {
+        title: "".concat(item.searchable.name),
+        content: {
+          dn: dn
+        },
+        precio: item.searchable.monto,
+        type: item.type
+      };
+      this.articulos.unshift(nuevaRecarga);
     },
     newIcc: function newIcc(icc) {
       this.showList = false;
