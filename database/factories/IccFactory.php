@@ -14,6 +14,7 @@ $factory->define(Icc::class, function (Faker $faker) {
         'icc' => $faker->numerify('895203#############'),
         'status_id' => $faker->numberBetween($min = 1, $max = 5),
         'sucursal_id' => $faker->numberBetween($min = 1, $max = 10),
+        'company_id' => 2,
 
     ];
 });

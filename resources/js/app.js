@@ -62,7 +62,7 @@ Vue.component('iccsubproduct-component', require('./components/IccSubProductComp
 Vue.component('venta-component', require('./components/VentaComponent.vue').default);
 Vue.component('select-iccproduct', require('./components/IccProductSelectComponent.vue').default);
 Vue.component('select-iccsubproduct', require('./components/IccSubProductSelectComponent.vue').default);
-
+Vue.component('select-general', require('./components/SelectGeneralComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

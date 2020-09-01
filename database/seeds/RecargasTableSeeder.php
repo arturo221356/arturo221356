@@ -18,6 +18,7 @@ class RecargasTableSeeder extends Seeder
             'monto' => 20,
             'distribution_id' => 1,
             'codigo' => 'recarga10',
+            'company_id' => 2,
           ]);
 
           Recarga::create([
@@ -25,12 +26,14 @@ class RecargasTableSeeder extends Seeder
             'monto' => 20,
             'distribution_id' => 1,
             'codigo' => 'recarga20',
+            'company_id' => 2,
           ]);
           Recarga::create([
             'name' => 'Recarga tiempo Aire 30',
             'monto' => 30,
             'distribution_id' => 1,
             'codigo' => 'recarga30',
+            'company_id' => 2,
           ]);
     }
 }

@@ -15,9 +15,11 @@ class RecargaResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'       => $this->id,
-            'name' => $this->name,
+            'id'    => $this->id,
+            'codigo'    => $this->codigo,
+            'name'  => $this->name,
             'monto' => $this->monto,
+            'company'   => $this->company,
         ];
     }
 }

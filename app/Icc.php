@@ -37,6 +37,10 @@ class Icc extends Model implements Searchable
     {
         return $this->belongsTo('App\Status');
     }
+    public function company()
+    {
+        return $this->belongsTo('App\Company');
+    }
     public function subproduct()
     {
         return $this->belongsTo('App\IccSubProduct', 'subproduct_id');

@@ -96,6 +96,21 @@
                                 v-on:equipo="equipoChange"
                             ></select-equipo>
                         </b-form-group>
+
+                        <b-form-group
+                            v-if="producto === 'Icc'"
+                            label="Compañia"
+                            label-for="select-company"
+                            label-size="lg"
+                            
+                            :state="false"
+                        >
+                            <select-company
+                                seleccionado=""
+                                name="select-company"
+                                
+                            ></select-company>
+                        </b-form-group>
                         <!-- grupo para sucursal -->
                         <b-form-group
                             label="Sucursal"

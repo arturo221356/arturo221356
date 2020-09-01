@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DistributionTableSeeder::class);
         $this->call(IccProductSeeder::class);
         $this->call(RecargasTableSeeder::class);
+        $this->call(CompanyTableSeeder::class);
 
         
        

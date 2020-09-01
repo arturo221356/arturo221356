@@ -15,9 +15,9 @@ class IccProductSeeder extends Seeder
     {
         IccProduct::truncate();
         IccProduct::create(['name'=>'Linea nueva prepago']);
-        IccProduct::create(['name'=>'Portabilidad']);
+        IccProduct::create(['name'=>'Portabilidad prepago']);
         IccProduct::create(['name'=>'Pospago']);
         IccProduct::create(['name'=>'Remplazo']);
-        IccProduct::create(['name'=>'Oasis']);
+        IccProduct::create(['name'=>'Telemarketing']);
     }
 }

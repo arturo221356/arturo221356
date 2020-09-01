@@ -11,7 +11,7 @@ use Spatie\Searchable\SearchResult;
 class Recarga extends Model implements Searchable
 {
     protected $fillable = [
-        'name', 'monto','codigo',
+        'name', 'monto','codigo','company_id',
     ];
 
     public function getSearchResult(): SearchResult
@@ -23,5 +23,9 @@ class Recarga extends Model implements Searchable
            $this->codigo,
            // $url
         );
+    }
+
+    public function company(){
+        return $this->belongsTo('App\Company');
     }
 }

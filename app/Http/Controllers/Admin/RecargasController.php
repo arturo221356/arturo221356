@@ -19,6 +19,14 @@ class RecargasController extends Controller
     public function index(Request $request)
     {
 
+        // $userDistribution = Auth::User()->distribution()->id;
+
+        // $distribution = Distribution::find($userDistribution);
+
+        // $recargas = $distribution->recargas()->get();
+
+        // return RecargaResource::collection($recargas);
+
         if ($request->ajax()) {
             $userDistribution = Auth::User()->distribution()->id;
 
@@ -50,10 +58,12 @@ class RecargasController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,['name'=>'required','monto'=>'required|max:9999|integer',]);
+        $this->validate($request,['name'=>'required','monto'=>'required|max:9999|integer', 'codigo' => 'required|min:5']);
         $recarga=new Recarga;
-        $recarga->name=$request->name;
-        $recarga->monto=$request->monto;
+        $recarga->codigo = $request->codigo;
+        $recarga->name = $request->name;
+        $recarga->monto = $request->monto;
+        $recarga->company_id = $request->company_id;
         $recarga->distribution_id = Auth::user()->distribution()->id;
         $recarga->save();
         
@@ -90,8 +100,23 @@ class RecargasController extends Controller
      */
     public function update(Request $request, Recarga $recarga)
     {
-        $this->validate($request,['name'=>'required','monto'=>'required|max:9999|integer',]);
+        $this->validate($request,['name'=>'required','monto'=>'required|max:9999|integer', 'codigo' => 'required|min:5']);
+        
         $recarga->update($request->all());
+
+        $message = '';
+
+        $variant = '';
+
+        $title = '';
+
+        $message = "$recarga->name Editado con exito";
+        
+        $variant = "success";
+        
+        $title = 'Exito';
+
+        return ['message'=>$message,'variant' => $variant,'title'=>$title];
     }
 
     /**
@@ -102,13 +127,13 @@ class RecargasController extends Controller
      */
     public function destroy(Recarga $recarga)
     {
+        $recarga->delete();
+
         $message = '';
 
         $variant = '';
 
         $title = '';
-
-        $recarga->delete();
             
         $message = "$recarga->name Eliminado con exito";
         
