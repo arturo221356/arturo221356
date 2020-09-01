@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(IccProductSeeder::class);
         $this->call(RecargasTableSeeder::class);
         $this->call(CompanyTableSeeder::class);
+        $this->call(IccTypeTableSeeder::class);
 
         
        

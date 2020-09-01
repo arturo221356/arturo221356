@@ -119,10 +119,12 @@
                             :invalid-feedback="sucursalValidation.message"
                             :state="false"
                         >
-                            <select-sucursal
+                            <!-- <select-sucursal
                                 name="select-sucursal"
                                 v-on:sucursal="sucursalChange"
-                            ></select-sucursal>
+                            ></select-sucursal> -->
+
+                            
                         </b-form-group>
                         <!-- gurpo para serie -->
                         <b-form-group

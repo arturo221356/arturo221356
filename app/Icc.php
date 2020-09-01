@@ -57,5 +57,9 @@ class Icc extends Model implements Searchable
     {
         return $this->hasOne('App\IccDetail')->withDefault();
     }
+    public function type()
+    {
+        return $this->belongsTo('App\IccType');
+    }
 
 }
