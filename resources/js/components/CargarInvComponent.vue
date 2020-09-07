@@ -14,11 +14,11 @@
                     <b-navbar-nav>
                         <b-nav-form>
                             <b-form-radio-group
-                                v-model="producto"
+                                v-model.lazy="producto"
                                 :options="options"
                                 buttons
                                 name="radios-btn-default"
-                                @input="productoChange"
+                                @click.native="confirmProductChange($event)"
                             >
                             </b-form-radio-group>
                         </b-nav-form>
@@ -80,99 +80,185 @@
 
                     <h1>Agregar {{ producto }}:</h1>
 
-                    <b-form @submit="agregarserie">
-                        <!-- grupo para producto -->
-                        <b-form-group
-                            v-if="producto === 'Imei'"
-                            label="Equipo"
-                            label-for="select-equipo"
-                            label-size="lg"
-                            :invalid-feedback="equipoValidation.message"
-                            :state="false"
-                        >
-                            <select-equipo
-                                seleccionado=""
-                                name="select-equipo"
-                                v-on:equipo="equipoChange"
-                            ></select-equipo>
-                        </b-form-group>
+                    <!-- nuevo formulario -->
+                    <validation-observer
+                        ref="observer"
+                        v-slot="{ handleSubmit }"
+                    >
+                        <b-form @submit.prevent="handleSubmit(agregarSerie)">
+                            <!-- valida que el producto sea 1 imei  -->
+                            <ValidationProvider
+                                v-slot="validationContext"
+                                rules="required"
+                                v-if="producto == 'Imei'"
+                            >
+                                <b-form-group label="Equipo" label-size="lg">
+                                    <select-general
+                                        url="/get/equipos"
+                                        pholder="Seleccionar Equipo"
+                                        v-model="item.equipo"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                        :equipo="true"
+                                    ></select-general>
 
-                        <b-form-group
-                            v-if="producto === 'Icc'"
-                            label="Compañia"
-                            label-for="select-company"
-                            label-size="lg"
-                            
-                            :state="false"
-                        >
-                            <select-company
-                                seleccionado=""
-                                name="select-company"
-                                
-                            ></select-company>
-                        </b-form-group>
-                        <!-- grupo para sucursal -->
-                        <b-form-group
-                            label="Sucursal"
-                            label-for="select-sucursal"
-                            label-size="lg"
-                            :invalid-feedback="sucursalValidation.message"
-                            :state="false"
-                        >
-                            <!-- <select-sucursal
-                                name="select-sucursal"
-                                v-on:sucursal="sucursalChange"
-                            ></select-sucursal> -->
-
-                            
-                        </b-form-group>
-                        <!-- gurpo para serie -->
-                        <b-form-group
-                            :label="producto"
-                            label-for="serie"
-                            label-size="lg"
-                            :invalid-feedback="serieValidation.message"
-                            :state="serieValidation.input"
-                        >
-                            <b-input-group>
-                                <b-input
-                                    :placeholder="`Ingresa 1 ${producto}`"
-                                    name="serie"
-                                    v-model="item.serie"
-                                    autocomplete="off"
-                                    :state="serieValidation.input"
-                                    type="number"
-                                ></b-input>
-
-                                <b-input-group-append>
-                                    <b-button
-                                        variant="success"
-                                        type="submit"
-                                        :disabled="validationFails"
-                                        >Agregar</b-button
+                                    <b-form-invalid-feedback
+                                        ><b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback></b-form-invalid-feedback
                                     >
-                                </b-input-group-append>
-                            </b-input-group>
-                        </b-form-group>
+                                </b-form-group>
+                            </ValidationProvider>
 
-                        <b-form-group label="Excel" label-size="lg">
-                            <b-form-file
-                                v-model="file"
-                                :state="Boolean(file)"
-                                placeholder="Agregar archivo Excel"
-                                drop-placeholder="Arrastra el archivo aqui"
-                                browse-text="Excel"
-                                accept=".xlsx, .csv"
-                            ></b-form-file>
-                        </b-form-group>
-                    </b-form>
+                            <ValidationProvider
+                                v-slot="validationContext"
+                                rules="required"
+                                v-if="producto == 'Icc'"
+                            >
+                                <b-form-group label="Compañia" label-size="lg">
+                                    <select-general
+                                        url="/get/companies"
+                                        pholder="Seleccionar Compañia"
+                                        v-model="item.company"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    ></select-general>
+
+                                    <b-form-invalid-feedback
+                                        ><b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback></b-form-invalid-feedback
+                                    >
+                                </b-form-group>
+                            </ValidationProvider>
+
+                            <!-- grupo para sucursal -->
+                            <ValidationProvider
+                                v-slot="validationContext"
+                                rules="required"
+                            >
+                                <b-form-group
+                                    label="Sucursal"
+                                    label-for="select-sucursal"
+                                    label-size="lg"
+                                >
+                                    <select-general
+                                        url="/get/sucursales"
+                                        pholder="Seleccionar Sucursal"
+                                        v-model="item.sucursal"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    >
+                                    </select-general>
+                                    <b-form-invalid-feedback
+                                        ><b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback></b-form-invalid-feedback
+                                    >
+                                </b-form-group>
+                            </ValidationProvider>
+
+                            <!-- grupo para tipo de icc -->
+                            <ValidationProvider
+                                v-slot="validationContext"
+                                rules="required"
+                                v-if="item.company"
+                            >
+                                <b-form-group
+                                    label="Tipo de Tarjeta sim"
+                                    label-size="lg"
+                                >
+                                    <select-general
+                                        url="/get/icctypes"
+                                        pholder="Seleccionar tipo de sim"
+                                        v-model="item.simType"
+                                        :query="item.company.id"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    >
+                                    </select-general>
+                                    <b-form-invalid-feedback
+                                        ><b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback></b-form-invalid-feedback
+                                    >
+                                </b-form-group>
+                            </ValidationProvider>
+
+                            <!-- valida la entrada de serie -->
+                            <ValidationProvider
+                                v-slot="validationContext"
+                                :rules="`${serieRequired ? 'required':''}|numeric|${producto}`"
+                                :name="producto"
+                            >
+                                <b-form-group
+                                    :label="producto"
+                                    label-for="serie"
+                                    label-size="lg"
+                                    :invalid-feedback="
+                                        validationContext.errors[0]
+                                    "
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                >
+                                    <b-input-group>
+                                        <b-input
+                                            :placeholder="`Ingresa 1 ${producto}`"
+                                            name="serie"
+                                            v-model="item.serie"
+                                            autocomplete="off"
+                                            type="number"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        ></b-input>
+
+                                        <b-input-group-append>
+                                            <b-button
+                                                variant="success"
+                                                type="submit"
+                                                >Agregar</b-button
+                                            >
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+                            </ValidationProvider>
+                            <!-- agregar excel -->
+                            <b-form-group label="Excel" label-size="lg">
+                                <b-form-file
+                                    v-model="file"
+                                    :state="Boolean(file)"
+                                    placeholder="Agregar archivo Excel"
+                                    drop-placeholder="Arrastra el archivo aqui"
+                                    browse-text="Excel"
+                                    accept=".xlsx, .csv"
+                                ></b-form-file>
+                            </b-form-group>
+                        </b-form>
+                    </validation-observer>
 
                     <b-form-group :description="`Cantidad: ${items.length}`">
                         <b-button
                             block
                             variant="primary"
-                            @click="sendData()"
-                            :disabled="btnAgregarInventario"
+                            @click="sendData()"                       
+                            type="submit"
+                            :disabled="agregarButtonDisabled"
                             >Agregar a Inventario</b-button
                         >
                     </b-form-group>
@@ -184,10 +270,17 @@
                         >
                             {{ index + 1 }} :
                             <strong>{{ articulo.serie }}</strong>
-                            <small>{{ articulo.sucursalText }}</small>
-                            <small v-if="producto === 'Imei'">{{
-                                articulo.equipoText
-                            }}</small>
+                            <small>{{ articulo.sucursal.name }}</small>
+                            <small v-if="producto === 'Imei'"
+                                >{{ articulo.equipo.marca }}
+                                {{ articulo.equipo.modelo }} ${{
+                                    articulo.equipo.precio
+                                }}</small
+                            >
+                            <small v-if="producto === 'Icc'"
+                                >{{ articulo.company.name }}
+                                {{ articulo.simType.name }}</small
+                            >
                             <b-button
                                 size="sm"
                                 class="float-right"
@@ -222,19 +315,17 @@ export default {
 
             postUrl: "/admin/imei",
 
-            //variable de los caracteres minimos requeridos para la serie
-            lengthRequired: 15,
-
             isLoading: false,
 
             //valores actuales del formulario
             item: {
                 serie: null,
                 sucursal: null,
-                sucursalText: null,
+                company: null,
+                simType: null,
                 equipo: null,
-                equipoText: null,
             },
+            serieRequired: true,
 
             items: [],
             //Archivo de excel
@@ -248,18 +339,19 @@ export default {
         };
     },
     methods: {
-        //detecta el cambio de producto a trabajar
-        productoChange() {
-            this.items = [];
+        getValidationState({ dirty, validated, valid = null }) {
+            return dirty || validated ? valid : null;
+        },
 
-            if (this.producto == "Imei") {
-                this.lengthRequired = 15;
-                this.postUrl = "/admin/imei";
-            } else if (this.producto == "Icc") {
-                this.lengthRequired = 19;
-                this.postUrl = "/admin/icc";
+        confirmProductChange(e) {
+            if (this.items.length > 0) {
+                if (!confirm("Desea continuar se borrara la informacion??")) {
+                    e.preventDefault();
+                } else {
+                }
             }
         },
+
         //crea el boton de errores y regresa un alert con los valores
         erroresButton() {
             this.alert.show = true;
@@ -275,6 +367,7 @@ export default {
         //crea el boton de exitosos y regresa un alert con los valores
         exitososButton() {
             this.alert.show = true;
+
             this.alert.variant = "success";
 
             this.alert.title = "Exitosos";
@@ -284,35 +377,20 @@ export default {
                 this.alert.list = [];
             }
         },
-        //detecta el cambio del select de sucursal
-        sucursalChange(value) {
-            this.item.sucursal = value.id;
-
-            this.item.sucursalText = value.text;
+        clearItem() {
+            Object.keys(this.item).forEach((k) => delete this.item[k]);
         },
-        //detecta el cambio del select de equipo
-        equipoChange(value) {
-            this.item.equipo = value.id;
-
-            this.item.equipoText = value.text;
+        clearItems() {
+            this.items = [];
         },
+
         //agrega serie a array items
-        agregarserie(evt) {
-            evt.preventDefault();
+        agregarSerie() {
+            const serie = this.item;
 
-            const nuevoItem = this.item;
+            this.items.unshift({ ...serie });
 
-            this.items.unshift(nuevoItem);
-
-            this.item = {
-                serie: "",
-                sucursal: this.item.sucursal,
-                equipo: this.item.equipo,
-                sucursalText: this.item.sucursalText,
-                equipoText: this.item.equipoText,
-            };
-
-            console.log(this.items);
+            this.item.serie = "";
         },
         //elimina la serie del array items
         eliminarSerie(item, index) {
@@ -320,78 +398,53 @@ export default {
         },
         //envia los datos a laravel para su almacenamiento
         sendData() {
-            this.isLoading = true;
+            
+           
+            
 
-            const self = this;
+            
+                    this.isLoading = true;
 
-            const settings = {
-                headers: {
-                    "content-type": "multipart/form-data",
-                },
-            };
-            //  const obj = this.file;
-            // const json = JSON.stringify(obj);
-            // const blob = new Blob([json], {
-            //     type: "application/json",
-            // });
-            const data = new FormData();
-            data.append("data", JSON.stringify(this.items));
-            data.append("file", this.file);
-            data.set("sucursal_id", this.item.sucursal);
-            data.set("equipo_id", this.item.equipo);
-            axios.post(this.postUrl, data, settings).then(function (response) {
-                console.log(response.data);
+                    const self = this;
 
-                self.isLoading = false;
+                    const settings = {
+                        headers: {
+                            "content-type": "multipart/form-data",
+                        },
+                    };
 
-                self.errores = response.data.errors;
+                    const data = new FormData();
+                    data.append("data", JSON.stringify(this.items));
+                    data.append("file", this.file);
+                    if (this.producto == "Icc") {
+                        data.set("icc_type_id", this.item.simType.id);
+                        data.set("company_id", this.item.company.id);
+                    } else if (this.producto == "Imei") {
+                        data.set("equipo_id", this.item.equipo.id);
+                    }
+                    data.set("sucursal_id", this.item.sucursal.id);
 
-                self.exitosos = response.data.success;
-            });
+                    axios
+                        .post(this.postUrl, data, settings)
+                        .then(function (response) {
+                            console.log(response.data);
 
-            this.items = [];
+                            self.isLoading = false;
 
-            this.file = null;
+                            self.errores = response.data.errors;
+
+                            self.exitosos = response.data.success;
+                        });
+
+                    this.items = [];
+
+                    this.file = null;
+      
+
+           
         },
     },
     computed: {
-        //bloquea el boton de aregar inventario si el excel y el array de items estan vacios
-        btnAgregarInventario() {
-            if (
-                (this.items.length == 0 && this.file == null) ||
-                this.sucursalValidation.validation == true
-            ) {
-                return true;
-            } else {
-                if (
-                    this.producto == "Imei" &&
-                    this.equipoValidation.validation == true
-                ) {
-                    return true;
-                } else {
-                    return false;
-                }
-                return false;
-            }
-        },
-        //validacion general del formulario para bloquear el boton agregar serie
-        validationFails() {
-            if (
-                this.serieValidation.validation == true ||
-                this.sucursalValidation.validation == true
-            ) {
-                return true;
-            } else {
-                if (
-                    this.producto === "Imei" &&
-                    this.equipoValidation.validation == true
-                ) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        },
         //cuenta los errores de la peticion send data
         countErrors() {
             if (this.errores) {
@@ -404,56 +457,33 @@ export default {
                 return this.exitosos.length;
             }
         },
-
-        //validacion de el campo sucursal que no este vacio
-        sucursalValidation() {
-            var validationFails = {
-                validation: true,
-                message: "Sucursal requerida",
-            };
-            if (this.item.sucursal) {
-                validationFails = false;
-            }
-            return validationFails;
-        },
-        //valida que el campo equipo tenga valos
-        equipoValidation() {
-            var validationFails = {
-                validation: true,
-                message: "Equipo requerido",
-            };
-            if (this.item.equipo) {
-                validationFails = false;
-            }
-            return validationFails;
-        },
-
-        //valida que las series de icc o de imei tengan los caracteres necesarios y que no esten repetidos dentro del array de objetos
-        serieValidation() {
-            //true for error
-            var validationFails = {
-                input: null,
-                validation: true,
-                message: "",
-            };
-
-            if (this.item.serie) {
-                if (this.item.serie.length != this.lengthRequired) {
-                    validationFails.input = false;
-                    validationFails.message = `${this.producto} debe ser de ${this.lengthRequired} digitos`;
-                } else {
-                    if (this.items.some((e) => e.serie === this.item.serie)) {
-                        validationFails.input = false;
-                        validationFails.validation = true;
-                        validationFails.message = `${this.producto} repetido`;
-                    } else {
-                        validationFails.input = true;
-                        validationFails.validation = false;
-                    }
+        agregarButtonDisabled(){
+            if(this.item.sucursal == null || (this.items.length == 0 && this.file == null)){
+                return true;
+            }else{
+                if(this.producto == "Imei" && this.item.equipo == null){
+                    return true;
+                }else if( this.producto == "Icc" && (this.item.company == null || this.item.simType == null)){
+                    return true;
+                }else{
+                    return false;
                 }
-            }
+                
+            }   
+        },
+        
 
-            return validationFails;
+    },
+    watch: {
+        producto: function () {
+            if (this.producto == "Imei") {
+                this.postUrl = "/admin/imei";
+            } else if (this.producto == "Icc") {
+                this.postUrl = "/admin/icc";
+            }
+            this.clearItem();
+
+            this.clearItems();
         },
     },
 };

@@ -57,7 +57,9 @@ class IccController extends Controller
 
         $sucursal = $request->input('sucursal_id');
 
+        $company = $request->input('company_id');
 
+        $type = $request->input('icc_type_id');
 
 
         //si el request contiene un archivo excel procede con esta funcion 
@@ -71,6 +73,8 @@ class IccController extends Controller
             $data = [
                 'sucursal_id' => $sucursal,
                 'status_id' => 1,
+                'icc_type_id' => $type,
+                'company_id' => $company,
 
             ];
 
@@ -95,18 +99,21 @@ class IccController extends Controller
 
         if ($series) {
 
-            foreach ($series as $data) {
+            foreach ($series as $datos) {
 
                 $serie = [];
 
-                $serie = ['serie' => $data->serie];
+                $serie = ['serie' => $datos->serie];
 
                 
 
                 $icc = new Icc([
-                    'icc' => $data->serie,
+                    
+                    'icc' => $datos->serie,
                     'status_id' => 1,
-                    'sucursal_id' => $data->sucursal,
+                    'sucursal_id' => $sucursal,
+                    'company_id' => $company,
+                    'icc_type_id' => $type,
                    
 
 
@@ -131,7 +138,7 @@ class IccController extends Controller
 
                     $errorList = [];
 
-                    $err['serie'] = $data->serie;
+                    $err['serie'] = $datos->serie;
 
 
 

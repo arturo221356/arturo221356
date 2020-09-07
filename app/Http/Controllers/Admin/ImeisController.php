@@ -70,6 +70,8 @@ class ImeisController extends Controller
                 'sucursal_id' => $sucursal,
                 'equipo_id' => $equipo,
                 'status_id' => 1,
+
+                
                
                 
             ];
@@ -106,8 +108,8 @@ class ImeisController extends Controller
             $imei = new Imei([
                 'imei' => $data->serie,
                 'status_id' => 1,
-                'sucursal_id' => $data->sucursal,
-                'equipo_id' => $data->equipo,
+                'sucursal_id' => $data->sucursal->id,
+                'equipo_id' => $data->equipo->id,
                 
 
             ]);

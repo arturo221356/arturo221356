@@ -10,22 +10,18 @@
             :loading="isLoading"
             :class="stateClass"
             @input="emitToParent"
-
-           
+            :custom-label="customLabel"
+            
         ></multiselect>
         <label class="typo__label form__label invalid" v-show="state === false"
             >Elige un valor</label
         >
-
-
-        
     </div>
 </template>
 
 <script>
 export default {
     props: {
-        
         todas: {
             type: Boolean,
             required: false,
@@ -42,67 +38,89 @@ export default {
             required: true,
         },
 
+        equipo:{
+            type:Boolean,
+            required:false,
+            default: false,
+        },
+
         pholder: {
             type: String,
             required: false,
             detault: "Seleccionar Opcion",
         },
 
-        value: null,
+        value: {},
 
         state: {
             type: Boolean,
             required: false,
             default: null,
         },
+        query:{
+            type: Number,
+            required: false,
+            default: null
+        }
     },
     mounted() {},
     data() {
         return {
             isLoading: false,
 
-            options: [
-
-                
-            ],
+            options: [],
 
             selected: null,
-
-           
         };
     },
     methods: {
         emitToParent() {
-            if (this.selected != null) {
-                const company = {
-                    id: this.selected.id,
-                    text: `${this.selected.name}`,
-                };
-                this.$emit('input', company);
-            }
-        },
+            
+            
+             this.$emit("input", this.selected);
 
-        
+        },
+        customLabel({name, marca, modelo}){
+            
+            if(this.equipo === true){
+
+                return `${marca}--${modelo}`;
+            }else{
+            
+            return name;}
+        },
+        loadData() {
+            this.isLoading = true;
+             
+            const param = this.query;
+
+            axios.get(`${this.url}?param=${param}`).then(
+                function (response) {
+                    this.options = response.data;
+
+                    this.isLoading = false;
+                }.bind(this)
+            );
+        },
     },
 
     created: function () {
-        this.isLoading = true;
-        axios.get(this.url).then(
-            function (response) {
-                
-                this.options = response.data;
-
-                this.isLoading = false;
-                if (this.value) {
-                    this.selected = response.data.find(
-                        (option) => option.id === this.value
-                    );
-                }
-            }.bind(this)
-        );
+        this.loadData();
+    },
+    watch:{
+        url: function(){
+            this.loadData();
+        },
+        query: function(){
+            this.loadData();
+            this.selected = null;
+            this.emitToParent();
+        },
+        value: function (){
+            this.selected = this.value;
+        }
     },
     computed: {
-
         stateClass: function () {
             var response;
 

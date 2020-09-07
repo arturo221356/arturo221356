@@ -54,6 +54,8 @@ class IccsImport implements ToCollection
                 'icc' => $formatedSerie,
                 'status_id' => 1,
                 'sucursal_id' => $this->data['sucursal_id'],
+                'icc_type_id' => $this->data['icc_type_id'],
+                'company_id' => $this->data['company_id'],
                
 
             ]);

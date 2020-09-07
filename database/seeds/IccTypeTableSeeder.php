@@ -15,15 +15,18 @@ class IccTypeTableSeeder extends Seeder
     {
         IccType::create([
             'name' => 'Chip Express',
-            'company_id' => 1
+            'company_id' => 1,
+            'costo' => 30
         ]);
         IccType::create([
             'name' => 'Universal',
             'company_id' => 2,
+            'costo' => 30
         ]);
         IccType::create([
             'name' => 'Movistar Sim',
             'company_id' => 2,
+            'costo' => 30
         ]);
     }
 }

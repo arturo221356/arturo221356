@@ -16,7 +16,7 @@ class Icc extends Model implements Searchable
     
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ["icc", "sucursal_id", "status_id","distribution_id"];
+    protected $fillable = ["icc", "sucursal_id", "status_id","distribution_id","company_id","icc_type_id"];
 
     public function getSearchResult(): SearchResult
      {

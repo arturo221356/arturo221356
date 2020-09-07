@@ -1908,6 +1908,107 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2126,17 +2227,16 @@ __webpack_require__.r(__webpack_exports__);
       //array con respuesta del servidor con las series erroneas
       errores: [],
       postUrl: "/admin/imei",
-      //variable de los caracteres minimos requeridos para la serie
-      lengthRequired: 15,
       isLoading: false,
       //valores actuales del formulario
       item: {
         serie: null,
         sucursal: null,
-        sucursalText: null,
-        equipo: null,
-        equipoText: null
+        company: null,
+        simType: null,
+        equipo: null
       },
+      serieRequired: true,
       items: [],
       //Archivo de excel
       file: null,
@@ -2154,16 +2254,18 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    //detecta el cambio de producto a trabajar
-    productoChange: function productoChange() {
-      this.items = [];
-
-      if (this.producto == "Imei") {
-        this.lengthRequired = 15;
-        this.postUrl = "/admin/imei";
-      } else if (this.producto == "Icc") {
-        this.lengthRequired = 19;
-        this.postUrl = "/admin/icc";
+    getValidationState: function getValidationState(_ref) {
+      var dirty = _ref.dirty,
+          validated = _ref.validated,
+          _ref$valid = _ref.valid,
+          valid = _ref$valid === void 0 ? null : _ref$valid;
+      return dirty || validated ? valid : null;
+    },
+    confirmProductChange: function confirmProductChange(e) {
+      if (this.items.length > 0) {
+        if (!confirm("Desea continuar se borrara la informacion??")) {
+          e.preventDefault();
+        } else {}
       }
     },
     //crea el boton de errores y regresa un alert con los valores
@@ -2190,29 +2292,21 @@ __webpack_require__.r(__webpack_exports__);
         this.alert.list = [];
       }
     },
-    //detecta el cambio del select de sucursal
-    sucursalChange: function sucursalChange(value) {
-      this.item.sucursal = value.id;
-      this.item.sucursalText = value.text;
+    clearItem: function clearItem() {
+      var _this = this;
+
+      Object.keys(this.item).forEach(function (k) {
+        return delete _this.item[k];
+      });
     },
-    //detecta el cambio del select de equipo
-    equipoChange: function equipoChange(value) {
-      this.item.equipo = value.id;
-      this.item.equipoText = value.text;
+    clearItems: function clearItems() {
+      this.items = [];
     },
     //agrega serie a array items
-    agregarserie: function agregarserie(evt) {
-      evt.preventDefault();
-      var nuevoItem = this.item;
-      this.items.unshift(nuevoItem);
-      this.item = {
-        serie: "",
-        sucursal: this.item.sucursal,
-        equipo: this.item.equipo,
-        sucursalText: this.item.sucursalText,
-        equipoText: this.item.equipoText
-      };
-      console.log(this.items);
+    agregarSerie: function agregarSerie() {
+      var serie = this.item;
+      this.items.unshift(_objectSpread({}, serie));
+      this.item.serie = "";
     },
     //elimina la serie del array items
     eliminarSerie: function eliminarSerie(item, index) {
@@ -2226,17 +2320,19 @@ __webpack_require__.r(__webpack_exports__);
         headers: {
           "content-type": "multipart/form-data"
         }
-      }; //  const obj = this.file;
-      // const json = JSON.stringify(obj);
-      // const blob = new Blob([json], {
-      //     type: "application/json",
-      // });
-
+      };
       var data = new FormData();
       data.append("data", JSON.stringify(this.items));
       data.append("file", this.file);
-      data.set("sucursal_id", this.item.sucursal);
-      data.set("equipo_id", this.item.equipo);
+
+      if (this.producto == "Icc") {
+        data.set("icc_type_id", this.item.simType.id);
+        data.set("company_id", this.item.company.id);
+      } else if (this.producto == "Imei") {
+        data.set("equipo_id", this.item.equipo.id);
+      }
+
+      data.set("sucursal_id", this.item.sucursal.id);
       axios.post(this.postUrl, data, settings).then(function (response) {
         console.log(response.data);
         self.isLoading = false;
@@ -2248,32 +2344,6 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
-    //bloquea el boton de aregar inventario si el excel y el array de items estan vacios
-    btnAgregarInventario: function btnAgregarInventario() {
-      if (this.items.length == 0 && this.file == null || this.sucursalValidation.validation == true) {
-        return true;
-      } else {
-        if (this.producto == "Imei" && this.equipoValidation.validation == true) {
-          return true;
-        } else {
-          return false;
-        }
-
-        return false;
-      }
-    },
-    //validacion general del formulario para bloquear el boton agregar serie
-    validationFails: function validationFails() {
-      if (this.serieValidation.validation == true || this.sucursalValidation.validation == true) {
-        return true;
-      } else {
-        if (this.producto === "Imei" && this.equipoValidation.validation == true) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    },
     //cuenta los errores de la peticion send data
     countErrors: function countErrors() {
       if (this.errores) {
@@ -2286,62 +2356,30 @@ __webpack_require__.r(__webpack_exports__);
         return this.exitosos.length;
       }
     },
-    //validacion de el campo sucursal que no este vacio
-    sucursalValidation: function sucursalValidation() {
-      var validationFails = {
-        validation: true,
-        message: "Sucursal requerida"
-      };
-
-      if (this.item.sucursal) {
-        validationFails = false;
-      }
-
-      return validationFails;
-    },
-    //valida que el campo equipo tenga valos
-    equipoValidation: function equipoValidation() {
-      var validationFails = {
-        validation: true,
-        message: "Equipo requerido"
-      };
-
-      if (this.item.equipo) {
-        validationFails = false;
-      }
-
-      return validationFails;
-    },
-    //valida que las series de icc o de imei tengan los caracteres necesarios y que no esten repetidos dentro del array de objetos
-    serieValidation: function serieValidation() {
-      var _this = this;
-
-      //true for error
-      var validationFails = {
-        input: null,
-        validation: true,
-        message: ""
-      };
-
-      if (this.item.serie) {
-        if (this.item.serie.length != this.lengthRequired) {
-          validationFails.input = false;
-          validationFails.message = "".concat(this.producto, " debe ser de ").concat(this.lengthRequired, " digitos");
+    agregarButtonDisabled: function agregarButtonDisabled() {
+      if (this.item.sucursal == null || this.items.length == 0 && this.file == null) {
+        return true;
+      } else {
+        if (this.producto == "Imei" && this.item.equipo == null) {
+          return true;
+        } else if (this.producto == "Icc" && (this.item.company == null || this.item.simType == null)) {
+          return true;
         } else {
-          if (this.items.some(function (e) {
-            return e.serie === _this.item.serie;
-          })) {
-            validationFails.input = false;
-            validationFails.validation = true;
-            validationFails.message = "".concat(this.producto, " repetido");
-          } else {
-            validationFails.input = true;
-            validationFails.validation = false;
-          }
+          return false;
         }
       }
+    }
+  },
+  watch: {
+    producto: function producto() {
+      if (this.producto == "Imei") {
+        this.postUrl = "/admin/imei";
+      } else if (this.producto == "Icc") {
+        this.postUrl = "/admin/icc";
+      }
 
-      return validationFails;
+      this.clearItem();
+      this.clearItems();
     }
   }
 });
@@ -4553,9 +4591,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todas: {
@@ -4572,14 +4607,24 @@ __webpack_require__.r(__webpack_exports__);
       type: String,
       required: true
     },
+    equipo: {
+      type: Boolean,
+      required: false,
+      "default": false
+    },
     pholder: {
       type: String,
       required: false,
       detault: "Seleccionar Opcion"
     },
-    value: null,
+    value: {},
     state: {
       type: Boolean,
+      required: false,
+      "default": null
+    },
+    query: {
+      type: Number,
       required: false,
       "default": null
     }
@@ -4594,29 +4639,43 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     emitToParent: function emitToParent() {
-      if (this.selected != null) {
-        var company = {
-          id: this.selected.id,
-          text: "".concat(this.selected.name)
-        };
-        this.$emit('input', company);
+      this.$emit("input", this.selected);
+    },
+    customLabel: function customLabel(_ref) {
+      var name = _ref.name,
+          marca = _ref.marca,
+          modelo = _ref.modelo;
+
+      if (this.equipo === true) {
+        return "".concat(marca, "--").concat(modelo);
+      } else {
+        return name;
       }
+    },
+    loadData: function loadData() {
+      this.isLoading = true;
+      var param = this.query;
+      axios.get("".concat(this.url, "?param=").concat(param)).then(function (response) {
+        this.options = response.data;
+        this.isLoading = false;
+      }.bind(this));
     }
   },
   created: function created() {
-    this.isLoading = true;
-    axios.get(this.url).then(function (response) {
-      var _this = this;
-
-      this.options = response.data;
-      this.isLoading = false;
-
-      if (this.value) {
-        this.selected = response.data.find(function (option) {
-          return option.id === _this.value;
-        });
-      }
-    }.bind(this));
+    this.loadData();
+  },
+  watch: {
+    url: function url() {
+      this.loadData();
+    },
+    query: function query() {
+      this.loadData();
+      this.selected = null;
+      this.emitToParent();
+    },
+    value: function value() {
+      this.selected = this.value;
+    }
   },
   computed: {
     stateClass: function stateClass() {
@@ -85356,7 +85415,11 @@ var render = function() {
                               buttons: "",
                               name: "radios-btn-default"
                             },
-                            on: { input: _vm.productoChange },
+                            nativeOn: {
+                              click: function($event) {
+                                return _vm.confirmProductChange($event)
+                              }
+                            },
                             model: {
                               value: _vm.producto,
                               callback: function($$v) {
@@ -85476,160 +85539,430 @@ var render = function() {
                 _vm._v(" "),
                 _c("h1", [_vm._v("Agregar " + _vm._s(_vm.producto) + ":")]),
                 _vm._v(" "),
-                _c(
-                  "b-form",
-                  { on: { submit: _vm.agregarserie } },
-                  [
-                    _vm.producto === "Imei"
-                      ? _c(
-                          "b-form-group",
-                          {
-                            attrs: {
-                              label: "Equipo",
-                              "label-for": "select-equipo",
-                              "label-size": "lg",
-                              "invalid-feedback": _vm.equipoValidation.message,
-                              state: false
-                            }
-                          },
-                          [
-                            _c("select-equipo", {
-                              attrs: {
-                                seleccionado: "",
-                                name: "select-equipo"
-                              },
-                              on: { equipo: _vm.equipoChange }
-                            })
-                          ],
-                          1
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.producto === "Icc"
-                      ? _c(
-                          "b-form-group",
-                          {
-                            attrs: {
-                              label: "Compañia",
-                              "label-for": "select-company",
-                              "label-size": "lg",
-                              state: false
-                            }
-                          },
-                          [
-                            _c("select-company", {
-                              attrs: {
-                                seleccionado: "",
-                                name: "select-company"
+                _c("validation-observer", {
+                  ref: "observer",
+                  scopedSlots: _vm._u([
+                    {
+                      key: "default",
+                      fn: function(ref) {
+                        var handleSubmit = ref.handleSubmit
+                        return [
+                          _c(
+                            "b-form",
+                            {
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                  return handleSubmit(_vm.agregarSerie)
+                                }
                               }
-                            })
-                          ],
-                          1
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      {
-                        attrs: {
-                          label: "Sucursal",
-                          "label-for": "select-sucursal",
-                          "label-size": "lg",
-                          "invalid-feedback": _vm.sucursalValidation.message,
-                          state: false
-                        }
-                      },
-                      [
-                        _c("select-sucursal", {
-                          attrs: { name: "select-sucursal" },
-                          on: { sucursal: _vm.sucursalChange }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      {
-                        attrs: {
-                          label: _vm.producto,
-                          "label-for": "serie",
-                          "label-size": "lg",
-                          "invalid-feedback": _vm.serieValidation.message,
-                          state: _vm.serieValidation.input
-                        }
-                      },
-                      [
-                        _c(
-                          "b-input-group",
-                          [
-                            _c("b-input", {
-                              attrs: {
-                                placeholder: "Ingresa 1 " + _vm.producto,
-                                name: "serie",
-                                autocomplete: "off",
-                                state: _vm.serieValidation.input,
-                                type: "number"
-                              },
-                              model: {
-                                value: _vm.item.serie,
-                                callback: function($$v) {
-                                  _vm.$set(_vm.item, "serie", $$v)
-                                },
-                                expression: "item.serie"
-                              }
-                            }),
-                            _vm._v(" "),
-                            _c(
-                              "b-input-group-append",
-                              [
-                                _c(
-                                  "b-button",
-                                  {
-                                    attrs: {
-                                      variant: "success",
-                                      type: "submit",
-                                      disabled: _vm.validationFails
-                                    }
-                                  },
-                                  [_vm._v("Agregar")]
-                                )
-                              ],
-                              1
-                            )
-                          ],
-                          1
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Excel", "label-size": "lg" } },
-                      [
-                        _c("b-form-file", {
-                          attrs: {
-                            state: Boolean(_vm.file),
-                            placeholder: "Agregar archivo Excel",
-                            "drop-placeholder": "Arrastra el archivo aqui",
-                            "browse-text": "Excel",
-                            accept: ".xlsx, .csv"
-                          },
-                          model: {
-                            value: _vm.file,
-                            callback: function($$v) {
-                              _vm.file = $$v
                             },
-                            expression: "file"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                ),
+                            [
+                              _vm.producto == "Imei"
+                                ? _c("ValidationProvider", {
+                                    attrs: { rules: "required" },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function(validationContext) {
+                                            return [
+                                              _c(
+                                                "b-form-group",
+                                                {
+                                                  attrs: {
+                                                    label: "Equipo",
+                                                    "label-size": "lg"
+                                                  }
+                                                },
+                                                [
+                                                  _c("select-general", {
+                                                    attrs: {
+                                                      url: "/get/equipos",
+                                                      pholder:
+                                                        "Seleccionar Equipo",
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      ),
+                                                      equipo: true
+                                                    },
+                                                    model: {
+                                                      value: _vm.item.equipo,
+                                                      callback: function($$v) {
+                                                        _vm.$set(
+                                                          _vm.item,
+                                                          "equipo",
+                                                          $$v
+                                                        )
+                                                      },
+                                                      expression: "item.equipo"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _c(
+                                                        "b-form-invalid-feedback",
+                                                        [
+                                                          _vm._v(
+                                                            _vm._s(
+                                                              validationContext
+                                                                .errors[0]
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    ],
+                                                    1
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm.producto == "Icc"
+                                ? _c("ValidationProvider", {
+                                    attrs: { rules: "required" },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function(validationContext) {
+                                            return [
+                                              _c(
+                                                "b-form-group",
+                                                {
+                                                  attrs: {
+                                                    label: "Compañia",
+                                                    "label-size": "lg"
+                                                  }
+                                                },
+                                                [
+                                                  _c("select-general", {
+                                                    attrs: {
+                                                      url: "/get/companies",
+                                                      pholder:
+                                                        "Seleccionar Compañia",
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      )
+                                                    },
+                                                    model: {
+                                                      value: _vm.item.company,
+                                                      callback: function($$v) {
+                                                        _vm.$set(
+                                                          _vm.item,
+                                                          "company",
+                                                          $$v
+                                                        )
+                                                      },
+                                                      expression: "item.company"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _c(
+                                                        "b-form-invalid-feedback",
+                                                        [
+                                                          _vm._v(
+                                                            _vm._s(
+                                                              validationContext
+                                                                .errors[0]
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    ],
+                                                    1
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _c("ValidationProvider", {
+                                attrs: { rules: "required" },
+                                scopedSlots: _vm._u(
+                                  [
+                                    {
+                                      key: "default",
+                                      fn: function(validationContext) {
+                                        return [
+                                          _c(
+                                            "b-form-group",
+                                            {
+                                              attrs: {
+                                                label: "Sucursal",
+                                                "label-for": "select-sucursal",
+                                                "label-size": "lg"
+                                              }
+                                            },
+                                            [
+                                              _c("select-general", {
+                                                attrs: {
+                                                  url: "/get/sucursales",
+                                                  pholder:
+                                                    "Seleccionar Sucursal",
+                                                  state: _vm.getValidationState(
+                                                    validationContext
+                                                  )
+                                                },
+                                                model: {
+                                                  value: _vm.item.sucursal,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.item,
+                                                      "sucursal",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "item.sucursal"
+                                                }
+                                              }),
+                                              _vm._v(" "),
+                                              _c(
+                                                "b-form-invalid-feedback",
+                                                [
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          validationContext
+                                                            .errors[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  null,
+                                  true
+                                )
+                              }),
+                              _vm._v(" "),
+                              _vm.item.company
+                                ? _c("ValidationProvider", {
+                                    attrs: { rules: "required" },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function(validationContext) {
+                                            return [
+                                              _c(
+                                                "b-form-group",
+                                                {
+                                                  attrs: {
+                                                    label:
+                                                      "Tipo de Tarjeta sim",
+                                                    "label-size": "lg"
+                                                  }
+                                                },
+                                                [
+                                                  _c("select-general", {
+                                                    attrs: {
+                                                      url: "/get/icctypes",
+                                                      pholder:
+                                                        "Seleccionar tipo de sim",
+                                                      query:
+                                                        _vm.item.company.id,
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      )
+                                                    },
+                                                    model: {
+                                                      value: _vm.item.simType,
+                                                      callback: function($$v) {
+                                                        _vm.$set(
+                                                          _vm.item,
+                                                          "simType",
+                                                          $$v
+                                                        )
+                                                      },
+                                                      expression: "item.simType"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _c(
+                                                        "b-form-invalid-feedback",
+                                                        [
+                                                          _vm._v(
+                                                            _vm._s(
+                                                              validationContext
+                                                                .errors[0]
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    ],
+                                                    1
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _c("ValidationProvider", {
+                                attrs: {
+                                  rules:
+                                    (_vm.serieRequired ? "required" : "") +
+                                    "|numeric|" +
+                                    _vm.producto,
+                                  name: _vm.producto
+                                },
+                                scopedSlots: _vm._u(
+                                  [
+                                    {
+                                      key: "default",
+                                      fn: function(validationContext) {
+                                        return [
+                                          _c(
+                                            "b-form-group",
+                                            {
+                                              attrs: {
+                                                label: _vm.producto,
+                                                "label-for": "serie",
+                                                "label-size": "lg",
+                                                "invalid-feedback":
+                                                  validationContext.errors[0],
+                                                state: _vm.getValidationState(
+                                                  validationContext
+                                                )
+                                              }
+                                            },
+                                            [
+                                              _c(
+                                                "b-input-group",
+                                                [
+                                                  _c("b-input", {
+                                                    attrs: {
+                                                      placeholder:
+                                                        "Ingresa 1 " +
+                                                        _vm.producto,
+                                                      name: "serie",
+                                                      autocomplete: "off",
+                                                      type: "number",
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      )
+                                                    },
+                                                    model: {
+                                                      value: _vm.item.serie,
+                                                      callback: function($$v) {
+                                                        _vm.$set(
+                                                          _vm.item,
+                                                          "serie",
+                                                          $$v
+                                                        )
+                                                      },
+                                                      expression: "item.serie"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-input-group-append",
+                                                    [
+                                                      _c(
+                                                        "b-button",
+                                                        {
+                                                          attrs: {
+                                                            variant: "success",
+                                                            type: "submit"
+                                                          }
+                                                        },
+                                                        [_vm._v("Agregar")]
+                                                      )
+                                                    ],
+                                                    1
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  null,
+                                  true
+                                )
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "b-form-group",
+                                {
+                                  attrs: { label: "Excel", "label-size": "lg" }
+                                },
+                                [
+                                  _c("b-form-file", {
+                                    attrs: {
+                                      state: Boolean(_vm.file),
+                                      placeholder: "Agregar archivo Excel",
+                                      "drop-placeholder":
+                                        "Arrastra el archivo aqui",
+                                      "browse-text": "Excel",
+                                      accept: ".xlsx, .csv"
+                                    },
+                                    model: {
+                                      value: _vm.file,
+                                      callback: function($$v) {
+                                        _vm.file = $$v
+                                      },
+                                      expression: "file"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ]
+                      }
+                    }
+                  ])
+                }),
                 _vm._v(" "),
                 _c(
                   "b-form-group",
@@ -85641,7 +85974,8 @@ var render = function() {
                         attrs: {
                           block: "",
                           variant: "primary",
-                          disabled: _vm.btnAgregarInventario
+                          type: "submit",
+                          disabled: _vm.agregarButtonDisabled
                         },
                         on: {
                           click: function($event) {
@@ -85670,10 +86004,28 @@ var render = function() {
                         ),
                         _c("strong", [_vm._v(_vm._s(articulo.serie))]),
                         _vm._v(" "),
-                        _c("small", [_vm._v(_vm._s(articulo.sucursalText))]),
+                        _c("small", [_vm._v(_vm._s(articulo.sucursal.name))]),
                         _vm._v(" "),
                         _vm.producto === "Imei"
-                          ? _c("small", [_vm._v(_vm._s(articulo.equipoText))])
+                          ? _c("small", [
+                              _vm._v(
+                                _vm._s(articulo.equipo.marca) +
+                                  "\n                            " +
+                                  _vm._s(articulo.equipo.modelo) +
+                                  " $" +
+                                  _vm._s(articulo.equipo.precio)
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.producto === "Icc"
+                          ? _c("small", [
+                              _vm._v(
+                                _vm._s(articulo.company.name) +
+                                  "\n                            " +
+                                  _vm._s(articulo.simType.name)
+                              )
+                            ])
                           : _vm._e(),
                         _vm._v(" "),
                         _c(
@@ -87692,7 +88044,8 @@ var render = function() {
           label: "name",
           "track-by": "id",
           "allow-empty": _vm.empty,
-          loading: _vm.isLoading
+          loading: _vm.isLoading,
+          "custom-label": _vm.customLabel
         },
         on: { input: _vm.emitToParent },
         model: {
@@ -103231,6 +103584,20 @@ Object(vee_validate__WEBPACK_IMPORTED_MODULE_0__["extend"])("positive", function
   }
 
   return "El {_field_} debe se un numero positivo ";
+});
+Object(vee_validate__WEBPACK_IMPORTED_MODULE_0__["extend"])("Imei", function (value) {
+  if (value.length == 15) {
+    return true;
+  }
+
+  return "El IMEI debe ser de 15 digitos ";
+});
+Object(vee_validate__WEBPACK_IMPORTED_MODULE_0__["extend"])("Icc", function (value) {
+  if (value.length == 19) {
+    return true;
+  }
+
+  return "El ICC debe ser de 19 digitos ";
 }); // extend("required", {
 //     validate(value) {
 //         return {

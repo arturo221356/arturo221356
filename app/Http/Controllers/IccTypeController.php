@@ -12,9 +12,17 @@ class IccTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $iccTypes = null;
+
+        if($request->param){
+            $iccTypes = IccType::where('company_Id','=',$request->param)->get();
+        }
+
+       
+
+        return $iccTypes;
     }
 
     /**

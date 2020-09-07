@@ -88,6 +88,8 @@ Route::get('/get/equipos', 'Admin\EquiposController@index')->middleware('auth');
 
 Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
 
+Route::get('/get/icctypes', 'IccTypeController@index')->middleware('auth');
+
 Route::get('/get/companies', 'Admin\CompaniesController@index')->middleware('auth');
 
 Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');

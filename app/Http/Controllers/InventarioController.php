@@ -121,13 +121,7 @@ class InventarioController extends Controller
 
             return IccResource::collection($iccs);
         }
-        // if ($sucursal_id == 'all') {
 
-        //     return IccResource::collection(Icc::where('distribution_id','=',$userDistribution)->whereIn('status_id', $statusArray)->get());
-        // } else {
-
-        //     return IccResource::collection(Icc::where([['distribution_id','=',$userDistribution],['sucursal_id', '=', $sucursal_id]])->whereIn('status_id', $statusArray)->get());
-        // }
     }
 
 

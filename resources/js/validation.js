@@ -12,6 +12,21 @@ extend("positive", (value) => {
     return "El {_field_} debe se un numero positivo ";
 });
 
+extend("Imei", (value) => {
+  if (value.length == 15) {
+      return true;
+  }
+
+  return "El IMEI debe ser de 15 digitos ";
+});
+
+extend("Icc", (value) => {
+  if (value.length == 19) {
+      return true;
+  }
+
+  return "El ICC debe ser de 19 digitos ";
+});
 // extend("required", {
    
 //     validate(value) {
