@@ -350,7 +350,7 @@ export default {
         },
         agregarSerie() {
             axios
-                .get("/search/exact-search", {
+                .get("/search/venta-exact", {
                     params: { search: this.searchValue },
                 })
                 .then(

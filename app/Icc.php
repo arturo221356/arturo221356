@@ -59,7 +59,7 @@ class Icc extends Model implements Searchable
     }
     public function type()
     {
-        return $this->belongsTo('App\IccType');
+        return $this->belongsTo('App\IccType','icc_type_id');
     }
 
 }

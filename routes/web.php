@@ -43,17 +43,26 @@ Route::get('/', function () {
 Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('/users', 'UsersController');
+
     Route::resource('/sucursales', 'SucursalController');
+
     Route::resource('/productos/recargas', 'RecargasController');
+
     Route::resource('/productos/equipos', 'EquiposController');
+
     Route::resource('/productos/sims', 'IccProductController');
+
     Route::resource('/imei', 'ImeisController');
+
     Route::resource('/icc', 'IccController');
+
     Route::resource('/roles', 'RoleController');
 
     Route::view('/productos', 'admin.productos');
 
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+
+    Route::view('/inventario/traspasos', 'admin.inventario.traspasos');
 
     Route::view('/productos', 'admin.productos.index');
 
@@ -73,7 +82,13 @@ Route::get('/pruebas', function (Request $request) {
 
 Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
 
-Route::get('/search/exact-search', 'SearchController@exactSearch')->middleware('auth');
+Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
+
+Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
+
+Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
+
+
 
 //apissssss
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');

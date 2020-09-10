@@ -16,7 +16,6 @@ class CreateIccSubProductsTable extends Migration
         Schema::create('icc_sub_products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('distribution_id');
-            $table->unsignedInteger('company_id');
             $table->string('name');
             $table->unsignedInteger('icc_product_id');
             $table->unsignedInteger('recarga_requerida')->nullable();

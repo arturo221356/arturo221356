@@ -160,7 +160,7 @@
                             >
                                 <b-form-group label="Compañia">
                                     <select-general
-                                        :seleccionado="recarga.company"
+                                        
                                         v-model="recarga.company"
                                         url="/get/companies"
                                         pholder="Seleccionar Compañia"
@@ -301,14 +301,15 @@ export default {
         onSubmit() {
             this.modalLoading = true;
 
-            // if (this.editMode == true) {
-            //     this.updateRecarga();
-            // } else if (this.editMode == false) {
-            //     this.storeRecarga();
-            // }
+            if (this.editMode == true) {
+                this.updateRecarga();
+            } else if (this.editMode == false) {
+                this.storeRecarga();
+            }
 
         },
         editRecarga(item, index, button) {
+            
             this.editMode = true;
 
             this.infoModal.content.id = item.id;
@@ -321,9 +322,10 @@ export default {
 
             this.recarga.monto = item.monto;
 
-            this.recarga.company = item.company.id;
+            this.recarga.company = item.company;
 
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
+
         },
         resetInfoModal() {
             this.infoModal.title = "";

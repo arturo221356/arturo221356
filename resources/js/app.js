@@ -49,20 +49,15 @@ Vue.component('radio-producto', require('./components/RadioProductoComponent.vue
 Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
 Vue.component('table-component', require('./components/TableComponent.vue').default);
 Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
-Vue.component('select-status', require('./components/SelectStatusComponent.vue').default);
-Vue.component('select-equipo', require('./components/SelectEquipoComponent.vue').default);
 Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
 Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
-Vue.component('select-role', require('./components/SelectRoleComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
 Vue.component('sucursales-component', require('./components/SucursalesComponent.vue').default);
 Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);
-Vue.component('iccproduct-component', require('./components/IccProductComponent.vue').default);
-Vue.component('iccsubproduct-component', require('./components/IccSubProductComponent.vue').default);
 Vue.component('venta-component', require('./components/VentaComponent.vue').default);
-Vue.component('select-iccproduct', require('./components/IccProductSelectComponent.vue').default);
-Vue.component('select-iccsubproduct', require('./components/IccSubProductSelectComponent.vue').default);
 Vue.component('select-general', require('./components/SelectGeneralComponent.vue').default);
+Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalComponent.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

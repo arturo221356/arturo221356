@@ -129,10 +129,11 @@
                                 v-slot="validationContext"
                                 rules="min:5|required"
                                 autocomplete="off"
+                                 v-if="editMode == false"
                             >
                                 <b-form-group
                                     label="Contraseña"
-                                    v-if="editMode == false"
+                                   
                                 >
                                     <b-form-input
                                         type="text"
@@ -151,19 +152,55 @@
                                 </b-form-group>
                             </ValidationProvider>
 
-                            <b-form-group label="Sucursal">
-                                <select-sucursal
-                                    v-on:sucursal="sucursalChange"
-                                    :seleccionado="user.sucursal"
-                                ></select-sucursal>
-                            </b-form-group>
 
-                            <b-form-group label="Rol">
-                                <select-role
-                                    :seleccionado="user.role"
-                                    v-on:role="roleChange"
-                                ></select-role>
-                            </b-form-group>
+                            <ValidationProvider
+                                name="sucursal"
+                                v-slot="validationContext"
+                                rules="required"
+                                autocomplete="off"
+                            >
+                                <b-form-group label="Sucursal">
+                                    <select-general
+                                        url="/get/sucursales"
+                                        pholder="Seleccionar Sucursal"
+                                        v-model="user.sucursal"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    >
+                                    </select-general>
+
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
+
+                            <ValidationProvider
+                                name="Rol"
+                                v-slot="validationContext"
+                                rules="required"
+                                autocomplete="off"
+                            >
+                                <b-form-group label="Rol">
+                                    <select-general
+                                        url="/admin/roles"
+                                        pholder="Seleccionar Rol"
+                                        v-model="user.role"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    ></select-general>
+
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
                             <b-button size="sm" variant="primary" type="submit">
                                 Guardar
                             </b-button>
@@ -204,7 +241,7 @@ export default {
 
             formErrors: [],
 
-            editMode: null,
+            editMode: false,
 
             isBusy: false,
 
@@ -237,13 +274,13 @@ export default {
                     sortDirection: "desc",
                 },
                 {
-                    key: "role",
+                    key: "role.name",
                     label: "Rol",
                     sortable: true,
                     sortDirection: "desc",
                 },
                 {
-                    key: "sucursal",
+                    key: "sucursal.name",
                     label: "Sucursal",
                     sortable: true,
                     sortDirection: "desc",
@@ -279,12 +316,7 @@ export default {
                     console.log(error);
                 });
         },
-        sucursalChange(value) {
-            this.user.sucursal = value.id;
-        },
-        roleChange(value) {
-            this.user.role = value.id;
-        },
+
         onSubmit() {
             this.modalLoading = true;
 
@@ -301,10 +333,11 @@ export default {
             this.infoModal.title = `Row index: ${this.infoModal.content.id}`;
             this.user.name = item.name;
             this.user.email = item.email;
-            this.user.sucursal = item.sucursal_id;
-            this.user.role = item.role_id;
+            this.user.sucursal = item.sucursal;
+            this.user.role = item.role;
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
             console.log(this.infoModal.content);
+            console.log(item);
         },
         resetInfoModal() {
             this.infoModal.title = "";
@@ -336,10 +369,10 @@ export default {
         updateUser() {
             const id = this.infoModal.content.id;
             const params = {
-                sucursal_id: this.user.sucursal,
+                sucursal_id: this.user.sucursal.id,
                 name: this.user.name,
                 email: this.user.email,
-                role_id: this.user.role,
+                role_id: this.user.role.id,
             };
             axios.put(`/admin/users/${id}`, params).then((res) => {
                 alert("Editado");
@@ -351,11 +384,11 @@ export default {
         },
         storeUser() {
             const params = {
-                sucursal_id: this.user.sucursal,
+                sucursal_id: this.user.sucursal.id,
                 name: this.user.name,
                 password: this.user.password,
                 email: this.user.email,
-                role_id: this.user.role,
+                role_id: this.user.role.id,
             };
             axios.post(`/admin/users/`, params).then((res) => {
                 this.$refs["modal"].hide();
@@ -376,7 +409,7 @@ export default {
         newUser() {
             this.editMode = false;
             this.$refs["modal"].show();
-            console.log(`editmode ${this.editMode}`);
+           
         },
     },
     created() {

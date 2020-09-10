@@ -16,6 +16,7 @@ class CreateIccProductsTable extends Migration
         Schema::create('icc_products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->unsignedInteger('company_id');
             $table->boolean('dn_required')->default(false);
             $table->boolean('dn_temporal_required')->default(false);
             $table->boolean('nip_required')->default(false);

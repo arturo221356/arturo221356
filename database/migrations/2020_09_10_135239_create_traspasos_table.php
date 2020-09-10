@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRecargasTable extends Migration
+class CreateTraspasosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateRecargasTable extends Migration
      */
     public function up()
     {
-        Schema::create('recargas', function (Blueprint $table) {
+        Schema::create('traspasos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->boolean('aceptacion_required')->default(false);
+            $table->boolean('accepted')->default(false);
+            $table->unsignedInteger('sucursal_id');
             $table->timestamps();
-            $table->char('codigo')->unique();
-            $table->char('name');
-            $table->integer('monto');
-            $table->unsignedInteger('company_id');
         });
     }
 
@@ -30,6 +29,6 @@ class CreateRecargasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('recargas');
+        Schema::dropIfExists('traspasos');
     }
 }

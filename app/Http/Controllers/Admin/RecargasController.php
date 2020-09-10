@@ -28,11 +28,8 @@ class RecargasController extends Controller
         // return RecargaResource::collection($recargas);
 
         if ($request->ajax()) {
-            $userDistribution = Auth::User()->distribution()->id;
 
-            $distribution = Distribution::find($userDistribution);
-
-            $recargas = $distribution->recargas()->get();
+            $recargas = Recarga::all();
 
             return RecargaResource::collection($recargas);
         } else {
@@ -64,7 +61,6 @@ class RecargasController extends Controller
         $recarga->name = $request->name;
         $recarga->monto = $request->monto;
         $recarga->company_id = $request->company_id;
-        $recarga->distribution_id = Auth::user()->distribution()->id;
         $recarga->save();
         
     }

@@ -50,7 +50,7 @@ export default {
             detault: "Seleccionar Opcion",
         },
 
-        value: {},
+         value:{},
 
         state: {
             type: Boolean,
@@ -71,6 +71,8 @@ export default {
             options: [],
 
             selected: null,
+
+           
         };
     },
     methods: {
@@ -97,7 +99,7 @@ export default {
             axios.get(`${this.url}?param=${param}`).then(
                 function (response) {
                     this.options = response.data;
-
+                    
                     this.isLoading = false;
                 }.bind(this)
             );
@@ -105,6 +107,7 @@ export default {
     },
 
     created: function () {
+        this.selected = this.value;
         this.loadData();
     },
     watch:{
@@ -117,6 +120,9 @@ export default {
             this.emitToParent();
         },
         value: function (){
+            
+            //this.selected = this.options.find((option) => option.id === this.value.id);
+
             this.selected = this.value;
         }
     },

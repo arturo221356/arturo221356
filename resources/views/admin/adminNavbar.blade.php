@@ -12,7 +12,7 @@
                             <a class="dropdown-item" href="/inventario/">Reporte de Inventario</a>
                             <a class="dropdown-item" href="/admin/inventario/cargar">Cargar Inventario</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Productos</a>
+                            <a class="dropdown-item" href="/admin/inventario/traspasos">Traspasos</a>
                           </div>
                         </li>
                   
