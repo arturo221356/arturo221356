@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Traspaso;
+use App\Imei;
+use App\Icc;
 
 class TraspasoController extends Controller
 {
@@ -34,7 +38,39 @@ class TraspasoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $traspaso = Traspaso::create([
+            'sucursal_id' => $request->sucursal_id
+        ]);
+
+        $items = json_decode($request->data);
+
+        foreach ($items as $item) {
+            switch ($item->type) {
+
+                case "iccs":
+                    $traspaso->iccs()->attach(
+                        $item->id
+                    );
+                    $icc =  Icc::findorfail($item->id);
+                    $icc->sucursal_id = $request->sucursal_id;
+                    $icc->save();
+                    break;
+
+                case "imeis":
+                    $traspaso->imeis()->attach(
+                        $item->id
+                    );
+                    $imei =  Imei::findorfail($item->id);
+                    $imei->sucursal_id = $request->sucursal_id;
+                    $imei->save();
+
+                    break;
+            }
+        }
+
+
+
+        return $traspaso;
     }
 
     /**

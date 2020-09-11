@@ -63,7 +63,7 @@
                         ref="observer"
                         v-slot="{ handleSubmit }"
                     >
-                        <b-form @submit.prevent="handleSubmit(nuevoTraspaso)">
+                        <b-form @submit.prevent="handleSubmit(storeTraspaso)">
                             <ValidationProvider
                                 name="company"
                                 v-slot="validationContext"
@@ -89,7 +89,6 @@
                                         validationContext.errors[0]
                                     }}</b-form-invalid-feedback>
                                 </b-form-group>
-                                
                             </ValidationProvider>
 
                             <b-form-group label="¿Aceptacion requerida?">
@@ -270,10 +269,27 @@ export default {
                 self.searchResults = [];
             }
         },
-        nuevoTraspaso() {
-           
 
-            this.isLoading = true;
+        storeTraspaso() {
+            // this.isLoading = true;
+
+            const data = new FormData();
+            data.append("data", JSON.stringify(this.items));
+            data.append("file", this.file);
+            data.append("sucursal_id", this.sucursal.id);
+
+            axios.post(`/admin/inventario/traspasos/`, data).then((res) => {
+                console.log(res);
+
+                this.$bvToast.toast(`Recarga Agregada con exito`, {
+                    title: "Exito",
+                    autoHideDelay: 5000,
+                    appendToast: true,
+                    solid: true,
+                    variant: "success",
+                    toaster: "b-toaster-bottom-full",
+                });
+            });
         },
 
         agregarSerie(event) {

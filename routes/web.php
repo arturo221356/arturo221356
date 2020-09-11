@@ -62,9 +62,9 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
 
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
 
-    Route::view('/inventario/traspasos', 'admin.inventario.traspasos');
-
     Route::view('/productos', 'admin.productos.index');
+
+    Route::resource('/inventario/traspasos', 'TraspasoController');
 
     Route::view('/', 'admin.index');
 });

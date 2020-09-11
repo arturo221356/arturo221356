@@ -13,21 +13,21 @@ use Spatie\Searchable\SearchResult;
 class Icc extends Model implements Searchable
 {
     use SoftDeletes;
-    
+
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ["icc", "sucursal_id", "status_id","distribution_id","company_id","icc_type_id"];
+    protected $fillable = ["icc", "sucursal_id", "status_id", "distribution_id", "company_id", "icc_type_id"];
 
     public function getSearchResult(): SearchResult
-     {
+    {
         // $url = route('blogPost.show', $this->slug);
-     
-         return new \Spatie\Searchable\SearchResult(
+
+        return new \Spatie\Searchable\SearchResult(
             $this,
             $this->icc,
             // $url
-         );
-     }
+        );
+    }
 
     public function sucursal()
     {
@@ -59,7 +59,10 @@ class Icc extends Model implements Searchable
     }
     public function type()
     {
-        return $this->belongsTo('App\IccType','icc_type_id');
+        return $this->belongsTo('App\IccType', 'icc_type_id');
     }
-
+    public function traspasos()
+    {
+        return $this->morphToMany('App\Traspaso', 'traspasoable');
+    }
 }

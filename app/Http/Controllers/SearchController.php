@@ -12,12 +12,16 @@ use Illuminate\Http\Request;
 
 use Spatie\Searchable\Search;
 
+use Illuminate\Support\Facades\Auth;
+
 class SearchController extends Controller
 {
+    
     public function ventaPrediction(Request $request){
 
 
         // falta hacer los filtros para la distribucion y de la sucursal 
+        
 
         $searchResults = (new Search())
         ->registerModel(Icc::class, function ($modelSearchAspect) {
@@ -79,16 +83,15 @@ class SearchController extends Controller
 
     public function traspasoPrediction(Request $request){
 
-
+        $user = Auth::user();
         // falta hacer los filtros para la distribucion y de la sucursal 
 
         $searchResults = (new Search())
         ->registerModel(Icc::class, function ($modelSearchAspect) {
             $modelSearchAspect
-                
                 ->limit(5)
                 ->addSearchableAttribute('icc')
-                ->where('status_id', '!=', 5)
+                ->where(['status_id', '!=', 5],[''])
                 ;
         })
         ->registerModel(Imei::class, function ($modelSearchAspect) {
@@ -114,9 +117,9 @@ class SearchController extends Controller
         ->registerModel(Icc::class, function ($modelSearchAspect) {
             $modelSearchAspect
                
-                
+              
                 ->addExactSearchableAttribute('icc')
-                ->where('status_id', '!=', 5)
+                ->where(['status_id', '!=', 5],[])
                 ->with(['sucursal','status','company','type']);
         })
         ->registerModel(Imei::class, function ($modelSearchAspect) {

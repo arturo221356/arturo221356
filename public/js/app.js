@@ -4946,7 +4946,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -5030,16 +5029,34 @@ __webpack_require__.r(__webpack_exports__);
         self.searchResults = [];
       }
     },
-    nuevoTraspaso: function nuevoTraspaso() {
-      this.isLoading = true;
+    storeTraspaso: function storeTraspaso() {
+      var _this = this;
+
+      // this.isLoading = true;
+      var data = new FormData();
+      data.append("data", JSON.stringify(this.items));
+      data.append("file", this.file);
+      data.append("sucursal_id", this.sucursal.id);
+      axios.post("/admin/inventario/traspasos/", data).then(function (res) {
+        console.log(res);
+
+        _this.$bvToast.toast("Recarga Agregada con exito", {
+          title: "Exito",
+          autoHideDelay: 5000,
+          appendToast: true,
+          solid: true,
+          variant: "success",
+          toaster: "b-toaster-bottom-full"
+        });
+      });
     },
     agregarSerie: function agregarSerie(event) {
-      var _this = this;
+      var _this2 = this;
 
       event.preventDefault();
 
       if (this.items.some(function (item) {
-        return item.serie === _this.searchValue;
+        return item.serie === _this2.searchValue;
       })) {
         alert("duplicado");
       } else {
@@ -88004,7 +88021,7 @@ var render = function() {
                               on: {
                                 submit: function($event) {
                                   $event.preventDefault()
-                                  return handleSubmit(_vm.nuevoTraspaso)
+                                  return handleSubmit(_vm.storeTraspaso)
                                 }
                               }
                             },

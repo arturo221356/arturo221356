@@ -13,35 +13,40 @@ use Spatie\Searchable\SearchResult;
 class Imei extends Model implements Searchable
 {
     use SoftDeletes;
-    
-    protected $fillable = ["imei","sucursal_id","equipo_id","status_id","distribution_id"];
+
+    protected $fillable = ["imei", "sucursal_id", "equipo_id", "status_id", "distribution_id"];
 
     protected $dates = ['deleted_at'];
-    
+
     public function getSearchResult(): SearchResult
     {
-       // $url = route('blogPost.show', $this->slug);
-    
+        // $url = route('blogPost.show', $this->slug);
+
         return new \Spatie\Searchable\SearchResult(
-           $this,
-           $this->imei,
-           // $url
+            $this,
+            $this->imei,
+            // $url
         );
     }
-    
-    public function sucursal(){
+
+    public function sucursal()
+    {
         return $this->belongsTo('App\Sucursal');
     }
-    public function equipo(){
+    public function equipo()
+    {
         return $this->belongsTo('App\Equipo');
     }
-    public function status(){
+    public function status()
+    {
         return $this->belongsTo('App\Status');
     }
-    public function comment(){
+    public function comment()
+    {
         return $this->morphOne('App\Comment', 'commentable');
-
-        
     }
-
+    public function traspasos()
+    {
+        return $this->morphToMany('App\Traspaso', 'traspasoable');
+    }
 }
