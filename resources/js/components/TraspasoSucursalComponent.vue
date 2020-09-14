@@ -156,11 +156,7 @@
                                         <div class="col-sm">
                                             <h5>{{ item.serie }}</h5>
                                         </div>
-                                        <div class="col-sm" v-if="item.equipo">
-                                            <B>Equipo:</B>
-                                            {{ item.equipo.marca }}
-                                            {{ item.equipo.modelo }}
-                                        </div>
+                                        
                                         <div class="col-sm">
                                             <B>Sucursal:</B>
                                             {{ item.sucursal.name }}
@@ -168,6 +164,11 @@
                                         <div class="col-sm">
                                             <B>Status:</B>
                                             {{ item.status.status }}
+                                        </div>
+                                        <div class="col-sm" v-if="item.equipo">
+                                            <B>Equipo:</B>
+                                            {{ item.equipo.marca }}
+                                            {{ item.equipo.modelo }}
                                         </div>
                                         <div class="col-sm" v-if="item.company">
                                             <B>compañia:</B>
@@ -431,12 +432,13 @@
                                         <h5>{{ item.icc }}</h5>
                                     </div>
                                     <div class="col-sm float-left">
+                                        <B>Compañia: </B>
                                         {{ item.company.name }}
                                         {{ item.type.name }}
                                     </div>
                                     <div class="col-sm float-left">
                                         <B>Sucursal origen:</B>
-                                        {{ item.pivot.old_sucursal_id}}
+                                        {{ item.pivot.old_sucursal_name}}
                                     </div>
                                 </div>
                             </b-list-group-item>
@@ -450,12 +452,13 @@
                                         <h5>{{ item.imei }}</h5>
                                     </div>
                                     <div class="col-sm float-left">
+                                        <B>Equipo: </B>
                                         {{ item.equipo.marca }}
                                         {{ item.equipo.modelo }}
                                     </div>
                                     <div class="col-sm float-left">
                                         <B>Sucursal origen:</B>
-                                        {{ item.pivot.old_sucursal_id}}
+                                        {{ item.pivot.old_sucursal_name}}
                                     </div>
                                 </div>
                             </b-list-group-item>
@@ -572,12 +575,14 @@ export default {
     },
     methods: {
         cancelarTraspaso(item) {
-            // this.isLoading = true;
+            this.isLoading = true;
             axios
                 .delete(`/admin/inventario/traspasos/${item}`)
                 .then(
                     function (response) {
-                        // this.isLoading = false;
+                        this.isLoading = false;
+                        this.traspasoType = 'historial';
+                        this.retrieveHistorial();
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -585,12 +590,15 @@ export default {
                 });
         },
         aceptarTraspaso(item) {
-            // this.isLoading = true;
+            this.isLoading = true;
             axios
                 .put(`/admin/inventario/traspasos/${item}`)
                 .then(
                     function (response) {
-                        console.log(response);
+                      
+                        this.isLoading = false;
+                        this.traspasoType = 'historial';
+                        this.retrieveHistorial();
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -602,6 +610,8 @@ export default {
         },
 
         traspasoLoadDetails(item) {
+            this.currentTraspaso = {};
+            
             this.isLoading = true;
 
             this.traspasoType = "detalle";

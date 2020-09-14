@@ -89,7 +89,8 @@ class TraspasoController extends Controller
 
                     $traspaso->iccs()->attach(
                         $icc,
-                        ['old_sucursal_id' => $icc->sucursal_id,
+                        ['old_sucursal_id' => $icc->sucursal->id,
+                        'old_sucursal_name' => $icc->sucursal->name,
                          'old_status_id' => $icc->status_id
                         ]
                     );
@@ -112,6 +113,7 @@ class TraspasoController extends Controller
                     $traspaso->imeis()->attach(
                         $imei,
                         ['old_sucursal_id' => $imei->sucursal_id,
+                        'old_sucursal_name' => $imei->sucursal->name,
                         'old_status_id' => $imei->status_id
                        ]
                     );

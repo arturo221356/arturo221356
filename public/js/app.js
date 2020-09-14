@@ -5229,6 +5229,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -5303,16 +5306,21 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     cancelarTraspaso: function cancelarTraspaso(item) {
-      // this.isLoading = true;
-      axios["delete"]("/admin/inventario/traspasos/".concat(item)).then(function (response) {// this.isLoading = false;
+      this.isLoading = true;
+      axios["delete"]("/admin/inventario/traspasos/".concat(item)).then(function (response) {
+        this.isLoading = false;
+        this.traspasoType = 'historial';
+        this.retrieveHistorial();
       }.bind(this))["catch"](function (error) {
         console.log(error);
       });
     },
     aceptarTraspaso: function aceptarTraspaso(item) {
-      // this.isLoading = true;
+      this.isLoading = true;
       axios.put("/admin/inventario/traspasos/".concat(item)).then(function (response) {
-        console.log(response);
+        this.isLoading = false;
+        this.traspasoType = 'historial';
+        this.retrieveHistorial();
       }.bind(this))["catch"](function (error) {
         console.log(error);
       });
@@ -5325,6 +5333,7 @@ __webpack_require__.r(__webpack_exports__);
       return dirty || validated ? valid : null;
     },
     traspasoLoadDetails: function traspasoLoadDetails(item) {
+      this.currentTraspaso = {};
       this.isLoading = true;
       this.traspasoType = "detalle";
       this.currentTraspaso = item;
@@ -88567,24 +88576,6 @@ var render = function() {
                                     _c("h5", [_vm._v(_vm._s(item.serie))])
                                   ]),
                                   _vm._v(" "),
-                                  item.equipo
-                                    ? _c(
-                                        "div",
-                                        { staticClass: "col-sm" },
-                                        [
-                                          _c("B", [_vm._v("Equipo:")]),
-                                          _vm._v(
-                                            "\n                                        " +
-                                              _vm._s(item.equipo.marca) +
-                                              "\n                                        " +
-                                              _vm._s(item.equipo.modelo) +
-                                              "\n                                    "
-                                          )
-                                        ],
-                                        1
-                                      )
-                                    : _vm._e(),
-                                  _vm._v(" "),
                                   _c(
                                     "div",
                                     { staticClass: "col-sm" },
@@ -88612,6 +88603,24 @@ var render = function() {
                                     ],
                                     1
                                   ),
+                                  _vm._v(" "),
+                                  item.equipo
+                                    ? _c(
+                                        "div",
+                                        { staticClass: "col-sm" },
+                                        [
+                                          _c("B", [_vm._v("Equipo:")]),
+                                          _vm._v(
+                                            "\n                                        " +
+                                              _vm._s(item.equipo.marca) +
+                                              "\n                                        " +
+                                              _vm._s(item.equipo.modelo) +
+                                              "\n                                    "
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    : _vm._e(),
                                   _vm._v(" "),
                                   item.company
                                     ? _c(
@@ -89146,6 +89155,7 @@ var render = function() {
                                       "div",
                                       { staticClass: "col-sm float-left" },
                                       [
+                                        _c("B", [_vm._v("Compañia: ")]),
                                         _vm._v(
                                           "\n                                    " +
                                             _vm._s(item.company.name) +
@@ -89153,7 +89163,8 @@ var render = function() {
                                             _vm._s(item.type.name) +
                                             "\n                                "
                                         )
-                                      ]
+                                      ],
+                                      1
                                     ),
                                     _vm._v(" "),
                                     _c(
@@ -89163,7 +89174,9 @@ var render = function() {
                                         _c("B", [_vm._v("Sucursal origen:")]),
                                         _vm._v(
                                           "\n                                    " +
-                                            _vm._s(item.pivot.old_sucursal_id) +
+                                            _vm._s(
+                                              item.pivot.old_sucursal_name
+                                            ) +
                                             "\n                                "
                                         )
                                       ],
@@ -89193,6 +89206,7 @@ var render = function() {
                                       "div",
                                       { staticClass: "col-sm float-left" },
                                       [
+                                        _c("B", [_vm._v("Equipo: ")]),
                                         _vm._v(
                                           "\n                                    " +
                                             _vm._s(item.equipo.marca) +
@@ -89200,7 +89214,8 @@ var render = function() {
                                             _vm._s(item.equipo.modelo) +
                                             "\n                                "
                                         )
-                                      ]
+                                      ],
+                                      1
                                     ),
                                     _vm._v(" "),
                                     _c(
@@ -89210,7 +89225,9 @@ var render = function() {
                                         _c("B", [_vm._v("Sucursal origen:")]),
                                         _vm._v(
                                           "\n                                    " +
-                                            _vm._s(item.pivot.old_sucursal_id) +
+                                            _vm._s(
+                                              item.pivot.old_sucursal_name
+                                            ) +
                                             "\n                                "
                                         )
                                       ],
