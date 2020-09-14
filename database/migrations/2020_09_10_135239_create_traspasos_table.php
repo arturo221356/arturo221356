@@ -18,7 +18,10 @@ class CreateTraspasosTable extends Migration
             $table->boolean('aceptacion_required')->default(false);
             $table->boolean('accepted')->default(false);
             $table->unsignedInteger('sucursal_id');
+            $table->unsignedInteger('distribution_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

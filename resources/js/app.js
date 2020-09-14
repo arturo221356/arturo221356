@@ -8,9 +8,11 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-import BootstrapVue from 'bootstrap-vue' //Importing
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 
 Vue.use(BootstrapVue) 
+
+Vue.use(BootstrapVueIcons)
 
 
 import Multiselect from 'vue-multiselect'

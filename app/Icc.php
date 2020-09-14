@@ -10,9 +10,13 @@ use Spatie\Searchable\Searchable;
 
 use Spatie\Searchable\SearchResult;
 
+
+
 class Icc extends Model implements Searchable
 {
     use SoftDeletes;
+
+    use \Znck\Eloquent\Traits\BelongsToThrough;
 
     protected $dates = ['deleted_at'];
 
@@ -49,10 +53,10 @@ class Icc extends Model implements Searchable
     {
         return $this->morphOne('App\Comment', 'commentable');
     }
-    public function distribution()
-    {
-        return $this->belongsTo('App\Distribution');
-    }
+    // public function distribution()
+    // {
+    //     return $this->belongsToThrough('App\Distribution','App\Sucursal',null,'',['App\Sucursal' => 'sucursal_id']);
+    // }
     public function details()
     {
         return $this->hasOne('App\IccDetail')->withDefault();

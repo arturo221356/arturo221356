@@ -4946,12 +4946,326 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      traspasoType: 1,
+      traspasoType: "historial",
+      tableLoading: false,
+      detailTraspaso: {},
+      currentTraspaso: {},
+      traspasosAccepted: true,
+      historialTableFields: [{
+        key: "id",
+        sortable: true,
+        label: "Folio"
+      }, {
+        key: "sucursal_name",
+        sortable: true,
+        label: "Sucursal Destino"
+      }, {
+        key: "created_at",
+        sortable: true,
+        label: "Fecha de Creacion"
+      }, {
+        key: "accepted",
+        sortable: true,
+        label: "Aceptado"
+      }, {
+        key: "user_name",
+        sortable: true,
+        label: "Aceptado por"
+      }, {
+        key: "detalles",
+        label: "Detalles"
+      }],
+      historialItems: [],
+      finalDate: new Date().toISOString().substr(0, 10),
+      initialDate: new Date(Date.now() - 5184000000).toISOString().substring(0, 10),
       sucursal: null,
-      aceptacionRequired: false,
+      aceptacionRequired: true,
       showList: true,
       searchValue: "",
       searchResults: [],
@@ -4961,46 +5275,47 @@ __webpack_require__.r(__webpack_exports__);
         variant: "",
         list: []
       },
-      items: [{
-        id: 1,
-        serie: "8925034545455454547",
-        type: "iccs",
-        status: {
-          status: "disponible"
-        },
-        sucursal: {
-          name: "tonala"
-        }
-      }, {
-        id: 2,
-        serie: 123456789123456,
-        type: "imeis",
-        status: {
-          name: "disponible"
-        },
-        sucursal: {
-          name: "chipinkuan"
-        },
-        equipo: {
-          marca: "nokia 3311",
-          modelo: "3311",
-          precio: 999
-        }
-      }],
+      items: [],
       isLoading: false,
-      options: [{
-        text: "Sucursal a sucursal",
-        value: 1
+      traspasoOptions: [{
+        text: "Nuevo traspaso",
+        value: "nuevo"
+      }, {
+        text: "Historial",
+        value: "historial"
       }]
     };
   },
+  computed: {
+    maxDate: function maxDate() {
+      var now = new Date();
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return today;
+    },
+    computedHistorialTableFields: function computedHistorialTableFields() {
+      // If the user isn't an admin, filter out fields that require auth.
+      // if (!this.isUserAdmin)
+      //     return this.historialTableFields.filter((field) => !field.requiresAdmin);
+      // // If the user IS an admin, return all fields.
+      // else
+      return this.historialTableFields;
+    }
+  },
   methods: {
-    confirmProductChange: function confirmProductChange(e) {
-      if (this.items.length > 0) {
-        if (!confirm("Desea continuar se borrara la informacion??")) {
-          e.preventDefault();
-        } else {}
-      }
+    cancelarTraspaso: function cancelarTraspaso(item) {
+      // this.isLoading = true;
+      axios["delete"]("/admin/inventario/traspasos/".concat(item)).then(function (response) {// this.isLoading = false;
+      }.bind(this))["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    aceptarTraspaso: function aceptarTraspaso(item) {
+      // this.isLoading = true;
+      axios.put("/admin/inventario/traspasos/".concat(item)).then(function (response) {
+        console.log(response);
+      }.bind(this))["catch"](function (error) {
+        console.log(error);
+      });
     },
     getValidationState: function getValidationState(_ref) {
       var dirty = _ref.dirty,
@@ -5009,8 +5324,35 @@ __webpack_require__.r(__webpack_exports__);
           valid = _ref$valid === void 0 ? null : _ref$valid;
       return dirty || validated ? valid : null;
     },
+    traspasoLoadDetails: function traspasoLoadDetails(item) {
+      this.isLoading = true;
+      this.traspasoType = "detalle";
+      this.currentTraspaso = item;
+      console.log(item);
+      axios.get("/admin/inventario/traspasos/".concat(item.id)).then(function (response) {
+        this.detailTraspaso = response.data;
+        this.isLoading = false;
+      }.bind(this))["catch"](function (error) {
+        console.log(error);
+      });
+    },
     eliminarItem: function eliminarItem(item, index) {
       this.items.splice(index, 1);
+    },
+    retrieveHistorial: function retrieveHistorial() {
+      this.tableLoading = true;
+      axios.get("/admin/inventario/traspasos", {
+        params: {
+          initial_date: this.initialDate,
+          final_date: this.finalDate,
+          accepted: this.traspasosAccepted
+        }
+      }).then(function (response) {
+        this.historialItems = response.data.data;
+        this.tableLoading = false;
+      }.bind(this))["catch"](function (error) {
+        console.log(error);
+      });
     },
     searchProduct: function searchProduct() {
       var self = this;
@@ -5032,15 +5374,14 @@ __webpack_require__.r(__webpack_exports__);
     storeTraspaso: function storeTraspaso() {
       var _this = this;
 
-      // this.isLoading = true;
+      this.isLoading = true;
       var data = new FormData();
       data.append("data", JSON.stringify(this.items));
       data.append("file", this.file);
       data.append("sucursal_id", this.sucursal.id);
+      data.append("aceptacion_required", this.aceptacionRequired);
       axios.post("/admin/inventario/traspasos/", data).then(function (res) {
-        console.log(res);
-
-        _this.$bvToast.toast("Recarga Agregada con exito", {
+        _this.$bvToast.toast("Traspaso creado con exito", {
           title: "Exito",
           autoHideDelay: 5000,
           appendToast: true,
@@ -5048,6 +5389,10 @@ __webpack_require__.r(__webpack_exports__);
           variant: "success",
           toaster: "b-toaster-bottom-full"
         });
+
+        _this.isLoading = false;
+        _this.items = [];
+        _this.traspasoType = 'historial';
       });
     },
     agregarSerie: function agregarSerie(event) {
@@ -5082,6 +5427,7 @@ __webpack_require__.r(__webpack_exports__);
           console.log(error);
         });
         this.searchValue = null;
+        this.searchResults = [];
       }
     }
   }
@@ -87913,14 +88259,8 @@ var render = function() {
                         [
                           _c("b-form-radio-group", {
                             attrs: {
-                              options: _vm.options,
-                              buttons: "",
-                              name: "radios-btn-default"
-                            },
-                            nativeOn: {
-                              click: function($event) {
-                                return _vm.confirmProductChange($event)
-                              }
+                              options: _vm.traspasoOptions,
+                              buttons: ""
                             },
                             model: {
                               value: _vm.traspasoType,
@@ -87951,10 +88291,10 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c("div", { staticClass: "jumbotron" }, [
+          _c("div", { staticClass: "jumbotron jumbotron-fluid" }, [
             _c(
               "div",
-              { staticClass: "col-md-11 mx-auto" },
+              { staticClass: "col-md-8 mx-auto" },
               [
                 _c(
                   "b-alert",
@@ -88005,176 +88345,203 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _c("h1", [_vm._v("Agregar Producto a traspasar:")]),
-                _vm._v(" "),
-                _c("validation-observer", {
-                  ref: "observer",
-                  scopedSlots: _vm._u([
-                    {
-                      key: "default",
-                      fn: function(ref) {
-                        var handleSubmit = ref.handleSubmit
-                        return [
-                          _c(
-                            "b-form",
-                            {
-                              on: {
-                                submit: function($event) {
-                                  $event.preventDefault()
-                                  return handleSubmit(_vm.storeTraspaso)
-                                }
-                              }
-                            },
-                            [
-                              _c("ValidationProvider", {
-                                attrs: { name: "company", rules: "required" },
-                                scopedSlots: _vm._u(
-                                  [
-                                    {
-                                      key: "default",
-                                      fn: function(validationContext) {
-                                        return [
-                                          _c(
-                                            "b-form-group",
-                                            {
-                                              staticClass: "mt-4",
-                                              attrs: {
-                                                label: "Sucursal de destino:",
-                                                "label-for": "select-sucursal"
-                                              }
-                                            },
-                                            [
-                                              _c("select-general", {
-                                                attrs: {
-                                                  url: "/get/sucursales",
-                                                  pholder:
-                                                    "Seleccionar Sucursal",
-                                                  state: _vm.getValidationState(
-                                                    validationContext
-                                                  )
-                                                },
-                                                model: {
-                                                  value: _vm.sucursal,
-                                                  callback: function($$v) {
-                                                    _vm.sucursal = $$v
-                                                  },
-                                                  expression: "sucursal"
-                                                }
-                                              }),
-                                              _vm._v(" "),
-                                              _c("b-form-invalid-feedback", [
-                                                _vm._v(
-                                                  _vm._s(
-                                                    validationContext.errors[0]
-                                                  )
-                                                )
-                                              ])
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      }
-                                    }
-                                  ],
-                                  null,
-                                  true
-                                )
-                              }),
-                              _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.traspasoType == "nuevo",
+                        expression: "traspasoType == 'nuevo'"
+                      }
+                    ]
+                  },
+                  [
+                    _c("h1", [_vm._v("Agregar Producto a traspasar:")]),
+                    _vm._v(" "),
+                    _c("validation-observer", {
+                      ref: "observer",
+                      scopedSlots: _vm._u([
+                        {
+                          key: "default",
+                          fn: function(ref) {
+                            var handleSubmit = ref.handleSubmit
+                            return [
                               _c(
-                                "b-form-group",
-                                { attrs: { label: "¿Aceptacion requerida?" } },
-                                [
-                                  _c("b-form-radio-group", {
-                                    attrs: {
-                                      options: [
-                                        { text: "Si", value: true },
-                                        { text: "No", value: false }
-                                      ],
-                                      "button-variant": "outline-primary",
-                                      buttons: "",
-                                      name: "radios-btn-default"
-                                    },
-                                    model: {
-                                      value: _vm.aceptacionRequired,
-                                      callback: function($$v) {
-                                        _vm.aceptacionRequired = $$v
-                                      },
-                                      expression: "aceptacionRequired"
+                                "b-form",
+                                {
+                                  on: {
+                                    submit: function($event) {
+                                      $event.preventDefault()
+                                      return handleSubmit(_vm.storeTraspaso)
                                     }
-                                  })
+                                  }
+                                },
+                                [
+                                  _c("ValidationProvider", {
+                                    attrs: {
+                                      name: "company",
+                                      rules: "required"
+                                    },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function(validationContext) {
+                                            return [
+                                              _c(
+                                                "b-form-group",
+                                                {
+                                                  staticClass: "mt-4",
+                                                  attrs: {
+                                                    label:
+                                                      "Sucursal de destino:",
+                                                    "label-for":
+                                                      "select-sucursal"
+                                                  }
+                                                },
+                                                [
+                                                  _c("select-general", {
+                                                    attrs: {
+                                                      url: "/get/sucursales",
+                                                      pholder:
+                                                        "Seleccionar Sucursal",
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      )
+                                                    },
+                                                    model: {
+                                                      value: _vm.sucursal,
+                                                      callback: function($$v) {
+                                                        _vm.sucursal = $$v
+                                                      },
+                                                      expression: "sucursal"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          validationContext
+                                                            .errors[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "b-form-group",
+                                    {
+                                      attrs: { label: "¿Aceptacion requerida?" }
+                                    },
+                                    [
+                                      _c("b-form-radio-group", {
+                                        attrs: {
+                                          options: [
+                                            { text: "Si", value: true },
+                                            { text: "No", value: false }
+                                          ],
+                                          "button-variant": "outline-primary",
+                                          buttons: "",
+                                          name: "radios-btn-default"
+                                        },
+                                        model: {
+                                          value: _vm.aceptacionRequired,
+                                          callback: function($$v) {
+                                            _vm.aceptacionRequired = $$v
+                                          },
+                                          expression: "aceptacionRequired"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _vm.items.length > 0
+                                    ? _c(
+                                        "b-button",
+                                        {
+                                          staticClass: "mt-3",
+                                          attrs: {
+                                            type: "submit",
+                                            variant: "outline-primary",
+                                            block: ""
+                                          }
+                                        },
+                                        [_vm._v("Realizar traspazo")]
+                                      )
+                                    : _vm._e()
                                 ],
                                 1
                               ),
                               _vm._v(" "),
-                              _vm.items.length > 0
-                                ? _c(
-                                    "b-button",
-                                    {
-                                      staticClass: "mt-3",
-                                      attrs: {
-                                        type: "submit",
-                                        variant: "outline-primary",
-                                        block: ""
-                                      }
-                                    },
-                                    [_vm._v("Realizar traspazo")]
-                                  )
-                                : _vm._e()
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "b-form",
-                            { on: { submit: _vm.agregarSerie } },
-                            [
                               _c(
-                                "b-input-group",
-                                { staticClass: "mt-5" },
+                                "b-form",
+                                { on: { submit: _vm.agregarSerie } },
                                 [
-                                  _c("b-form-input", {
-                                    attrs: {
-                                      autocomplete: "off",
-                                      placeholder: "Buscar Producto",
-                                      list: "search-results"
-                                    },
-                                    on: { update: _vm.searchProduct },
-                                    model: {
-                                      value: _vm.searchValue,
-                                      callback: function($$v) {
-                                        _vm.searchValue = $$v
-                                      },
-                                      expression: "searchValue"
-                                    }
-                                  }),
-                                  _vm._v(" "),
                                   _c(
-                                    "datalist",
-                                    { attrs: { id: "search-results" } },
-                                    _vm._l(_vm.searchResults, function(
-                                      list,
-                                      index
-                                    ) {
-                                      return _c("option", { key: index }, [
-                                        _vm._v(_vm._s(list.title))
-                                      ])
-                                    }),
-                                    0
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "b-input-group-append",
+                                    "b-input-group",
+                                    { staticClass: "mt-5" },
                                     [
-                                      _c(
-                                        "b-button",
-                                        {
-                                          attrs: {
-                                            variant: "success",
-                                            type: "submit"
-                                          }
+                                      _c("b-form-input", {
+                                        attrs: {
+                                          autocomplete: "off",
+                                          placeholder: "Buscar Producto",
+                                          list: "search-results"
                                         },
-                                        [_vm._v("Agregar")]
+                                        on: { update: _vm.searchProduct },
+                                        model: {
+                                          value: _vm.searchValue,
+                                          callback: function($$v) {
+                                            _vm.searchValue = $$v
+                                          },
+                                          expression: "searchValue"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "datalist",
+                                        { attrs: { id: "search-results" } },
+                                        _vm._l(_vm.searchResults, function(
+                                          list,
+                                          index
+                                        ) {
+                                          return _c("option", { key: index }, [
+                                            _vm._v(_vm._s(list.title))
+                                          ])
+                                        }),
+                                        0
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "b-input-group-append",
+                                        [
+                                          _c(
+                                            "b-button",
+                                            {
+                                              attrs: {
+                                                variant: "success",
+                                                type: "submit"
+                                              }
+                                            },
+                                            [_vm._v("Agregar")]
+                                          )
+                                        ],
+                                        1
                                       )
                                     ],
                                     1
@@ -88182,121 +88549,681 @@ var render = function() {
                                 ],
                                 1
                               )
-                            ],
-                            1
-                          )
-                        ]
-                      }
-                    }
-                  ])
-                }),
+                            ]
+                          }
+                        }
+                      ])
+                    }),
+                    _vm._v(" "),
+                    _vm.showList == true
+                      ? _c(
+                          "b-list-group",
+                          { staticClass: "mt-5" },
+                          _vm._l(_vm.items, function(item, index) {
+                            return _c("b-list-group-item", { key: index }, [
+                              _c("div", [
+                                _c("div", { staticClass: "row" }, [
+                                  _c("div", { staticClass: "col-sm" }, [
+                                    _c("h5", [_vm._v(_vm._s(item.serie))])
+                                  ]),
+                                  _vm._v(" "),
+                                  item.equipo
+                                    ? _c(
+                                        "div",
+                                        { staticClass: "col-sm" },
+                                        [
+                                          _c("B", [_vm._v("Equipo:")]),
+                                          _vm._v(
+                                            "\n                                        " +
+                                              _vm._s(item.equipo.marca) +
+                                              "\n                                        " +
+                                              _vm._s(item.equipo.modelo) +
+                                              "\n                                    "
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "col-sm" },
+                                    [
+                                      _c("B", [_vm._v("Sucursal:")]),
+                                      _vm._v(
+                                        "\n                                        " +
+                                          _vm._s(item.sucursal.name) +
+                                          "\n                                    "
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "col-sm" },
+                                    [
+                                      _c("B", [_vm._v("Status:")]),
+                                      _vm._v(
+                                        "\n                                        " +
+                                          _vm._s(item.status.status) +
+                                          "\n                                    "
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  item.company
+                                    ? _c(
+                                        "div",
+                                        { staticClass: "col-sm" },
+                                        [
+                                          _c("B", [_vm._v("compañia:")]),
+                                          _vm._v(
+                                            "\n                                        " +
+                                              _vm._s(item.company.name) +
+                                              "\n                                        " +
+                                              _vm._s(item.tipoSim.name) +
+                                              "\n                                    "
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "col-sm" },
+                                    [
+                                      _c(
+                                        "b-button",
+                                        {
+                                          staticClass: "float-right",
+                                          attrs: {
+                                            variant: "danger",
+                                            size: "sm"
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.eliminarItem(
+                                                item,
+                                                index
+                                              )
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("Eliminar")]
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ])
+                              ])
+                            ])
+                          }),
+                          1
+                        )
+                      : _vm._e()
+                  ],
+                  1
+                ),
                 _vm._v(" "),
-                _vm.showList == true
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.traspasoType == "historial",
+                        expression: "traspasoType == 'historial'"
+                      }
+                    ]
+                  },
+                  [
+                    _c("h1", [_vm._v("Historial de traspasos")]),
+                    _vm._v(" "),
+                    _c("validation-observer", {
+                      ref: "observer",
+                      scopedSlots: _vm._u([
+                        {
+                          key: "default",
+                          fn: function(ref) {
+                            var handleSubmit = ref.handleSubmit
+                            return [
+                              _c(
+                                "b-form",
+                                {
+                                  on: {
+                                    submit: function($event) {
+                                      $event.preventDefault()
+                                      return handleSubmit(_vm.retrieveHistorial)
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("ValidationProvider", {
+                                    attrs: {
+                                      name: "fecha-inicio",
+                                      rules: "required"
+                                    },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function(validationContext) {
+                                            return [
+                                              _c(
+                                                "b-form-group",
+                                                {
+                                                  staticClass: "mt-4",
+                                                  attrs: {
+                                                    label: "Fecha inicio:"
+                                                  }
+                                                },
+                                                [
+                                                  _c("b-form-datepicker", {
+                                                    staticClass: "mb-2",
+                                                    attrs: {
+                                                      id: "fecha-inicio",
+                                                      max: _vm.maxDate,
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      )
+                                                    },
+                                                    model: {
+                                                      value: _vm.initialDate,
+                                                      callback: function($$v) {
+                                                        _vm.initialDate = $$v
+                                                      },
+                                                      expression: "initialDate"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          validationContext
+                                                            .errors[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  }),
+                                  _vm._v(" "),
+                                  _c("ValidationProvider", {
+                                    attrs: {
+                                      name: "fecha-final",
+                                      rules: "required"
+                                    },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function(validationContext) {
+                                            return [
+                                              _c(
+                                                "b-form-group",
+                                                {
+                                                  staticClass: "mt-4",
+                                                  attrs: {
+                                                    label: "Fecha final:"
+                                                  }
+                                                },
+                                                [
+                                                  _c("b-form-datepicker", {
+                                                    staticClass: "mb-2",
+                                                    attrs: {
+                                                      id: "fecha-final",
+                                                      max: _vm.maxDate,
+                                                      state: _vm.getValidationState(
+                                                        validationContext
+                                                      )
+                                                    },
+                                                    model: {
+                                                      value: _vm.finalDate,
+                                                      callback: function($$v) {
+                                                        _vm.finalDate = $$v
+                                                      },
+                                                      expression: "finalDate"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          validationContext
+                                                            .errors[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "b-form-group",
+                                    [
+                                      _c("b-form-radio-group", {
+                                        attrs: {
+                                          options: [
+                                            {
+                                              text: "Aceptados",
+                                              value: true
+                                            },
+                                            {
+                                              text: "Pendientes",
+                                              value: false
+                                            }
+                                          ],
+                                          buttons: "",
+                                          "button-variant": "outline-primary",
+                                          size: "lg",
+                                          name: "radio-btn-outline"
+                                        },
+                                        on: { input: _vm.retrieveHistorial },
+                                        model: {
+                                          value: _vm.traspasosAccepted,
+                                          callback: function($$v) {
+                                            _vm.traspasosAccepted = $$v
+                                          },
+                                          expression: "traspasosAccepted"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "b-button",
+                                    {
+                                      attrs: {
+                                        block: "",
+                                        type: "submit",
+                                        variant: "primary"
+                                      }
+                                    },
+                                    [_vm._v("Buscar")]
+                                  )
+                                ],
+                                1
+                              )
+                            ]
+                          }
+                        }
+                      ])
+                    }),
+                    _vm._v(" "),
+                    _c("b-table", {
+                      staticClass: "mt-5",
+                      attrs: {
+                        busy: _vm.tableLoading,
+                        hover: "",
+                        responsive: "",
+                        striped: "",
+                        "head-variant": "dark",
+                        "table-variant": "light",
+                        items: _vm.historialItems,
+                        fields: _vm.computedHistorialTableFields
+                      },
+                      scopedSlots: _vm._u([
+                        {
+                          key: "cell(detalles)",
+                          fn: function(row) {
+                            return [
+                              _c(
+                                "b-button",
+                                {
+                                  attrs: { size: "sm" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.traspasoLoadDetails(row.item)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                Detalles\n                            "
+                                  )
+                                ]
+                              )
+                            ]
+                          }
+                        },
+                        {
+                          key: "cell(accepted)",
+                          fn: function(row) {
+                            return [
+                              row.item.accepted
+                                ? _c("div", [
+                                    _vm._v(
+                                      "\n                                " +
+                                        _vm._s(row.item.updated_at) +
+                                        "\n                            "
+                                    )
+                                  ])
+                                : _vm._e()
+                            ]
+                          }
+                        },
+                        {
+                          key: "table-busy",
+                          fn: function() {
+                            return [
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "text-center text-primary my-2"
+                                },
+                                [
+                                  _c("b-spinner", {
+                                    staticClass: "align-middle"
+                                  }),
+                                  _vm._v(" "),
+                                  _c("strong", [_vm._v("Loading...")])
+                                ],
+                                1
+                              )
+                            ]
+                          },
+                          proxy: true
+                        }
+                      ])
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _vm.traspasoType == "detalle"
                   ? _c(
-                      "b-list-group",
-                      { staticClass: "mt-5" },
-                      _vm._l(_vm.items, function(item, index) {
-                        return _c("b-list-group-item", { key: index }, [
-                          _c("div", { staticClass: "d-flex flex-row" }, [
-                            _c("div", { staticClass: "p-2" }, [
-                              _c("h5", [_vm._v(_vm._s(item.serie))])
-                            ]),
-                            _vm._v(" "),
-                            item.equipo
-                              ? _c(
-                                  "div",
-                                  { staticClass: "p-2" },
-                                  [
-                                    _c("B", [_vm._v("Equipo:")]),
-                                    _vm._v(
-                                      " " +
-                                        _vm._s(item.equipo.marca) +
-                                        "\n                                " +
-                                        _vm._s(item.equipo.modelo) +
-                                        "\n                            "
-                                    )
-                                  ],
-                                  1
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
+                      "div",
+                      [
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-sm" }, [
                             _c(
-                              "div",
-                              { staticClass: "p-2" },
+                              "h1",
+                              {
+                                staticClass: "float-right",
+                                style: { cursor: "pointer" }
+                              },
                               [
-                                _c("B", [_vm._v("Sucursal:")]),
-                                _vm._v(
-                                  " " +
-                                    _vm._s(item.sucursal.name) +
-                                    "\n                            "
-                                )
+                                _c("b-icon", {
+                                  attrs: {
+                                    icon: "x-circle-fill",
+                                    variant: "danger"
+                                  },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.traspasoType = "historial"
+                                    }
+                                  }
+                                })
                               ],
                               1
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              { staticClass: "p-2" },
-                              [
-                                _c("B", [_vm._v("Status:")]),
-                                _vm._v(
-                                  " " +
-                                    _vm._s(item.status.status) +
-                                    "\n                            "
-                                )
-                              ],
-                              1
-                            ),
-                            _vm._v(" "),
-                            item.company
-                              ? _c(
-                                  "div",
-                                  { staticClass: "p-2" },
-                                  [
-                                    _c("B", [_vm._v("compañia:")]),
-                                    _vm._v(
-                                      " " +
-                                        _vm._s(item.company.name) +
-                                        "\n                            "
-                                    )
-                                  ],
-                                  1
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            item.tipoSim
-                              ? _c("div", { staticClass: "p-2" }, [
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-sm" }, [
+                            _c("h3", [
+                              _c("b", [_vm._v("Traspaso folio:")]),
+                              _vm._v(
+                                "\n                                " +
+                                  _vm._s(_vm.currentTraspaso.id) +
+                                  "\n                            "
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-sm" }, [
+                            _c("h5", [
+                              _c("b", [_vm._v("Sucursal de destino:")]),
+                              _vm._v(
+                                "\n                                " +
+                                  _vm._s(_vm.currentTraspaso.sucursal_name) +
+                                  "\n                            "
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-sm" }, [
+                            _c("h5", [
+                              _c("b", [_vm._v("Fecha:")]),
+                              _vm._v(
+                                "\n                                " +
+                                  _vm._s(_vm.currentTraspaso.created_at) +
+                                  "\n                            "
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _vm.currentTraspaso.accepted == true
+                            ? _c("div", { staticClass: "col-sm" }, [
+                                _c("h5", [
+                                  _c("b", [_vm._v("Aceptado:")]),
                                   _vm._v(
                                     "\n                                " +
-                                      _vm._s(item.tipoSim.name) +
+                                      _vm._s(_vm.currentTraspaso.updated_at) +
                                       "\n                            "
                                   )
                                 ])
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _c("div", { staticClass: "ml-auto" }, [
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.currentTraspaso.accepted == true
+                            ? _c("div", { staticClass: "col-sm" }, [
+                                _c("h5", [
+                                  _c("b", [_vm._v("Aceptado por:")]),
+                                  _vm._v(
+                                    "\n                                " +
+                                      _vm._s(_vm.currentTraspaso.user_name) +
+                                      "\n                            "
+                                  )
+                                ])
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.detailTraspaso.iccs &&
+                          _vm.detailTraspaso.iccs.length > 0
+                            ? _c("div", { staticClass: "col-sm" }, [
+                                _c("h5", [
+                                  _c("b", [_vm._v("SIMs:")]),
+                                  _vm._v(
+                                    "\n                                " +
+                                      _vm._s(_vm.detailTraspaso.iccs.length) +
+                                      "\n                            "
+                                  )
+                                ])
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.detailTraspaso.imeis &&
+                          _vm.detailTraspaso.imeis.length > 0
+                            ? _c("div", { staticClass: "col-sm" }, [
+                                _c("h5", [
+                                  _c("b", [_vm._v("Equipos:")]),
+                                  _vm._v(
+                                    "\n                                " +
+                                      _vm._s(_vm.detailTraspaso.imeis.length) +
+                                      "\n                            "
+                                  )
+                                ])
+                              ])
+                            : _vm._e()
+                        ]),
+                        _vm._v(" "),
+                        _vm.detailTraspaso.accepted == false
+                          ? _c("div", { staticClass: "row mt-2" }, [
                               _c(
-                                "small",
+                                "div",
+                                { staticClass: "col-sm" },
                                 [
                                   _c(
                                     "b-button",
                                     {
-                                      attrs: { variant: "danger", size: "sm" },
+                                      attrs: { variant: "danger" },
                                       on: {
                                         click: function($event) {
-                                          return _vm.eliminarItem(item, index)
+                                          return _vm.cancelarTraspaso(
+                                            _vm.detailTraspaso.id
+                                          )
                                         }
                                       }
                                     },
-                                    [_vm._v("Eliminar")]
+                                    [
+                                      _vm._v(
+                                        "\n                                Cancelar Traspaso\n                            "
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "b-button",
+                                    {
+                                      attrs: { variant: "warning" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.aceptarTraspaso(
+                                            _vm.detailTraspaso.id
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                                Forzar Aceptar Traspaso\n                            "
+                                      )
+                                    ]
                                   )
                                 ],
                                 1
                               )
                             ])
-                          ])
-                        ])
-                      }),
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "b-list-group",
+                          { staticClass: "mt-5" },
+                          [
+                            _vm._l(_vm.detailTraspaso.iccs, function(
+                              item,
+                              index
+                            ) {
+                              return _c(
+                                "b-list-group-item",
+                                { key: "a" + index + "-" + item.id },
+                                [
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col-sm" }, [
+                                      _c("h5", [_vm._v(_vm._s(item.icc))])
+                                    ]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm float-left" },
+                                      [
+                                        _vm._v(
+                                          "\n                                    " +
+                                            _vm._s(item.company.name) +
+                                            "\n                                    " +
+                                            _vm._s(item.type.name) +
+                                            "\n                                "
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm float-left" },
+                                      [
+                                        _c("B", [_vm._v("Sucursal origen:")]),
+                                        _vm._v(
+                                          "\n                                    " +
+                                            _vm._s(item.pivot.old_sucursal_id) +
+                                            "\n                                "
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ])
+                                ]
+                              )
+                            }),
+                            _vm._v(" "),
+                            _vm._l(_vm.detailTraspaso.imeis, function(
+                              item,
+                              index
+                            ) {
+                              return _c(
+                                "b-list-group-item",
+                                { key: "b" + index + "-" + item.id },
+                                [
+                                  _c("div", { staticClass: "row" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm float-left" },
+                                      [_c("h5", [_vm._v(_vm._s(item.imei))])]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm float-left" },
+                                      [
+                                        _vm._v(
+                                          "\n                                    " +
+                                            _vm._s(item.equipo.marca) +
+                                            "\n                                    " +
+                                            _vm._s(item.equipo.modelo) +
+                                            "\n                                "
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm float-left" },
+                                      [
+                                        _c("B", [_vm._v("Sucursal origen:")]),
+                                        _vm._v(
+                                          "\n                                    " +
+                                            _vm._s(item.pivot.old_sucursal_id) +
+                                            "\n                                "
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ])
+                                ]
+                              )
+                            })
+                          ],
+                          2
+                        )
+                      ],
                       1
                     )
                   : _vm._e()
@@ -101650,9 +102577,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
- //Importing
 
-Vue.use(bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__["default"]);
+Vue.use(bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__["BootstrapVue"]);
+Vue.use(bootstrap_vue__WEBPACK_IMPORTED_MODULE_0__["BootstrapVueIcons"]);
 
 Vue.component('multiselect', vue_multiselect__WEBPACK_IMPORTED_MODULE_1___default.a);
 

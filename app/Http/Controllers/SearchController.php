@@ -83,22 +83,33 @@ class SearchController extends Controller
 
     public function traspasoPrediction(Request $request){
 
-        $user = Auth::user();
+        
         // falta hacer los filtros para la distribucion y de la sucursal 
 
         $searchResults = (new Search())
         ->registerModel(Icc::class, function ($modelSearchAspect) {
+            
+            
             $modelSearchAspect
                 ->limit(5)
                 ->addSearchableAttribute('icc')
-                ->where(['status_id', '!=', 5],[''])
+                ->whereNotIn('status_id', [5,3])
+                ->whereHas('sucursal', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution()->id);
+                })
                 ;
         })
         ->registerModel(Imei::class, function ($modelSearchAspect) {
             $modelSearchAspect
-               
+            ->whereNotIn('status_id', [5,3])
                 ->limit(5)
-                ->addSearchableAttribute('imei');
+                ->addSearchableAttribute('imei')
+                ->whereHas('sucursal', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution()->id);
+                })
+                ;
         })
         
         ->search($request->search);
@@ -119,7 +130,12 @@ class SearchController extends Controller
                
               
                 ->addExactSearchableAttribute('icc')
-                ->where(['status_id', '!=', 5],[])
+                ->whereNotIn('status_id', [5,3])
+                ->whereHas('sucursal', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution()->id);
+                })
+                
                 ->with(['sucursal','status','company','type']);
         })
         ->registerModel(Imei::class, function ($modelSearchAspect) {
@@ -127,7 +143,12 @@ class SearchController extends Controller
             ->with('equipo')
                 
                 ->addExactSearchableAttribute('imei')
-                ->where('status_id', '!=', 5)
+                ->whereNotIn('status_id', [5,3])
+                ->whereHas('sucursal', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution()->id);
+                })
+                
                 ->with(['sucursal','status','equipo']);
                 
         })

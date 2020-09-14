@@ -17,7 +17,9 @@ class CreateTraspasoableTable extends Migration
             $table->integer('traspaso_id');
             $table->integer('traspasoable_id');
             $table->string('traspasoable_type');
-            $table->timestamps();
+            $table->integer('old_sucursal_id');
+            $table->integer('old_status_id');
+         
         });
     }
 

@@ -15,10 +15,8 @@
                         <b-nav-form>
                             <b-form-radio-group
                                 v-model.lazy="traspasoType"
-                                :options="options"
+                                :options="traspasoOptions"
                                 buttons
-                                name="radios-btn-default"
-                                @click.native="confirmProductChange($event)"
                             >
                             </b-form-radio-group>
                         </b-nav-form>
@@ -31,8 +29,8 @@
                     </div>
                 </b-collapse>
             </b-navbar>
-            <div class="jumbotron">
-                <div class="col-md-11 mx-auto">
+            <div class="jumbotron jumbotron-fluid">
+                <div class="col-md-8 mx-auto">
                     <!-- alerta -->
                     <b-alert
                         dismissible
@@ -58,127 +56,412 @@
                         </ol>
                     </b-alert>
 
-                    <h1>Agregar Producto a traspasar:</h1>
-                    <validation-observer
-                        ref="observer"
-                        v-slot="{ handleSubmit }"
-                    >
-                        <b-form @submit.prevent="handleSubmit(storeTraspaso)">
-                            <ValidationProvider
-                                name="company"
-                                v-slot="validationContext"
-                                rules="required"
-                            >
-                                <b-form-group
-                                    label="Sucursal de destino:"
-                                    label-for="select-sucursal"
-                                    class="mt-4"
-                                >
-                                    <select-general
-                                        url="/get/sucursales"
-                                        pholder="Seleccionar Sucursal"
-                                        v-model="sucursal"
-                                        :state="
-                                            getValidationState(
-                                                validationContext
-                                            )
-                                        "
-                                    >
-                                    </select-general>
-                                    <b-form-invalid-feedback>{{
-                                        validationContext.errors[0]
-                                    }}</b-form-invalid-feedback>
-                                </b-form-group>
-                            </ValidationProvider>
-
-                            <b-form-group label="¿Aceptacion requerida?">
-                                <b-form-radio-group
-                                    v-model="aceptacionRequired"
-                                    :options="[
-                                        { text: 'Si', value: true },
-                                        { text: 'No', value: false },
-                                    ]"
-                                    button-variant="outline-primary"
-                                    buttons
-                                    name="radios-btn-default"
-                                ></b-form-radio-group>
-                            </b-form-group>
-
-                            <b-button
-                                type="submit"
-                                class="mt-3"
-                                variant="outline-primary"
-                                v-if="items.length > 0"
-                                block
-                                >Realizar traspazo</b-button
-                            >
-                        </b-form>
-                        <b-form @submit="agregarSerie">
-                            <b-input-group class="mt-5">
-                                <b-form-input
-                                    v-model="searchValue"
-                                    autocomplete="off"
-                                    placeholder="Buscar Producto"
-                                    list="search-results"
-                                    @update="searchProduct"
-                                ></b-form-input>
-
-                                <datalist id="search-results">
-                                    <option
-                                        v-for="(list, index) in searchResults"
-                                        :key="index"
-                                        >{{ list.title }}</option
-                                    >
-                                </datalist>
-
-                                <b-input-group-append>
-                                    <b-button variant="success" type="submit"
-                                        >Agregar</b-button
-                                    >
-                                </b-input-group-append>
-                            </b-input-group>
-                        </b-form>
-                    </validation-observer>
-
-                    <!-- cards -->
-                    <b-list-group v-if="showList == true" class="mt-5">
-                        <b-list-group-item
-                            v-for="(item, index) in items"
-                            :key="index"
+                    <!-- nuevo traspaso -->
+                    <div v-show="traspasoType == 'nuevo'">
+                        <h1>Agregar Producto a traspasar:</h1>
+                        <validation-observer
+                            ref="observer"
+                            v-slot="{ handleSubmit }"
                         >
-                            <div class="d-flex flex-row">
-                                <div class="p-2">
-                                    <h5>{{ item.serie }}</h5>
-                                </div>
-                                <div class="p-2" v-if="item.equipo">
-                                    <B>Equipo:</B> {{ item.equipo.marca }}
-                                    {{ item.equipo.modelo }}
-                                </div>
-                                <div class="p-2">
-                                    <B>Sucursal:</B> {{ item.sucursal.name }}
-                                </div>
-                                <div class="p-2">
-                                    <B>Status:</B> {{ item.status.status }}
-                                </div>
-                                <div class="p-2" v-if="item.company">
-                                    <B>compañia:</B> {{ item.company.name }}
-                                </div>
-                                <div class="p-2" v-if="item.tipoSim">
-                                    {{ item.tipoSim.name }}
-                                </div>
-                                <div class="ml-auto">
-                                    <small
-                                        ><b-button
-                                            variant="danger"
-                                            size="sm"
-                                            @click="eliminarItem(item, index)"
-                                            >Eliminar</b-button
+                            <b-form
+                                @submit.prevent="handleSubmit(storeTraspaso)"
+                            >
+                                <ValidationProvider
+                                    name="company"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                >
+                                    <b-form-group
+                                        label="Sucursal de destino:"
+                                        label-for="select-sucursal"
+                                        class="mt-4"
+                                    >
+                                        <select-general
+                                            url="/get/sucursales"
+                                            pholder="Seleccionar Sucursal"
+                                            v-model="sucursal"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
                                         >
-                                    </small>
+                                        </select-general>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <b-form-group label="¿Aceptacion requerida?">
+                                    <b-form-radio-group
+                                        v-model="aceptacionRequired"
+                                        :options="[
+                                            { text: 'Si', value: true },
+                                            { text: 'No', value: false },
+                                        ]"
+                                        button-variant="outline-primary"
+                                        buttons
+                                        name="radios-btn-default"
+                                    ></b-form-radio-group>
+                                </b-form-group>
+
+                                <b-button
+                                    type="submit"
+                                    class="mt-3"
+                                    variant="outline-primary"
+                                    v-if="items.length > 0"
+                                    block
+                                    >Realizar traspazo</b-button
+                                >
+                            </b-form>
+                            <b-form @submit="agregarSerie">
+                                <b-input-group class="mt-5">
+                                    <b-form-input
+                                        v-model="searchValue"
+                                        autocomplete="off"
+                                        placeholder="Buscar Producto"
+                                        list="search-results"
+                                        @update="searchProduct"
+                                    ></b-form-input>
+
+                                    <datalist id="search-results">
+                                        <option
+                                            v-for="(list,
+                                            index) in searchResults"
+                                            :key="index"
+                                            >{{ list.title }}</option
+                                        >
+                                    </datalist>
+
+                                    <b-input-group-append>
+                                        <b-button
+                                            variant="success"
+                                            type="submit"
+                                            >Agregar</b-button
+                                        >
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </b-form>
+                        </validation-observer>
+
+                        <!-- cards -->
+                        <b-list-group v-if="showList == true" class="mt-5">
+                            <b-list-group-item
+                                v-for="(item, index) in items"
+                                :key="index"
+                            >
+                                <div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <h5>{{ item.serie }}</h5>
+                                        </div>
+                                        <div class="col-sm" v-if="item.equipo">
+                                            <B>Equipo:</B>
+                                            {{ item.equipo.marca }}
+                                            {{ item.equipo.modelo }}
+                                        </div>
+                                        <div class="col-sm">
+                                            <B>Sucursal:</B>
+                                            {{ item.sucursal.name }}
+                                        </div>
+                                        <div class="col-sm">
+                                            <B>Status:</B>
+                                            {{ item.status.status }}
+                                        </div>
+                                        <div class="col-sm" v-if="item.company">
+                                            <B>compañia:</B>
+                                            {{ item.company.name }}
+                                            {{ item.tipoSim.name }}
+                                        </div>
+
+                                        <div class="col-sm">
+                                            <b-button
+                                                class="float-right"
+                                                variant="danger"
+                                                size="sm"
+                                                @click="
+                                                    eliminarItem(item, index)
+                                                "
+                                                >Eliminar</b-button
+                                            >
+                                        </div>
+                                    </div>
                                 </div>
+                            </b-list-group-item>
+                        </b-list-group>
+                    </div>
+
+                    <!-- historial de traspasos -->
+
+                    <div v-show="traspasoType == 'historial'">
+                        <h1>Historial de traspasos</h1>
+                        <validation-observer
+                            ref="observer"
+                            v-slot="{ handleSubmit }"
+                        >
+                            <b-form
+                                @submit.prevent="
+                                    handleSubmit(retrieveHistorial)
+                                "
+                            >
+                                <!-- fecha inicial -->
+                                <ValidationProvider
+                                    name="fecha-inicio"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                >
+                                    <b-form-group
+                                        label="Fecha inicio:"
+                                        class="mt-4"
+                                    >
+                                        <b-form-datepicker
+                                            id="fecha-inicio"
+                                            v-model="initialDate"
+                                            class="mb-2"
+                                            :max="maxDate"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        ></b-form-datepicker>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <!-- fecha final -->
+                                <ValidationProvider
+                                    name="fecha-final"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                >
+                                    <b-form-group
+                                        label="Fecha final:"
+                                        class="mt-4"
+                                    >
+                                        <b-form-datepicker
+                                            id="fecha-final"
+                                            v-model="finalDate"
+                                            class="mb-2"
+                                            :max="maxDate"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        ></b-form-datepicker>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <b-form-group>
+                                    <b-form-radio-group
+                                        v-model="traspasosAccepted"
+                                        :options="[
+                                            {
+                                                text: 'Aceptados',
+                                                value: true,
+                                            },
+                                            {
+                                                text: 'Pendientes',
+                                                value: false,
+                                            },
+                                        ]"
+                                        buttons
+                                        button-variant="outline-primary"
+                                        size="lg"
+                                        name="radio-btn-outline"
+                                        @input="retrieveHistorial"
+                                    ></b-form-radio-group>
+                                </b-form-group>
+                                <b-button block type="submit" variant="primary"
+                                    >Buscar</b-button
+                                >
+                            </b-form>
+                        </validation-observer>
+                        <b-table
+                            
+                            :busy="tableLoading"
+                            hover
+                            responsive
+                            striped
+                            head-variant="dark"
+                            table-variant="light"
+                            :items="historialItems"
+                            :fields="computedHistorialTableFields"
+                            class="mt-5"
+                        >
+                            <template v-slot:cell(detalles)="row">
+                                <b-button
+                                    size="sm"
+                                    @click="traspasoLoadDetails(row.item)"
+                                >
+                                    Detalles
+                                </b-button>
+                            </template>
+                            <template v-slot:cell(accepted)="row">
+                                <div v-if="row.item.accepted">
+                                    {{ row.item.updated_at }}
+                                </div>
+                            </template>
+
+                            <template v-slot:table-busy>
+                                <div class="text-center text-primary my-2">
+                                    <b-spinner class="align-middle"></b-spinner>
+                                    <strong>Loading...</strong>
+                                </div>
+                            </template>
+                        </b-table>
+                    </div>
+
+                    <!-- detalle de traspaso-->
+                    <div v-if="traspasoType == 'detalle'">
+                        <div class="row">
+                            <div class="col-sm">
+                                <h1
+                                    class="float-right"
+                                    :style="{ cursor: 'pointer' }"
+                                >
+                                    <b-icon
+                                        icon="x-circle-fill"
+                                        variant="danger"
+                                        @click="traspasoType = 'historial'"
+                                    ></b-icon>
+                                </h1>
                             </div>
-                        </b-list-group-item>
-                    </b-list-group>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm">
+                                <h3>
+                                    <b>Traspaso folio:</b>
+                                    {{ currentTraspaso.id }}
+                                </h3>
+                            </div>
+                            <div class="col-sm">
+                                <h5>
+                                    <b>Sucursal de destino:</b>
+                                    {{ currentTraspaso.sucursal_name }}
+                                </h5>
+                            </div>
+                            
+
+                            <div class="col-sm">
+                                <h5>
+                                    <b>Fecha:</b>
+                                    {{ currentTraspaso.created_at }}
+                                </h5>
+                            </div>
+
+                            <div
+                                class="col-sm"
+                                v-if="currentTraspaso.accepted == true"
+                            >
+                                <h5>
+                                    <b>Aceptado:</b>
+                                    {{ currentTraspaso.updated_at }}
+                                </h5>
+                            </div>
+                            <div
+                                class="col-sm"
+                                v-if="currentTraspaso.accepted == true"
+                            >
+                                <h5>
+                                    <b>Aceptado por:</b>
+                                    {{ currentTraspaso.user_name }}
+                                </h5>
+                            </div>
+                            <div
+                                class="col-sm"
+                                v-if="
+                                    detailTraspaso.iccs &&
+                                    detailTraspaso.iccs.length > 0
+                                "
+                            >
+                                <h5>
+                                    <b>SIMs:</b>
+                                    {{ detailTraspaso.iccs.length }}
+                                </h5>
+                            </div>
+                            <div
+                                class="col-sm"
+                                v-if="
+                                    detailTraspaso.imeis &&
+                                    detailTraspaso.imeis.length > 0
+                                "
+                            >
+                                <h5>
+                                    <b>Equipos:</b>
+                                    {{ detailTraspaso.imeis.length }}
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="row mt-2" v-if="detailTraspaso.accepted == false" >
+                            <div class="col-sm">
+                                <b-button
+                                    variant="danger"
+                                    @click="cancelarTraspaso(detailTraspaso.id)"
+                                >
+                                    Cancelar Traspaso
+                                </b-button>
+                                <b-button
+                                variant="warning"
+                                    @click="aceptarTraspaso(detailTraspaso.id)"
+                                >
+                                    Forzar Aceptar Traspaso
+                                </b-button>
+                            </div>
+
+                        </div>
+
+                        <!-- lista de chips -->
+                        <b-list-group class="mt-5">
+                            <b-list-group-item
+                                v-for="(item, index) in detailTraspaso.iccs"
+                                :key="`a${index}-${item.id}`"
+                            >
+                                <div class="row">
+                                    
+
+                                    <div class="col-sm">
+                                        <h5>{{ item.icc }}</h5>
+                                    </div>
+                                    <div class="col-sm float-left">
+                                        {{ item.company.name }}
+                                        {{ item.type.name }}
+                                    </div>
+                                    <div class="col-sm float-left">
+                                        <B>Sucursal origen:</B>
+                                        {{ item.pivot.old_sucursal_id}}
+                                    </div>
+                                </div>
+                            </b-list-group-item>
+                            <!-- lista de equipos -->
+                            <b-list-group-item
+                                v-for="(item, index) in detailTraspaso.imeis"
+                                :key="`b${index}-${item.id}`"
+                            >
+                                <div class="row">
+                                    <div class="col-sm float-left">
+                                        <h5>{{ item.imei }}</h5>
+                                    </div>
+                                    <div class="col-sm float-left">
+                                        {{ item.equipo.marca }}
+                                        {{ item.equipo.modelo }}
+                                    </div>
+                                    <div class="col-sm float-left">
+                                        <B>Sucursal origen:</B>
+                                        {{ item.pivot.old_sucursal_id}}
+                                    </div>
+                                </div>
+                            </b-list-group-item>
+                        </b-list-group>
+                    </div>
+
                 </div>
             </div>
         </b-overlay>
@@ -189,11 +472,59 @@
 export default {
     data() {
         return {
-            traspasoType: 1,
+            traspasoType: "historial",
+
+            tableLoading: false,
+
+            detailTraspaso: {},
+
+            currentTraspaso: {},
+
+            traspasosAccepted: true,
+
+            historialTableFields: [
+                {
+                    key: "id",
+                    sortable: true,
+                    label: "Folio",
+                },
+                {
+                    key: "sucursal_name",
+                    sortable: true,
+                    label: "Sucursal Destino",
+                },
+                {
+                    key: "created_at",
+                    sortable: true,
+                    label: "Fecha de Creacion",
+                },
+                {
+                    key: "accepted",
+                    sortable: true,
+                    label: "Aceptado",
+                },
+                                {
+                    key: "user_name",
+                    sortable: true,
+                    label: "Aceptado por",
+                },
+                {
+                    key: "detalles",
+                    label: "Detalles",
+                },
+            ],
+
+            historialItems: [],
+
+            finalDate: new Date().toISOString().substr(0, 10),
+
+            initialDate: new Date(Date.now() - 5184000000)
+                .toISOString()
+                .substring(0, 10),
 
             sucursal: null,
 
-            aceptacionRequired: false,
+            aceptacionRequired: true,
 
             showList: true,
 
@@ -208,48 +539,114 @@ export default {
                 list: [],
             },
 
-            items: [
-                {
-                    id: 1,
-                    serie: "8925034545455454547",
-                    type: "iccs",
-                    status: { status: "disponible" },
-                    sucursal: { name: "tonala" },
-                },
-                {
-                    id: 2,
-                    serie: 123456789123456,
-                    type: "imeis",
-                    status: { name: "disponible" },
-                    sucursal: { name: "chipinkuan" },
-                    equipo: {
-                        marca: "nokia 3311",
-                        modelo: "3311",
-                        precio: 999,
-                    },
-                },
-            ],
+            items: [],
 
             isLoading: false,
 
-            options: [{ text: "Sucursal a sucursal", value: 1 }],
+            traspasoOptions: [
+                { text: "Nuevo traspaso", value: "nuevo" },
+                { text: "Historial", value: "historial" },
+            ],
         };
     },
+    computed: {
+        maxDate: function () {
+            const now = new Date();
+            const today = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+
+            return today;
+        },
+        computedHistorialTableFields: function () {
+            // If the user isn't an admin, filter out fields that require auth.
+            // if (!this.isUserAdmin)
+            //     return this.historialTableFields.filter((field) => !field.requiresAdmin);
+            // // If the user IS an admin, return all fields.
+            // else
+
+            return this.historialTableFields;
+        },
+    },
     methods: {
-        confirmProductChange(e) {
-            if (this.items.length > 0) {
-                if (!confirm("Desea continuar se borrara la informacion??")) {
-                    e.preventDefault();
-                } else {
-                }
-            }
+        cancelarTraspaso(item) {
+            // this.isLoading = true;
+            axios
+                .delete(`/admin/inventario/traspasos/${item}`)
+                .then(
+                    function (response) {
+                        // this.isLoading = false;
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        aceptarTraspaso(item) {
+            // this.isLoading = true;
+            axios
+                .put(`/admin/inventario/traspasos/${item}`)
+                .then(
+                    function (response) {
+                        console.log(response);
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         getValidationState({ dirty, validated, valid = null }) {
             return dirty || validated ? valid : null;
         },
 
+        traspasoLoadDetails(item) {
+            this.isLoading = true;
+
+            this.traspasoType = "detalle";
+
+            this.currentTraspaso = item;
+
+            console.log(item);
+
+            axios
+                .get(`/admin/inventario/traspasos/${item.id}`)
+                .then(
+                    function (response) {
+                        this.detailTraspaso = response.data;
+                        this.isLoading = false;
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+
         eliminarItem(item, index) {
             this.items.splice(index, 1);
+        },
+        retrieveHistorial() {
+            this.tableLoading = true;
+
+            axios
+                .get("/admin/inventario/traspasos", {
+                    params: {
+                        initial_date: this.initialDate,
+                        final_date: this.finalDate,
+                        accepted: this.traspasosAccepted,
+                    },
+                })
+                .then(
+                    function (response) {
+                        this.historialItems = response.data.data;
+
+                        this.tableLoading = false;
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
 
         searchProduct() {
@@ -271,17 +668,16 @@ export default {
         },
 
         storeTraspaso() {
-            // this.isLoading = true;
+            this.isLoading = true;
 
             const data = new FormData();
             data.append("data", JSON.stringify(this.items));
             data.append("file", this.file);
             data.append("sucursal_id", this.sucursal.id);
+            data.append("aceptacion_required", this.aceptacionRequired);
 
             axios.post(`/admin/inventario/traspasos/`, data).then((res) => {
-                console.log(res);
-
-                this.$bvToast.toast(`Recarga Agregada con exito`, {
+                this.$bvToast.toast(`Traspaso creado con exito`, {
                     title: "Exito",
                     autoHideDelay: 5000,
                     appendToast: true,
@@ -289,6 +685,12 @@ export default {
                     variant: "success",
                     toaster: "b-toaster-bottom-full",
                 });
+
+                this.isLoading = false;
+
+                this.items = [];
+
+                this.traspasoType = 'historial'
             });
         },
 
@@ -333,6 +735,8 @@ export default {
                         console.log(error);
                     });
                 this.searchValue = null;
+
+                this.searchResults = [];
             }
         },
     },
