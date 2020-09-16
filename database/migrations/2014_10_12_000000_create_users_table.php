@@ -19,8 +19,9 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->unsignedBigInteger('sucursal_id');
-            // $table->foreign('sucursal_id')->references('id')->on('sucursales');
+            $table->integer('sucursal_id')->nullable();
+            $table->integer('distribution_id');
+            $table->boolean('inventario_propio')->default(false);
             $table->integer('role_id');
             $table->softDeletes();
             $table->rememberToken();

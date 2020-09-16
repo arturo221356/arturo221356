@@ -21,15 +21,16 @@ class DatabaseSeeder extends Seeder
         $this->call(RecargasTableSeeder::class);
         $this->call(CompanyTableSeeder::class);
         $this->call(IccTypeTableSeeder::class);
+        $this->call(InventarioTableSeeder::class);
 
         
        
 
 
 
-         $imeis = factory(App\Imei::class, 10000)->create();
+         $imeis = factory(App\Imei::class, 1000)->create();
          $equipo = factory(App\Equipo::class, 10)->create();
-         $sucursal = factory(App\Sucursal::class, 10)->create();
-         $icc = factory(App\Icc::class, 10000)->create();
+        //  $sucursal = factory(App\Sucursal::class, 10)->create();
+         $icc = factory(App\Icc::class, 1000)->create();
     }
 }

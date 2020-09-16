@@ -20,7 +20,7 @@ class Icc extends Model implements Searchable
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ["icc", "sucursal_id", "status_id", "distribution_id", "company_id", "icc_type_id"];
+    protected $fillable = ["icc", "inventario_id", "status_id", "distribution_id", "company_id", "icc_type_id"];
 
     public function getSearchResult(): SearchResult
     {
@@ -33,9 +33,9 @@ class Icc extends Model implements Searchable
         );
     }
 
-    public function sucursal()
+    public function inventario()
     {
-        return $this->belongsTo('App\Sucursal');
+        return $this->belongsTo('App\Inventario');
     }
     public function status()
     {
@@ -53,10 +53,6 @@ class Icc extends Model implements Searchable
     {
         return $this->morphOne('App\Comment', 'commentable');
     }
-    // public function distribution()
-    // {
-    //     return $this->belongsToThrough('App\Distribution','App\Sucursal',null,'',['App\Sucursal' => 'sucursal_id']);
-    // }
     public function details()
     {
         return $this->hasOne('App\IccDetail')->withDefault();

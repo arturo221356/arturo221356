@@ -24,6 +24,7 @@ class UsersTableSeeder extends Seeder
       'email' => 'admin@1.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
+      'distribution_id' => 1,
       'role_id' => 1,
     ]);
 
@@ -32,6 +33,7 @@ class UsersTableSeeder extends Seeder
       'email' => 'admin@2.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 2,
+      'distribution_id' => 2,
       'role_id' => 1,
     ]);
 
@@ -40,6 +42,7 @@ class UsersTableSeeder extends Seeder
       'email' => 'supervisor@1.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
+      'distribution_id' => 1,
       'role_id' => 2,
     ]);
 
@@ -47,6 +50,7 @@ class UsersTableSeeder extends Seeder
       'name' => 'supervisor User',
       'email' => 'supervisor@2.com',
       'password' => Hash::make('password'),
+      'distribution_id' => 2,
       'sucursal_id' => 2,
       'role_id' => 2,
     ]);
@@ -56,6 +60,7 @@ class UsersTableSeeder extends Seeder
       'email' => 'seller@1.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
+      'distribution_id' => 1,
       'role_id' => 3,
     ]);
     User::create([
@@ -63,6 +68,7 @@ class UsersTableSeeder extends Seeder
       'email' => 'seller@2.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 2,
+      'distribution_id' => 2,
       'role_id' => 3,
     ]);
 
@@ -71,6 +77,7 @@ class UsersTableSeeder extends Seeder
       'email' => 'externo@1.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
+      'distribution_id' => 1,
       'role_id' => 4,
     ]);
   }

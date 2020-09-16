@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 use App\Traspaso;
 use App\Imei;
 use App\Icc;
+use App\Sucursal;
+use App\Inventario;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
-use App\Http\Resources\TraspasoCollection as TraspasoResource;
+use App\Http\Resources\TraspasoCollection as TraspasoCollection;
+use App\Http\Resources\TraspasoResource as TraspasoResource;
+
 use PHPUnit\Framework\MockObject\Stub\ReturnStub;
 
 class TraspasoController extends Controller
@@ -32,14 +37,16 @@ class TraspasoController extends Controller
 
             $accepted = json_decode($request->accepted);
 
-            $traspasos = Traspaso::where([['accepted','=',$accepted],['distribution_id','=',$userDistribution]])->whereBetween('created_at', [$initialDate, $finalDate])->with('user')->get();
+            $traspasos = Traspaso::where([['accepted','=',$accepted],['distribution_id','=',$userDistribution]])->whereBetween('created_at', [$initialDate, $finalDate])->get();
 
-            return TraspasoResource::collection($traspasos);
+            return TraspasoCollection::collection($traspasos);
 
 
         } else {
             return view('admin.inventario.traspasos');
         }
+
+
     }
 
     /**
@@ -64,21 +71,28 @@ class TraspasoController extends Controller
 
         $userDistribution = Auth::User()->distribution()->id;
 
+        $sucursal = Sucursal::findOrFail($request->sucursal_id);
+
+        $inventario = $sucursal->inventario;
+
         $accepted = !$aceptacionRequired;
 
-        $traspaso = Traspaso::create([
+        $traspaso = new Traspaso;
+        $traspaso->aceptacion_required = $aceptacionRequired;
+        $traspaso->accepted = $accepted;
+        $traspaso->distribution_id = $userDistribution;
+        $traspaso->inventario()->associate($inventario); 
+        if ($aceptacionRequired == false) {
+            $traspaso->user_id = Auth::user()->id;
+        }
+        $traspaso->save();
 
-            'aceptacion_required' => $aceptacionRequired,
-            'sucursal_id' => $request->sucursal_id,
-            'accepted' => $accepted,
-            'distribution_id' => $userDistribution,
-            
-
-        ]);
-
-
+        
 
         $items = json_decode($request->data);
+
+
+        
 
         foreach ($items as $item) {
             switch ($item->type) {
@@ -89,8 +103,7 @@ class TraspasoController extends Controller
 
                     $traspaso->iccs()->attach(
                         $icc,
-                        ['old_sucursal_id' => $icc->sucursal->id,
-                        'old_sucursal_name' => $icc->sucursal->name,
+                        ['old_inventario_id' => $icc->inventario->id,
                          'old_status_id' => $icc->status_id
                         ]
                     );
@@ -98,9 +111,10 @@ class TraspasoController extends Controller
                     
 
                     if ($aceptacionRequired == true) {
-                        $icc->status_id = 3;
+                        $icc->status_id = 2;
                     }else{
-                        $icc->sucursal_id = $request->sucursal_id;
+                        //arreglar esto de aqui
+                        $icc->inventario()->associate($inventario);
                     }
 
                     $icc->save();
@@ -112,8 +126,7 @@ class TraspasoController extends Controller
 
                     $traspaso->imeis()->attach(
                         $imei,
-                        ['old_sucursal_id' => $imei->sucursal_id,
-                        'old_sucursal_name' => $imei->sucursal->name,
+                        ['old_inventario_id' => $imei->inventario_id,
                         'old_status_id' => $imei->status_id
                        ]
                     );
@@ -121,9 +134,11 @@ class TraspasoController extends Controller
                     
                     
                     if ($aceptacionRequired == true) {
-                        $imei->status_id = 3;
+                        $imei->status_id = 2;
                     }else{
-                        $imei->sucursal_id = $request->sucursal_id;
+                        //arreglar esto de aqui 
+                        
+                        $imei->inventario()->associate($inventario);
                     }
                     $imei->save();
 
@@ -145,10 +160,11 @@ class TraspasoController extends Controller
     public function show($id, Request $request)
     {
         if ($request->ajax()) {
-            
-            $traspaso = Traspaso::findOrFail($id)->load('sucursal', 'imeis.sucursal', 'imeis.equipo', 'iccs.sucursal', 'iccs.type', 'iccs.company');
 
-            return $traspaso;
+            $traspaso = Traspaso::find($id);
+
+             return  TraspasoResource::make($traspaso);
+   
         }
     }
 
@@ -181,7 +197,7 @@ class TraspasoController extends Controller
 
        foreach($traspaso->imeis as $imei){
            $imei->status_id = $imei->pivot->old_status_id;
-           $imei->sucursal_id = $traspaso->sucursal_id;
+           $imei->inventario_id = $traspaso->inventario_id;
            $imei->save();
        
        }
@@ -189,7 +205,7 @@ class TraspasoController extends Controller
        foreach($traspaso->iccs as $icc){
         
         $icc->status_id = $icc->pivot->old_status_id;
-        $icc->sucursal_id = $traspaso->sucursal_id;
+        $icc->inventario_id = $traspaso->inventario_id;
         $icc->save();
         
     }
@@ -215,7 +231,7 @@ class TraspasoController extends Controller
 
             $imei->status_id = $imei->pivot->old_status_id;
 
-            $imei->status_id = $imei->pivot->old_sucursal_id;
+            $imei->inventario_id = $imei->pivot->old_inventario_id;
 
             $imei->save();
         
@@ -223,7 +239,7 @@ class TraspasoController extends Controller
         
         foreach($traspaso->iccs as $icc){
          
-         $icc->sucursal_id = $icc->pivot->old_sucursal_id;
+         $icc->inventario_id = $icc->pivot->old_inventario_id;
 
          $icc->status_id = $icc->pivot->old_status_id;
          

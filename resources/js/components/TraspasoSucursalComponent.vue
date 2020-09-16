@@ -156,14 +156,14 @@
                                         <div class="col-sm">
                                             <h5>{{ item.serie }}</h5>
                                         </div>
-                                        
+
                                         <div class="col-sm">
-                                            <B>Sucursal:</B>
-                                            {{ item.sucursal.name }}
+                                            <B>Origen:</B>
+                                            {{ item.inventario.name }}
                                         </div>
                                         <div class="col-sm">
                                             <B>Status:</B>
-                                            {{ item.status.status }}
+                                            {{ item.status.name }}
                                         </div>
                                         <div class="col-sm" v-if="item.equipo">
                                             <B>Equipo:</B>
@@ -171,7 +171,7 @@
                                             {{ item.equipo.modelo }}
                                         </div>
                                         <div class="col-sm" v-if="item.company">
-                                            <B>compañia:</B>
+                                            <B>Compañia:</B>
                                             {{ item.company.name }}
                                             {{ item.tipoSim.name }}
                                         </div>
@@ -286,7 +286,6 @@
                             </b-form>
                         </validation-observer>
                         <b-table
-                            
                             :busy="tableLoading"
                             hover
                             responsive
@@ -340,40 +339,36 @@
                             <div class="col-sm">
                                 <h3>
                                     <b>Traspaso folio:</b>
-                                    {{ currentTraspaso.id }}
+                                    {{ detailTraspaso.id }}
                                 </h3>
                             </div>
                             <div class="col-sm">
                                 <h5>
-                                    <b>Sucursal de destino:</b>
-                                    {{ currentTraspaso.sucursal_name }}
+                                    <b>Destino:</b>
+                                    {{ detailTraspaso.destino_name }}
                                 </h5>
                             </div>
-                            
 
                             <div class="col-sm">
                                 <h5>
                                     <b>Fecha:</b>
-                                    {{ currentTraspaso.created_at }}
+                                    {{ detailTraspaso.created_at }}
                                 </h5>
                             </div>
 
-                            <div
-                                class="col-sm"
-                                v-if="currentTraspaso.accepted == true"
-                            >
+                           
+                            <div class="col-sm"  v-if="detailTraspaso.accepted == true">
                                 <h5>
                                     <b>Aceptado:</b>
-                                    {{ currentTraspaso.updated_at }}
+                                    {{ detailTraspaso.updated_at }}
                                 </h5>
                             </div>
-                            <div
-                                class="col-sm"
-                                v-if="currentTraspaso.accepted == true"
-                            >
+
+                            
+                            <div class="col-sm" v-if="detailTraspaso.accepted == true">
                                 <h5>
                                     <b>Aceptado por:</b>
-                                    {{ currentTraspaso.user_name }}
+                                    {{ detailTraspaso.user_name }}
                                 </h5>
                             </div>
                             <div
@@ -401,7 +396,10 @@
                                 </h5>
                             </div>
                         </div>
-                        <div class="row mt-2" v-if="detailTraspaso.accepted == false" >
+                        <div
+                            class="row mt-2"
+                            v-if="detailTraspaso.accepted == false"
+                        >
                             <div class="col-sm">
                                 <b-button
                                     variant="danger"
@@ -410,61 +408,53 @@
                                     Cancelar Traspaso
                                 </b-button>
                                 <b-button
-                                variant="warning"
+                                    variant="warning"
                                     @click="aceptarTraspaso(detailTraspaso.id)"
                                 >
                                     Forzar Aceptar Traspaso
                                 </b-button>
                             </div>
-
                         </div>
 
                         <!-- lista de chips -->
                         <b-list-group class="mt-5">
                             <b-list-group-item
-                                v-for="(item, index) in detailTraspaso.iccs"
-                                :key="`a${index}-${item.id}`"
+                                v-for="(item, index) in detailTraspaso.series"
+                                :key="index"
                             >
                                 <div class="row">
-                                    
-
-                                    <div class="col-sm">
-                                        <h5>{{ item.icc }}</h5>
-                                    </div>
-                                    <div class="col-sm float-left">
-                                        <B>Compañia: </B>
-                                        {{ item.company.name }}
-                                        {{ item.type.name }}
-                                    </div>
-                                    <div class="col-sm float-left">
-                                        <B>Sucursal origen:</B>
-                                        {{ item.pivot.old_sucursal_name}}
-                                    </div>
-                                </div>
-                            </b-list-group-item>
-                            <!-- lista de equipos -->
-                            <b-list-group-item
-                                v-for="(item, index) in detailTraspaso.imeis"
-                                :key="`b${index}-${item.id}`"
-                            >
-                                <div class="row">
-                                    <div class="col-sm float-left">
+                                    <div class="col-sm" v-if="item.imei">
                                         <h5>{{ item.imei }}</h5>
                                     </div>
-                                    <div class="col-sm float-left">
+                                    <div
+                                        class="col-sm float-left"
+                                        v-if="item.imei"
+                                    >
                                         <B>Equipo: </B>
                                         {{ item.equipo.marca }}
                                         {{ item.equipo.modelo }}
                                     </div>
+
+                                    <div class="col-sm" v-if="item.icc">
+                                        <h5>{{ item.icc }}</h5>
+                                    </div>
+                                    <div
+                                        class="col-sm float-left"
+                                        v-if="item.icc"
+                                    >
+                                        <B>Compañia: </B>
+                                        {{ item.company.name }}
+                                        {{ item.type.name }}
+                                    </div>
+
                                     <div class="col-sm float-left">
-                                        <B>Sucursal origen:</B>
-                                        {{ item.pivot.old_sucursal_name}}
+                                        <B>Origen:</B>
+                                        {{ item.pivot.old_inventario_name }}
                                     </div>
                                 </div>
                             </b-list-group-item>
                         </b-list-group>
                     </div>
-
                 </div>
             </div>
         </b-overlay>
@@ -481,8 +471,6 @@ export default {
 
             detailTraspaso: {},
 
-            currentTraspaso: {},
-
             traspasosAccepted: true,
 
             historialTableFields: [
@@ -492,9 +480,9 @@ export default {
                     label: "Folio",
                 },
                 {
-                    key: "sucursal_name",
+                    key: "inventario_name",
                     sortable: true,
-                    label: "Sucursal Destino",
+                    label: "Destino",
                 },
                 {
                     key: "created_at",
@@ -506,7 +494,7 @@ export default {
                     sortable: true,
                     label: "Aceptado",
                 },
-                                {
+                {
                     key: "user_name",
                     sortable: true,
                     label: "Aceptado por",
@@ -581,7 +569,7 @@ export default {
                 .then(
                     function (response) {
                         this.isLoading = false;
-                        this.traspasoType = 'historial';
+                        this.traspasoType = "historial";
                         this.retrieveHistorial();
                     }.bind(this)
                 )
@@ -595,9 +583,8 @@ export default {
                 .put(`/admin/inventario/traspasos/${item}`)
                 .then(
                     function (response) {
-                      
                         this.isLoading = false;
-                        this.traspasoType = 'historial';
+                        this.traspasoType = "historial";
                         this.retrieveHistorial();
                     }.bind(this)
                 )
@@ -610,22 +597,17 @@ export default {
         },
 
         traspasoLoadDetails(item) {
-            this.currentTraspaso = {};
-            
             this.isLoading = true;
 
             this.traspasoType = "detalle";
-
-            this.currentTraspaso = item;
-
-            console.log(item);
 
             axios
                 .get(`/admin/inventario/traspasos/${item.id}`)
                 .then(
                     function (response) {
-                        this.detailTraspaso = response.data;
+                        this.detailTraspaso = response.data.data;
                         this.isLoading = false;
+                        console.log(this.detailTraspaso);
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -700,7 +682,7 @@ export default {
 
                 this.items = [];
 
-                this.traspasoType = 'historial'
+                this.traspasoType = "historial";
             });
         },
 
@@ -727,7 +709,8 @@ export default {
 
                                 serie: item.title,
 
-                                sucursal: item.searchable.sucursal,
+                                inventario:
+                                    item.searchable.inventario.inventarioable,
 
                                 status: item.searchable.status,
 

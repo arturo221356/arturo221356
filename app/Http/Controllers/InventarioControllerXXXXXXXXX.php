@@ -10,6 +10,7 @@ use App\Icc;
 use App\Sucursal;
 use App\Role;
 use App\User;
+use App\Inventario;
 use App\Distribution;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;

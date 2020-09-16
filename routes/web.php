@@ -93,10 +93,6 @@ Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middlewa
 //apissssss
 Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');
 
-Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
-
-Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
-
 Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth');
 
 Route::get('/get/equipos', 'Admin\EquiposController@index')->middleware('auth');
@@ -107,12 +103,15 @@ Route::get('/get/icctypes', 'IccTypeController@index')->middleware('auth');
 
 Route::get('/get/companies', 'Admin\CompaniesController@index')->middleware('auth');
 
-Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');
+// Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');
 
-Route::get('/export/imeis/', 'InventarioController@exportImei')->middleware('auth');
+// Route::get('/export/imeis/', 'InventarioController@exportImei')->middleware('auth');
 
-Route::get('/export/iccs/', 'InventarioController@exportIcc')->middleware('auth');
+// Route::get('/export/iccs/', 'InventarioController@exportIcc')->middleware('auth');
 
-Route::post('/post/iccs/', 'InventarioController@geticcs')->middleware('auth');
+// Route::post('/post/iccs/', 'InventarioController@geticcs')->middleware('auth');
 
+// Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
+
+// Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
 //apis

@@ -93,8 +93,8 @@ class SearchController extends Controller
             $modelSearchAspect
                 ->limit(5)
                 ->addSearchableAttribute('icc')
-                ->whereNotIn('status_id', [5,3])
-                ->whereHas('sucursal', function($query) {
+                ->whereNotIn('status_id', [2,3])
+                ->whereHas('inventario', function($query) {
                     $user = Auth::user();
                     $query->where('distribution_id', $user->distribution()->id);
                 })
@@ -102,10 +102,10 @@ class SearchController extends Controller
         })
         ->registerModel(Imei::class, function ($modelSearchAspect) {
             $modelSearchAspect
-            ->whereNotIn('status_id', [5,3])
+            ->whereNotIn('status_id', [2,3])
                 ->limit(5)
                 ->addSearchableAttribute('imei')
-                ->whereHas('sucursal', function($query) {
+                ->whereHas('inventario', function($query) {
                     $user = Auth::user();
                     $query->where('distribution_id', $user->distribution()->id);
                 })
@@ -130,26 +130,26 @@ class SearchController extends Controller
                
               
                 ->addExactSearchableAttribute('icc')
-                ->whereNotIn('status_id', [5,3])
-                ->whereHas('sucursal', function($query) {
+                ->whereNotIn('status_id', [2,3])
+                ->whereHas('inventario', function($query) {
                     $user = Auth::user();
                     $query->where('distribution_id', $user->distribution()->id);
                 })
                 
-                ->with(['sucursal','status','company','type']);
+                ->with(['inventario.inventarioable','status','company','type']);
         })
         ->registerModel(Imei::class, function ($modelSearchAspect) {
             $modelSearchAspect
             ->with('equipo')
                 
                 ->addExactSearchableAttribute('imei')
-                ->whereNotIn('status_id', [5,3])
-                ->whereHas('sucursal', function($query) {
+                ->whereNotIn('status_id', [2,3])
+                ->whereHas('inventario', function($query) {
                     $user = Auth::user();
                     $query->where('distribution_id', $user->distribution()->id);
                 })
                 
-                ->with(['sucursal','status','equipo']);
+                ->with(['inventario.inventarioable','status','equipo']);
                 
         })
 

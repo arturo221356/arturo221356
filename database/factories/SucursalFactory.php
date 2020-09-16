@@ -10,6 +10,7 @@ $factory->define(Sucursal::class, function (Faker $faker) {
         'name' => $faker->city(),
         'address' => $faker->address(),
         'distribution_id' => $faker->numberBetween($min = 1, $max = 2),
+        'inventario_id' => $faker->numberBetween($min = 1, $max = 10),
 
     ];
 });

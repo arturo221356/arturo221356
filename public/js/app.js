@@ -5222,32 +5222,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       traspasoType: "historial",
       tableLoading: false,
       detailTraspaso: {},
-      currentTraspaso: {},
       traspasosAccepted: true,
       historialTableFields: [{
         key: "id",
         sortable: true,
         label: "Folio"
       }, {
-        key: "sucursal_name",
+        key: "inventario_name",
         sortable: true,
-        label: "Sucursal Destino"
+        label: "Destino"
       }, {
         key: "created_at",
         sortable: true,
@@ -5309,7 +5298,7 @@ __webpack_require__.r(__webpack_exports__);
       this.isLoading = true;
       axios["delete"]("/admin/inventario/traspasos/".concat(item)).then(function (response) {
         this.isLoading = false;
-        this.traspasoType = 'historial';
+        this.traspasoType = "historial";
         this.retrieveHistorial();
       }.bind(this))["catch"](function (error) {
         console.log(error);
@@ -5319,7 +5308,7 @@ __webpack_require__.r(__webpack_exports__);
       this.isLoading = true;
       axios.put("/admin/inventario/traspasos/".concat(item)).then(function (response) {
         this.isLoading = false;
-        this.traspasoType = 'historial';
+        this.traspasoType = "historial";
         this.retrieveHistorial();
       }.bind(this))["catch"](function (error) {
         console.log(error);
@@ -5333,14 +5322,12 @@ __webpack_require__.r(__webpack_exports__);
       return dirty || validated ? valid : null;
     },
     traspasoLoadDetails: function traspasoLoadDetails(item) {
-      this.currentTraspaso = {};
       this.isLoading = true;
       this.traspasoType = "detalle";
-      this.currentTraspaso = item;
-      console.log(item);
       axios.get("/admin/inventario/traspasos/".concat(item.id)).then(function (response) {
-        this.detailTraspaso = response.data;
+        this.detailTraspaso = response.data.data;
         this.isLoading = false;
+        console.log(this.detailTraspaso);
       }.bind(this))["catch"](function (error) {
         console.log(error);
       });
@@ -5401,7 +5388,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.isLoading = false;
         _this.items = [];
-        _this.traspasoType = 'historial';
+        _this.traspasoType = "historial";
       });
     },
     agregarSerie: function agregarSerie(event) {
@@ -5425,7 +5412,7 @@ __webpack_require__.r(__webpack_exports__);
             type: item.type,
             id: item.searchable.id,
             serie: item.title,
-            sucursal: item.searchable.sucursal,
+            inventario: item.searchable.inventario.inventarioable,
             status: item.searchable.status,
             equipo: item.searchable.equipo,
             tipoSim: item.searchable.type,
@@ -88580,10 +88567,10 @@ var render = function() {
                                     "div",
                                     { staticClass: "col-sm" },
                                     [
-                                      _c("B", [_vm._v("Sucursal:")]),
+                                      _c("B", [_vm._v("Origen:")]),
                                       _vm._v(
                                         "\n                                        " +
-                                          _vm._s(item.sucursal.name) +
+                                          _vm._s(item.inventario.name) +
                                           "\n                                    "
                                       )
                                     ],
@@ -88597,7 +88584,7 @@ var render = function() {
                                       _c("B", [_vm._v("Status:")]),
                                       _vm._v(
                                         "\n                                        " +
-                                          _vm._s(item.status.status) +
+                                          _vm._s(item.status.name) +
                                           "\n                                    "
                                       )
                                     ],
@@ -88627,7 +88614,7 @@ var render = function() {
                                         "div",
                                         { staticClass: "col-sm" },
                                         [
-                                          _c("B", [_vm._v("compañia:")]),
+                                          _c("B", [_vm._v("Compañia:")]),
                                           _vm._v(
                                             "\n                                        " +
                                               _vm._s(item.company.name) +
@@ -89002,7 +88989,7 @@ var render = function() {
                               _c("b", [_vm._v("Traspaso folio:")]),
                               _vm._v(
                                 "\n                                " +
-                                  _vm._s(_vm.currentTraspaso.id) +
+                                  _vm._s(_vm.detailTraspaso.id) +
                                   "\n                            "
                               )
                             ])
@@ -89010,10 +88997,10 @@ var render = function() {
                           _vm._v(" "),
                           _c("div", { staticClass: "col-sm" }, [
                             _c("h5", [
-                              _c("b", [_vm._v("Sucursal de destino:")]),
+                              _c("b", [_vm._v("Destino:")]),
                               _vm._v(
                                 "\n                                " +
-                                  _vm._s(_vm.currentTraspaso.sucursal_name) +
+                                  _vm._s(_vm.detailTraspaso.destino_name) +
                                   "\n                            "
                               )
                             ])
@@ -89024,32 +89011,32 @@ var render = function() {
                               _c("b", [_vm._v("Fecha:")]),
                               _vm._v(
                                 "\n                                " +
-                                  _vm._s(_vm.currentTraspaso.created_at) +
+                                  _vm._s(_vm.detailTraspaso.created_at) +
                                   "\n                            "
                               )
                             ])
                           ]),
                           _vm._v(" "),
-                          _vm.currentTraspaso.accepted == true
+                          _vm.detailTraspaso.accepted == true
                             ? _c("div", { staticClass: "col-sm" }, [
                                 _c("h5", [
                                   _c("b", [_vm._v("Aceptado:")]),
                                   _vm._v(
                                     "\n                                " +
-                                      _vm._s(_vm.currentTraspaso.updated_at) +
+                                      _vm._s(_vm.detailTraspaso.updated_at) +
                                       "\n                            "
                                   )
                                 ])
                               ])
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.currentTraspaso.accepted == true
+                          _vm.detailTraspaso.accepted == true
                             ? _c("div", { staticClass: "col-sm" }, [
                                 _c("h5", [
                                   _c("b", [_vm._v("Aceptado por:")]),
                                   _vm._v(
                                     "\n                                " +
-                                      _vm._s(_vm.currentTraspaso.user_name) +
+                                      _vm._s(_vm.detailTraspaso.user_name) +
                                       "\n                            "
                                   )
                                 ])
@@ -89137,72 +89124,20 @@ var render = function() {
                         _c(
                           "b-list-group",
                           { staticClass: "mt-5" },
-                          [
-                            _vm._l(_vm.detailTraspaso.iccs, function(
-                              item,
-                              index
-                            ) {
-                              return _c(
-                                "b-list-group-item",
-                                { key: "a" + index + "-" + item.id },
-                                [
-                                  _c("div", { staticClass: "row" }, [
-                                    _c("div", { staticClass: "col-sm" }, [
-                                      _c("h5", [_vm._v(_vm._s(item.icc))])
-                                    ]),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      { staticClass: "col-sm float-left" },
-                                      [
-                                        _c("B", [_vm._v("Compañia: ")]),
-                                        _vm._v(
-                                          "\n                                    " +
-                                            _vm._s(item.company.name) +
-                                            "\n                                    " +
-                                            _vm._s(item.type.name) +
-                                            "\n                                "
-                                        )
-                                      ],
-                                      1
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      { staticClass: "col-sm float-left" },
-                                      [
-                                        _c("B", [_vm._v("Sucursal origen:")]),
-                                        _vm._v(
-                                          "\n                                    " +
-                                            _vm._s(
-                                              item.pivot.old_sucursal_name
-                                            ) +
-                                            "\n                                "
-                                        )
-                                      ],
-                                      1
-                                    )
-                                  ])
-                                ]
-                              )
-                            }),
-                            _vm._v(" "),
-                            _vm._l(_vm.detailTraspaso.imeis, function(
-                              item,
-                              index
-                            ) {
-                              return _c(
-                                "b-list-group-item",
-                                { key: "b" + index + "-" + item.id },
-                                [
-                                  _c("div", { staticClass: "row" }, [
-                                    _c(
-                                      "div",
-                                      { staticClass: "col-sm float-left" },
-                                      [_c("h5", [_vm._v(_vm._s(item.imei))])]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
+                          _vm._l(_vm.detailTraspaso.series, function(
+                            item,
+                            index
+                          ) {
+                            return _c("b-list-group-item", { key: index }, [
+                              _c("div", { staticClass: "row" }, [
+                                item.imei
+                                  ? _c("div", { staticClass: "col-sm" }, [
+                                      _c("h5", [_vm._v(_vm._s(item.imei))])
+                                    ])
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                item.imei
+                                  ? _c(
                                       "div",
                                       { staticClass: "col-sm float-left" },
                                       [
@@ -89216,29 +89151,50 @@ var render = function() {
                                         )
                                       ],
                                       1
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                item.icc
+                                  ? _c("div", { staticClass: "col-sm" }, [
+                                      _c("h5", [_vm._v(_vm._s(item.icc))])
+                                    ])
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                item.icc
+                                  ? _c(
                                       "div",
                                       { staticClass: "col-sm float-left" },
                                       [
-                                        _c("B", [_vm._v("Sucursal origen:")]),
+                                        _c("B", [_vm._v("Compañia: ")]),
                                         _vm._v(
                                           "\n                                    " +
-                                            _vm._s(
-                                              item.pivot.old_sucursal_name
-                                            ) +
+                                            _vm._s(item.company.name) +
+                                            "\n                                    " +
+                                            _vm._s(item.type.name) +
                                             "\n                                "
                                         )
                                       ],
                                       1
                                     )
-                                  ])
-                                ]
-                              )
-                            })
-                          ],
-                          2
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  { staticClass: "col-sm float-left" },
+                                  [
+                                    _c("B", [_vm._v("Origen:")]),
+                                    _vm._v(
+                                      "\n                                    " +
+                                        _vm._s(item.pivot.old_inventario_name) +
+                                        "\n                                "
+                                    )
+                                  ],
+                                  1
+                                )
+                              ])
+                            ])
+                          }),
+                          1
                         )
                       ],
                       1

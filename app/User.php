@@ -57,4 +57,8 @@ class User extends Authenticatable
     {
         return User::role()->where('name', $role)->get();
     }
+    public function inventario()
+    {
+        return $this->morphOne('App\Inventario', 'inventarioable');
+    }
 }

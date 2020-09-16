@@ -29,9 +29,9 @@ class Imei extends Model implements Searchable
         );
     }
 
-    public function sucursal()
+    public function inventario()
     {
-        return $this->belongsTo('App\Sucursal');
+        return $this->belongsTo('App\Inventario');
     }
     public function equipo()
     {
