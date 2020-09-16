@@ -52,7 +52,7 @@ class ImeisController extends Controller
         
         $series = json_decode($request->data);
 
-        $sucursal = $request->input('sucursal_id');
+        $inventario = $request->input('inventario_id');
 
         $equipo = $request->input('equipo_id');
 
@@ -67,7 +67,7 @@ class ImeisController extends Controller
 
             //datos enviados al import que vienen desde la request
             $data = [
-                'sucursal_id' => $sucursal,
+                'inventario_id' => $inventario,
                 'equipo_id' => $equipo,
                 'status_id' => 1,
 
@@ -108,8 +108,8 @@ class ImeisController extends Controller
             $imei = new Imei([
                 'imei' => $data->serie,
                 'status_id' => 1,
-                'sucursal_id' => $data->sucursal->id,
-                'equipo_id' => $data->equipo->id,
+                'inventario_id' =>  $inventario,
+                'equipo_id' => $equipo,
                 
 
             ]);

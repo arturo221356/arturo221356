@@ -72,14 +72,14 @@
                                     rules="required"
                                 >
                                     <b-form-group
-                                        label="Sucursal de destino:"
-                                        label-for="select-sucursal"
+                                        label="Inventario de destino:"
+                                        label-for="select-inventario"
                                         class="mt-4"
                                     >
                                         <select-general
-                                            url="/get/sucursales"
-                                            pholder="Seleccionar Sucursal"
-                                            v-model="sucursal"
+                                            url="/admin/inventarios"
+                                            pholder="Seleccionar Inventario"
+                                            v-model="inventario"
                                             :state="
                                                 getValidationState(
                                                     validationContext
@@ -513,7 +513,7 @@ export default {
                 .toISOString()
                 .substring(0, 10),
 
-            sucursal: null,
+           inventario: null,
 
             aceptacionRequired: true,
 
@@ -665,7 +665,7 @@ export default {
             const data = new FormData();
             data.append("data", JSON.stringify(this.items));
             data.append("file", this.file);
-            data.append("sucursal_id", this.sucursal.id);
+            data.append("inventario_id", this.inventario.id);
             data.append("aceptacion_required", this.aceptacionRequired);
 
             axios.post(`/admin/inventario/traspasos/`, data).then((res) => {

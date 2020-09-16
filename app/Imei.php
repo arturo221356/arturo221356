@@ -14,7 +14,7 @@ class Imei extends Model implements Searchable
 {
     use SoftDeletes;
 
-    protected $fillable = ["imei", "sucursal_id", "equipo_id", "status_id", "distribution_id"];
+    protected $fillable = ["imei", "inventario_id", "equipo_id", "status_id", "distribution_id"];
 
     protected $dates = ['deleted_at'];
 

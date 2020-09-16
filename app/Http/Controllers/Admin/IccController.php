@@ -55,7 +55,7 @@ class IccController extends Controller
 
         $series = json_decode($request->data);
 
-        $sucursal = $request->input('sucursal_id');
+        $inventario = $request->input('inventario_id');
 
         $company = $request->input('company_id');
 
@@ -71,7 +71,7 @@ class IccController extends Controller
 
             //datos enviados al import que vienen desde la request
             $data = [
-                'sucursal_id' => $sucursal,
+                'inventario_id' => $inventario,
                 'status_id' => 1,
                 'icc_type_id' => $type,
                 'company_id' => $company,
@@ -111,7 +111,7 @@ class IccController extends Controller
                     
                     'icc' => $datos->serie,
                     'status_id' => 1,
-                    'sucursal_id' => $sucursal,
+                    'inventario_id' => $inventario,
                     'company_id' => $company,
                     'icc_type_id' => $type,
                    

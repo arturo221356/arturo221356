@@ -138,20 +138,20 @@
                                 </b-form-group>
                             </ValidationProvider>
 
-                            <!-- grupo para sucursal -->
+                            <!-- grupo para inventario -->
                             <ValidationProvider
                                 v-slot="validationContext"
                                 rules="required"
                             >
                                 <b-form-group
-                                    label="Sucursal"
-                                    label-for="select-sucursal"
+                                    label="Inventario"
+                                    label-for="select-inventario"
                                     label-size="lg"
                                 >
                                     <select-general
-                                        url="/get/sucursales"
-                                        pholder="Seleccionar Sucursal"
-                                        v-model="item.sucursal"
+                                        url="/admin/inventarios"
+                                        pholder="Seleccionar Inventario"
+                                        v-model="item.inventario"
                                         :state="
                                             getValidationState(
                                                 validationContext
@@ -270,7 +270,7 @@
                         >
                             {{ index + 1 }} :
                             <strong>{{ articulo.serie }}</strong>
-                            <small>{{ articulo.sucursal.name }}</small>
+                            <small>{{ articulo.inventario.name }}</small>
                             <small v-if="producto === 'Imei'"
                                 >{{ articulo.equipo.marca }}
                                 {{ articulo.equipo.modelo }} ${{
@@ -320,7 +320,7 @@ export default {
             //valores actuales del formulario
             item: {
                 serie: null,
-                sucursal: null,
+                inventario: null,
                 company: null,
                 simType: null,
                 equipo: null,
@@ -422,7 +422,7 @@ export default {
                     } else if (this.producto == "Imei") {
                         data.set("equipo_id", this.item.equipo.id);
                     }
-                    data.set("sucursal_id", this.item.sucursal.id);
+                    data.set("inventario_id", this.item.inventario.id);
 
                     axios
                         .post(this.postUrl, data, settings)
@@ -458,7 +458,7 @@ export default {
             }
         },
         agregarButtonDisabled(){
-            if(this.item.sucursal == null || (this.items.length == 0 && this.file == null)){
+            if(this.item.inventario == null || (this.items.length == 0 && this.file == null)){
                 return true;
             }else{
                 if(this.producto == "Imei" && this.item.equipo == null){

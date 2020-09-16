@@ -51,7 +51,7 @@ class ImeisImport implements ToCollection, WithValidation, SkipsOnFailure
             $imei = new Imei([
                 'imei' => $row[0],
                 'status_id' => 1,
-                'sucursal_id' => $this->data['sucursal_id'],
+                'inventario_id' => $this->data['inventario_id'],
                 'equipo_id' => $this->data['equipo_id'],
                
 

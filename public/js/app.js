@@ -2231,7 +2231,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //valores actuales del formulario
       item: {
         serie: null,
-        sucursal: null,
+        inventario: null,
         company: null,
         simType: null,
         equipo: null
@@ -2332,7 +2332,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.set("equipo_id", this.item.equipo.id);
       }
 
-      data.set("sucursal_id", this.item.sucursal.id);
+      data.set("inventario_id", this.item.inventario.id);
       axios.post(this.postUrl, data, settings).then(function (response) {
         console.log(response.data);
         self.isLoading = false;
@@ -2357,7 +2357,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     agregarButtonDisabled: function agregarButtonDisabled() {
-      if (this.item.sucursal == null || this.items.length == 0 && this.file == null) {
+      if (this.item.inventario == null || this.items.length == 0 && this.file == null) {
         return true;
       } else {
         if (this.producto == "Imei" && this.item.equipo == null) {
@@ -5256,7 +5256,7 @@ __webpack_require__.r(__webpack_exports__);
       historialItems: [],
       finalDate: new Date().toISOString().substr(0, 10),
       initialDate: new Date(Date.now() - 5184000000).toISOString().substring(0, 10),
-      sucursal: null,
+      inventario: null,
       aceptacionRequired: true,
       showList: true,
       searchValue: "",
@@ -5374,7 +5374,7 @@ __webpack_require__.r(__webpack_exports__);
       var data = new FormData();
       data.append("data", JSON.stringify(this.items));
       data.append("file", this.file);
-      data.append("sucursal_id", this.sucursal.id);
+      data.append("inventario_id", this.inventario.id);
       data.append("aceptacion_required", this.aceptacionRequired);
       axios.post("/admin/inventario/traspasos/", data).then(function (res) {
         _this.$bvToast.toast("Traspaso creado con exito", {
@@ -85769,31 +85769,32 @@ var render = function() {
                                             "b-form-group",
                                             {
                                               attrs: {
-                                                label: "Sucursal",
-                                                "label-for": "select-sucursal",
+                                                label: "Inventario",
+                                                "label-for":
+                                                  "select-inventario",
                                                 "label-size": "lg"
                                               }
                                             },
                                             [
                                               _c("select-general", {
                                                 attrs: {
-                                                  url: "/get/sucursales",
+                                                  url: "/admin/inventarios",
                                                   pholder:
-                                                    "Seleccionar Sucursal",
+                                                    "Seleccionar Inventario",
                                                   state: _vm.getValidationState(
                                                     validationContext
                                                   )
                                                 },
                                                 model: {
-                                                  value: _vm.item.sucursal,
+                                                  value: _vm.item.inventario,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.item,
-                                                      "sucursal",
+                                                      "inventario",
                                                       $$v
                                                     )
                                                   },
-                                                  expression: "item.sucursal"
+                                                  expression: "item.inventario"
                                                 }
                                               }),
                                               _vm._v(" "),
@@ -86062,7 +86063,7 @@ var render = function() {
                         ),
                         _c("strong", [_vm._v(_vm._s(articulo.serie))]),
                         _vm._v(" "),
-                        _c("small", [_vm._v(_vm._s(articulo.sucursal.name))]),
+                        _c("small", [_vm._v(_vm._s(articulo.inventario.name))]),
                         _vm._v(" "),
                         _vm.producto === "Imei"
                           ? _c("small", [
@@ -88392,27 +88393,27 @@ var render = function() {
                                                   staticClass: "mt-4",
                                                   attrs: {
                                                     label:
-                                                      "Sucursal de destino:",
+                                                      "Inventario de destino:",
                                                     "label-for":
-                                                      "select-sucursal"
+                                                      "select-inventario"
                                                   }
                                                 },
                                                 [
                                                   _c("select-general", {
                                                     attrs: {
-                                                      url: "/get/sucursales",
+                                                      url: "/admin/inventarios",
                                                       pholder:
-                                                        "Seleccionar Sucursal",
+                                                        "Seleccionar Inventario",
                                                       state: _vm.getValidationState(
                                                         validationContext
                                                       )
                                                     },
                                                     model: {
-                                                      value: _vm.sucursal,
+                                                      value: _vm.inventario,
                                                       callback: function($$v) {
-                                                        _vm.sucursal = $$v
+                                                        _vm.inventario = $$v
                                                       },
-                                                      expression: "sucursal"
+                                                      expression: "inventario"
                                                     }
                                                   }),
                                                   _vm._v(" "),

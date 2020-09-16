@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Traspaso;
 use App\Imei;
 use App\Icc;
-use App\Sucursal;
 use App\Inventario;
 use App\User;
 use Illuminate\Support\Facades\Auth;
@@ -71,9 +70,9 @@ class TraspasoController extends Controller
 
         $userDistribution = Auth::User()->distribution()->id;
 
-        $sucursal = Sucursal::findOrFail($request->sucursal_id);
+        // $sucursal = Sucursal::findOrFail($request->sucursal_id);
 
-        $inventario = $sucursal->inventario;
+        $inventario = Inventario::findOrFail($request->inventario_id);
 
         $accepted = !$aceptacionRequired;
 
