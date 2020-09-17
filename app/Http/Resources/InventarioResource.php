@@ -7,7 +7,7 @@ use Illuminate\Support\Carbon;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InventarioCollection extends JsonResource
+class InventarioResource extends JsonResource
 {
     /**
      * Transform the resource collection into an array.
@@ -21,8 +21,8 @@ class InventarioCollection extends JsonResource
         
         return [
 
-            
-            'imeis'=>$this->imeis
+            'id'=> $this->id,
+            'name'=>$this->inventarioable->name
 
             
     

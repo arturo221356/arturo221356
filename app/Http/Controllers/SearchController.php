@@ -96,7 +96,7 @@ class SearchController extends Controller
                 ->whereNotIn('status_id', [2,3])
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution()->id);
+                    $query->where('distribution_id', $user->distribution->id);
                 })
                 ;
         })
@@ -107,7 +107,7 @@ class SearchController extends Controller
                 ->addSearchableAttribute('imei')
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution()->id);
+                    $query->where('distribution_id', $user->distribution->id);
                 })
                 ;
         })
@@ -133,7 +133,7 @@ class SearchController extends Controller
                 ->whereNotIn('status_id', [2,3])
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution()->id);
+                    $query->where('distribution_id', $user->distribution->id);
                 })
                 
                 ->with(['inventario.inventarioable','status','company','type']);
@@ -146,7 +146,7 @@ class SearchController extends Controller
                 ->whereNotIn('status_id', [2,3])
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution()->id);
+                    $query->where('distribution_id', $user->distribution->id);
                 })
                 
                 ->with(['inventario.inventarioable','status','equipo']);

@@ -73,7 +73,9 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
 
 
 
-Route::get('/inventario', 'InventarioController@index')->middleware('auth');
+Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth');
+
+
 
 
 Route::get('/pruebas', function (Request $request) {

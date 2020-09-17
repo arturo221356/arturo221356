@@ -4,6 +4,7 @@
             v-model="selected"
             :options="options"
             :placeholder="pholder"
+            :multiple="multiple"
             label="name"
             track-by="id"
             :allow-empty="empty"
@@ -26,6 +27,11 @@ export default {
             type: Boolean,
             required: false,
             default: false,
+        },
+        multiple:{
+            type: Boolean,
+            required: false,
+            default: false
         },
         empty: {
             type: Boolean,
@@ -57,6 +63,7 @@ export default {
             required: false,
             default: null,
         },
+
         query:{
             type: Number,
             required: false,
@@ -71,6 +78,8 @@ export default {
             options: [],
 
             selected: null,
+
+           
 
            
         };
@@ -99,7 +108,7 @@ export default {
             axios.get(`${this.url}?param=${param}`).then(
                 function (response) {
                     this.options = response.data;
-                    
+                    if(this.todas){ this.options.unshift({id:'all',name:'Todos'});}
                     this.isLoading = false;
                 }.bind(this)
             );
@@ -114,6 +123,8 @@ export default {
         url: function(){
             this.loadData();
         },
+        
+
         query: function(){
             this.loadData();
             this.selected = null;
@@ -124,7 +135,8 @@ export default {
             //this.selected = this.options.find((option) => option.id === this.value.id);
 
             this.selected = this.value;
-        }
+        },
+
     },
     computed: {
         stateClass: function () {
@@ -144,6 +156,7 @@ export default {
             }
             return response;
         },
+
     },
 };
 </script>

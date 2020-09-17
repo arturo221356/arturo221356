@@ -3158,136 +3158,274 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    userRole: {
-      type: String,
-      required: true
-    },
-    userSucursal: {
-      type: String
-    },
-    navbarName: {
-      type: String,
-      required: true
-    }
-  },
+  props: {},
   data: function data() {
     return {
-      producto: "",
-      status: [],
-      fields: [],
-      fetchUrl: "",
-      sucursalid: 0,
-      countItems: 0,
-      items: [],
-      totalRows: 0,
-      sortBy: "",
-      sortDesc: false,
-      sortDirection: "asc",
-      filter: null,
-      filterOn: [],
-      navbarBrand: "",
-      isBusy: false
+      userRole: "admin",
+      tableBusy: false,
+      tableFilter: null,
+      isLoading: false,
+      editMode: false,
+      editableItem: {},
+      productoOptions: [{
+        text: "Sims",
+        value: "Icc"
+      }, {
+        text: "Equipos",
+        value: "Imei"
+      }],
+      inventario: [],
+      inventarioStatus: [],
+      lineaStatus: [],
+      producto: "Icc",
+      tableItems: [],
+      countItems: 0
     };
   },
-  computed: {
-    sortOptions: function sortOptions() {
-      // Create an options list from our fields
-      return this.fields.filter(function (f) {
-        return f.sortable;
-      }).map(function (f) {
-        return {
-          text: f.label,
-          value: f.key
-        };
-      });
-    },
-    rows: function rows() {
-      return this.items.length;
-    }
-  },
-  watch: {},
-  mounted: function mounted() {
-    if (this.userSucursal) {
-      this.sucursalid = this.userSucursal;
-      this.loadData();
-    }
-  },
   methods: {
-    info: function info(item, index, producto) {
-      this.$refs.modal.info(item, index, producto);
-    },
-    makeToast: function makeToast() {
-      var variant = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      this.$bvToast.show("Toast body content", {
-        title: "Variant ".concat(variant || "default"),
-        variant: variant,
-        solid: true
-      });
-    },
-    deleteItem: function deleteItem(id) {
-      var _this = this;
-
-      axios["delete"]("/admin/users/".concat(id)).then(function () {
-        alert('eliminado');
-
-        _this.$refs['modal'].hide();
-
-        _this.$parent.loadData();
-      });
-    },
-    //carga la informacion de la base de datos dependiendo de la Utl que es la variable fetchurl
-    loadData: function loadData() {
-      var _this2 = this;
-
-      this.isBusy = true;
-      axios.post(this.fetchUrl, {
-        sucursal_id: this.sucursalid,
-        status: this.status
+    loadInventario: function loadInventario() {
+      this.tableBusy = true;
+      this.isLoading = true;
+      axios.get("/inventario/".concat(this.inventario.id), {
+        params: {
+          producto: this.producto
+        }
       }).then(function (response) {
-        _this2.items = response.data.data;
-        _this2.countItems = _this2.items.length;
-        _this2.isBusy = false;
+        this.tableItems = response.data.data;
+        this.countItems = this.tableItems.length;
+        this.tableBusy = false;
+        this.isLoading = false;
+      }.bind(this))["catch"](function (error) {
+        console.log(error);
       });
     },
-    //detecta el cambio de sucursal
-    sucursalChange: function sucursalChange(value) {
-      this.sucursal = value;
-      this.navbarBrand = this.sucursal.text;
-      this.sucursalid = this.sucursal.id;
-      this.loadData();
+    editItem: function editItem(item, row) {
+      this.editableItem = {};
+      console.log(item);
+      console.log(row);
+      this.editMode = true;
+      this.editableItem = item;
+      window.scrollTo(0, 0);
     },
-    //carga los datos si la la sucursal esta en blanco
-    statusChange: function statusChange(value) {
-      this.status = value;
-
-      if (this.navbarBrand != "") {
-        this.loadData();
-      }
-    },
-    //detecta el cambio de producto
-    productoChange: function productoChange(value) {
-      this.producto = value;
-
-      if (value == "equipos") {
-        this.fetchUrl = "/post/imeis/";
-      } else {
-        this.fetchUrl = "/post/iccs/";
-      }
-
-      if (this.actualSucursal != "") {
-        this.loadData();
-      }
-    },
-    loadfields: function loadfields(value) {
-      this.fields = value;
-    },
-    onFiltered: function onFiltered(filteredItems) {
+    tableFiltered: function tableFiltered(filteredItems) {
       this.countItems = filteredItems.length;
     }
   },
-  created: function created() {}
+  computed: {
+    computedTableFields: function computedTableFields() {
+      if (this.producto == "Imei") {
+        switch (this.userRole) {
+          case "admin":
+            return [{
+              key: "serie",
+              label: "Imei"
+            }, {
+              key: "inventario_name",
+              label: "Inventario"
+            }, {
+              key: "status",
+              label: "Estatus"
+            }, {
+              key: "marca",
+              label: "Marca"
+            }, {
+              key: "modelo",
+              label: "Modelo"
+            }, {
+              key: "precio",
+              label: "Precio"
+            }, {
+              key: "costo",
+              label: "Costo"
+            }, {
+              key: "created_at",
+              label: "Agregado"
+            }, {
+              key: "updated_at",
+              label: "Modificado"
+            }, {
+              key: "editar",
+              label: "Editar"
+            }];
+            break;
+
+          case "supervisor":
+            break;
+
+          default:
+            break;
+        }
+      } else if (this.producto == "Icc") {
+        switch (this.userRole) {
+          case "admin":
+            return [{
+              key: "serie",
+              label: "Icc"
+            }, {
+              key: "inventario_name",
+              label: "Inventario"
+            }, {
+              key: "status",
+              label: "Estatus"
+            }, {
+              key: "company",
+              label: "Compañia"
+            }, {
+              key: "type",
+              label: "Tipo"
+            }, {
+              key: "created_at",
+              label: "Agregado"
+            }, {
+              key: "updated_at",
+              label: "Modificado"
+            }, {
+              key: "editar",
+              label: "Editar"
+            }];
+            break;
+
+          case "supervisor":
+            break;
+
+          default:
+        }
+      }
+    }
+  }
 });
 
 /***/ }),
@@ -4066,9 +4204,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todas: {
+      type: Boolean,
+      required: false,
+      "default": false
+    },
+    multiple: {
       type: Boolean,
       required: false,
       "default": false
@@ -4132,6 +4276,14 @@ __webpack_require__.r(__webpack_exports__);
       var param = this.query;
       axios.get("".concat(this.url, "?param=").concat(param)).then(function (response) {
         this.options = response.data;
+
+        if (this.todas) {
+          this.options.unshift({
+            id: 'all',
+            name: 'Todos'
+          });
+        }
+
         this.isLoading = false;
       }.bind(this));
     }
@@ -86802,231 +86954,582 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "b-container",
-    { attrs: { fluid: "" } },
+    "div",
     [
-      _c(
-        "b-navbar",
-        {
-          staticStyle: { "background-color": "#dedede" },
-          attrs: { toggleable: "lg", type: "light" }
-        },
-        [
-          _c("b-navbar-brand", { attrs: { href: "#" } }, [
-            _vm._v(_vm._s(_vm.navbarName) + " " + _vm._s(_vm.navbarBrand))
-          ]),
-          _vm._v(" "),
-          _c("b-navbar-toggle", { attrs: { target: "nav-collapse" } }),
-          _vm._v(" "),
-          _c(
-            "b-collapse",
-            { attrs: { id: "nav-collapse", "is-nav": "" } },
-            [
-              _c(
-                "b-navbar-nav",
-                [
-                  _c(
-                    "b-nav-form",
-                    [
-                      _c("radio-producto", {
-                        staticClass: "mb-2 mr-sm-2 mb-sm-0",
-                        attrs: { busy: _vm.isBusy, "user-role": _vm.userRole },
-                        on: {
-                          producto: _vm.productoChange,
-                          fields: _vm.loadfields
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("checkbox-status", {
-                        staticClass: "mb-2 mr-sm-2 mb-sm-0",
-                        attrs: { producto: _vm.producto },
-                        on: { status: _vm.statusChange }
-                      }),
-                      _vm._v(" "),
-                      _vm.userRole == "supervisor" || _vm.userRole == "admin"
-                        ? _c("select-sucursal", {
-                            staticClass: "mb-2 mr-sm-2 mb-sm-0",
-                            attrs: { todas: true, seleccionado: null },
-                            on: { sucursal: _vm.sucursalChange }
-                          })
-                        : _vm._e()
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "b-navbar-nav",
-                { staticClass: "ml-auto" },
-                [
-                  _c(
-                    "b-nav-form",
-                    [
-                      _c("b-form-input", {
-                        staticClass: "mr-sm-2",
-                        attrs: { placeholder: "Buscar", id: "filterInpt" },
-                        model: {
-                          value: _vm.filter,
-                          callback: function($$v) {
-                            _vm.filter = $$v
-                          },
-                          expression: "filter"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("export-excel", {
-                        attrs: {
-                          "sucursal-id": _vm.sucursalid,
-                          "status-id": _vm.status,
-                          producto: _vm.producto
-                        }
-                      })
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c("edit-modal", { ref: "modal" }),
-      _vm._v(" "),
-      _c("b-table", {
-        attrs: {
-          id: "my-table",
-          "show-empty": "",
-          responsive: "",
-          striped: "",
-          hover: "",
-          stacked: "md",
-          items: _vm.items,
-          fields: _vm.fields,
-          filter: _vm.filter,
-          filterIncludedFields: _vm.filterOn,
-          "sort-by": _vm.sortBy,
-          "sort-desc": _vm.sortDesc,
-          "sort-direction": _vm.sortDirection,
-          busy: _vm.isBusy,
-          selectable: ""
-        },
-        on: {
-          "update:sortBy": function($event) {
-            _vm.sortBy = $event
-          },
-          "update:sort-by": function($event) {
-            _vm.sortBy = $event
-          },
-          "update:sortDesc": function($event) {
-            _vm.sortDesc = $event
-          },
-          "update:sort-desc": function($event) {
-            _vm.sortDesc = $event
-          },
-          filtered: _vm.onFiltered
-        },
-        scopedSlots: _vm._u([
-          {
-            key: "table-busy",
-            fn: function() {
-              return [
+      _c("b-overlay", { attrs: { show: _vm.isLoading, rounded: "sm" } }, [
+        _c("div", { staticClass: "jumbotron" }, [
+          _c("div", { staticClass: "col-md-4 mx-auto" }, [
+            _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.editMode == false,
+                    expression: "editMode == false"
+                  }
+                ]
+              },
+              [
+                _c("h1", [_vm._v("Reporte de Inventario")]),
+                _vm._v(" "),
                 _c(
-                  "div",
-                  { staticClass: "text-center text-primary my-2" },
+                  "b-form",
                   [
-                    _c("b-spinner", { staticClass: "align-middle" }),
+                    _c(
+                      "b-form-group",
+                      [
+                        _c("b-form-radio-group", {
+                          staticClass: "align-middle",
+                          attrs: {
+                            id: "radio-producto",
+                            options: _vm.productoOptions,
+                            buttons: "",
+                            name: "radio-producto"
+                          },
+                          on: {
+                            change: function($event) {
+                              _vm.tableItems = []
+                            }
+                          },
+                          model: {
+                            value: _vm.producto,
+                            callback: function($$v) {
+                              _vm.producto = $$v
+                            },
+                            expression: "producto"
+                          }
+                        })
+                      ],
+                      1
+                    ),
                     _vm._v(" "),
-                    _c("strong", [_vm._v("Cargando...")])
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "Inventario:", "label-size": "lg" } },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.inventario,
+                            callback: function($$v) {
+                              _vm.inventario = $$v
+                            },
+                            expression: "inventario"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.inventario) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      {
+                        attrs: {
+                          label: "Inventario estatus:",
+                          "label-size": "lg"
+                        }
+                      },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            multiple: true,
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.inventarioStatus,
+                            callback: function($$v) {
+                              _vm.inventarioStatus = $$v
+                            },
+                            expression: "inventarioStatus"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.inventarioStatus) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      {
+                        attrs: { label: "Linea estatus:", "label-size": "lg" }
+                      },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            multiple: true,
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.lineaStatus,
+                            callback: function($$v) {
+                              _vm.lineaStatus = $$v
+                            },
+                            expression: "lineaStatus"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.lineaStatus) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-button",
+                      {
+                        attrs: { block: "", variant: "primary" },
+                        on: { click: _vm.loadInventario }
+                      },
+                      [_vm._v("Cargar")]
+                    )
                   ],
                   1
                 )
-              ]
-            },
-            proxy: true
-          },
-          {
-            key: "table-caption",
-            fn: function() {
-              return [
-                _vm._v("Resultado: - " + _vm._s(_vm.countItems) + "\n        ")
-              ]
-            },
-            proxy: true
-          },
-          {
-            key: "cell(editar)",
-            fn: function(row) {
-              return [
-                _c(
-                  "b-button",
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                directives: [
                   {
-                    on: {
-                      click: function($event) {
-                        return _vm.info(row.item, row.index, _vm.producto)
-                      }
-                    }
-                  },
-                  [_vm._v("\n                Editar")]
-                )
-              ]
-            }
-          },
-          {
-            key: "cell(status)",
-            fn: function(row) {
-              return [
-                _vm._v(
-                  "\n            " + _vm._s(row.item.status) + "\n            "
-                ),
-                _c("b-link", [
-                  row.item.comment
-                    ? _c(
-                        "svg",
-                        {
-                          directives: [
-                            {
-                              name: "b-popover",
-                              rawName: "v-b-popover.hover.focus.top",
-                              value: row.item.comment.comment,
-                              expression: "row.item.comment.comment",
-                              modifiers: { hover: true, focus: true, top: true }
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.editMode == true,
+                    expression: "editMode == true"
+                  }
+                ]
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-sm" }, [
+                    _c(
+                      "h1",
+                      {
+                        staticClass: "float-right",
+                        style: { cursor: "pointer" }
+                      },
+                      [
+                        _c("b-icon", {
+                          attrs: { icon: "x-circle-fill", variant: "danger" },
+                          on: {
+                            click: function($event) {
+                              _vm.editMode = false
                             }
-                          ],
-                          staticClass: "bi bi-chat-square",
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-sm" }, [
+                    _c("h1", [
+                      _vm._v(
+                        "\n                                Editar\n                                " +
+                          _vm._s(_vm.producto) +
+                          "\n                            "
+                      )
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-sm" }, [
+                    _c("h3", [
+                      _vm._v(
+                        "\n                                    " +
+                          _vm._s(_vm.editableItem.serie) +
+                          "\n                                "
+                      )
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "b-form",
+                  [
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "Inventario", "label-size": "lg" } },
+                      [
+                        _c("select-general", {
                           attrs: {
-                            width: "1em",
-                            height: "1em",
-                            viewBox: "0 0 16 16",
-                            fill: "currentColor",
-                            xmlns: "http://www.w3.org/2000/svg",
-                            title: row.item.status,
-                            variant: "primary"
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.inventario,
+                            callback: function($$v) {
+                              _vm.inventario = $$v
+                            },
+                            expression: "inventario"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.inventario) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "estatus:", "label-size": "lg" } },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            multiple: true,
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.lineaStatus,
+                            callback: function($$v) {
+                              _vm.lineaStatus = $$v
+                            },
+                            expression: "lineaStatus"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.lineaStatus) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      {
+                        attrs: { label: "Linea estatus:", "label-size": "lg" }
+                      },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            multiple: true,
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.lineaStatus,
+                            callback: function($$v) {
+                              _vm.lineaStatus = $$v
+                            },
+                            expression: "lineaStatus"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.lineaStatus) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "Compañia:", "label-size": "lg" } },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            multiple: true,
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.lineaStatus,
+                            callback: function($$v) {
+                              _vm.lineaStatus = $$v
+                            },
+                            expression: "lineaStatus"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.lineaStatus) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "Tipo:", "label-size": "lg" } },
+                      [
+                        _c("select-general", {
+                          attrs: {
+                            url: "/admin/inventarios",
+                            pholder: "Seleccionar Inventario",
+                            multiple: true,
+                            empty: true,
+                            todas: true
+                          },
+                          model: {
+                            value: _vm.lineaStatus,
+                            callback: function($$v) {
+                              _vm.lineaStatus = $$v
+                            },
+                            expression: "lineaStatus"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(_vm.lineaStatus) +
+                            "\n                        "
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      { attrs: { label: "Comentario", "label-size": "lg" } },
+                      [
+                        _c("b-form-textarea", {
+                          attrs: { "max-rows": "6", placeholder: "Comentario" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "b-form-group",
+                      [
+                        _c(
+                          "b-button",
+                          { attrs: { block: "", variant: "success" } },
+                          [_vm._v("Guardar")]
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _vm.tableItems.length > 0
+            ? _c(
+                "div",
+                { staticClass: "col-md-11 mx-auto mt-5" },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-sm mt-auto" }, [
+                      _c("h5", [_vm._v("Resultado: " + _vm._s(_vm.countItems))])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-sm float-right" },
+                      [
+                        _c(
+                          "b-form-group",
+                          { attrs: { label: "Filtrar:", "label-size": "sm" } },
+                          [
+                            _c("b-input", {
+                              attrs: { placeholder: "Filtrar", type: "search" },
+                              model: {
+                                value: _vm.tableFilter,
+                                callback: function($$v) {
+                                  _vm.tableFilter = $$v
+                                },
+                                expression: "tableFilter"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("b-table", {
+                    attrs: {
+                      items: _vm.tableItems,
+                      fields: _vm.computedTableFields,
+                      filter: _vm.tableFilter,
+                      hover: "",
+                      responsive: "",
+                      striped: "",
+                      stacked: "md",
+                      "head-variant": "dark",
+                      "table-variant": "light",
+                      busy: _vm.tableBusy
+                    },
+                    on: { filtered: _vm.tableFiltered },
+                    scopedSlots: _vm._u(
+                      [
+                        {
+                          key: "table-busy",
+                          fn: function() {
+                            return [
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "text-center text-primary my-2"
+                                },
+                                [
+                                  _c("b-spinner", {
+                                    staticClass: "align-middle"
+                                  }),
+                                  _vm._v(" "),
+                                  _c("strong", [_vm._v("Cargando...")])
+                                ],
+                                1
+                              )
+                            ]
+                          },
+                          proxy: true
+                        },
+                        {
+                          key: "table-caption",
+                          fn: function() {
+                            return [
+                              _vm._v(
+                                "Resultado: - " +
+                                  _vm._s(_vm.countItems) +
+                                  "\n                    "
+                              )
+                            ]
+                          },
+                          proxy: true
+                        },
+                        {
+                          key: "cell(editar)",
+                          fn: function(row) {
+                            return [
+                              _c(
+                                "b-button",
+                                {
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.editItem(row.item, row.index)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                            Editar\n                            " +
+                                      _vm._s(_vm.producto)
+                                  )
+                                ]
+                              )
+                            ]
                           }
                         },
-                        [
-                          _c("path", {
-                            attrs: {
-                              "fill-rule": "evenodd",
-                              d:
-                                "M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h2.5a2 2 0 011.6.8L8 14.333 9.9 11.8a2 2 0 011.6-.8H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v8a2 2 0 002 2h2.5a1 1 0 01.8.4l1.9 2.533a1 1 0 001.6 0l1.9-2.533a1 1 0 01.8-.4H14a2 2 0 002-2V2a2 2 0 00-2-2H2z",
-                              "clip-rule": "evenodd"
-                            }
-                          })
-                        ]
-                      )
-                    : _vm._e()
-                ])
-              ]
-            }
-          }
+                        {
+                          key: "cell(status)",
+                          fn: function(row) {
+                            return [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(row.item.status) +
+                                  "\n                        "
+                              ),
+                              _c("b-link", [
+                                row.item.comment
+                                  ? _c(
+                                      "svg",
+                                      {
+                                        directives: [
+                                          {
+                                            name: "b-popover",
+                                            rawName:
+                                              "v-b-popover.hover.focus.top",
+                                            value: row.item.comment.comment,
+                                            expression:
+                                              "\n                                    row.item.comment.comment\n                                ",
+                                            modifiers: {
+                                              hover: true,
+                                              focus: true,
+                                              top: true
+                                            }
+                                          }
+                                        ],
+                                        staticClass: "bi bi-chat-square",
+                                        attrs: {
+                                          width: "1em",
+                                          height: "1em",
+                                          viewBox: "0 0 16 16",
+                                          fill: "currentColor",
+                                          xmlns: "http://www.w3.org/2000/svg",
+                                          title: row.item.status,
+                                          variant: "primary"
+                                        }
+                                      },
+                                      [
+                                        _c("path", {
+                                          attrs: {
+                                            "fill-rule": "evenodd",
+                                            d:
+                                              "M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h2.5a2 2 0 011.6.8L8 14.333 9.9 11.8a2 2 0 011.6-.8H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v8a2 2 0 002 2h2.5a1 1 0 01.8.4l1.9 2.533a1 1 0 001.6 0l1.9-2.533a1 1 0 01.8-.4H14a2 2 0 002-2V2a2 2 0 00-2-2H2z",
+                                            "clip-rule": "evenodd"
+                                          }
+                                        })
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]
+                          }
+                        }
+                      ],
+                      null,
+                      false,
+                      643575618
+                    )
+                  })
+                ],
+                1
+              )
+            : _vm._e()
         ])
-      })
+      ])
     ],
     1
   )
@@ -87600,6 +88103,7 @@ var render = function() {
         attrs: {
           options: _vm.options,
           placeholder: _vm.pholder,
+          multiple: _vm.multiple,
           label: "name",
           "track-by": "id",
           "allow-empty": _vm.empty,

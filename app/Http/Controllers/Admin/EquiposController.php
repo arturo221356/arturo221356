@@ -19,7 +19,7 @@ class EquiposController extends Controller
     {
         if ($request->ajax()) {
 
-            $userDistribution = Auth::User()->distribution()->id;
+            $userDistribution = Auth::User()->distribution->id;
 
             $distribution = Distribution::find($userDistribution);
         
@@ -64,7 +64,7 @@ class EquiposController extends Controller
         $equipo->modelo=$request->modelo;
         $equipo->precio=$request->precio;
         $equipo->costo=$request->costo;
-        $equipo->distribution_id = Auth::user()->distribution()->id;
+        $equipo->distribution_id = Auth::user()->distribution->id;
         $equipo->save();
         
     }

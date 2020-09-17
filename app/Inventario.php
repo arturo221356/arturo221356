@@ -12,6 +12,19 @@ class Inventario extends Model
     {
         return $this->morphTo();
     }
+    public function imeis()
+    {
+        return $this->hasMany('App\Imei');
+    }
+    public function iccs()
+    {
+        return $this->hasMany('App\Icc');
+    }
+    public function distribution()
+    {
+        return $this->belongsTo('App\Distribution');
+    }
+
 
 
 }

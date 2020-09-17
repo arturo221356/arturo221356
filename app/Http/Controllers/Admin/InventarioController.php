@@ -7,6 +7,9 @@ use App\Inventario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\InventarioCollection;
+use App\Http\Resources\InventarioResource;
+use App\Http\Resources\ImeiResource;
+use App\Http\Resources\IccResource;
 
 class InventarioController extends Controller
 {
@@ -17,39 +20,43 @@ class InventarioController extends Controller
      */
     public function index(Request $request)
     {
-    //    if($request->ajax()){
-        
-        $user = Auth::user();
+        if ($request->ajax()) {
 
-        $userRoleName = $user->role->name;
-        
-        $userDistribution = $user->distribution();
+            $user = Auth::user();
 
-        switch($userRoleName){
-            case 'admin':
-               $inventarios =  Inventario::where('distribution_id',$userDistribution->id)->get();
-               
-               $response = json_encode(InventarioCollection::collection($inventarios));
-               
-               return   $response ;
-            break;
-            case 'supervisor':
+            $userRoleName = $user->role->name;
 
-            break;
-            case 'vendedor':
+            $userDistribution = $user->distribution;
 
-            break;
-            case 'cambaceo':
+            switch ($userRoleName) {
+                case 'admin':
+                    $inventarios =  Inventario::where('distribution_id', $userDistribution->id)->get();
 
-            break;
-            case 'externo':
+                    $response = json_encode(InventarioResource::collection($inventarios));
 
-            break;
+                    return   $response;
+                    break;
+                case 'supervisor':
+
+                    break;
+                case 'vendedor':
+
+                    break;
+                case 'cambaceo':
+
+                    break;
+                case 'externo':
+
+                    break;
+            }
+            $inventarios = Inventario::all();
+
+            return $userDistribution;
+        } else {
+            $user = Auth::User();
+            $userRole = $user->role->name;
+            return view('inventario.index', compact('userRole'));
         }
-        $inventarios = Inventario::all();
-        
-        return $userDistribution;
-    //    }
     }
 
     /**
@@ -79,9 +86,46 @@ class InventarioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+
+        $user = Auth::user();
+
+        $userDistribution = $user->distribution;
+
+        $producto = $request->producto;
+
+   
+
+        if ($id == 'all') {
+            if ($producto === 'Imei') {
+                $imeis = $userDistribution->imeis()->where('status_id', 1)->get();
+                 $response = ImeiResource::collection($imeis);
+                return $response;
+            }
+            else if ($producto === 'Icc') {
+                $iccs = $userDistribution->iccs()->where('status_id', 1)->get();
+                $response = IccResource::collection($iccs);
+                return $response;
+            }
+        } else {
+            $inventario = Inventario::find($id);
+           
+             if($inventario->distribution->id != $userDistribution->id){
+                 return 'error';
+             }
+
+
+            if ($producto === 'Imei') {
+                $imeis = $inventario->imeis()->where('status_id', 1)->get();
+                $response = ImeiResource::collection($imeis);
+                return $response;
+            } else if ($producto === 'Icc') {
+                $iccs = $inventario->iccs()->where('status_id', 1)->get();
+                $response = IccResource::collection($iccs);
+                return $response;
+            }
+        }
     }
 
     /**

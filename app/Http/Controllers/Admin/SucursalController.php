@@ -50,7 +50,7 @@ class SucursalController extends Controller
         $sucursal=new Sucursal;
         $sucursal->name = $request->name;
         $sucursal->address = $request->address;
-        $sucursal->distribution_id = Auth::user()->distribution()->id;
+        $sucursal->distribution_id = Auth::user()->distribution->id;
         $sucursal->save();
        
     }
@@ -107,7 +107,7 @@ class SucursalController extends Controller
     }
     public function getSucursales(){
 
-        $userDistribution = Auth::User()->distribution()->id;
+        $userDistribution = Auth::User()->distribution->id;
 
         $distribution = Distribution::find($userDistribution);
 

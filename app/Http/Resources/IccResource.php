@@ -16,44 +16,23 @@ class IccResource extends JsonResource
      */
     public function toArray($request)
     {
-       
+
 
 
         return [
 
             'id'       => $this->id,
-            'icc'      => $this->icc,
-            'sucursal'    => $this->sucursal->name,
-            'id_sucursal' =>$this->sucursal_id,
-            // 'producto'    => $this->subproduct->product->name,
-            // 'subproducto'    => $this->subproduct->name,
-            // 'costosim'     => $this->subproduct->costo_sim,
-            // 'pagoinicial'     => $this->subproduct->pago_inicial,
-            // 'recargarequerida'     => $this->subproduct->recarga_required,
-            // 'total'     => $this->subproduct->total,
+            'serie'      => $this->icc,
+            'inventario_id' => $this->inventario_id,
+            'inventario_name' => $this->inventario->inventarioable->name,
+            'company' => $this->company->name,
+            'type' => $this->type->name,
             'comment'  => $this->comment,
             'status_id'    => $this->status->id,
-            'status'    => $this->status->status,
-            'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s' ),
+            'status'    => $this->status->name,
+            'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
-    
-];
-        
 
-
-
-
-
-
-
-
-
-
+        ];
     }
 }
-
-
-
-
-
-

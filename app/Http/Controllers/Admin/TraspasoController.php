@@ -28,7 +28,7 @@ class TraspasoController extends Controller
     {
         if ($request->ajax()) {
 
-            $userDistribution = Auth::User()->distribution()->id;
+            $userDistribution = Auth::User()->distribution->id;
             
             $initialDate = Carbon::createFromFormat('Y-m-d', $request->initial_date)->startOfDay()->toDateTimeString();
 
@@ -68,7 +68,7 @@ class TraspasoController extends Controller
     {
         $aceptacionRequired =  json_decode($request->aceptacion_required);
 
-        $userDistribution = Auth::User()->distribution()->id;
+        $userDistribution = Auth::User()->distribution->id;
 
         // $sucursal = Sucursal::findOrFail($request->sucursal_id);
 

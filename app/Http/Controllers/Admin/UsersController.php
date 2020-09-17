@@ -26,7 +26,7 @@ class UsersController extends Controller
     {
 
         if ($request->ajax()) {
-            $userDistribution = Auth::User()->distribution()->id;
+            $userDistribution = Auth::User()->distribution->id;
 
             $distribution = Distribution::find($userDistribution);
 

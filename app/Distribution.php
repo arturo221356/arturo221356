@@ -14,15 +14,15 @@ class Distribution extends Model
 
     public function users()
     {
-        return $this->hasManyThrough('App\User', 'App\Sucursal');
+        return $this->hasManyThrough('App\User', 'App\Inventario');
     }
     public function imeis()
     {
-        return $this->hasManyThrough('App\Imei', 'App\Sucursal');
+        return $this->hasManyThrough('App\Imei', 'App\Inventario');
     }
     public function iccs()
     {
-        return $this->hasManyThrough('App\Icc', 'App\Sucursal');
+        return $this->hasManyThrough('App\Icc', 'App\Inventario');
     }
     public function equipos()
     {

@@ -51,7 +51,7 @@ class User extends Authenticatable
     public function distribution()
     {
 
-        return $this->sucursal->distribution;
+        return $this->belongsTo('App\Distribution');
     }
     public function hasRole($role)
     {
