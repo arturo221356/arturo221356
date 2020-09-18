@@ -99,12 +99,12 @@ class InventarioController extends Controller
 
         if ($id == 'all') {
             if ($producto === 'Imei') {
-                $imeis = $userDistribution->imeis()->where('status_id', 1)->get();
+                $imeis = $userDistribution->imeis()->otherCurrentStatus('Vendido')->get();
                  $response = ImeiResource::collection($imeis);
                 return $response;
             }
             else if ($producto === 'Icc') {
-                $iccs = $userDistribution->iccs()->where('status_id', 1)->get();
+                $iccs = $userDistribution->iccs()->otherCurrentStatus('Vendido')->get();
                 $response = IccResource::collection($iccs);
                 return $response;
             }
@@ -117,11 +117,11 @@ class InventarioController extends Controller
 
 
             if ($producto === 'Imei') {
-                $imeis = $inventario->imeis()->where('status_id', 1)->get();
+                $imeis = $inventario->imeis()->otherCurrentStatus('Vendido')->get();
                 $response = ImeiResource::collection($imeis);
                 return $response;
             } else if ($producto === 'Icc') {
-                $iccs = $inventario->iccs()->where('status_id', 1)->get();
+                $iccs = $inventario->iccs()->otherCurrentStatus('Vendido')->get();
                 $response = IccResource::collection($iccs);
                 return $response;
             }

@@ -155,6 +155,7 @@ class IccController extends Controller
                 } else {
 
                     $icc->save();
+                    $icc->setStatus('Disponible');
                     array_push($exitosos, $serie);
                 }
             }

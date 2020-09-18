@@ -89089,7 +89089,7 @@ var render = function() {
                                       _c("B", [_vm._v("Status:")]),
                                       _vm._v(
                                         "\n                                        " +
-                                          _vm._s(item.status.name) +
+                                          _vm._s(item.status) +
                                           "\n                                    "
                                       )
                                     ],

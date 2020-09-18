@@ -17,7 +17,6 @@ class CreateLineasTable extends Migration
             $table->bigIncrements('id');
             $table->char('dn',10);
             $table->unsignedInteger('icc_id');
-            $table->unsignedInteger('status_id');
             $table->unsignedInteger('productoable_id');
             $table->string('productoable_type');
             $table->unsignedInteger('icc_product_id');

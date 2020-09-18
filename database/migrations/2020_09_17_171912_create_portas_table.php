@@ -16,7 +16,6 @@ class CreatePortasTable extends Migration
         Schema::create('portas', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nip');
-            $table->unsignedInteger('status_id');
             $table->char('temporal',10);
             $table->boolean('trafico');
             $table->boolean('trafico_real');

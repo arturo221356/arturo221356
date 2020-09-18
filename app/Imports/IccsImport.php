@@ -98,6 +98,7 @@ class IccsImport implements ToCollection
             } else {
                 
                 $icc->save();
+                $icc->setStatus('Disponible');
                 array_push($this->exitosos, $serie);
             }
         }

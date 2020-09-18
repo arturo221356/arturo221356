@@ -18,7 +18,7 @@ class CreateTraspasoableTable extends Migration
             $table->integer('traspasoable_id');
             $table->string('traspasoable_type');
             $table->integer('old_inventario_id');
-            $table->integer('old_status_id');
+         
          
         });
     }

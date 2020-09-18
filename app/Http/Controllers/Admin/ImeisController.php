@@ -68,11 +68,7 @@ class ImeisController extends Controller
             //datos enviados al import que vienen desde la request
             $data = [
                 'inventario_id' => $inventario,
-                'equipo_id' => $equipo,
-                'status_id' => 1,
-
-                
-               
+                'equipo_id' => $equipo,     
                 
             ];
 
@@ -107,12 +103,12 @@ class ImeisController extends Controller
 
             $imei = new Imei([
                 'imei' => $data->serie,
-                'status_id' => 1,
                 'inventario_id' =>  $inventario,
                 'equipo_id' => $equipo,
-                
+                'status_id' =>1
 
             ]);
+            
 
             // Crea la matriz de mensajes.
             $mensajes = array(
@@ -150,6 +146,7 @@ class ImeisController extends Controller
             } else {
 
                 $imei->save();
+                $imei->setStatus('Disponible');
                 array_push($exitosos, $serie);
             }
         }

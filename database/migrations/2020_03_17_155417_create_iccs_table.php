@@ -19,8 +19,6 @@ class CreateIccsTable extends Migration
             $table->unsignedInteger('inventario_id');
             $table->unsignedInteger('company_id');
             $table->unsignedInteger('icc_type_id')->default(2);
-            // $table->foreign('sucursal_id')->references('id')->on('sucursales');  
-            $table->integer('status_id'); 
             $table->timestamps();
             $table->softDeletes();
             

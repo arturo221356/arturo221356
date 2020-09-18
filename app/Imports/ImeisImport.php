@@ -95,6 +95,7 @@ class ImeisImport implements ToCollection, WithValidation, SkipsOnFailure
             } else {
                 
                 $imei->save();
+                $imei->setStatus('Disponible');
                 array_push($this->exitosos, $serie);
             }
         }

@@ -28,8 +28,7 @@ class IccResource extends JsonResource
             'company' => $this->company->name,
             'type' => $this->type->name,
             'comment'  => $this->comment,
-            'status_id'    => $this->status->id,
-            'status'    => $this->status->name,
+            'status'    => $this->status,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
 

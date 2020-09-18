@@ -10,17 +10,23 @@ use Spatie\Searchable\Searchable;
 
 use Spatie\Searchable\SearchResult;
 
+use Spatie\ModelStatus\HasStatuses;
+
 
 
 class Icc extends Model implements Searchable
 {
     use SoftDeletes;
 
+    use HasStatuses;
+
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ["icc", "inventario_id", "status_id", "distribution_id", "company_id", "icc_type_id"];
+    protected $fillable = ["icc", "inventario_id","distribution_id", "company_id", "icc_type_id"];
+
+    protected $appends = ['status'];
 
     public function getSearchResult(): SearchResult
     {
@@ -32,15 +38,15 @@ class Icc extends Model implements Searchable
             // $url
         );
     }
-
+    public function getStatus()
+    {
+        return $this->status;
+    }
     public function inventario()
     {
         return $this->belongsTo('App\Inventario');
     }
-    public function status()
-    {
-        return $this->belongsTo('App\Status');
-    }
+
     public function company()
     {
         return $this->belongsTo('App\Company');

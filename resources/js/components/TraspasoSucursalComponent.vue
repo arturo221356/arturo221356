@@ -163,7 +163,7 @@
                                         </div>
                                         <div class="col-sm">
                                             <B>Status:</B>
-                                            {{ item.status.name }}
+                                            {{ item.status}}
                                         </div>
                                         <div class="col-sm" v-if="item.equipo">
                                             <B>Equipo:</B>

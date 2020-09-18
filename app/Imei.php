@@ -10,13 +10,22 @@ use Spatie\Searchable\Searchable;
 
 use Spatie\Searchable\SearchResult;
 
-class Imei extends Model implements Searchable
+use Spatie\ModelStatus\Status;
+
+use Spatie\ModelStatus\HasStatuses as HasStatuses;
+
+
+class Imei extends Model implements  Searchable 
 {
     use SoftDeletes;
 
-    protected $fillable = ["imei", "inventario_id", "equipo_id", "status_id", "distribution_id"];
+    use HasStatuses;
+
+    protected $fillable = ["imei", "inventario_id", "equipo_id", "distribution_id"];
 
     protected $dates = ['deleted_at'];
+
+    protected $appends = ['status'];
 
     public function getSearchResult(): SearchResult
     {
@@ -28,6 +37,10 @@ class Imei extends Model implements Searchable
             // $url
         );
     }
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
     public function inventario()
     {
@@ -37,10 +50,7 @@ class Imei extends Model implements Searchable
     {
         return $this->belongsTo('App\Equipo');
     }
-    public function status()
-    {
-        return $this->belongsTo('App\Status');
-    }
+
     public function comment()
     {
         return $this->morphOne('App\Comment', 'commentable');

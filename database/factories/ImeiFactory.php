@@ -8,7 +8,6 @@ use Faker\Generator as Faker;
 $factory->define(Imei::class, function (Faker $faker) {
     return [
         'imei' => $faker->numerify('12345##########'),
-        'status_id' => $faker->numberBetween($min = 1, $max = 5),
         'inventario_id' => $faker->numberBetween($min = 1, $max = 4),
         'equipo_id' => $faker->numberBetween($min = 1, $max = 10),
     ];

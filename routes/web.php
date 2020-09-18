@@ -67,9 +67,9 @@ Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->n
 
     Route::resource('/inventario/traspasos', 'TraspasoController');
 
+
     Route::view('/', 'admin.index');
 });
-
 
 
 Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth');
@@ -79,20 +79,12 @@ Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth')
 
 Route::get('/pruebas', function (Request $request) {
    
-    $icc = Icc::find(1);
+    $icc = Icc::find(1001);
 
+    $allPendingModels = Icc::currentStatus('Perdido')->get();
 
-    $distribution = Distribution::find(1);
-
-    // $icc->linea->with('productoable')->get();
-
-    $inventario = Inventario::find(3);
-
-    // $lineas = $inventario->lineas;
-
-
-
-    return $distribution->lineas();
+    $respone = $icc->statuses; 
+    return $respone;
     
 
 });
