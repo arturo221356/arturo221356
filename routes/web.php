@@ -23,80 +23,75 @@ use Illuminate\Http\Request;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
-Route::get('/home', function () {
-
-    $redir = Auth::user()->role->name;
-    return redirect("$redir/");
-})->name('home');
+Route::view('/home','home')->name('home')->middleware('auth');
 
 Route::get('/', function () {
 
-    $redir = Auth::user()->role->name;
-    return redirect("$redir/");
-})->name('home')->middleware('auth');
-
-
-
-
-
-Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
-
-    Route::resource('/users', 'UsersController');
-
-    Route::resource('/sucursales', 'SucursalController');
-
-    Route::resource('/productos/recargas', 'RecargasController');
-
-    Route::resource('/productos/equipos', 'EquiposController');
-
-    Route::resource('/productos/sims', 'IccProductController');
-
-    Route::resource('/imei', 'ImeisController');
-
-    Route::resource('/icc', 'IccController');
-
-    Route::resource('/roles', 'RoleController');
-
-    Route::view('/productos', 'admin.productos');
-
-    Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
-
-    Route::resource('/inventarios', 'inventarioController');
-
-    Route::view('/productos', 'admin.productos.index');
-
-    Route::resource('/inventario/traspasos', 'TraspasoController');
-
-
-    Route::view('/', 'admin.index');
+    return 'Hola raiz';
 });
 
 
-Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth');
+
+
+
+// Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
+
+//     Route::resource('/users', 'UsersController');
+
+//     Route::resource('/sucursales', 'SucursalController');
+
+//     Route::resource('/productos/recargas', 'RecargasController');
+
+//     Route::resource('/productos/equipos', 'EquiposController');
+
+//     Route::resource('/productos/sims', 'IccProductController');
+
+//     Route::resource('/imei', 'ImeisController');
+
+//     Route::resource('/icc', 'IccController');
+
+//     Route::resource('/roles', 'RoleController');
+
+//     Route::view('/productos', 'admin.productos');
+
+//     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+
+//     Route::resource('/inventarios', 'inventarioController');
+
+//     Route::view('/productos', 'admin.productos.index');
+
+//     Route::resource('/inventario/traspasos', 'TraspasoController');
+
+
+//     Route::view('/', 'admin.index');
+// });
+
+
+// Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth');
 
 
 
 
-Route::get('/pruebas', function (Request $request) {
+// Route::get('/pruebas', function (Request $request) {
    
-    $icc = Icc::find(1001);
+//     $icc = Icc::find(1001);
 
-    $allPendingModels = Icc::currentStatus('Perdido')->get();
+//     $allPendingModels = Icc::currentStatus('Perdido')->get();
 
-    $respone = $icc->statuses; 
-    return $respone;
+//     $respone = $icc->statuses; 
+//     return $respone;
     
 
-});
+// });
 // searchs
 
-Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
+// Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
 
-Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
+// Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
 
-Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
+// Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
 
-Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
+// Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
 
 
 

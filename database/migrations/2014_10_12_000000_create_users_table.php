@@ -22,7 +22,6 @@ class CreateUsersTable extends Migration
             $table->integer('sucursal_id')->nullable();
             $table->integer('distribution_id');
             $table->boolean('inventario_propio')->default(false);
-            $table->integer('role_id');
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

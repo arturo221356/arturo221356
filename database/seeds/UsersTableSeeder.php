@@ -3,8 +3,9 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\User;
-use App\Role;
-use App\Sucursal;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Illuminate\Support\Facades\DB;
 
 class UsersTableSeeder extends Seeder
@@ -16,69 +17,80 @@ class UsersTableSeeder extends Seeder
    */
   public function run()
   {
-    User::truncate();
+    app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+    //permisions
 
 
-    User::create([
-      'name' => 'Admin User',
-      'email' => 'admin@1.com',
+
+
+
+
+    //roles
+    $superAdminRole = Role::create(['name' => 'super-admin']);
+
+    $administradorRole = Role::create(['name' => 'administrador']);
+
+    $supervisorRole = Role::create(['name' => 'supervisor']);
+
+    $vendedorRole = Role::create(['name' => 'vendedor']);
+
+    $externoRole = Role::create(['name' => 'externo']);
+
+
+    $superAdmin = User::create([
+      'name' => 'Super Admin User',
+      'email' => 'superadmin@promoviles.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
       'distribution_id' => 1,
-      'role_id' => 1,
+      
     ]);
+    $superAdmin->assignRole($superAdminRole);
 
-    User::create([
-      'name' => 'Admin User',
-      'email' => 'admin@2.com',
+    $admin = User::create([
+      'name' => 'Super Admin User',
+      'email' => 'admin@promoviles.com',
       'password' => Hash::make('password'),
-      'sucursal_id' => 2,
-      'distribution_id' => 2,
-      'role_id' => 1,
+      'sucursal_id' => 1,
+      'distribution_id' => 1,
+      
     ]);
+    $admin->assignRole($administradorRole);
 
-    User::create([
+
+    $supervisor = User::create([
       'name' => 'supervisor User',
-      'email' => 'supervisor@1.com',
+      'email' => 'supervisor@promoviles.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
       'distribution_id' => 1,
-      'role_id' => 2,
+      
     ]);
+    $supervisor->assignRole($supervisorRole);
 
-    User::create([
-      'name' => 'supervisor User',
-      'email' => 'supervisor@2.com',
-      'password' => Hash::make('password'),
-      'distribution_id' => 2,
-      'sucursal_id' => 2,
-      'role_id' => 2,
-    ]);
-
-    User::create([
-      'name' => 'seller User',
-      'email' => 'seller@1.com',
+    $vendedor = User::create([
+      'name' => 'Vendedor User',
+      'email' => 'vendedor@promoviles.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
       'distribution_id' => 1,
-      'role_id' => 3,
+      
     ]);
-    User::create([
-      'name' => 'seller User',
-      'email' => 'seller@2.com',
-      'password' => Hash::make('password'),
-      'sucursal_id' => 2,
-      'distribution_id' => 2,
-      'role_id' => 3,
-    ]);
+    $vendedor->assignRole($vendedorRole);
 
-    User::create([
+
+    $vendedor = User::create([
       'name' => 'externo User',
-      'email' => 'externo@1.com',
+      'email' => 'externo@promoviles.com',
       'password' => Hash::make('password'),
       'sucursal_id' => 1,
       'distribution_id' => 1,
-      'role_id' => 4,
+      
     ]);
+    $vendedor->assignRole($externoRole);
+
+
+
   }
 }
