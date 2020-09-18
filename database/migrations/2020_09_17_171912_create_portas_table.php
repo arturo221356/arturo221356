@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateIccProductsTable extends Migration
+class CreatePortasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,15 @@ class CreateIccProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('icc_products', function (Blueprint $table) {
+        Schema::create('portas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
+            $table->string('nip');
+            $table->unsignedInteger('status_id');
+            $table->char('temporal',10);
+            $table->boolean('trafico');
+            $table->boolean('trafico_real');
+            $table->date('fvc');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +32,6 @@ class CreateIccProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('icc_products');
+        Schema::dropIfExists('portas');
     }
 }

@@ -15,12 +15,13 @@ class CreateIccSubProductsTable extends Migration
     {
         Schema::create('icc_sub_products', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('distribution_id');
             $table->string('name');
-            $table->unsignedInteger('icc_product_id');
-            $table->unsignedInteger('recarga_requerida')->nullable();
-            $table->unsignedInteger('costo_sim')->default(0);
-            $table->unsignedInteger('initial_price')->default(0);
+            $table->unsignedInteger('company_id');
+            $table->unsignedInteger('distribution_id');
+            $table->unsignedInteger('icc_product_id');            
+            $table->boolean('recarga_required')->default(false);
+            $table->unsignedInteger('recarga_id')->nullable();
+            $table->integer('precio')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

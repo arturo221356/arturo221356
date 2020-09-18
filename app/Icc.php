@@ -65,4 +65,8 @@ class Icc extends Model implements Searchable
     {
         return $this->morphToMany('App\Traspaso', 'traspasoable');
     }
+    public function linea()
+    {
+        return $this->hasOne('App\Linea');
+    }
 }

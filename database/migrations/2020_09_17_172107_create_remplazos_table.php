@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateIccProductsTable extends Migration
+class CreateRemplazosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateIccProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('icc_products', function (Blueprint $table) {
+        Schema::create('remplazos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +26,6 @@ class CreateIccProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('icc_products');
+        Schema::dropIfExists('remplazos');
     }
 }

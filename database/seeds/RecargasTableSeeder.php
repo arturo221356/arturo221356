@@ -30,8 +30,14 @@ class RecargasTableSeeder extends Seeder
           Recarga::create([
             'name' => 'Recarga tiempo Aire 30',
             'monto' => 30,
-            'codigo' => 'recarga30',
+            'codigo' => 'recargaMov30',
             'company_id' => 2,
+          ]);
+          Recarga::create([
+            'name' => 'Recarga tiempo Aire 30',
+            'monto' => 30,
+            'codigo' => 'recargaTel30',
+            'company_id' => 1,
           ]);
     }
 }

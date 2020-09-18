@@ -24,6 +24,10 @@ class Inventario extends Model
     {
         return $this->belongsTo('App\Distribution');
     }
+    public function lineas()
+    {
+        return $this->hasManyThrough('App\Linea','App\Icc');
+    }
 
 
 

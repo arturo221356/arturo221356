@@ -11,15 +11,14 @@
 |
 */
 //para pruebas
-use App\Distribution;
-use App\Sucursal;
-use App\Role;
+
 use Illuminate\Support\Facades\Auth;
 
 //borrar
+use App\Icc;
+use App\Inventario;
+use App\Distribution;
 
-use App\IccProduct;
-use App\Recarga;
 use Illuminate\Http\Request;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
@@ -79,7 +78,22 @@ Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth')
 
 
 Route::get('/pruebas', function (Request $request) {
+   
+    $icc = Icc::find(1);
 
+
+    $distribution = Distribution::find(1);
+
+    // $icc->linea->with('productoable')->get();
+
+    $inventario = Inventario::find(3);
+
+    // $lineas = $inventario->lineas;
+
+
+
+    return $distribution->lineas();
+    
 
 });
 // searchs
@@ -95,7 +109,6 @@ Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middlewa
 
 
 //apissssss
-Route::get('/get/sucursales', 'Admin\SucursalController@getSucursales')->middleware('auth');
 
 Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth');
 

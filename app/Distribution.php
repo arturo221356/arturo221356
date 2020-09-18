@@ -11,6 +11,23 @@ class Distribution extends Model
     {
         return $this->hasMany('App\Sucursal');
     }
+    public function inventarios()
+    {
+        return $this->hasMany('App\Inventario');
+    }
+    public function lineas()
+    {
+        $array = [];
+        
+        foreach($this->inventarios()->get() as $inventario){
+            $lineas = $inventario->lineas()->get();
+            foreach($lineas as $linea){
+                array_push($array,$linea);
+            }
+        }
+
+        return $array;
+    }
 
     public function users()
     {
@@ -32,14 +49,6 @@ class Distribution extends Model
     {
         return $this->hasMany('App\Recarga');
     }
-    public function iccProducts()
-    {
-        
-    }
-    public function iccSubProducts()
-    {
-        // return $this->hasManyThrough('App\IccSubProduct','App\IccProduct');
-        return $this->hasMany('App\IccSubProduct');
-    }
+
 
 }
