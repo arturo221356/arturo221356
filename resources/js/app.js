@@ -31,6 +31,10 @@ Vue.component("ValidationObserver", ValidationObserver);
 require('./validation');
 
 
+import LaravelPermissionToVueJS from 'laravel-permission-to-vuejs';
+Vue.use(LaravelPermissionToVueJS);
+
+
 // Telling Vue to use this in whole applicat
 
 /**

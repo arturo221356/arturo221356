@@ -25,14 +25,20 @@ Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false])
 
 Route::view('/home','home')->name('home')->middleware('auth');
 
-Route::get('/', function () {
 
-    return 'Hola raiz';
+
+    Route::view('/','home')->name('home')->middleware('auth');
+
+
+Route::group(['middleware' => ['role:super-admin|administrador|supervisor']], function () {
+   
+        Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+   
 });
+Route::group(['middleware' => ['auth',]], function () {
+    Route::resource('/inventario','Admin\InventarioController');
 
-
-
-
+});
 
 // Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
 

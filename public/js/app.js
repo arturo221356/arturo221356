@@ -61438,6 +61438,71 @@ return jQuery;
 
 /***/ }),
 
+/***/ "./node_modules/laravel-permission-to-vuejs/index.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/laravel-permission-to-vuejs/index.js ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+	install(Vue, options) {
+		Vue.prototype.can = function(value){
+			var permissions = window.Laravel.jsPermissions.permissions;
+			var _return = false;
+			if(!Array.isArray(permissions)){
+				return false;
+			}
+			if(value.includes('|')){
+				value.split('|').forEach(function (item) {
+					if(permissions.includes(item.trim())){
+						_return = true;
+					}
+				});
+			}else if(value.includes('&')){
+				_return = true;
+				value.split('&').forEach(function (item) {
+					if(!permissions.includes(item.trim())){
+						_return = false;
+					}
+				});
+			}else{
+				_return = permissions.includes(value.trim());
+			}
+			return _return;
+		}
+		
+		Vue.prototype.is = function(value){
+			var roles = window.Laravel.jsPermissions.roles;
+			var _return = false;
+			if(!Array.isArray(roles)){
+				return false;
+			}
+			if(value.includes('|')){
+				value.split('|').forEach(function (item) {
+					if(roles.includes(item.trim())){
+						_return = true;
+					}
+				});
+			}else if(value.includes('&')){
+				_return = true;
+				value.split('&').forEach(function (item) {
+					if(!roles.includes(item.trim())){
+						_return = false;
+					}
+				});
+			}else{
+				_return = roles.includes(value.trim());
+			}
+			return _return;
+		}
+	}
+});
+
+/***/ }),
+
 /***/ "./node_modules/lodash/lodash.js":
 /*!***************************************!*\
   !*** ./node_modules/lodash/lodash.js ***!
@@ -86972,7 +87037,9 @@ var render = function() {
                 ]
               },
               [
-                _c("h1", [_vm._v("Reporte de Inventario")]),
+                _vm.can("siajdosij")
+                  ? _c("h1", [_vm._v("Reporte de Inventario")])
+                  : _vm._e(),
                 _vm._v(" "),
                 _c(
                   "b-form",
@@ -103047,6 +103114,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var vee_validate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vee-validate */ "./node_modules/vee-validate/dist/vee-validate.esm.js");
+/* harmony import */ var laravel_permission_to_vuejs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! laravel-permission-to-vuejs */ "./node_modules/laravel-permission-to-vuejs/index.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -103064,7 +103132,10 @@ Vue.component('multiselect', vue_multiselect__WEBPACK_IMPORTED_MODULE_1___defaul
 Vue.component('ValidationProvider', vee_validate__WEBPACK_IMPORTED_MODULE_2__["ValidationProvider"]);
 Vue.component("ValidationObserver", vee_validate__WEBPACK_IMPORTED_MODULE_2__["ValidationObserver"]);
 
-__webpack_require__(/*! ./validation */ "./resources/js/validation.js"); // Telling Vue to use this in whole applicat
+__webpack_require__(/*! ./validation */ "./resources/js/validation.js");
+
+
+Vue.use(laravel_permission_to_vuejs__WEBPACK_IMPORTED_MODULE_3__["default"]); // Telling Vue to use this in whole applicat
 
 /**
  * The following block of code may be used to automatically register your
@@ -103075,7 +103146,6 @@ __webpack_require__(/*! ./validation */ "./resources/js/validation.js"); // Tell
  */
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
-
 
 Vue.component('inventario-component', __webpack_require__(/*! ./components/InventarioComponent.vue */ "./resources/js/components/InventarioComponent.vue")["default"]);
 Vue.component('select-sucursal', __webpack_require__(/*! ./components/SelectSucursalComponent.vue */ "./resources/js/components/SelectSucursalComponent.vue")["default"]);
@@ -104288,8 +104358,8 @@ Object.keys(vee_validate_dist_rules__WEBPACK_IMPORTED_MODULE_1__).forEach(functi
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/Code/promoviles/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/Code/promoviles/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

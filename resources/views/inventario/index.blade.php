@@ -3,7 +3,7 @@
         <inventario-component
         
        
-            user-role="{{$userRole}}"
+           
            
         
         

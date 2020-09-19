@@ -20,43 +20,30 @@ class InventarioController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        // if ($request->ajax()) {
 
             $user = Auth::user();
 
-            $userRoleName = $user->role->name;
+           if( $user->can('cargar inventarios')){
+            return view('inventario.index');
+           }else{
+               return 'no puto no ';
+           }
 
-            $userDistribution = $user->distribution;
+            // $userDistribution = $user->distribution;
 
-            switch ($userRoleName) {
-                case 'admin':
-                    $inventarios =  Inventario::where('distribution_id', $userDistribution->id)->get();
+        
+               
+            //         $inventarios =  Inventario::where('distribution_id', $userDistribution->id)->get();
 
-                    $response = json_encode(InventarioResource::collection($inventarios));
+            //         $response = json_encode(InventarioResource::collection($inventarios));
 
-                    return   $response;
-                    break;
-                case 'supervisor':
 
-                    break;
-                case 'vendedor':
+            // }
+            // $inventarios = Inventario::all();
 
-                    break;
-                case 'cambaceo':
-
-                    break;
-                case 'externo':
-
-                    break;
-            }
-            $inventarios = Inventario::all();
-
-            return $userDistribution;
-        } else {
-            $user = Auth::User();
-            $userRole = $user->role->name;
-            return view('inventario.index', compact('userRole'));
-        }
+            
+        
     }
 
     /**

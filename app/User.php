@@ -7,6 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
+
+
+
 
 class User extends Authenticatable
 {
@@ -17,13 +21,15 @@ class User extends Authenticatable
 
     use HasRoles;
 
+    use LaravelPermissionToVueJS;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'sucursal_id', 'role_id',
+        'name', 'email', 'sucursal_id',
     ];
 
     /**
@@ -43,10 +49,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function role()
-    {
-        return $this->belongsTo('App\Role');
-    }
+    
     public function sucursal()
     {
         return $this->belongsTo('App\Sucursal');
@@ -56,12 +59,10 @@ class User extends Authenticatable
 
         return $this->belongsTo('App\Distribution');
     }
-    public function hasRole($role)
-    {
-        return User::role()->where('name', $role)->get();
-    }
+
     public function inventario()
     {
         return $this->morphOne('App\Inventario', 'inventarioable');
     }
+
 }

@@ -20,7 +20,7 @@ class UsersTableSeeder extends Seeder
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     //permisions
-
+    $cargarInventarios = Permission::create(['name' => 'cargar inventarios']);
 
 
 
@@ -28,10 +28,14 @@ class UsersTableSeeder extends Seeder
 
     //roles
     $superAdminRole = Role::create(['name' => 'super-admin']);
+    $superAdminRole->givePermissionTo($cargarInventarios);
 
     $administradorRole = Role::create(['name' => 'administrador']);
+    $administradorRole->givePermissionTo($cargarInventarios);
 
     $supervisorRole = Role::create(['name' => 'supervisor']);
+    $supervisorRole->givePermissionTo($cargarInventarios);
+
 
     $vendedorRole = Role::create(['name' => 'vendedor']);
 

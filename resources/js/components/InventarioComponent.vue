@@ -4,7 +4,7 @@
             <div class="jumbotron">
                 <div class="col-md-4 mx-auto">
                     <div v-show="editMode == false">
-                        <h1>Reporte de Inventario</h1>
+                        <h1 v-if="can('siajdosij')">Reporte de Inventario</h1>
                         <b-form>
                             <b-form-group>
                                 <b-form-radio-group
