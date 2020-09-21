@@ -28,6 +28,10 @@ class Inventario extends Model
     {
         return $this->hasManyThrough('App\Linea','App\Icc');
     }
+    public function supervisores()
+    {
+        return $this->belongsToMany('App\User');
+    }
 
 
 

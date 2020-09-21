@@ -12,6 +12,8 @@ use Spatie\Searchable\SearchResult;
 
 use Spatie\ModelStatus\HasStatuses;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 
 class Icc extends Model implements Searchable
@@ -19,6 +21,8 @@ class Icc extends Model implements Searchable
     use SoftDeletes;
 
     use HasStatuses;
+
+    use HasFactory;
 
     use \Znck\Eloquent\Traits\BelongsToThrough;
 

@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\Auth;
 
 //borrar
 use App\Icc;
+use App\Imei;
 use App\Inventario;
 use App\Distribution;
+use App\User;
 
 use Illuminate\Http\Request;
 
@@ -30,13 +32,34 @@ Route::view('/home','home')->name('home')->middleware('auth');
     Route::view('/','home')->name('home')->middleware('auth');
 
 
-Route::group(['middleware' => ['role:super-admin|administrador|supervisor']], function () {
+Route::group(['middleware' => ['role:super-admin|administrador']], function () {
    
         Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
    
 });
-Route::group(['middleware' => ['auth',]], function () {
-    Route::resource('/inventario','Admin\InventarioController');
+Route::group(['middleware' => ['auth']], function () {
+    Route::resource('/inventario','InventarioController');
+
+});
+
+Route::get('/pruebas', function (Request $request) {
+   
+    $user = User::find(3);
+    // $imeis = $distribution->iccs()->get();
+
+    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+    
+     $imeis = Imei::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get();    
+    
+
+
+    // $iccs = Icc::otherCurrentStatus(['Vendido'])->whereHas('inventario', function($query) {
+    //     $user = User::find(3);
+    //     $userInventariosAsignados = $user->InventariosAsignados()->get();
+    //     $query->where('distribution_id', $user->distribution->id);
+    // })->get();
+    
+    return $imeis;
 
 });
 
@@ -78,14 +101,7 @@ Route::group(['middleware' => ['auth',]], function () {
 
 
 
-// Route::get('/pruebas', function (Request $request) {
-   
-//     $icc = Icc::find(1001);
 
-//     $allPendingModels = Icc::currentStatus('Perdido')->get();
-
-//     $respone = $icc->statuses; 
-//     return $respone;
     
 
 // });

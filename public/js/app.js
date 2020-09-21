@@ -87037,9 +87037,7 @@ var render = function() {
                 ]
               },
               [
-                _vm.can("siajdosij")
-                  ? _c("h1", [_vm._v("Reporte de Inventario")])
-                  : _vm._e(),
+                _c("h1", [_vm._v("Reporte de Inventario")]),
                 _vm._v(" "),
                 _c(
                   "b-form",
@@ -87072,33 +87070,37 @@ var render = function() {
                       1
                     ),
                     _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Inventario:", "label-size": "lg" } },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            empty: true,
-                            todas: true
+                    _vm.can("get inventarios")
+                      ? _c(
+                          "b-form-group",
+                          {
+                            attrs: { label: "Inventario:", "label-size": "lg" }
                           },
-                          model: {
-                            value: _vm.inventario,
-                            callback: function($$v) {
-                              _vm.inventario = $$v
-                            },
-                            expression: "inventario"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.inventario) +
-                            "\n                        "
+                          [
+                            _c("select-general", {
+                              attrs: {
+                                url: "/inventario",
+                                pholder: "Seleccionar Inventario",
+                                empty: true,
+                                todas: true
+                              },
+                              model: {
+                                value: _vm.inventario,
+                                callback: function($$v) {
+                                  _vm.inventario = $$v
+                                },
+                                expression: "inventario"
+                              }
+                            }),
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(_vm.inventario) +
+                                "\n                        "
+                            )
+                          ],
+                          1
                         )
-                      ],
-                      1
-                    ),
+                      : _vm._e(),
                     _vm._v(" "),
                     _c(
                       "b-form-group",
@@ -87337,7 +87339,7 @@ var render = function() {
                       [
                         _c("select-general", {
                           attrs: {
-                            url: "/admin/inventarios",
+                            url: "/inventario",
                             pholder: "Seleccionar Inventario",
                             multiple: true,
                             empty: true,
@@ -104358,8 +104360,8 @@ Object.keys(vee_validate_dist_rules__WEBPACK_IMPORTED_MODULE_1__).forEach(functi
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/vagrant/Code/promoviles/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/vagrant/Code/promoviles/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/vagrant/code/laravel/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/vagrant/code/laravel/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

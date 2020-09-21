@@ -1,6 +1,15 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
+
+use App\Equipo;
+
+use App\Icc;
+
+use App\Imei;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,17 +31,11 @@ class DatabaseSeeder extends Seeder
         $this->call(InventarioTableSeeder::class);
 
         
-       
+         Equipo::factory()->count(10)->create();
 
+         Icc::factory()->times(10)->create();
 
+         Imei::factory()->times(10)->create();
 
-         $imeis = factory(App\Imei::class, 1000)->create()->each(function($imei){
-             $imei->setStatus('Disponible');
-         });
-         $equipo = factory(App\Equipo::class, 10)->create();
-        //  $sucursal = factory(App\Sucursal::class, 10)->create();
-         $icc = factory(App\Icc::class, 1000)->create()->each(function($icc){
-            $icc->setStatus('Disponible');
-        });
     }
 }

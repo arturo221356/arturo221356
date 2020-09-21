@@ -1,7 +1,9 @@
 <?php
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Inventario;
+use App\User;
 
 class InventarioTableSeeder extends Seeder
 {
@@ -12,12 +14,13 @@ class InventarioTableSeeder extends Seeder
      */
     public function run()
     {
-        Inventario::create([
+        $supervisor = User::find(3);
+         Inventario::create([
 
             'distribution_id' => 1,
             'inventarioable_id' => 1,
             'inventarioable_type' => 'App\Sucursal',
-        ]);
+        ])->supervisores()->attach($supervisor);
         Inventario::create([
 
             'distribution_id' => 2,
@@ -36,5 +39,11 @@ class InventarioTableSeeder extends Seeder
             'inventarioable_id' => 4,
             'inventarioable_type' => 'App\Sucursal',
         ]);
+        Inventario::create([
+          
+            'distribution_id' => 1,
+            'inventarioable_id' => 6,
+            'inventarioable_type' => 'App\User',
+        ])->supervisores()->attach($supervisor);
     }
 }

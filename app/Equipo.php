@@ -6,9 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+
+
 class Equipo extends Model
 {
     use SoftDeletes;
+
+    use HasFactory;
 
     protected $fillable = [
         'marca', 'modelo', 'precio', 'costo',
@@ -21,4 +27,6 @@ class Equipo extends Model
     {
         return $this->belongsTo('App\Distribution');
     }
+
+
 }

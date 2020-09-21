@@ -1,19 +1,31 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Icc;
-use Faker\Generator as Faker;
-use App\Distribution;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-$factory->define(Icc::class, function (Faker $faker) {
-    $distribution = Distribution::all()->pluck('id');
+class IccFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Icc::class;
 
-    return [
-
-        'icc' => $faker->numerify('895203#############'),
-        'inventario_id' => $faker->numberBetween($min = 1, $max = 4),
-        'company_id' => 2,
-
-    ];
-});
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'icc' => $this->faker->numerify('895203#############'),
+            'inventario_id' =>  $this->faker->numberBetween($min = 1, $max = 4),
+            'company_id' => 2,
+        ];
+    }
+}

@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Database\Seeder;
+namespace Database\Seeders;
 
 use App\Company;
+
+use Illuminate\Database\Seeder;
 
 class CompanyTableSeeder extends Seeder
 {

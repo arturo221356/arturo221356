@@ -65,4 +65,10 @@ class User extends Authenticatable
         return $this->morphOne('App\Inventario', 'inventarioable');
     }
 
+    public function inventariosAsignados()
+    {
+        return $this->belongsToMany('App\Inventario');
+    }
+    
+
 }

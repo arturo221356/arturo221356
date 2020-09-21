@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -20,21 +21,25 @@ class UsersTableSeeder extends Seeder
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     //permisions
-    $cargarInventarios = Permission::create(['name' => 'cargar inventarios']);
+    $getInventarios = Permission::create(['name' => 'get inventarios']);
 
+    $allInventarios = Permission::create(['name' => 'all inventarios']);
 
+    $distributionInventarios = Permission::create(['name' => 'distribution inventarios']);
 
 
 
     //roles
     $superAdminRole = Role::create(['name' => 'super-admin']);
-    $superAdminRole->givePermissionTo($cargarInventarios);
+    $superAdminRole->givePermissionTo($getInventarios);
+    $superAdminRole->givePermissionTo('all inventarios');
 
     $administradorRole = Role::create(['name' => 'administrador']);
-    $administradorRole->givePermissionTo($cargarInventarios);
+    $administradorRole->givePermissionTo($getInventarios);
+    $administradorRole->givePermissionTo('distribution inventarios');
 
     $supervisorRole = Role::create(['name' => 'supervisor']);
-    $supervisorRole->givePermissionTo($cargarInventarios);
+    $supervisorRole->givePermissionTo($getInventarios);
 
 
     $vendedorRole = Role::create(['name' => 'vendedor']);
@@ -46,17 +51,15 @@ class UsersTableSeeder extends Seeder
       'name' => 'Super Admin User',
       'email' => 'superadmin@promoviles.com',
       'password' => Hash::make('password'),
-      'sucursal_id' => 1,
       'distribution_id' => 1,
       
     ]);
     $superAdmin->assignRole($superAdminRole);
 
     $admin = User::create([
-      'name' => 'Super Admin User',
+      'name' => 'Admin User',
       'email' => 'admin@promoviles.com',
       'password' => Hash::make('password'),
-      'sucursal_id' => 1,
       'distribution_id' => 1,
       
     ]);
@@ -67,7 +70,6 @@ class UsersTableSeeder extends Seeder
       'name' => 'supervisor User',
       'email' => 'supervisor@promoviles.com',
       'password' => Hash::make('password'),
-      'sucursal_id' => 1,
       'distribution_id' => 1,
       
     ]);
@@ -77,6 +79,14 @@ class UsersTableSeeder extends Seeder
       'name' => 'Vendedor User',
       'email' => 'vendedor@promoviles.com',
       'password' => Hash::make('password'),
+      'sucursal_id' => 3,
+      'distribution_id' => 1,
+      
+    ]);
+    $vendedor = User::create([
+      'name' => 'Vendedor 2 User',
+      'email' => 'vendedor2@promoviles.com',
+      'password' => Hash::make('password'),
       'sucursal_id' => 1,
       'distribution_id' => 1,
       
@@ -84,15 +94,15 @@ class UsersTableSeeder extends Seeder
     $vendedor->assignRole($vendedorRole);
 
 
-    $vendedor = User::create([
+    $externo = User::create([
       'name' => 'externo User',
       'email' => 'externo@promoviles.com',
       'password' => Hash::make('password'),
-      'sucursal_id' => 1,
       'distribution_id' => 1,
+      'inventario_propio'=> true,
       
     ]);
-    $vendedor->assignRole($externoRole);
+    $externo->assignRole($externoRole);
 
 
 

@@ -1,16 +1,32 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Sucursal;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-$factory->define(Sucursal::class, function (Faker $faker) {
-    return [
-        'name' => $faker->city(),
-        'address' => $faker->address(),
-        'distribution_id' => $faker->numberBetween($min = 1, $max = 2),
-        'inventario_id' => $faker->numberBetween($min = 1, $max = 10),
+class SucursalFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Sucursal::class;
 
-    ];
-});
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->city(),
+            'address' =>  $this->faker->address(),
+            'distribution_id' =>  $this->faker->numberBetween($min = 1, $max = 2),
+
+        ];
+    }
+}

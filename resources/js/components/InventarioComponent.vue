@@ -4,7 +4,7 @@
             <div class="jumbotron">
                 <div class="col-md-4 mx-auto">
                     <div v-show="editMode == false">
-                        <h1 v-if="can('siajdosij')">Reporte de Inventario</h1>
+                        <h1>Reporte de Inventario</h1>
                         <b-form>
                             <b-form-group>
                                 <b-form-radio-group
@@ -18,9 +18,9 @@
                                 ></b-form-radio-group>
                             </b-form-group>
 
-                            <b-form-group label="Inventario:" label-size="lg">
+                            <b-form-group label="Inventario:" label-size="lg" v-if="can('get inventarios')">
                                 <select-general
-                                    url="/admin/inventarios"
+                                    url="/inventario"
                                     pholder="Seleccionar Inventario"
                                     v-model="inventario"
                                     :empty="true"
@@ -147,7 +147,7 @@
                                 label-size="lg"
                             >
                                 <select-general
-                                    url="/admin/inventarios"
+                                    url="/inventario"
                                     pholder="Seleccionar Inventario"
                                     v-model="lineaStatus"
                                     :multiple="true"

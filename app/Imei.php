@@ -14,6 +14,8 @@ use Spatie\ModelStatus\Status;
 
 use Spatie\ModelStatus\HasStatuses as HasStatuses;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class Imei extends Model implements  Searchable 
 {
@@ -21,6 +23,8 @@ class Imei extends Model implements  Searchable
 
     use HasStatuses;
 
+    use HasFactory;
+    
     protected $fillable = ["imei", "inventario_id", "equipo_id", "distribution_id"];
 
     protected $dates = ['deleted_at'];

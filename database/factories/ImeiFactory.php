@@ -1,14 +1,31 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Imei;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-$factory->define(Imei::class, function (Faker $faker) {
-    return [
-        'imei' => $faker->numerify('12345##########'),
-        'inventario_id' => $faker->numberBetween($min = 1, $max = 4),
-        'equipo_id' => $faker->numberBetween($min = 1, $max = 10),
-    ];
-});
+class ImeiFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Imei::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'imei' => $this->faker->numerify('12345##########'),
+            'inventario_id' =>$this->faker->numberBetween($min = 1, $max = 4),
+            'equipo_id' => $this->faker->numberBetween($min = 1, $max = 10),
+        ];
+    }
+}
