@@ -46,9 +46,14 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="/inventario/">Reporte de Inventario</a>
+                      @can ('store stock')
                       <a class="dropdown-item" href="/inventario/cargar">Cargar Inventario</a>
+                      @endcan
+                      
                       <div class="dropdown-divider"></div>
                       <a class="dropdown-item" href="/inventario/traspasos">Traspasos</a>
+                     
+                      
                     </div>
                   </li>
                 <li class="nav-item">
@@ -56,11 +61,11 @@
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown
+                    Lineas
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Preactivar</a>
+                    
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Something else here</a>
                   </div>

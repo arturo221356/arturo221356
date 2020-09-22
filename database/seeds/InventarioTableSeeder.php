@@ -14,13 +14,14 @@ class InventarioTableSeeder extends Seeder
      */
     public function run()
     {
-        $supervisor = User::find(3);
+        
+
          Inventario::create([
 
             'distribution_id' => 1,
             'inventarioable_id' => 1,
             'inventarioable_type' => 'App\Sucursal',
-        ])->supervisores()->attach($supervisor);
+        ])->usuariosAsignados()->sync([3,4,5]);
         Inventario::create([
 
             'distribution_id' => 2,
@@ -32,7 +33,7 @@ class InventarioTableSeeder extends Seeder
             'distribution_id' => 1,
             'inventarioable_id' => 3,
             'inventarioable_type' => 'App\Sucursal',
-        ]);
+        ])->usuariosAsignados()->attach(1);
         Inventario::create([
           
             'distribution_id' => 2,
@@ -44,6 +45,6 @@ class InventarioTableSeeder extends Seeder
             'distribution_id' => 1,
             'inventarioable_id' => 6,
             'inventarioable_type' => 'App\User',
-        ])->supervisores()->attach($supervisor);
+        ])->usuariosAsignados()->sync([1,5,3]);
     }
 }

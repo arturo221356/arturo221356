@@ -49,7 +49,7 @@ Vue.use(LaravelPermissionToVueJS);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('inventario-component', require('./components/InventarioComponent.vue').default);
-Vue.component('select-sucursal', require('./components/SelectSucursalComponent.vue').default);
+Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
 Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
 Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);

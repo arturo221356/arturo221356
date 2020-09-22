@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Icc;
@@ -48,6 +48,9 @@ class IccController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        
+        if($user->can('store stock')){
        //array de mensajes de error y exitosos
         $errores = [];
 
@@ -164,7 +167,8 @@ class IccController extends Controller
         //regresa los mensajes de errores y exitosos
         return ['errors' => $errores, 'success' => $exitosos];
     }
-
+    return ['errors' => ['usuario sin permisos']];
+    }
 
     /**
      * Display the specified resource.
@@ -197,6 +201,9 @@ class IccController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
+        if($user->can('full update stock')){
+        
         $icc = Icc::findorfail($id);
 
 
@@ -211,6 +218,7 @@ class IccController extends Controller
             $icc->comment()->delete();
         }
     }
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -220,9 +228,11 @@ class IccController extends Controller
      */
     public function destroy(Icc $icc)
     {
+        $user = Auth::user();
+        if($user->can('destroy stock')){
         $icc->details()->delete();
 
         $icc->delete();
-       
+        }
     }
 }

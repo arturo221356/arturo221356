@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Company;
 use App\Http\Controllers\Controller;
@@ -16,6 +16,7 @@ class CompaniesController extends Controller
     public function index()
     {
         $companies = Company::all();
+        
     
         return $companies;
     }

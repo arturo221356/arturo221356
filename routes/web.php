@@ -13,14 +13,12 @@
 //para pruebas
 
 use Illuminate\Support\Facades\Auth;
-
-//borrar
 use App\Icc;
 use App\Imei;
 use App\Inventario;
 use App\Distribution;
 use App\User;
-
+use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
@@ -35,33 +33,58 @@ Route::view('/home','home')->name('home')->middleware('auth');
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
    
         Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+
+        
    
 });
+
+
 Route::group(['middleware' => ['auth']], function () {
+
+    Route::resource('/inventario/traspasos', 'TraspasoController')->middleware('can:ver traspasos');
+
     Route::resource('/inventario','InventarioController');
+
+    Route::resource('/imei', 'ImeisController');
+
+    Route::resource('/icc', 'IccController');
+
+    Route::get('/get/icctypes', 'IccTypeController@index');
+
+    Route::get('/get/companies', 'CompaniesController@index');
+
+    Route::get('/get/equipos', 'EquiposController@index')->middleware('auth');
+
+  
 
 });
 
 Route::get('/pruebas', function (Request $request) {
    
-    $user = User::find(3);
-    // $imeis = $distribution->iccs()->get();
-
-    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-    
-     $imeis = Imei::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get();    
-    
 
 
-    // $iccs = Icc::otherCurrentStatus(['Vendido'])->whereHas('inventario', function($query) {
-    //     $user = User::find(3);
-    //     $userInventariosAsignados = $user->InventariosAsignados()->get();
-    //     $query->where('distribution_id', $user->distribution->id);
-    // })->get();
-    
-    return $imeis;
+    $user = Auth::user();
+
+    return $user->distribution;
+
+
 
 });
+
+
+// searchs
+
+Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
+
+Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
+
+Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
+
+Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
+
+
+
+
 
 // Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
 
@@ -75,21 +98,19 @@ Route::get('/pruebas', function (Request $request) {
 
 //     Route::resource('/productos/sims', 'IccProductController');
 
-//     Route::resource('/imei', 'ImeisController');
 
-//     Route::resource('/icc', 'IccController');
 
-//     Route::resource('/roles', 'RoleController');
+//    
 
 //     Route::view('/productos', 'admin.productos');
 
-//     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+//     
 
 //     Route::resource('/inventarios', 'inventarioController');
 
 //     Route::view('/productos', 'admin.productos.index');
 
-//     Route::resource('/inventario/traspasos', 'TraspasoController');
+//     
 
 
 //     Route::view('/', 'admin.index');
@@ -105,15 +126,7 @@ Route::get('/pruebas', function (Request $request) {
     
 
 // });
-// searchs
 
-// Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
-
-// Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
-
-// Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
-
-// Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
 
 
 
@@ -121,13 +134,13 @@ Route::get('/pruebas', function (Request $request) {
 
 Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth');
 
-Route::get('/get/equipos', 'Admin\EquiposController@index')->middleware('auth');
+
 
 Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
 
 Route::get('/get/icctypes', 'IccTypeController@index')->middleware('auth');
 
-Route::get('/get/companies', 'Admin\CompaniesController@index')->middleware('auth');
+// Route::get('/get/companies', 'Admin\CompaniesController@index')->middleware('auth');
 
 // Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');
 

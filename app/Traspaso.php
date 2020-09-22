@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Support\Facades\Auth;
+
 class Traspaso extends Model
 {
     use SoftDeletes;
@@ -33,7 +35,10 @@ class Traspaso extends Model
     {
         return $this->belongsTo('App\User');
     }
-
+    public function scopeDistribution($query)
+    {
+        return $query->where('distributon_id', Auth::user()->distribution->id);
+    }
 
 
 }

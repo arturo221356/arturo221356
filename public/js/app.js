@@ -2226,7 +2226,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       exitosos: [],
       //array con respuesta del servidor con las series erroneas
       errores: [],
-      postUrl: "/admin/imei",
+      postUrl: "/imei",
       isLoading: false,
       //valores actuales del formulario
       item: {
@@ -2373,9 +2373,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   watch: {
     producto: function producto() {
       if (this.producto == "Imei") {
-        this.postUrl = "/admin/imei";
+        this.postUrl = "/imei/";
       } else if (this.producto == "Icc") {
-        this.postUrl = "/admin/icc";
+        this.postUrl = "/icc/";
       }
 
       this.clearItem();
@@ -3278,28 +3278,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {},
   data: function data() {
     return {
-      userRole: "admin",
       tableBusy: false,
       tableFilter: null,
       isLoading: false,
       editMode: false,
-      editableItem: {},
+      editableItem: {
+        inventario: null,
+        status: null,
+        iccType: null,
+        company: null,
+        marca: null,
+        modelo: null,
+        comment: null
+      },
       productoOptions: [{
         text: "Sims",
         value: "Icc"
@@ -3309,6 +3304,7 @@ __webpack_require__.r(__webpack_exports__);
       }],
       inventario: [],
       inventarioStatus: [],
+      item: {},
       lineaStatus: [],
       producto: "Icc",
       tableItems: [],
@@ -3316,6 +3312,22 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    getValidationState: function getValidationState(_ref) {
+      var dirty = _ref.dirty,
+          validated = _ref.validated,
+          _ref$valid = _ref.valid,
+          valid = _ref$valid === void 0 ? null : _ref$valid;
+      return dirty || validated ? valid : null;
+    },
+    resetEditableItem: function resetEditableItem() {
+      this.editableItem.inventario = null;
+      this.editableItem.serie = null;
+      this.editableItem.comment = null;
+      this.editableItem.company = null;
+      this.editableItem.status = null;
+      this.editableItem.equipo = null;
+      this.editableItem.iccType = null;
+    },
     loadInventario: function loadInventario() {
       this.tableBusy = true;
       this.isLoading = true;
@@ -3333,11 +3345,26 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     editItem: function editItem(item, row) {
-      this.editableItem = {};
+      this.resetEditableItem();
       console.log(item);
-      console.log(row);
       this.editMode = true;
-      this.editableItem = item;
+      this.editableItem.inventario = {
+        id: item.inventario_id,
+        name: item.inventario_name
+      };
+      this.editableItem.serie = item.serie;
+
+      if (item.comment) {
+        this.editableItem.comment = item.comment.comment;
+      }
+
+      this.editableItem.company = item.company;
+      this.editableItem.status = {
+        id: item.status,
+        name: item.status
+      };
+      this.editableItem.equipo = item.equipo;
+      this.editableItem.iccType = item.type;
       window.scrollTo(0, 0);
     },
     tableFiltered: function tableFiltered(filteredItems) {
@@ -3345,11 +3372,68 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
+    renderSimType: function renderSimType() {
+      if (this.can("full update stock") && this.editableItem.company) {
+        return true;
+      }
+    },
+    renderCompany: function renderCompany() {
+      if (this.can("full update stock") && this.producto == "Icc") {
+        return true;
+      }
+    },
+    renderEquipo: function renderEquipo() {
+      if (this.can("full update stock") && this.producto == "Imei") {
+        return true;
+      }
+    },
     computedTableFields: function computedTableFields() {
-      if (this.producto == "Imei") {
-        switch (this.userRole) {
-          case "admin":
-            return [{
+      var $response = [];
+
+      switch (this.producto) {
+        case "Imei":
+          if (this.can("update stock")) {
+            $response = [{
+              key: "serie",
+              label: "Imei"
+            }, {
+              key: "inventario_name",
+              label: "Inventario",
+              sortable: true
+            }, {
+              key: "status",
+              label: "Estatus",
+              sortable: true
+            }, {
+              key: "equipo.marca",
+              label: "Marca",
+              sortable: true
+            }, {
+              key: "equipo.modelo",
+              label: "Modelo",
+              sortable: true
+            }, {
+              key: "equipo.precio",
+              label: "Precio",
+              sortable: true
+            }, {
+              key: "equipo.costo",
+              label: "Costo",
+              sortable: true
+            }, {
+              key: "created_at",
+              label: "Creado",
+              sortable: true
+            }, {
+              key: "updated_at",
+              label: "Modificado",
+              sortable: true
+            }, {
+              key: "editar",
+              label: "Editar"
+            }];
+          } else {
+            $response = [{
               key: "serie",
               label: "Imei"
             }, {
@@ -3359,70 +3443,94 @@ __webpack_require__.r(__webpack_exports__);
               key: "status",
               label: "Estatus"
             }, {
-              key: "marca",
+              key: "equipo.marca",
               label: "Marca"
             }, {
-              key: "modelo",
+              key: "equipo.modelo",
               label: "Modelo"
             }, {
               key: "precio",
               label: "Precio"
             }, {
-              key: "costo",
-              label: "Costo"
-            }, {
               key: "created_at",
-              label: "Agregado"
+              label: "Creado"
             }, {
               key: "updated_at",
               label: "Modificado"
-            }, {
-              key: "editar",
-              label: "Editar"
             }];
-            break;
+          }
 
-          case "supervisor":
-            break;
+          return $response;
+          break;
 
-          default:
-            break;
-        }
-      } else if (this.producto == "Icc") {
-        switch (this.userRole) {
-          case "admin":
-            return [{
+        case "Icc":
+          $response = [];
+
+          if (this.can("update stock")) {
+            $response = [{
               key: "serie",
               label: "Icc"
             }, {
               key: "inventario_name",
-              label: "Inventario"
+              label: "Inventario",
+              sortable: true
             }, {
               key: "status",
-              label: "Estatus"
+              label: "Estatus",
+              sortable: true
             }, {
-              key: "company",
-              label: "Compañia"
+              key: "company.name",
+              label: "Compañia",
+              sortable: true
             }, {
-              key: "type",
-              label: "Tipo"
+              key: "type.name",
+              label: "Tipo",
+              sortable: true
             }, {
               key: "created_at",
-              label: "Agregado"
+              label: "Creado",
+              sortable: true
             }, {
               key: "updated_at",
-              label: "Modificado"
+              label: "Modificado",
+              sortable: true
             }, {
               key: "editar",
               label: "Editar"
             }];
-            break;
+          } else {
+            $response = [{
+              key: "serie",
+              label: "Icc"
+            }, {
+              key: "inventario_name",
+              label: "Inventario",
+              sortable: true
+            }, {
+              key: "status",
+              label: "Estatus",
+              sortable: true
+            }, {
+              key: "company.name",
+              label: "Compañia",
+              sortable: true
+            }, {
+              key: "type.name",
+              label: "Tipo",
+              sortable: true
+            }, {
+              key: "created_at",
+              label: "Creado",
+              sortable: true
+            }, {
+              key: "updated_at",
+              label: "Modificado",
+              sortable: true
+            }];
+          }
 
-          case "supervisor":
-            break;
-
-          default:
-        }
+          return $response;
+          break;
       }
     }
   }
@@ -4331,9 +4439,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&":
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=script&lang=js&":
 /*!**********************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js& ***!
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectStatusesComponent.vue?vue&type=script&lang=js& ***!
   \**********************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -4354,68 +4462,101 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
-    todas: Boolean,
-    seleccionado: null
+    todas: {
+      type: Boolean,
+      required: false,
+      "default": false
+    },
+    multiple: {
+      type: Boolean,
+      required: false,
+      "default": false
+    },
+    empty: {
+      type: Boolean,
+      required: false,
+      "default": false
+    },
+    estatusable: {
+      type: String,
+      required: true
+    },
+    pholder: {
+      type: String,
+      required: false,
+      detault: "Seleccionar Estatus"
+    },
+    value: {},
+    state: {
+      type: Boolean,
+      required: false,
+      "default": null
+    }
   },
-  mounted: function mounted() {},
+  mounted: function mounted() {
+    var _this = this;
+
+    switch (this.estatusable) {
+      case 'inventario':
+        var $optionsArray = ['Disponible', 'Incompleto', 'Perdido', 'Robado'];
+        $optionsArray.forEach(function (element) {
+          _this.options.push({
+            id: element,
+            name: element
+          });
+        });
+        break;
+    }
+  },
   data: function data() {
     return {
       isLoading: false,
-      sucursal: {
-        id: 0,
-        text: ""
-      },
-      sucursales: [],
+      options: [],
       selected: null
     };
   },
   methods: {
     emitToParent: function emitToParent() {
-      this.sucursal.id = this.selected.id;
-      this.sucursal.text = this.selected.name;
-      this.$emit("sucursal", this.sucursal);
+      this.$emit("input", this.selected);
     }
   },
-  watch: {
-    selected: function selected() {
-      this.emitToParent();
-    },
-    sucursales: function sucursales() {}
-  },
   created: function created() {
-    var _this = this;
-
-    this.isLoading = true;
-    axios.get("/get/sucursales").then(function (response) {
-      _this.sucursales = response.data;
-
-      if (_this.seleccionado) {
-        _this.selected = response.data.find(function (option) {
-          return option.id === _this.seleccionado;
-        });
-      }
-
-      _this.isLoading = false;
-    })["catch"](function (error) {
-      // handle error
-      console.log(error);
-    });
+    this.selected = this.value;
+  },
+  watch: {
+    value: function value() {
+      this.selected = this.value;
+    }
   },
   computed: {
-    options: function options() {
-      var options = [];
-      options = this.sucursales;
+    stateClass: function stateClass() {
+      var response;
 
-      if (this.todas === true) {
-        options.unshift({
-          id: "all",
-          name: "Todas"
-        });
+      switch (this.state) {
+        case true:
+          response = "valid";
+          break;
+
+        case false:
+          response = "invalid";
+          break;
+
+        case null:
+          response = null;
+          break;
       }
 
-      return options;
+      return response;
     }
   }
 });
@@ -5374,6 +5515,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -5448,7 +5612,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     cancelarTraspaso: function cancelarTraspaso(item) {
       this.isLoading = true;
-      axios["delete"]("/admin/inventario/traspasos/".concat(item)).then(function (response) {
+      axios["delete"]("/inventario/traspasos/".concat(item)).then(function (response) {
         this.isLoading = false;
         this.traspasoType = "historial";
         this.retrieveHistorial();
@@ -5458,7 +5622,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     aceptarTraspaso: function aceptarTraspaso(item) {
       this.isLoading = true;
-      axios.put("/admin/inventario/traspasos/".concat(item)).then(function (response) {
+      axios.put("/inventario/traspasos/".concat(item)).then(function (response) {
         this.isLoading = false;
         this.traspasoType = "historial";
         this.retrieveHistorial();
@@ -5476,7 +5640,7 @@ __webpack_require__.r(__webpack_exports__);
     traspasoLoadDetails: function traspasoLoadDetails(item) {
       this.isLoading = true;
       this.traspasoType = "detalle";
-      axios.get("/admin/inventario/traspasos/".concat(item.id)).then(function (response) {
+      axios.get("/inventario/traspasos/".concat(item.id)).then(function (response) {
         this.detailTraspaso = response.data.data;
         this.isLoading = false;
         console.log(this.detailTraspaso);
@@ -5489,7 +5653,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     retrieveHistorial: function retrieveHistorial() {
       this.tableLoading = true;
-      axios.get("/admin/inventario/traspasos", {
+      axios.get("/inventario/traspasos", {
         params: {
           initial_date: this.initialDate,
           final_date: this.finalDate,
@@ -5528,7 +5692,7 @@ __webpack_require__.r(__webpack_exports__);
       data.append("file", this.file);
       data.append("inventario_id", this.inventario.id);
       data.append("aceptacion_required", this.aceptacionRequired);
-      axios.post("/admin/inventario/traspasos/", data).then(function (res) {
+      axios.post("/inventario/traspasos/", data).then(function (res) {
         _this.$bvToast.toast("Traspaso creado con exito", {
           title: "Exito",
           autoHideDelay: 5000,
@@ -50722,6 +50886,25 @@ exports.push([module.i, "\n.typo__label {\r\n    color: red;\n}\n.multiselect.in
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.typo__label {\r\n    color: red;\n}\n.multiselect.invalid .multiselect__tags {\r\n    border: 1px solid #f86c6b !important;\n}\n.multiselect.valid .multiselect__tags {\r\n    border: 1px solid #00d134 !important;\n}\n.multiselect__option--highlight {\r\n    background: #428bca !important;\n}\n.multiselect__option--highlight:after {\r\n    background: #428bca !important;\n}\n.multiselect__tag-icon:focus,\r\n.multiselect__tag-icon:hover {\r\n    background: #f0f0f0 !important;\n}\n.multiselect__tag-icon:focus:after,\r\n.multiselect__tag-icon:hover:after {\r\n    color: red !important;\n}\r\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&":
 /*!*********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css& ***!
@@ -82300,6 +82483,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectStatusesComponent.vue?vue&type=style&index=1&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&":
 /*!*************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css& ***!
@@ -85995,7 +86208,7 @@ var render = function() {
                                             [
                                               _c("select-general", {
                                                 attrs: {
-                                                  url: "/admin/inventarios",
+                                                  url: "/inventario",
                                                   pholder:
                                                     "Seleccionar Inventario",
                                                   state: _vm.getValidationState(
@@ -87039,376 +87252,375 @@ var render = function() {
               [
                 _c("h1", [_vm._v("Reporte de Inventario")]),
                 _vm._v(" "),
-                _c(
-                  "b-form",
-                  [
-                    _c(
-                      "b-form-group",
-                      [
-                        _c("b-form-radio-group", {
-                          staticClass: "align-middle",
-                          attrs: {
-                            id: "radio-producto",
-                            options: _vm.productoOptions,
-                            buttons: "",
-                            name: "radio-producto"
-                          },
-                          on: {
-                            change: function($event) {
-                              _vm.tableItems = []
-                            }
-                          },
-                          model: {
-                            value: _vm.producto,
-                            callback: function($$v) {
-                              _vm.producto = $$v
-                            },
-                            expression: "producto"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _vm.can("get inventarios")
-                      ? _c(
-                          "b-form-group",
-                          {
-                            attrs: { label: "Inventario:", "label-size": "lg" }
-                          },
-                          [
-                            _c("select-general", {
-                              attrs: {
-                                url: "/inventario",
-                                pholder: "Seleccionar Inventario",
-                                empty: true,
-                                todas: true
-                              },
-                              model: {
-                                value: _vm.inventario,
-                                callback: function($$v) {
-                                  _vm.inventario = $$v
-                                },
-                                expression: "inventario"
+                _c("validation-observer", {
+                  ref: "observer",
+                  scopedSlots: _vm._u([
+                    {
+                      key: "default",
+                      fn: function(ref) {
+                        var handleSubmit = ref.handleSubmit
+                        return [
+                          _c(
+                            "b-form",
+                            {
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                  return handleSubmit(_vm.loadInventario)
+                                }
                               }
-                            }),
-                            _vm._v(
-                              "\n                            " +
-                                _vm._s(_vm.inventario) +
-                                "\n                        "
-                            )
-                          ],
-                          1
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      {
-                        attrs: {
-                          label: "Inventario estatus:",
-                          "label-size": "lg"
-                        }
-                      },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            multiple: true,
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.inventarioStatus,
-                            callback: function($$v) {
-                              _vm.inventarioStatus = $$v
                             },
-                            expression: "inventarioStatus"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.inventarioStatus) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      {
-                        attrs: { label: "Linea estatus:", "label-size": "lg" }
-                      },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            multiple: true,
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.lineaStatus,
-                            callback: function($$v) {
-                              _vm.lineaStatus = $$v
-                            },
-                            expression: "lineaStatus"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.lineaStatus) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-button",
-                      {
-                        attrs: { block: "", variant: "primary" },
-                        on: { click: _vm.loadInventario }
-                      },
-                      [_vm._v("Cargar")]
-                    )
-                  ],
-                  1
-                )
+                            [
+                              _c(
+                                "b-form-group",
+                                [
+                                  _c("b-form-radio-group", {
+                                    staticClass: "align-middle",
+                                    attrs: {
+                                      id: "radio-producto",
+                                      options: _vm.productoOptions,
+                                      buttons: "",
+                                      name: "radio-producto"
+                                    },
+                                    on: {
+                                      change: function($event) {
+                                        _vm.tableItems = []
+                                      }
+                                    },
+                                    model: {
+                                      value: _vm.producto,
+                                      callback: function($$v) {
+                                        _vm.producto = $$v
+                                      },
+                                      expression: "producto"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c("ValidationProvider", {
+                                attrs: { rules: "required" },
+                                scopedSlots: _vm._u(
+                                  [
+                                    {
+                                      key: "default",
+                                      fn: function(validationContext) {
+                                        return [
+                                          _c(
+                                            "b-form-group",
+                                            {
+                                              attrs: {
+                                                label: "Inventario:",
+                                                "label-size": "lg"
+                                              }
+                                            },
+                                            [
+                                              _c("select-general", {
+                                                attrs: {
+                                                  url: "/inventario",
+                                                  pholder:
+                                                    "Seleccionar Inventario",
+                                                  empty: true,
+                                                  todas: _vm.can(
+                                                    "get inventarios"
+                                                  )
+                                                    ? true
+                                                    : false,
+                                                  state: _vm.getValidationState(
+                                                    validationContext
+                                                  )
+                                                },
+                                                model: {
+                                                  value: _vm.inventario,
+                                                  callback: function($$v) {
+                                                    _vm.inventario = $$v
+                                                  },
+                                                  expression: "inventario"
+                                                }
+                                              }),
+                                              _vm._v(" "),
+                                              _c(
+                                                "b-form-invalid-feedback",
+                                                [
+                                                  _c(
+                                                    "b-form-invalid-feedback",
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          validationContext
+                                                            .errors[0]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  null,
+                                  true
+                                )
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "b-button",
+                                {
+                                  attrs: {
+                                    block: "",
+                                    variant: "primary",
+                                    type: "submit"
+                                  }
+                                },
+                                [_vm._v("Cargar")]
+                              )
+                            ],
+                            1
+                          )
+                        ]
+                      }
+                    }
+                  ])
+                })
               ],
               1
             ),
             _vm._v(" "),
-            _c(
-              "div",
-              {
-                directives: [
+            _vm.can("update stock")
+              ? _c(
+                  "div",
                   {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.editMode == true,
-                    expression: "editMode == true"
-                  }
-                ]
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-sm" }, [
-                    _c(
-                      "h1",
+                    directives: [
                       {
-                        staticClass: "float-right",
-                        style: { cursor: "pointer" }
-                      },
-                      [
-                        _c("b-icon", {
-                          attrs: { icon: "x-circle-fill", variant: "danger" },
-                          on: {
-                            click: function($event) {
-                              _vm.editMode = false
-                            }
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-sm" }, [
-                    _c("h1", [
-                      _vm._v(
-                        "\n                                Editar\n                                " +
-                          _vm._s(_vm.producto) +
-                          "\n                            "
-                      )
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-sm" }, [
-                    _c("h3", [
-                      _vm._v(
-                        "\n                                    " +
-                          _vm._s(_vm.editableItem.serie) +
-                          "\n                                "
-                      )
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "b-form",
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.editMode == true,
+                        expression: "editMode == true"
+                      }
+                    ]
+                  },
                   [
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Inventario", "label-size": "lg" } },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.inventario,
-                            callback: function($$v) {
-                              _vm.inventario = $$v
-                            },
-                            expression: "inventario"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.inventario) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "estatus:", "label-size": "lg" } },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            multiple: true,
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.lineaStatus,
-                            callback: function($$v) {
-                              _vm.lineaStatus = $$v
-                            },
-                            expression: "lineaStatus"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.lineaStatus) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      {
-                        attrs: { label: "Linea estatus:", "label-size": "lg" }
-                      },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            multiple: true,
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.lineaStatus,
-                            callback: function($$v) {
-                              _vm.lineaStatus = $$v
-                            },
-                            expression: "lineaStatus"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.lineaStatus) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Compañia:", "label-size": "lg" } },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/inventario",
-                            pholder: "Seleccionar Inventario",
-                            multiple: true,
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.lineaStatus,
-                            callback: function($$v) {
-                              _vm.lineaStatus = $$v
-                            },
-                            expression: "lineaStatus"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.lineaStatus) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Tipo:", "label-size": "lg" } },
-                      [
-                        _c("select-general", {
-                          attrs: {
-                            url: "/admin/inventarios",
-                            pholder: "Seleccionar Inventario",
-                            multiple: true,
-                            empty: true,
-                            todas: true
-                          },
-                          model: {
-                            value: _vm.lineaStatus,
-                            callback: function($$v) {
-                              _vm.lineaStatus = $$v
-                            },
-                            expression: "lineaStatus"
-                          }
-                        }),
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(_vm.lineaStatus) +
-                            "\n                        "
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      { attrs: { label: "Comentario", "label-size": "lg" } },
-                      [
-                        _c("b-form-textarea", {
-                          attrs: { "max-rows": "6", placeholder: "Comentario" }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-form-group",
-                      [
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-sm" }, [
                         _c(
-                          "b-button",
-                          { attrs: { block: "", variant: "success" } },
-                          [_vm._v("Guardar")]
+                          "h1",
+                          {
+                            staticClass: "float-right",
+                            style: { cursor: "pointer" }
+                          },
+                          [
+                            _c("b-icon", {
+                              attrs: {
+                                icon: "x-circle-fill",
+                                variant: "danger"
+                              },
+                              on: {
+                                click: function() {
+                                  _vm.editMode = false
+                                  _vm.resetEditableItem()
+                                }
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-sm" }, [
+                        _c("h1", [
+                          _vm._v(
+                            "\n                                Editar\n                                " +
+                              _vm._s(_vm.producto) +
+                              "\n                            "
+                          )
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-sm" }, [
+                        _c("h3", [
+                          _vm._v(
+                            "\n                                " +
+                              _vm._s(_vm.editableItem.serie) +
+                              "\n                            "
+                          )
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "b-form",
+                      [
+                        _vm.can("full update stock")
+                          ? _c(
+                              "b-form-group",
+                              {
+                                attrs: {
+                                  label: "Inventario",
+                                  "label-size": "lg"
+                                }
+                              },
+                              [
+                                _c("select-general", {
+                                  attrs: {
+                                    url: "/inventario",
+                                    pholder: "Seleccionar Inventario"
+                                  },
+                                  model: {
+                                    value: _vm.editableItem.inventario,
+                                    callback: function($$v) {
+                                      _vm.$set(
+                                        _vm.editableItem,
+                                        "inventario",
+                                        $$v
+                                      )
+                                    },
+                                    expression: "editableItem.inventario"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "b-form-group",
+                          { attrs: { label: "Estatus:", "label-size": "lg" } },
+                          [
+                            _c("select-statuses", {
+                              attrs: { estatusable: "inventario" },
+                              model: {
+                                value: _vm.editableItem.status,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.editableItem, "status", $$v)
+                                },
+                                expression: "editableItem.status"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _vm.renderCompany
+                          ? _c(
+                              "b-form-group",
+                              {
+                                attrs: {
+                                  label: "Compañia:",
+                                  "label-size": "lg"
+                                }
+                              },
+                              [
+                                _c("select-general", {
+                                  attrs: {
+                                    url: "/get/companies",
+                                    pholder: "Seleccionar Compañia"
+                                  },
+                                  model: {
+                                    value: _vm.editableItem.company,
+                                    callback: function($$v) {
+                                      _vm.$set(_vm.editableItem, "company", $$v)
+                                    },
+                                    expression: "editableItem.company"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.renderSimType
+                          ? _c(
+                              "b-form-group",
+                              { attrs: { label: "Tipo:", "label-size": "lg" } },
+                              [
+                                _c("select-general", {
+                                  attrs: {
+                                    url: "/get/icctypes",
+                                    pholder: "Seleccionar tipo de sim",
+                                    query: _vm.editableItem.company.id
+                                  },
+                                  model: {
+                                    value: _vm.editableItem.iccType,
+                                    callback: function($$v) {
+                                      _vm.$set(_vm.editableItem, "iccType", $$v)
+                                    },
+                                    expression: "editableItem.iccType"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.renderEquipo
+                          ? _c(
+                              "b-form-group",
+                              {
+                                attrs: { label: "Equipo:", "label-size": "lg" }
+                              },
+                              [
+                                _c("select-general", {
+                                  attrs: {
+                                    url: "/get/equipos",
+                                    pholder: "Seleccionar Equipo",
+                                    equipo: true
+                                  },
+                                  model: {
+                                    value: _vm.editableItem.equipo,
+                                    callback: function($$v) {
+                                      _vm.$set(_vm.editableItem, "equipo", $$v)
+                                    },
+                                    expression: "editableItem.equipo"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "b-form-group",
+                          {
+                            attrs: { label: "Comentario", "label-size": "lg" }
+                          },
+                          [
+                            _c("b-form-textarea", {
+                              attrs: {
+                                "max-rows": "6",
+                                placeholder: "Comentario"
+                              },
+                              model: {
+                                value: _vm.editableItem.comment,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.editableItem, "comment", $$v)
+                                },
+                                expression: "editableItem.comment"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "b-form-group",
+                          [
+                            _c(
+                              "b-button",
+                              { attrs: { block: "", variant: "success" } },
+                              [_vm._v("Guardar")]
+                            )
+                          ],
+                          1
                         )
                       ],
                       1
@@ -87416,9 +87628,7 @@ var render = function() {
                   ],
                   1
                 )
-              ],
-              1
-            )
+              : _vm._e()
           ]),
           _vm._v(" "),
           _vm.tableItems.length > 0
@@ -88215,9 +88425,9 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&":
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=template&id=25e75bf4&":
 /*!**************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& ***!
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SelectStatusesComponent.vue?vue&type=template&id=25e75bf4& ***!
   \**************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -88234,14 +88444,17 @@ var render = function() {
     "div",
     [
       _c("multiselect", {
+        class: _vm.stateClass,
         attrs: {
           options: _vm.options,
-          placeholder: "Seleccionar Sucursal",
+          placeholder: "Seleccionar Estatus",
+          multiple: _vm.multiple,
           label: "name",
           "track-by": "id",
-          "allow-empty": false,
+          "allow-empty": _vm.empty,
           loading: _vm.isLoading
         },
+        on: { input: _vm.emitToParent },
         model: {
           value: _vm.selected,
           callback: function($$v) {
@@ -88249,7 +88462,23 @@ var render = function() {
           },
           expression: "selected"
         }
-      })
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.state === false,
+              expression: "state === false"
+            }
+          ],
+          staticClass: "typo__label form__label invalid"
+        },
+        [_vm._v("Elige un valor")]
+      )
     ],
     1
   )
@@ -88827,19 +89056,21 @@ var render = function() {
                       _c(
                         "b-nav-form",
                         [
-                          _c("b-form-radio-group", {
-                            attrs: {
-                              options: _vm.traspasoOptions,
-                              buttons: ""
-                            },
-                            model: {
-                              value: _vm.traspasoType,
-                              callback: function($$v) {
-                                _vm.traspasoType = $$v
-                              },
-                              expression: "traspasoType"
-                            }
-                          })
+                          _vm.can("traspasar stock")
+                            ? _c("b-form-radio-group", {
+                                attrs: {
+                                  options: _vm.traspasoOptions,
+                                  buttons: ""
+                                },
+                                model: {
+                                  value: _vm.traspasoType,
+                                  callback: function($$v) {
+                                    _vm.traspasoType = $$v
+                                  },
+                                  expression: "traspasoType"
+                                }
+                              })
+                            : _vm._e()
                         ],
                         1
                       )
@@ -88915,617 +89146,678 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    directives: [
+                _vm.can("traspasar stock")
+                  ? _c(
+                      "div",
                       {
-                        name: "show",
-                        rawName: "v-show",
-                        value: _vm.traspasoType == "nuevo",
-                        expression: "traspasoType == 'nuevo'"
-                      }
-                    ]
-                  },
-                  [
-                    _c("h1", [_vm._v("Agregar Producto a traspasar:")]),
-                    _vm._v(" "),
-                    _c("validation-observer", {
-                      ref: "observer",
-                      scopedSlots: _vm._u([
-                        {
-                          key: "default",
-                          fn: function(ref) {
-                            var handleSubmit = ref.handleSubmit
-                            return [
-                              _c(
-                                "b-form",
-                                {
-                                  on: {
-                                    submit: function($event) {
-                                      $event.preventDefault()
-                                      return handleSubmit(_vm.storeTraspaso)
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("ValidationProvider", {
-                                    attrs: {
-                                      name: "company",
-                                      rules: "required"
-                                    },
-                                    scopedSlots: _vm._u(
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.traspasoType == "nuevo",
+                            expression: "traspasoType == 'nuevo'"
+                          }
+                        ]
+                      },
+                      [
+                        _c("h1", [_vm._v("Agregar Producto a traspasar:")]),
+                        _vm._v(" "),
+                        _c("validation-observer", {
+                          ref: "observer",
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "default",
+                                fn: function(ref) {
+                                  var handleSubmit = ref.handleSubmit
+                                  return [
+                                    _c(
+                                      "b-form",
+                                      {
+                                        on: {
+                                          submit: function($event) {
+                                            $event.preventDefault()
+                                            return handleSubmit(
+                                              _vm.storeTraspaso
+                                            )
+                                          }
+                                        }
+                                      },
                                       [
-                                        {
-                                          key: "default",
-                                          fn: function(validationContext) {
-                                            return [
-                                              _c(
-                                                "b-form-group",
-                                                {
-                                                  staticClass: "mt-4",
-                                                  attrs: {
-                                                    label:
-                                                      "Inventario de destino:",
-                                                    "label-for":
-                                                      "select-inventario"
-                                                  }
-                                                },
-                                                [
-                                                  _c("select-general", {
-                                                    attrs: {
-                                                      url: "/admin/inventarios",
-                                                      pholder:
-                                                        "Seleccionar Inventario",
-                                                      state: _vm.getValidationState(
-                                                        validationContext
-                                                      )
-                                                    },
-                                                    model: {
-                                                      value: _vm.inventario,
-                                                      callback: function($$v) {
-                                                        _vm.inventario = $$v
-                                                      },
-                                                      expression: "inventario"
-                                                    }
-                                                  }),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "b-form-invalid-feedback",
-                                                    [
-                                                      _vm._v(
-                                                        _vm._s(
-                                                          validationContext
-                                                            .errors[0]
-                                                        )
-                                                      )
-                                                    ]
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      null,
-                                      true
-                                    )
-                                  }),
-                                  _vm._v(" "),
-                                  _c(
-                                    "b-form-group",
-                                    {
-                                      attrs: { label: "¿Aceptacion requerida?" }
-                                    },
-                                    [
-                                      _c("b-form-radio-group", {
-                                        attrs: {
-                                          options: [
-                                            { text: "Si", value: true },
-                                            { text: "No", value: false }
-                                          ],
-                                          "button-variant": "outline-primary",
-                                          buttons: "",
-                                          name: "radios-btn-default"
-                                        },
-                                        model: {
-                                          value: _vm.aceptacionRequired,
-                                          callback: function($$v) {
-                                            _vm.aceptacionRequired = $$v
-                                          },
-                                          expression: "aceptacionRequired"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _vm.items.length > 0
-                                    ? _c(
-                                        "b-button",
-                                        {
-                                          staticClass: "mt-3",
+                                        _c("ValidationProvider", {
                                           attrs: {
-                                            type: "submit",
-                                            variant: "outline-primary",
-                                            block: ""
-                                          }
-                                        },
-                                        [_vm._v("Realizar traspazo")]
-                                      )
-                                    : _vm._e()
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "b-form",
-                                { on: { submit: _vm.agregarSerie } },
-                                [
-                                  _c(
-                                    "b-input-group",
-                                    { staticClass: "mt-5" },
-                                    [
-                                      _c("b-form-input", {
-                                        attrs: {
-                                          autocomplete: "off",
-                                          placeholder: "Buscar Producto",
-                                          list: "search-results"
-                                        },
-                                        on: { update: _vm.searchProduct },
-                                        model: {
-                                          value: _vm.searchValue,
-                                          callback: function($$v) {
-                                            _vm.searchValue = $$v
+                                            name: "company",
+                                            rules: "required"
                                           },
-                                          expression: "searchValue"
-                                        }
-                                      }),
+                                          scopedSlots: _vm._u(
+                                            [
+                                              {
+                                                key: "default",
+                                                fn: function(
+                                                  validationContext
+                                                ) {
+                                                  return [
+                                                    _c(
+                                                      "b-form-group",
+                                                      {
+                                                        staticClass: "mt-4",
+                                                        attrs: {
+                                                          label:
+                                                            "Inventario de destino:",
+                                                          "label-for":
+                                                            "select-inventario"
+                                                        }
+                                                      },
+                                                      [
+                                                        _c("select-general", {
+                                                          attrs: {
+                                                            url: "/inventario",
+                                                            pholder:
+                                                              "Seleccionar Inventario",
+                                                            state: _vm.getValidationState(
+                                                              validationContext
+                                                            )
+                                                          },
+                                                          model: {
+                                                            value:
+                                                              _vm.inventario,
+                                                            callback: function(
+                                                              $$v
+                                                            ) {
+                                                              _vm.inventario = $$v
+                                                            },
+                                                            expression:
+                                                              "inventario"
+                                                          }
+                                                        }),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "b-form-invalid-feedback",
+                                                          [
+                                                            _vm._v(
+                                                              _vm._s(
+                                                                validationContext
+                                                                  .errors[0]
+                                                              )
+                                                            )
+                                                          ]
+                                                        )
+                                                      ],
+                                                      1
+                                                    )
+                                                  ]
+                                                }
+                                              }
+                                            ],
+                                            null,
+                                            true
+                                          )
+                                        }),
+                                        _vm._v(" "),
+                                        _c(
+                                          "b-form-group",
+                                          {
+                                            attrs: {
+                                              label: "¿Aceptacion requerida?"
+                                            }
+                                          },
+                                          [
+                                            _c("b-form-radio-group", {
+                                              attrs: {
+                                                options: [
+                                                  { text: "Si", value: true },
+                                                  { text: "No", value: false }
+                                                ],
+                                                "button-variant":
+                                                  "outline-primary",
+                                                buttons: "",
+                                                name: "radios-btn-default"
+                                              },
+                                              model: {
+                                                value: _vm.aceptacionRequired,
+                                                callback: function($$v) {
+                                                  _vm.aceptacionRequired = $$v
+                                                },
+                                                expression: "aceptacionRequired"
+                                              }
+                                            })
+                                          ],
+                                          1
+                                        ),
+                                        _vm._v(" "),
+                                        _vm.items.length > 0
+                                          ? _c(
+                                              "b-button",
+                                              {
+                                                staticClass: "mt-3",
+                                                attrs: {
+                                                  type: "submit",
+                                                  variant: "outline-primary",
+                                                  block: ""
+                                                }
+                                              },
+                                              [_vm._v("Realizar traspazo")]
+                                            )
+                                          : _vm._e()
+                                      ],
+                                      1
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "b-form",
+                                      { on: { submit: _vm.agregarSerie } },
+                                      [
+                                        _c(
+                                          "b-input-group",
+                                          { staticClass: "mt-5" },
+                                          [
+                                            _c("b-form-input", {
+                                              attrs: {
+                                                autocomplete: "off",
+                                                placeholder: "Buscar Producto",
+                                                list: "search-results"
+                                              },
+                                              on: { update: _vm.searchProduct },
+                                              model: {
+                                                value: _vm.searchValue,
+                                                callback: function($$v) {
+                                                  _vm.searchValue = $$v
+                                                },
+                                                expression: "searchValue"
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _c(
+                                              "datalist",
+                                              {
+                                                attrs: { id: "search-results" }
+                                              },
+                                              _vm._l(
+                                                _vm.searchResults,
+                                                function(list, index) {
+                                                  return _c(
+                                                    "option",
+                                                    { key: index },
+                                                    [_vm._v(_vm._s(list.title))]
+                                                  )
+                                                }
+                                              ),
+                                              0
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "b-input-group-append",
+                                              [
+                                                _c(
+                                                  "b-button",
+                                                  {
+                                                    attrs: {
+                                                      variant: "success",
+                                                      type: "submit"
+                                                    }
+                                                  },
+                                                  [_vm._v("Agregar")]
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ],
+                                          1
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                }
+                              }
+                            ],
+                            null,
+                            false,
+                            1510850602
+                          )
+                        }),
+                        _vm._v(" "),
+                        _vm.showList == true
+                          ? _c(
+                              "b-list-group",
+                              { staticClass: "mt-5" },
+                              _vm._l(_vm.items, function(item, index) {
+                                return _c("b-list-group-item", { key: index }, [
+                                  _c("div", [
+                                    _c("div", { staticClass: "row" }, [
+                                      _c("div", { staticClass: "col-sm" }, [
+                                        _c("h5", [_vm._v(_vm._s(item.serie))])
+                                      ]),
                                       _vm._v(" "),
                                       _c(
-                                        "datalist",
-                                        { attrs: { id: "search-results" } },
-                                        _vm._l(_vm.searchResults, function(
-                                          list,
-                                          index
-                                        ) {
-                                          return _c("option", { key: index }, [
-                                            _vm._v(_vm._s(list.title))
-                                          ])
-                                        }),
-                                        0
+                                        "div",
+                                        { staticClass: "col-sm" },
+                                        [
+                                          _c("B", [_vm._v("Origen:")]),
+                                          _vm._v(
+                                            "\n                                        " +
+                                              _vm._s(item.inventario.name) +
+                                              "\n                                    "
+                                          )
+                                        ],
+                                        1
                                       ),
                                       _vm._v(" "),
                                       _c(
-                                        "b-input-group-append",
+                                        "div",
+                                        { staticClass: "col-sm" },
+                                        [
+                                          _c("B", [_vm._v("Status:")]),
+                                          _vm._v(
+                                            "\n                                        " +
+                                              _vm._s(item.status) +
+                                              "\n                                    "
+                                          )
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      item.equipo
+                                        ? _c(
+                                            "div",
+                                            { staticClass: "col-sm" },
+                                            [
+                                              _c("B", [_vm._v("Equipo:")]),
+                                              _vm._v(
+                                                "\n                                        " +
+                                                  _vm._s(item.equipo.marca) +
+                                                  "\n                                        " +
+                                                  _vm._s(item.equipo.modelo) +
+                                                  "\n                                    "
+                                              )
+                                            ],
+                                            1
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      item.company
+                                        ? _c(
+                                            "div",
+                                            { staticClass: "col-sm" },
+                                            [
+                                              _c("B", [_vm._v("Compañia:")]),
+                                              _vm._v(
+                                                "\n                                        " +
+                                                  _vm._s(item.company.name) +
+                                                  "\n                                        " +
+                                                  _vm._s(item.tipoSim.name) +
+                                                  "\n                                    "
+                                              )
+                                            ],
+                                            1
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      _c(
+                                        "div",
+                                        { staticClass: "col-sm" },
                                         [
                                           _c(
                                             "b-button",
                                             {
+                                              staticClass: "float-right",
                                               attrs: {
-                                                variant: "success",
-                                                type: "submit"
+                                                variant: "danger",
+                                                size: "sm"
+                                              },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.eliminarItem(
+                                                    item,
+                                                    index
+                                                  )
+                                                }
                                               }
                                             },
-                                            [_vm._v("Agregar")]
+                                            [_vm._v("Eliminar")]
                                           )
                                         ],
                                         1
                                       )
-                                    ],
-                                    1
-                                  )
-                                ],
-                                1
-                              )
-                            ]
-                          }
-                        }
-                      ])
-                    }),
-                    _vm._v(" "),
-                    _vm.showList == true
-                      ? _c(
-                          "b-list-group",
-                          { staticClass: "mt-5" },
-                          _vm._l(_vm.items, function(item, index) {
-                            return _c("b-list-group-item", { key: index }, [
-                              _c("div", [
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col-sm" }, [
-                                    _c("h5", [_vm._v(_vm._s(item.serie))])
-                                  ]),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm" },
-                                    [
-                                      _c("B", [_vm._v("Origen:")]),
-                                      _vm._v(
-                                        "\n                                        " +
-                                          _vm._s(item.inventario.name) +
-                                          "\n                                    "
-                                      )
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm" },
-                                    [
-                                      _c("B", [_vm._v("Status:")]),
-                                      _vm._v(
-                                        "\n                                        " +
-                                          _vm._s(item.status) +
-                                          "\n                                    "
-                                      )
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  item.equipo
-                                    ? _c(
-                                        "div",
-                                        { staticClass: "col-sm" },
-                                        [
-                                          _c("B", [_vm._v("Equipo:")]),
-                                          _vm._v(
-                                            "\n                                        " +
-                                              _vm._s(item.equipo.marca) +
-                                              "\n                                        " +
-                                              _vm._s(item.equipo.modelo) +
-                                              "\n                                    "
-                                          )
-                                        ],
-                                        1
-                                      )
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  item.company
-                                    ? _c(
-                                        "div",
-                                        { staticClass: "col-sm" },
-                                        [
-                                          _c("B", [_vm._v("Compañia:")]),
-                                          _vm._v(
-                                            "\n                                        " +
-                                              _vm._s(item.company.name) +
-                                              "\n                                        " +
-                                              _vm._s(item.tipoSim.name) +
-                                              "\n                                    "
-                                          )
-                                        ],
-                                        1
-                                      )
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm" },
-                                    [
-                                      _c(
-                                        "b-button",
-                                        {
-                                          staticClass: "float-right",
-                                          attrs: {
-                                            variant: "danger",
-                                            size: "sm"
-                                          },
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.eliminarItem(
-                                                item,
-                                                index
-                                              )
-                                            }
-                                          }
-                                        },
-                                        [_vm._v("Eliminar")]
-                                      )
-                                    ],
-                                    1
-                                  )
-                                ])
-                              ])
-                            ])
-                          }),
-                          1
-                        )
-                      : _vm._e()
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: _vm.traspasoType == "historial",
-                        expression: "traspasoType == 'historial'"
-                      }
-                    ]
-                  },
-                  [
-                    _c("h1", [_vm._v("Historial de traspasos")]),
-                    _vm._v(" "),
-                    _c("validation-observer", {
-                      ref: "observer",
-                      scopedSlots: _vm._u([
-                        {
-                          key: "default",
-                          fn: function(ref) {
-                            var handleSubmit = ref.handleSubmit
-                            return [
-                              _c(
-                                "b-form",
-                                {
-                                  on: {
-                                    submit: function($event) {
-                                      $event.preventDefault()
-                                      return handleSubmit(_vm.retrieveHistorial)
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("ValidationProvider", {
-                                    attrs: {
-                                      name: "fecha-inicio",
-                                      rules: "required"
-                                    },
-                                    scopedSlots: _vm._u(
-                                      [
-                                        {
-                                          key: "default",
-                                          fn: function(validationContext) {
-                                            return [
-                                              _c(
-                                                "b-form-group",
-                                                {
-                                                  staticClass: "mt-4",
-                                                  attrs: {
-                                                    label: "Fecha inicio:"
-                                                  }
-                                                },
-                                                [
-                                                  _c("b-form-datepicker", {
-                                                    staticClass: "mb-2",
-                                                    attrs: {
-                                                      id: "fecha-inicio",
-                                                      max: _vm.maxDate,
-                                                      state: _vm.getValidationState(
-                                                        validationContext
-                                                      )
-                                                    },
-                                                    model: {
-                                                      value: _vm.initialDate,
-                                                      callback: function($$v) {
-                                                        _vm.initialDate = $$v
-                                                      },
-                                                      expression: "initialDate"
-                                                    }
-                                                  }),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "b-form-invalid-feedback",
-                                                    [
-                                                      _vm._v(
-                                                        _vm._s(
-                                                          validationContext
-                                                            .errors[0]
-                                                        )
-                                                      )
-                                                    ]
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      null,
-                                      true
-                                    )
-                                  }),
-                                  _vm._v(" "),
-                                  _c("ValidationProvider", {
-                                    attrs: {
-                                      name: "fecha-final",
-                                      rules: "required"
-                                    },
-                                    scopedSlots: _vm._u(
-                                      [
-                                        {
-                                          key: "default",
-                                          fn: function(validationContext) {
-                                            return [
-                                              _c(
-                                                "b-form-group",
-                                                {
-                                                  staticClass: "mt-4",
-                                                  attrs: {
-                                                    label: "Fecha final:"
-                                                  }
-                                                },
-                                                [
-                                                  _c("b-form-datepicker", {
-                                                    staticClass: "mb-2",
-                                                    attrs: {
-                                                      id: "fecha-final",
-                                                      max: _vm.maxDate,
-                                                      state: _vm.getValidationState(
-                                                        validationContext
-                                                      )
-                                                    },
-                                                    model: {
-                                                      value: _vm.finalDate,
-                                                      callback: function($$v) {
-                                                        _vm.finalDate = $$v
-                                                      },
-                                                      expression: "finalDate"
-                                                    }
-                                                  }),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "b-form-invalid-feedback",
-                                                    [
-                                                      _vm._v(
-                                                        _vm._s(
-                                                          validationContext
-                                                            .errors[0]
-                                                        )
-                                                      )
-                                                    ]
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      null,
-                                      true
-                                    )
-                                  }),
-                                  _vm._v(" "),
-                                  _c(
-                                    "b-form-group",
-                                    [
-                                      _c("b-form-radio-group", {
-                                        attrs: {
-                                          options: [
-                                            {
-                                              text: "Aceptados",
-                                              value: true
-                                            },
-                                            {
-                                              text: "Pendientes",
-                                              value: false
-                                            }
-                                          ],
-                                          buttons: "",
-                                          "button-variant": "outline-primary",
-                                          size: "lg",
-                                          name: "radio-btn-outline"
-                                        },
-                                        on: { input: _vm.retrieveHistorial },
-                                        model: {
-                                          value: _vm.traspasosAccepted,
-                                          callback: function($$v) {
-                                            _vm.traspasosAccepted = $$v
-                                          },
-                                          expression: "traspasosAccepted"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "b-button",
-                                    {
-                                      attrs: {
-                                        block: "",
-                                        type: "submit",
-                                        variant: "primary"
-                                      }
-                                    },
-                                    [_vm._v("Buscar")]
-                                  )
-                                ],
-                                1
-                              )
-                            ]
-                          }
-                        }
-                      ])
-                    }),
-                    _vm._v(" "),
-                    _c("b-table", {
-                      staticClass: "mt-5",
-                      attrs: {
-                        busy: _vm.tableLoading,
-                        hover: "",
-                        responsive: "",
-                        striped: "",
-                        "head-variant": "dark",
-                        "table-variant": "light",
-                        items: _vm.historialItems,
-                        fields: _vm.computedHistorialTableFields
-                      },
-                      scopedSlots: _vm._u([
-                        {
-                          key: "cell(detalles)",
-                          fn: function(row) {
-                            return [
-                              _c(
-                                "b-button",
-                                {
-                                  attrs: { size: "sm" },
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.traspasoLoadDetails(row.item)
-                                    }
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    "\n                                Detalles\n                            "
-                                  )
-                                ]
-                              )
-                            ]
-                          }
-                        },
-                        {
-                          key: "cell(accepted)",
-                          fn: function(row) {
-                            return [
-                              row.item.accepted
-                                ? _c("div", [
-                                    _vm._v(
-                                      "\n                                " +
-                                        _vm._s(row.item.updated_at) +
-                                        "\n                            "
-                                    )
+                                    ])
                                   ])
-                                : _vm._e()
-                            ]
+                                ])
+                              }),
+                              1
+                            )
+                          : _vm._e()
+                      ],
+                      1
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.can("ver traspasos")
+                  ? _c(
+                      "div",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.traspasoType == "historial",
+                            expression: "traspasoType == 'historial'"
                           }
-                        },
-                        {
-                          key: "table-busy",
-                          fn: function() {
-                            return [
-                              _c(
-                                "div",
-                                {
-                                  staticClass: "text-center text-primary my-2"
-                                },
-                                [
-                                  _c("b-spinner", {
-                                    staticClass: "align-middle"
-                                  }),
-                                  _vm._v(" "),
-                                  _c("strong", [_vm._v("Loading...")])
-                                ],
-                                1
-                              )
-                            ]
+                        ]
+                      },
+                      [
+                        _c("h1", [_vm._v("Historial de traspasos")]),
+                        _vm._v(" "),
+                        _c("validation-observer", {
+                          ref: "observer",
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "default",
+                                fn: function(ref) {
+                                  var handleSubmit = ref.handleSubmit
+                                  return [
+                                    _c(
+                                      "b-form",
+                                      {
+                                        on: {
+                                          submit: function($event) {
+                                            $event.preventDefault()
+                                            return handleSubmit(
+                                              _vm.retrieveHistorial
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("ValidationProvider", {
+                                          attrs: {
+                                            name: "fecha-inicio",
+                                            rules: "required"
+                                          },
+                                          scopedSlots: _vm._u(
+                                            [
+                                              {
+                                                key: "default",
+                                                fn: function(
+                                                  validationContext
+                                                ) {
+                                                  return [
+                                                    _c(
+                                                      "b-form-group",
+                                                      {
+                                                        staticClass: "mt-4",
+                                                        attrs: {
+                                                          label: "Fecha inicio:"
+                                                        }
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "b-form-datepicker",
+                                                          {
+                                                            staticClass: "mb-2",
+                                                            attrs: {
+                                                              id:
+                                                                "fecha-inicio",
+                                                              max: _vm.maxDate,
+                                                              state: _vm.getValidationState(
+                                                                validationContext
+                                                              )
+                                                            },
+                                                            model: {
+                                                              value:
+                                                                _vm.initialDate,
+                                                              callback: function(
+                                                                $$v
+                                                              ) {
+                                                                _vm.initialDate = $$v
+                                                              },
+                                                              expression:
+                                                                "initialDate"
+                                                            }
+                                                          }
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "b-form-invalid-feedback",
+                                                          [
+                                                            _vm._v(
+                                                              _vm._s(
+                                                                validationContext
+                                                                  .errors[0]
+                                                              )
+                                                            )
+                                                          ]
+                                                        )
+                                                      ],
+                                                      1
+                                                    )
+                                                  ]
+                                                }
+                                              }
+                                            ],
+                                            null,
+                                            true
+                                          )
+                                        }),
+                                        _vm._v(" "),
+                                        _c("ValidationProvider", {
+                                          attrs: {
+                                            name: "fecha-final",
+                                            rules: "required"
+                                          },
+                                          scopedSlots: _vm._u(
+                                            [
+                                              {
+                                                key: "default",
+                                                fn: function(
+                                                  validationContext
+                                                ) {
+                                                  return [
+                                                    _c(
+                                                      "b-form-group",
+                                                      {
+                                                        staticClass: "mt-4",
+                                                        attrs: {
+                                                          label: "Fecha final:"
+                                                        }
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "b-form-datepicker",
+                                                          {
+                                                            staticClass: "mb-2",
+                                                            attrs: {
+                                                              id: "fecha-final",
+                                                              max: _vm.maxDate,
+                                                              state: _vm.getValidationState(
+                                                                validationContext
+                                                              )
+                                                            },
+                                                            model: {
+                                                              value:
+                                                                _vm.finalDate,
+                                                              callback: function(
+                                                                $$v
+                                                              ) {
+                                                                _vm.finalDate = $$v
+                                                              },
+                                                              expression:
+                                                                "finalDate"
+                                                            }
+                                                          }
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "b-form-invalid-feedback",
+                                                          [
+                                                            _vm._v(
+                                                              _vm._s(
+                                                                validationContext
+                                                                  .errors[0]
+                                                              )
+                                                            )
+                                                          ]
+                                                        )
+                                                      ],
+                                                      1
+                                                    )
+                                                  ]
+                                                }
+                                              }
+                                            ],
+                                            null,
+                                            true
+                                          )
+                                        }),
+                                        _vm._v(" "),
+                                        _c(
+                                          "b-form-group",
+                                          [
+                                            _c("b-form-radio-group", {
+                                              attrs: {
+                                                options: [
+                                                  {
+                                                    text: "Aceptados",
+                                                    value: true
+                                                  },
+                                                  {
+                                                    text: "Pendientes",
+                                                    value: false
+                                                  }
+                                                ],
+                                                buttons: "",
+                                                "button-variant":
+                                                  "outline-primary",
+                                                size: "lg",
+                                                name: "radio-btn-outline"
+                                              },
+                                              on: {
+                                                input: _vm.retrieveHistorial
+                                              },
+                                              model: {
+                                                value: _vm.traspasosAccepted,
+                                                callback: function($$v) {
+                                                  _vm.traspasosAccepted = $$v
+                                                },
+                                                expression: "traspasosAccepted"
+                                              }
+                                            })
+                                          ],
+                                          1
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "b-button",
+                                          {
+                                            attrs: {
+                                              block: "",
+                                              type: "submit",
+                                              variant: "primary"
+                                            }
+                                          },
+                                          [_vm._v("Buscar")]
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                }
+                              }
+                            ],
+                            null,
+                            false,
+                            1453472187
+                          )
+                        }),
+                        _vm._v(" "),
+                        _c("b-table", {
+                          staticClass: "mt-5",
+                          attrs: {
+                            busy: _vm.tableLoading,
+                            hover: "",
+                            responsive: "",
+                            striped: "",
+                            "head-variant": "dark",
+                            "table-variant": "light",
+                            items: _vm.historialItems,
+                            fields: _vm.computedHistorialTableFields
                           },
-                          proxy: true
-                        }
-                      ])
-                    })
-                  ],
-                  1
-                ),
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "cell(detalles)",
+                                fn: function(row) {
+                                  return [
+                                    _c(
+                                      "b-button",
+                                      {
+                                        attrs: { size: "sm" },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.traspasoLoadDetails(
+                                              row.item
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                Detalles\n                            "
+                                        )
+                                      ]
+                                    )
+                                  ]
+                                }
+                              },
+                              {
+                                key: "cell(accepted)",
+                                fn: function(row) {
+                                  return [
+                                    row.item.accepted
+                                      ? _c("div", [
+                                          _vm._v(
+                                            "\n                                " +
+                                              _vm._s(row.item.updated_at) +
+                                              "\n                            "
+                                          )
+                                        ])
+                                      : _vm._e()
+                                  ]
+                                }
+                              },
+                              {
+                                key: "table-busy",
+                                fn: function() {
+                                  return [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass:
+                                          "text-center text-primary my-2"
+                                      },
+                                      [
+                                        _c("b-spinner", {
+                                          staticClass: "align-middle"
+                                        }),
+                                        _vm._v(" "),
+                                        _c("strong", [_vm._v("Loading...")])
+                                      ],
+                                      1
+                                    )
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            1121792543
+                          )
+                        })
+                      ],
+                      1
+                    )
+                  : _vm._e(),
                 _vm._v(" "),
                 _vm.traspasoType == "detalle"
                   ? _c(
@@ -89653,41 +89945,65 @@ var render = function() {
                                 { staticClass: "col-sm" },
                                 [
                                   _c(
-                                    "b-button",
-                                    {
-                                      attrs: { variant: "danger" },
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.cancelarTraspaso(
-                                            _vm.detailTraspaso.id
-                                          )
-                                        }
-                                      }
-                                    },
+                                    "b-form-group",
+                                    { staticClass: "mt-2" },
                                     [
-                                      _vm._v(
-                                        "\n                                Cancelar Traspaso\n                            "
-                                      )
-                                    ]
+                                      _vm.can("cancelar traspaso")
+                                        ? _c(
+                                            "b-button",
+                                            {
+                                              attrs: {
+                                                variant: "danger",
+                                                block: ""
+                                              },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.cancelarTraspaso(
+                                                    _vm.detailTraspaso.id
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                    Cancelar Traspaso\n                                "
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
                                   ),
                                   _vm._v(" "),
                                   _c(
-                                    "b-button",
-                                    {
-                                      attrs: { variant: "warning" },
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.aceptarTraspaso(
-                                            _vm.detailTraspaso.id
-                                          )
-                                        }
-                                      }
-                                    },
+                                    "b-form-group",
+                                    { staticClass: "mt-2" },
                                     [
-                                      _vm._v(
-                                        "\n                                Forzar Aceptar Traspaso\n                            "
-                                      )
-                                    ]
+                                      _vm.can("aceptar traspaso")
+                                        ? _c(
+                                            "b-button",
+                                            {
+                                              attrs: {
+                                                variant: "success",
+                                                block: ""
+                                              },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.aceptarTraspaso(
+                                                    _vm.detailTraspaso.id
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                   Aceptar Traspaso\n                                "
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
                                   )
                                 ],
                                 1
@@ -103150,7 +103466,7 @@ Vue.use(laravel_permission_to_vuejs__WEBPACK_IMPORTED_MODULE_3__["default"]); //
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('inventario-component', __webpack_require__(/*! ./components/InventarioComponent.vue */ "./resources/js/components/InventarioComponent.vue")["default"]);
-Vue.component('select-sucursal', __webpack_require__(/*! ./components/SelectSucursalComponent.vue */ "./resources/js/components/SelectSucursalComponent.vue")["default"]);
+Vue.component('select-statuses', __webpack_require__(/*! ./components/SelectStatusesComponent.vue */ "./resources/js/components/SelectStatusesComponent.vue")["default"]);
 Vue.component('checkbox-status', __webpack_require__(/*! ./components/StatusCheckboxComponent.vue */ "./resources/js/components/StatusCheckboxComponent.vue")["default"]);
 Vue.component('radio-producto', __webpack_require__(/*! ./components/RadioProductoComponent.vue */ "./resources/js/components/RadioProductoComponent.vue")["default"]);
 Vue.component('export-excel', __webpack_require__(/*! ./components/ExportExcelComponent.vue */ "./resources/js/components/ExportExcelComponent.vue")["default"]);
@@ -103793,19 +104109,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/SelectSucursalComponent.vue":
+/***/ "./resources/js/components/SelectStatusesComponent.vue":
 /*!*************************************************************!*\
-  !*** ./resources/js/components/SelectSucursalComponent.vue ***!
+  !*** ./resources/js/components/SelectStatusesComponent.vue ***!
   \*************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& */ "./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&");
-/* harmony import */ var _SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SelectSucursalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&");
+/* harmony import */ var _SelectStatusesComponent_vue_vue_type_template_id_25e75bf4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectStatusesComponent.vue?vue&type=template&id=25e75bf4& */ "./resources/js/components/SelectStatusesComponent.vue?vue&type=template&id=25e75bf4&");
+/* harmony import */ var _SelectStatusesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SelectStatusesComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/SelectStatusesComponent.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var vue_multiselect_dist_vue_multiselect_min_css_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css& */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.css?vue&type=style&index=0&lang=css&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SelectStatusesComponent.vue?vue&type=style&index=1&lang=css& */ "./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -103814,10 +104132,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
+  _SelectStatusesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _SelectStatusesComponent_vue_vue_type_template_id_25e75bf4___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _SelectStatusesComponent_vue_vue_type_template_id_25e75bf4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -103827,38 +104145,54 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/SelectSucursalComponent.vue"
+component.options.__file = "resources/js/components/SelectStatusesComponent.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&":
+/***/ "./resources/js/components/SelectStatusesComponent.vue?vue&type=script&lang=js&":
 /*!**************************************************************************************!*\
-  !*** ./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js& ***!
+  !*** ./resources/js/components/SelectStatusesComponent.vue?vue&type=script&lang=js& ***!
   \**************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectSucursalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectStatusesComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&":
+/***/ "./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css& ***!
+  \**********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectStatusesComponent.vue?vue&type=style&index=1&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=style&index=1&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_style_index_1_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/SelectStatusesComponent.vue?vue&type=template&id=25e75bf4&":
 /*!********************************************************************************************!*\
-  !*** ./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& ***!
+  !*** ./resources/js/components/SelectStatusesComponent.vue?vue&type=template&id=25e75bf4& ***!
   \********************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectSucursalComponent.vue?vue&type=template&id=a3cdf0b4&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_template_id_25e75bf4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./SelectStatusesComponent.vue?vue&type=template&id=25e75bf4& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SelectStatusesComponent.vue?vue&type=template&id=25e75bf4&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_template_id_25e75bf4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectSucursalComponent_vue_vue_type_template_id_a3cdf0b4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SelectStatusesComponent_vue_vue_type_template_id_25e75bf4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

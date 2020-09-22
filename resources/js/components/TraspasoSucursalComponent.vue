@@ -17,6 +17,7 @@
                                 v-model.lazy="traspasoType"
                                 :options="traspasoOptions"
                                 buttons
+                                v-if="can('traspasar stock')"
                             >
                             </b-form-radio-group>
                         </b-nav-form>
@@ -57,7 +58,10 @@
                     </b-alert>
 
                     <!-- nuevo traspaso -->
-                    <div v-show="traspasoType == 'nuevo'">
+                    <div
+                        v-show="traspasoType == 'nuevo'"
+                        v-if="can('traspasar stock')"
+                    >
                         <h1>Agregar Producto a traspasar:</h1>
                         <validation-observer
                             ref="observer"
@@ -77,7 +81,7 @@
                                         class="mt-4"
                                     >
                                         <select-general
-                                            url="/admin/inventarios"
+                                            url="/inventario"
                                             pholder="Seleccionar Inventario"
                                             v-model="inventario"
                                             :state="
@@ -163,7 +167,7 @@
                                         </div>
                                         <div class="col-sm">
                                             <B>Status:</B>
-                                            {{ item.status}}
+                                            {{ item.status }}
                                         </div>
                                         <div class="col-sm" v-if="item.equipo">
                                             <B>Equipo:</B>
@@ -195,7 +199,10 @@
 
                     <!-- historial de traspasos -->
 
-                    <div v-show="traspasoType == 'historial'">
+                    <div
+                        v-show="traspasoType == 'historial'"
+                        v-if="can('ver traspasos')"
+                    >
                         <h1>Historial de traspasos</h1>
                         <validation-observer
                             ref="observer"
@@ -356,16 +363,20 @@
                                 </h5>
                             </div>
 
-                           
-                            <div class="col-sm"  v-if="detailTraspaso.accepted == true">
+                            <div
+                                class="col-sm"
+                                v-if="detailTraspaso.accepted == true"
+                            >
                                 <h5>
                                     <b>Aceptado:</b>
                                     {{ detailTraspaso.updated_at }}
                                 </h5>
                             </div>
 
-                            
-                            <div class="col-sm" v-if="detailTraspaso.accepted == true">
+                            <div
+                                class="col-sm"
+                                v-if="detailTraspaso.accepted == true"
+                            >
                                 <h5>
                                     <b>Aceptado por:</b>
                                     {{ detailTraspaso.user_name }}
@@ -401,18 +412,30 @@
                             v-if="detailTraspaso.accepted == false"
                         >
                             <div class="col-sm">
-                                <b-button
-                                    variant="danger"
-                                    @click="cancelarTraspaso(detailTraspaso.id)"
-                                >
-                                    Cancelar Traspaso
-                                </b-button>
-                                <b-button
-                                    variant="warning"
-                                    @click="aceptarTraspaso(detailTraspaso.id)"
-                                >
-                                    Forzar Aceptar Traspaso
-                                </b-button>
+                                <b-form-group class="mt-2">
+                                    <b-button
+                                        variant="danger"
+                                        @click="
+                                            cancelarTraspaso(detailTraspaso.id)
+                                        "
+                                        v-if="can('cancelar traspaso')"
+                                        block
+                                    >
+                                        Cancelar Traspaso
+                                    </b-button>
+                                </b-form-group>
+                                <b-form-group class="mt-2">
+                                    <b-button
+                                        variant="success"
+                                        @click="
+                                            aceptarTraspaso(detailTraspaso.id)
+                                        "
+                                        v-if="can('aceptar traspaso')"
+                                        block
+                                    >
+                                       Aceptar Traspaso
+                                    </b-button>
+                                </b-form-group>
                             </div>
                         </div>
 
@@ -513,7 +536,7 @@ export default {
                 .toISOString()
                 .substring(0, 10),
 
-           inventario: null,
+            inventario: null,
 
             aceptacionRequired: true,
 
@@ -565,7 +588,7 @@ export default {
         cancelarTraspaso(item) {
             this.isLoading = true;
             axios
-                .delete(`/admin/inventario/traspasos/${item}`)
+                .delete(`/inventario/traspasos/${item}`)
                 .then(
                     function (response) {
                         this.isLoading = false;
@@ -580,7 +603,7 @@ export default {
         aceptarTraspaso(item) {
             this.isLoading = true;
             axios
-                .put(`/admin/inventario/traspasos/${item}`)
+                .put(`/inventario/traspasos/${item}`)
                 .then(
                     function (response) {
                         this.isLoading = false;
@@ -602,7 +625,7 @@ export default {
             this.traspasoType = "detalle";
 
             axios
-                .get(`/admin/inventario/traspasos/${item.id}`)
+                .get(`/inventario/traspasos/${item.id}`)
                 .then(
                     function (response) {
                         this.detailTraspaso = response.data.data;
@@ -622,7 +645,7 @@ export default {
             this.tableLoading = true;
 
             axios
-                .get("/admin/inventario/traspasos", {
+                .get("/inventario/traspasos", {
                     params: {
                         initial_date: this.initialDate,
                         final_date: this.finalDate,
@@ -668,7 +691,7 @@ export default {
             data.append("inventario_id", this.inventario.id);
             data.append("aceptacion_required", this.aceptacionRequired);
 
-            axios.post(`/admin/inventario/traspasos/`, data).then((res) => {
+            axios.post(`/inventario/traspasos/`, data).then((res) => {
                 this.$bvToast.toast(`Traspaso creado con exito`, {
                     title: "Exito",
                     autoHideDelay: 5000,

@@ -33,16 +33,16 @@ class InventarioController extends Controller
             if ($user->can('all inventarios')) {
 
                 $inventarios =  Inventario::all();
-            } elseif ($user->can('get inventarios')) {
+            } elseif ($user->can('distribution inventarios')) {
 
-                if ($user->can('distribution inventarios')) {
+               
 
                     $inventarios =  $userDistribution->inventarios()->get();
                 } else {
 
                     $inventarios =    $user->inventariosAsignados()->get();
                 }
-            }
+            
 
             $response = json_encode(InventarioResource::collection($inventarios));
             return $response;
@@ -82,7 +82,7 @@ class InventarioController extends Controller
 
         $user = Auth::user();
 
-        $userDistribution = $user->distribution();
+        $userDistribution = $user->distribution;
 
         $producto = $request->producto;
 
@@ -103,7 +103,7 @@ class InventarioController extends Controller
                     }else{
                         $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
     
-                        $imeis = Imei::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get();  
+                        $imeis = Imei::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get();    
                         
                         $response = ImeiResource::collection($imeis);
                     }

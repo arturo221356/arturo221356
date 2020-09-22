@@ -1,17 +1,15 @@
 <?php
 
 namespace Tests\Feature;
+use App\Icc;
 
-use App\Imei;
-use App\Sucursal;
-use Database\Factories\EquipoFactory;
-use Database\Factories\IccFactory;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    use RefreshDatabase;
+   
     /**
      * A basic test example.
      *
@@ -20,8 +18,5 @@ class ExampleTest extends TestCase
     public function testBasicTest()
     {
         
-
-        $response = Sucursal::factory()->times(10)->create();
-        dump($response);
     }
 }

@@ -28,7 +28,7 @@ class Inventario extends Model
     {
         return $this->hasManyThrough('App\Linea','App\Icc');
     }
-    public function supervisores()
+    public function usuariosAsignados()
     {
         return $this->belongsToMany('App\User');
     }

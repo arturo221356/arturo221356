@@ -5,70 +5,63 @@
                 <div class="col-md-4 mx-auto">
                     <div v-show="editMode == false">
                         <h1>Reporte de Inventario</h1>
-                        <b-form>
-                            <b-form-group>
-                                <b-form-radio-group
-                                    class="align-middle"
-                                    id="radio-producto"
-                                    v-model="producto"
-                                    :options="productoOptions"
-                                    buttons
-                                    name="radio-producto"
-                                    @change="tableItems = []"
-                                ></b-form-radio-group>
-                            </b-form-group>
-
-                            <b-form-group label="Inventario:" label-size="lg" v-if="can('get inventarios')">
-                                <select-general
-                                    url="/inventario"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="inventario"
-                                    :empty="true"
-                                    :todas="true"
-                                >
-                                </select-general>
-                                {{ inventario }}
-                            </b-form-group>
-                            <b-form-group
-                                label="Inventario estatus:"
-                                label-size="lg"
+                        <validation-observer
+                            ref="observer"
+                            v-slot="{ handleSubmit }"
+                        >
+                            <b-form
+                                @submit.prevent="handleSubmit(loadInventario)"
                             >
-                                <select-general
-                                    url="/admin/inventarios"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="inventarioStatus"
-                                    :multiple="true"
-                                    :empty="true"
-                                    :todas="true"
+                                <b-form-group>
+                                    <b-form-radio-group
+                                        class="align-middle"
+                                        id="radio-producto"
+                                        v-model="producto"
+                                        :options="productoOptions"
+                                        buttons
+                                        name="radio-producto"
+                                        @change="tableItems = []"
+                                    ></b-form-radio-group>
+                                </b-form-group>
+                                <ValidationProvider
+                                    v-slot="validationContext"
+                                    rules="required"
                                 >
-                                </select-general>
-                                {{ inventarioStatus }}
-                            </b-form-group>
-
-                            <b-form-group
-                                label="Linea estatus:"
-                                label-size="lg"
-                            >
-                                <select-general
-                                    url="/admin/inventarios"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="lineaStatus"
-                                    :multiple="true"
-                                    :empty="true"
-                                    :todas="true"
+                                    <b-form-group
+                                        label="Inventario:"
+                                        label-size="lg"
+                                    >
+                                        <select-general
+                                            url="/inventario"
+                                            pholder="Seleccionar Inventario"
+                                            v-model="inventario"
+                                            :empty="true"
+                                            :todas="
+                                                can('get inventarios')
+                                                    ? true
+                                                    : false
+                                            "
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        >
+                                        </select-general>
+                                        <b-form-invalid-feedback
+                                            ><b-form-invalid-feedback>{{
+                                                validationContext.errors[0]
+                                            }}</b-form-invalid-feedback></b-form-invalid-feedback
+                                        >
+                                    </b-form-group>
+                                </ValidationProvider>
+                                <b-button block variant="primary" type="submit"
+                                    >Cargar</b-button
                                 >
-                                </select-general>
-                                {{ lineaStatus }}
-                            </b-form-group>
-                            <b-button
-                                block
-                                variant="primary"
-                                @click="loadInventario"
-                                >Cargar</b-button
-                            >
-                        </b-form>
+                            </b-form>
+                        </validation-observer>
                     </div>
-                    <div v-show="editMode == true">
+                    <div v-show="editMode == true" v-if="can('update stock')">
                         <div class="row">
                             <div class="col-sm">
                                 <h1
@@ -78,7 +71,7 @@
                                     <b-icon
                                         icon="x-circle-fill"
                                         variant="danger"
-                                        @click="editMode = false"
+                                        @click="function(){editMode = false; resetEditableItem()}"
                                     ></b-icon>
                                 </h1>
                             </div>
@@ -91,93 +84,88 @@
                                 </h1>
                             </div>
                         </div>
-                            <div class="row">
-                                <div class="col-sm">
-                                    <h3>
-                                        {{ editableItem.serie }}
-                                    </h3>
-                                </div>
-                            
+                        <div class="row">
+                            <div class="col-sm">
+                                <h3>
+                                    {{ editableItem.serie }}
+                                </h3>
+                            </div>
                         </div>
-                       
-                        <b-form> 
-                            <b-form-group label="Inventario" label-size="lg">
-                                <select-general
-                                    url="/admin/inventarios"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="inventario"
-                                    :empty="true"
-                                    :todas="true"
-                                >
-                                </select-general>
-                                {{ inventario }}
-                            </b-form-group>
+
+                        <b-form>
                             <b-form-group
-                                label="estatus:"
+                                label="Inventario"
                                 label-size="lg"
-                            >
-                                <select-general
-                                    url="/admin/inventarios"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="lineaStatus"
-                                    :multiple="true"
-                                    :empty="true"
-                                    :todas="true"
-                                >
-                                </select-general>
-                                {{ lineaStatus }}
-                            </b-form-group>
-                            <b-form-group
-                                label="Linea estatus:"
-                                label-size="lg"
-                            >
-                                <select-general
-                                    url="/admin/inventarios"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="lineaStatus"
-                                    :multiple="true"
-                                    :empty="true"
-                                    :todas="true"
-                                >
-                                </select-general>
-                                {{ lineaStatus }}
-                            </b-form-group>
-                            <b-form-group
-                                label="Compañia:"
-                                label-size="lg"
+                                v-if="can('full update stock')"
                             >
                                 <select-general
                                     url="/inventario"
                                     pholder="Seleccionar Inventario"
-                                    v-model="lineaStatus"
-                                    :multiple="true"
-                                    :empty="true"
-                                    :todas="true"
+                                    v-model="editableItem.inventario"
                                 >
                                 </select-general>
-                                {{ lineaStatus }}
+                            </b-form-group>
+                            <b-form-group label="Estatus:" label-size="lg">
+                                <select-statuses
+                                    estatusable="inventario"
+                                    v-model="editableItem.status"
+                                ></select-statuses>
+                            </b-form-group>
+
+                            <b-form-group
+                                label="Compañia:"
+                                label-size="lg"
+                                v-if="renderCompany"
+                            >
+                                <select-general
+                                    url="/get/companies"
+                                    pholder="Seleccionar Compañia"
+                                    v-model="editableItem.company"
+                                >
+                                </select-general>
                             </b-form-group>
                             <b-form-group
                                 label="Tipo:"
                                 label-size="lg"
+                                v-if="renderSimType"
                             >
                                 <select-general
-                                    url="/admin/inventarios"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="lineaStatus"
-                                    :multiple="true"
-                                    :empty="true"
-                                    :todas="true"
+                                    url="/get/icctypes"
+                                    pholder="Seleccionar tipo de sim"
+                                    v-model="editableItem.iccType"
+                                    :query="editableItem.company.id"
                                 >
                                 </select-general>
-                                {{ lineaStatus }}
                             </b-form-group>
-                            <b-form-group label="Comentario" label-size="lg"><b-form-textarea max-rows="6" placeholder="Comentario"></b-form-textarea></b-form-group>
+
+                            <b-form-group
+                                label="Equipo:"
+                                label-size="lg"
+                                v-if="renderEquipo"
+                            >
+                                <select-general
+                                    url="/get/equipos"
+                                    pholder="Seleccionar Equipo"
+                                    v-model="editableItem.equipo"
+                                    :equipo="true"
+                                >
+                                </select-general>
+                            </b-form-group>
+
+                            <b-form-group label="Comentario" label-size="lg"
+                                ><b-form-textarea
+                                    v-model="editableItem.comment"
+                                    max-rows="6"
+                                    placeholder="Comentario"
+                                ></b-form-textarea
+                            ></b-form-group>
+
                             <b-form-group>
-                                <b-button block variant="success">Guardar</b-button>
+                                <b-button block variant="success"
+                                    >Guardar</b-button
+                                >
                             </b-form-group>
                         </b-form>
-                        
                     </div>
                 </div>
                 <div
@@ -269,8 +257,6 @@ export default {
     props: {},
     data() {
         return {
-            userRole: "admin",
-
             tableBusy: false,
 
             tableFilter: null,
@@ -279,7 +265,15 @@ export default {
 
             editMode: false,
 
-            editableItem: {},
+            editableItem: {
+                inventario: null,
+                status: null,
+                iccType: null,
+                company: null,
+                marca: null,
+                modelo: null,
+                comment: null,
+            },
 
             productoOptions: [
                 { text: "Sims", value: "Icc" },
@@ -288,6 +282,8 @@ export default {
             inventario: [],
 
             inventarioStatus: [],
+
+            item: {},
 
             lineaStatus: [],
 
@@ -298,7 +294,26 @@ export default {
             countItems: 0,
         };
     },
+
     methods: {
+        getValidationState({ dirty, validated, valid = null }) {
+            return dirty || validated ? valid : null;
+        },
+        resetEditableItem() {
+            this.editableItem.inventario = null;
+
+            this.editableItem.serie = null;
+
+            this.editableItem.comment = null;
+
+            this.editableItem.company = null;
+
+            this.editableItem.status = null;
+
+            this.editableItem.equipo = null;
+
+            this.editableItem.iccType = null;
+        },
         loadInventario() {
             this.tableBusy = true;
             this.isLoading = true;
@@ -324,61 +339,174 @@ export default {
                 });
         },
         editItem(item, row) {
-            this.editableItem = {};
+            
+            this.resetEditableItem();
             console.log(item);
-            console.log(row);
+
             this.editMode = true;
 
-            this.editableItem = item;
-            window.scrollTo(0,0);
+            this.editableItem.inventario = {
+                id: item.inventario_id,
+                name: item.inventario_name,
+            };
+
+            this.editableItem.serie = item.serie;
+
+            if(item.comment){this.editableItem.comment = item.comment.comment;}
+
+            this.editableItem.company = item.company;
+
+            this.editableItem.status = { id: item.status, name: item.status };
+
+            this.editableItem.equipo = item.equipo;
+
+            this.editableItem.iccType = item.type;
+
+            window.scrollTo(0, 0);
         },
         tableFiltered(filteredItems) {
             this.countItems = filteredItems.length;
         },
     },
     computed: {
+        renderSimType: function () {
+            if (this.can("full update stock") && this.editableItem.company) {
+                return true;
+            }
+        },
+        renderCompany: function () {
+            if (this.can("full update stock") && this.producto == "Icc") {
+                return true;
+            }
+        },
+        renderEquipo: function () {
+            if (this.can("full update stock") && this.producto == "Imei") {
+                return true;
+            }
+        },
         computedTableFields: function () {
-            if (this.producto == "Imei") {
-                switch (this.userRole) {
-                    case "admin":
-                        return [
+            var $response = [];
+            switch (this.producto) {
+                case "Imei":
+                    if (this.can("update stock")) {
+                        $response = [
+                            { key: "serie", label: "Imei" },
+                            {
+                                key: "inventario_name",
+                                label: "Inventario",
+                                sortable: true,
+                            },
+                            { key: "status", label: "Estatus", sortable: true },
+                            {
+                                key: "equipo.marca",
+                                label: "Marca",
+                                sortable: true,
+                            },
+                            {
+                                key: "equipo.modelo",
+                                label: "Modelo",
+                                sortable: true,
+                            },
+                            {
+                                key: "equipo.precio",
+                                label: "Precio",
+                                sortable: true,
+                            },
+                            {
+                                key: "equipo.costo",
+                                label: "Costo",
+                                sortable: true,
+                            },
+                            {
+                                key: "created_at",
+                                label: "Creado",
+                                sortable: true,
+                            },
+                            {
+                                key: "updated_at",
+                                label: "Modificado",
+                                sortable: true,
+                            },
+                            { key: "editar", label: "Editar" },
+                        ];
+                    } else {
+                        $response = [
                             { key: "serie", label: "Imei" },
                             { key: "inventario_name", label: "Inventario" },
                             { key: "status", label: "Estatus" },
-                            { key: "marca", label: "Marca" },
-                            { key: "modelo", label: "Modelo" },
+                            { key: "equipo.marca", label: "Marca" },
+                            { key: "equipo.modelo", label: "Modelo" },
                             { key: "precio", label: "Precio" },
-                            { key: "costo", label: "Costo" },
-                            { key: "created_at", label: "Agregado" },
+                            { key: "created_at", label: "Creado" },
                             { key: "updated_at", label: "Modificado" },
-                            { key: "editar", label: "Editar" },
                         ];
-                        break;
+                    }
 
-                    case "supervisor":
-                        break;
+                    return $response;
 
-                    default:
-                        break;
-                }
-            } else if (this.producto == "Icc") {
-                switch (this.userRole) {
-                    case "admin":
-                        return [
+                    break;
+
+                case "Icc":
+                    $response = [];
+
+                    if (this.can("update stock")) {
+                        $response = [
                             { key: "serie", label: "Icc" },
-                            { key: "inventario_name", label: "Inventario" },
-                            { key: "status", label: "Estatus" },
-                            { key: "company", label: "Compañia" },
-                            { key: "type", label: "Tipo" },
-                            { key: "created_at", label: "Agregado" },
-                            { key: "updated_at", label: "Modificado" },
+                            {
+                                key: "inventario_name",
+                                label: "Inventario",
+                                sortable: true,
+                            },
+                            { key: "status", label: "Estatus", sortable: true },
+                            {
+                                key: "company.name",
+                                label: "Compañia",
+                                sortable: true,
+                            },
+                            { key: "type.name", label: "Tipo", sortable: true },
+                            {
+                                key: "created_at",
+                                label: "Creado",
+                                sortable: true,
+                            },
+                            {
+                                key: "updated_at",
+                                label: "Modificado",
+                                sortable: true,
+                            },
                             { key: "editar", label: "Editar" },
                         ];
-                        break;
-                    case "supervisor":
-                        break;
-                    default:
-                }
+                    } else {
+                        $response = [
+                            { key: "serie", label: "Icc" },
+                            {
+                                key: "inventario_name",
+                                label: "Inventario",
+                                sortable: true,
+                            },
+                            { key: "status", label: "Estatus", sortable: true },
+                            {
+                                key: "company.name",
+                                label: "Compañia",
+                                sortable: true,
+                            },
+                            { key: "type.name", label: "Tipo", sortable: true },
+                            {
+                                key: "created_at",
+                                label: "Creado",
+                                sortable: true,
+                            },
+                            {
+                                key: "updated_at",
+                                label: "Modificado",
+                                sortable: true,
+                            },
+                        ];
+                    }
+
+                    return $response;
+
+                    break;
             }
         },
     },

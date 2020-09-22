@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -45,6 +45,9 @@ class ImeisController extends Controller
      */
     public function store(request $request)
     {
+        $user = Auth::user();
+        
+        if($user->can('store stock')){
         //array de mensajes de error y exitosos
         $errores = [];
         
@@ -154,6 +157,11 @@ class ImeisController extends Controller
 
         //regresa los mensajes de errores y exitosos
         return ['errors' => $errores, 'success' => $exitosos];
+        
+    
+    
+    
+    }   return ['errors' => ['usuario sin permisos']];
      
     }
 
@@ -186,20 +194,23 @@ class ImeisController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-        $imei = Imei::findorfail($id);
-
-
-        $imei->update($request->all());
+        $user = Auth::user();
+        if($user->can(' full update stock')){
+            $imei = Imei::findorfail($id);
 
 
-        if ($request->comment != NULL) {
-
-            $imei->comment()->updateOrCreate([], ['comment' => $request->comment]);
-        } else {
-
-            $imei->comment()->delete();
+            $imei->update($request->all());
+    
+    
+            if ($request->comment != NULL) {
+    
+                $imei->comment()->updateOrCreate([], ['comment' => $request->comment]);
+            } else {
+    
+                $imei->comment()->delete();
+            }
         }
+
     }
 
     /**
@@ -211,7 +222,10 @@ class ImeisController extends Controller
     public function destroy(imei $imei)
     {
 
-
-        $imei->delete();
+        $user = Auth::user();
+        if($user->can('destroy stock')){
+            $imei->delete();
+        }
+        
     }
 }

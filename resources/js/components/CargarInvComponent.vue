@@ -149,7 +149,7 @@
                                     label-size="lg"
                                 >
                                     <select-general
-                                        url="/admin/inventarios"
+                                         url="/inventario"
                                         pholder="Seleccionar Inventario"
                                         v-model="item.inventario"
                                         :state="
@@ -313,7 +313,7 @@ export default {
             //array con respuesta del servidor con las series erroneas
             errores: [],
 
-            postUrl: "/admin/imei",
+            postUrl: "/imei",
 
             isLoading: false,
 
@@ -477,9 +477,9 @@ export default {
     watch: {
         producto: function () {
             if (this.producto == "Imei") {
-                this.postUrl = "/admin/imei";
+                this.postUrl = "/imei/";
             } else if (this.producto == "Icc") {
-                this.postUrl = "/admin/icc";
+                this.postUrl = "/icc/";
             }
             this.clearItem();
 
