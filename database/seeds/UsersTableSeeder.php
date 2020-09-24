@@ -44,6 +44,8 @@ class UsersTableSeeder extends Seeder
 
     Permission::create(['name' => 'ver traspasos']);
 
+    Permission::create(['name' => 'preactivar linea']);
+
     //roles
     //super Admin
     $superAdminRole = Role::create(['name' => 'super-admin']);
@@ -62,7 +64,8 @@ class UsersTableSeeder extends Seeder
       'traspasar stock',
       'aceptar traspaso',
       'cancelar traspaso',
-      'ver traspasos'
+      'ver traspasos',
+      'preactivar linea',
     );
 
 

@@ -12,6 +12,8 @@ use Spatie\Searchable\SearchResult;
 
 use Spatie\ModelStatus\HasStatuses;
 
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
@@ -55,17 +57,9 @@ class Icc extends Model implements Searchable
     {
         return $this->belongsTo('App\Company');
     }
-    public function subproduct()
-    {
-        return $this->belongsTo('App\IccSubProduct', 'subproduct_id');
-    }
     public function comment()
     {
         return $this->morphOne('App\Comment', 'commentable');
-    }
-    public function details()
-    {
-        return $this->hasOne('App\IccDetail')->withDefault();
     }
     public function type()
     {
@@ -79,4 +73,15 @@ class Icc extends Model implements Searchable
     {
         return $this->hasOne('App\Linea');
     }
+
+    public function prueba()
+    {
+        $iccs = Icc::whereHas('inventario', function ($query) {
+            $user = Auth::user();
+            $query->where('distribution_id', $user->distribution->id);
+        });
+
+        return $iccs;
+    }
+    
 }

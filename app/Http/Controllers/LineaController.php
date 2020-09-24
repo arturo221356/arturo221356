@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Linea;
+
+use App\Icc;
+
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 
 class LineaController extends Controller
@@ -16,7 +21,35 @@ class LineaController extends Controller
     {
         //
     }
+    public function verificarIcc(Request $request)
+    {
+        $requestIcc = $request->icc;
 
+        $user = Auth::user();
+
+        if ($user->can('distribution inventarios')) {
+
+            $icc = Icc::where('icc', $requestIcc)->with('linea')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+
+                ->whereHas('inventario', function ($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })->get();
+        }else{
+           
+            $icc = Icc::where('icc', $requestIcc)->with('linea')
+            ->otherCurrentStatus(['Vendido', 'Traslado'])
+
+            ->whereHas('inventario', function ($query) {
+                $user = Auth::user();
+                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                $query->whereIn('inventario_id',$inventariosIds);
+            })->get();
+        }
+
+        return $icc;
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -33,10 +66,18 @@ class LineaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function preactivarPrepago(Request $request)
     {
-        //
+        $requestIcc = $request->icc;
+
+        $icc = Icc::where('icc', $requestIcc)->otherCurrentStatus(['Vendido', 'Traslado']);
+
+        $icc->linea->create([
+            'dn' => '3310512007',
+
+        ])->attach($producto);
     }
+
 
     /**
      * Display the specified resource.

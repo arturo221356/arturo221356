@@ -53,8 +53,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/get/companies', 'CompaniesController@index');
 
-    Route::get('/get/equipos', 'EquiposController@index')->middleware('auth');
+    Route::get('/get/equipos', 'EquiposController@index');
 
+    Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar linea');
+
+    Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar linea');
   
 
 });
@@ -74,9 +77,6 @@ Route::get('/pruebas', function (Request $request) {
 
 // searchs
 
-Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
-
-Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
 
 Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
 
