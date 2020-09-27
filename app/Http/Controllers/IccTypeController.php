@@ -17,7 +17,7 @@ class IccTypeController extends Controller
         $iccTypes = null;
 
         if($request->param){
-            $iccTypes = IccType::where('company_Id','=',$request->param)->get();
+            $iccTypes = IccType::where('company_id','=',$request->param)->get();
         }
 
        

@@ -21,13 +21,7 @@ class IccController extends Controller
      */
     public function index()
     {
-        $iccs = Icc::find(1)->get();
 
-        $products = IccProduct::all();
-
-
-
-        return view('admin.index', compact("iccs", "products"));
     }
 
     /**
