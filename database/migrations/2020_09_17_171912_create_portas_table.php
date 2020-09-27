@@ -16,10 +16,10 @@ class CreatePortasTable extends Migration
         Schema::create('portas', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nip');
-            $table->char('temporal',10);
-            $table->boolean('trafico');
-            $table->boolean('trafico_real');
-            $table->date('fvc');
+            $table->char('temporal',10)->nullable();
+            $table->boolean('trafico')->nullable();
+            $table->boolean('trafico_real')->nullable();
+            $table->date('fvc')->nullable();
             $table->timestamps();
         });
     }

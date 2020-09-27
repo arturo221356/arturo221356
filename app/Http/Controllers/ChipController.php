@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Chip;
+
+use App\Icc;
+
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 
 class ChipController extends Controller
@@ -35,7 +40,7 @@ class ChipController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**

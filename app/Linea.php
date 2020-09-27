@@ -8,6 +8,8 @@ use Spatie\ModelStatus\HasStatuses as HasStatuses;
 
 class Linea extends Model
 {
+    protected $fillable = ["icc_id", "dn", "icc_product_id", "icc_sub_product_id"];
+
     use HasStatuses;
 
     public function icc()
@@ -23,8 +25,6 @@ class Linea extends Model
     {
         return $this->belongsTo('App\IccProduct','icc_product_id');
     }
-    public function subProduct()
-    {
-        return $this->belongsTo('App\IccSubProduct','icc_sub_product_id');
-    }
+
+
 }

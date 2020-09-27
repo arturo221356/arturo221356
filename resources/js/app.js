@@ -64,6 +64,7 @@ Vue.component('venta-component', require('./components/VentaComponent.vue').defa
 Vue.component('select-general', require('./components/SelectGeneralComponent.vue').default);
 Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalComponent.vue').default);
 Vue.component('preactivar-linea', require('./components/PreactivarComponent.vue').default);
+Vue.component('activa-chip', require('./components/ActivaChip.vue').default);
 
 
 /**

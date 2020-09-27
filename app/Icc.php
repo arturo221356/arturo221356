@@ -30,7 +30,7 @@ class Icc extends Model implements Searchable
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ["icc", "inventario_id","distribution_id", "company_id", "icc_type_id"];
+    protected $fillable = ["icc", "inventario_id", "distribution_id", "company_id", "icc_type_id"];
 
     protected $appends = ['status'];
 
@@ -74,14 +74,24 @@ class Icc extends Model implements Searchable
         return $this->hasOne('App\Linea');
     }
 
-    public function prueba()
+    public function scopeIccInUserDistribution($query,$requestIcc)
     {
-        $iccs = Icc::whereHas('inventario', function ($query) {
+        
+        return $query->where('icc',$requestIcc)->with('linea')->whereHas('inventario', function ($query) {
             $user = Auth::user();
             $query->where('distribution_id', $user->distribution->id);
         });
-
-        return $iccs;
     }
-    
+    public function scopeIccInUserInventario($query,$requestIcc)
+    {
+        return $query->where('icc', $requestIcc)->with('linea')
+            ->otherCurrentStatus(['Vendido', 'Traslado'])
+
+            ->whereHas('inventario', function ($query) {
+                $user = Auth::user();
+                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                $query->whereIn('inventario_id',$inventariosIds);
+            });
+        
+    }
 }

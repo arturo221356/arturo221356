@@ -17,6 +17,7 @@ class CreateRecargasTable extends Migration
             $table->bigIncrements('id');
             $table->timestamps();
             $table->char('codigo')->unique();
+            $table->char('taecel_code')->unique();
             $table->char('name');
             $table->integer('monto');
             $table->unsignedInteger('company_id');

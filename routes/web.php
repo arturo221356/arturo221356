@@ -11,15 +11,24 @@
 |
 */
 //para pruebas
-
-use Illuminate\Support\Facades\Auth;
+use App\Transaction;
 use App\Icc;
+use App\Linea;
 use App\Imei;
 use App\Inventario;
 use App\Distribution;
+use App\IccProduct;
 use App\User;
+use App\Chip;
+use App\Porta;
+use App\Recarga;
 use GuzzleHttp\Middleware;
+use Illuminate\Support\Facades\Http;
+
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
+use SebastianBergmann\CodeUnit\TraitMethodUnit;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
@@ -27,7 +36,10 @@ Route::view('/home','home')->name('home')->middleware('auth');
 
 
 
-    Route::view('/','home')->name('home')->middleware('auth');
+Route::view('/','home')->name('home')->middleware('auth');
+
+
+Route::view('/activa-chip','linea.activa-chip')->name('activa-chip');
 
 
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
@@ -49,6 +61,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/icc', 'IccController');
 
+    Route::post('/preactivar-prepago', 'LineaController@preactivarPrepago');
+
     Route::get('/get/icctypes', 'IccTypeController@index');
 
     Route::get('/get/companies', 'CompaniesController@index');
@@ -63,16 +77,84 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/pruebas', function (Request $request) {
-   
+
+    $message = [];
+    
+    $monto = 100;
+
+    
+
+    $dn = '3310512007';
+
+    $linea = Linea::where('dn',$dn)->first();
 
 
-    $user = Auth::user();
 
-    return $user->distribution;
+        if($linea == null){
+
+            $message = [
+                'success' => false,
+                'message' => 'Numero no existe en la base de datos',
+
+            ];
+
+            return json_encode($message);
+        }
+        if($linea->status() == 'asdasd'){
+            $message = [
+                'success' => false,
+                'message' => 'Numero ya activado anteriormente',
+
+            ];
+
+            return json_encode($message);
+        }
 
 
+    $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
+
+
+
+    $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
+        'key' => 'c490127ff864a719bd89877f32a574de',
+        'nip' => '0c4ae19986107edd5ebcec3c6e08a0d0',
+        'producto'=> $recarga->taecel_code,
+        'referencia' => $dn
+    ]);
+    $response = json_decode($res);
+
+    $trasnsaction = new Transaction;
+
+    $trasnsaction->taecel = true;
+
+    $trasnsaction->taecel_success = $response->success;
+
+    if($response->data){
+        $trasnsaction->taecel_transID = $response->data->transID;
+    }
+    
+
+    $trasnsaction->taecel_message =  $response->message;
+
+    $trasnsaction->monto = $recarga->monto;
+
+    $trasnsaction->dn = $dn;
+
+    $trasnsaction->company_id = $recarga->company_id;
+
+    $trasnsaction->recarga_id = $recarga->id;
+
+    $trasnsaction->inventario_id = $linea->icc->inventario_id;
+
+    $trasnsaction->save();
+
+
+
+    return $trasnsaction;
 
 });
+
+
 
 
 // searchs

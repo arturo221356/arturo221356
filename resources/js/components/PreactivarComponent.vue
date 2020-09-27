@@ -25,6 +25,7 @@
                     <validation-observer
                         ref="observer"
                         v-slot="{ handleSubmit }"
+                        v-show="lineaDetail == false"
                     >
                         <b-form @submit.prevent="handleSubmit(verificarIcc)">
                             <ValidationProvider
@@ -40,7 +41,6 @@
                                     <b-input-group prepend="Icc">
                                         <b-form-input
                                             v-model.lazy="icc"
-                                            
                                             type="number"
                                             list="search-results"
                                             :state="
@@ -74,6 +74,20 @@
                             </ValidationProvider>
                         </b-form>
                     </validation-observer>
+                    <validation-observer v-if="lineaDetail == true">
+                        <b-form >
+                        <b-input v-model="currentIcc.dn"></b-input>
+
+                        <a>{{currentIcc.company}}</a>
+
+                        <a>{{currentIcc.type}}</a>
+
+                        <a>{{currentIcc.icc}}</a>
+
+                        <b-button @click="preactivarIcc">Preactivar</b-button>
+                    </b-form>
+                    </validation-observer>
+                    
                 </div>
             </div>
         </b-overlay>
@@ -87,6 +101,16 @@ export default {
             isLoading: false,
             icc: null,
             searchResults: [],
+            iccs: [],
+            lineaDetail: false,
+            dn: null,
+            currentIcc: {
+                icc: null,
+                company: null,
+                type: null,
+                dn: null
+            },
+            
         };
     },
     methods: {
@@ -96,15 +120,66 @@ export default {
         verificarIcc() {
             axios
                 .post("/linea/verificar-icc", { icc: this.icc })
-                .then(function (response) {
+                .then((response) => {
                     console.log(response.data);
+
+                    if (response.data.success == true) {
+
+                        this.lineaDetail = true;
+
+                        this.currentIcc.icc = response.data.data.icc;
+
+                        this.currentIcc.company =
+                            response.data.data.company.name;
+
+                        this.currentIcc.type = response.data.data.type.name;
+
+                        this.icc = null;
+                    }else{
+                        alert(response.data.message);
+                    }
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
                 });
         },
+        preactivarIcc(){
+                        axios
+                .post("/preactivar-prepago", { 
+                    icc: this.currentIcc.icc,
+                    
+                    dn: this.currentIcc.dn
+                    
+                    })
+                .then((response) => {
+                    console.log(response.data);
 
+                    if (response.data.success == true) {
+
+                        this.lineaDetail = true;
+
+                        this.currentIcc.icc = response.data.data.icc;
+
+                        this.currentIcc.company =
+                            response.data.data.company.name;
+
+                        this.currentIcc.type = response.data.data.type.name;
+
+                        this.icc = null;
+                    }else{
+                        alert(response.data.message);
+                    }
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
+        }
     },
-    watch:{
-        icc: function(val){
-           self = this; 
+    watch: {
+        icc: function (val) {
+            self = this;
             if (val >= 5) {
                 axios
                     .get("/search/traspaso-prediction", {
@@ -119,8 +194,8 @@ export default {
             } else {
                 self.searchResults = [];
             }
-        }
-    }
+        },
+    },
 };
 </script>
 
