@@ -149,7 +149,7 @@
                                     label-size="lg"
                                 >
                                     <select-general
-                                         url="/inventario"
+                                        url="/inventario"
                                         pholder="Seleccionar Inventario"
                                         v-model="item.inventario"
                                         :state="
@@ -200,7 +200,9 @@
                             <!-- valida la entrada de serie -->
                             <ValidationProvider
                                 v-slot="validationContext"
-                                :rules="`${serieRequired ? 'required':''}|numeric|${producto}`"
+                                :rules="`${
+                                    serieRequired ? 'required' : ''
+                                }|numeric|${producto}`"
                                 :name="producto"
                             >
                                 <b-form-group
@@ -256,7 +258,7 @@
                         <b-button
                             block
                             variant="primary"
-                            @click="sendData()"                       
+                            @click="sendData()"
                             type="submit"
                             :disabled="agregarButtonDisabled"
                             >Agregar a Inventario</b-button
@@ -398,50 +400,40 @@ export default {
         },
         //envia los datos a laravel para su almacenamiento
         sendData() {
-            
-           
-            
+            this.isLoading = true;
 
-            
-                    this.isLoading = true;
+            const self = this;
 
-                    const self = this;
+            const settings = {
+                headers: {
+                    "content-type": "multipart/form-data",
+                },
+            };
 
-                    const settings = {
-                        headers: {
-                            "content-type": "multipart/form-data",
-                        },
-                    };
+            const data = new FormData();
+            data.append("data", JSON.stringify(this.items));
+            data.append("file", this.file);
+            if (this.producto == "Icc") {
+                data.set("icc_type_id", this.item.simType.id);
+                data.set("company_id", this.item.company.id);
+            } else if (this.producto == "Imei") {
+                data.set("equipo_id", this.item.equipo.id);
+            }
+            data.set("inventario_id", this.item.inventario.id);
 
-                    const data = new FormData();
-                    data.append("data", JSON.stringify(this.items));
-                    data.append("file", this.file);
-                    if (this.producto == "Icc") {
-                        data.set("icc_type_id", this.item.simType.id);
-                        data.set("company_id", this.item.company.id);
-                    } else if (this.producto == "Imei") {
-                        data.set("equipo_id", this.item.equipo.id);
-                    }
-                    data.set("inventario_id", this.item.inventario.id);
+            axios.post(this.postUrl, data, settings).then(function (response) {
+                console.log(response.data);
 
-                    axios
-                        .post(this.postUrl, data, settings)
-                        .then(function (response) {
-                            console.log(response.data);
+                self.isLoading = false;
 
-                            self.isLoading = false;
+                self.errores = response.data.errors;
 
-                            self.errores = response.data.errors;
+                self.exitosos = response.data.success;
+            });
 
-                            self.exitosos = response.data.success;
-                        });
+            this.items = [];
 
-                    this.items = [];
-
-                    this.file = null;
-      
-
-           
+            this.file = null;
         },
     },
     computed: {
@@ -457,29 +449,32 @@ export default {
                 return this.exitosos.length;
             }
         },
-        agregarButtonDisabled(){
-            if(this.item.inventario == null || (this.items.length == 0 && this.file == null)){
+        agregarButtonDisabled() {
+            if (
+                this.item.inventario == null ||
+                (this.items.length == 0 && this.file == null)
+            ) {
                 return true;
-            }else{
-                if(this.producto == "Imei" && this.item.equipo == null){
+            } else {
+                if (this.producto == "Imei" && this.item.equipo == null) {
                     return true;
-                }else if( this.producto == "Icc" && (this.item.company == null || this.item.simType == null)){
+                } else if (
+                    this.producto == "Icc" &&
+                    (this.item.company == null || this.item.simType == null)
+                ) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
-                
-            }   
+            }
         },
-        
-
     },
     watch: {
         producto: function () {
             if (this.producto == "Imei") {
-                this.postUrl = "/imei/";
+                this.postUrl = "/imei";
             } else if (this.producto == "Icc") {
-                this.postUrl = "/icc/";
+                this.postUrl = "/icc";
             }
             this.clearItem();
 

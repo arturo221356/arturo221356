@@ -16,6 +16,8 @@ class CreateDistributionsTable extends Migration
         Schema::create('distributions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('taecel_key')->nullable();
+            $table->string('taecel_nip')->nullable();
             $table->timestamps();
         });
     }

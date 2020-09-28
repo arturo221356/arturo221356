@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
+use App\Imports\LineaImport;
+
+
+use Maatwebsite\Excel\Excel;
+
 class LineaController extends Controller
 {
     /**
@@ -38,9 +43,9 @@ class LineaController extends Controller
 
         if ($user->can('distribution inventarios')) {
 
-            $icc = Icc::iccInUserDistribution($requestIcc)->with('company','type')->first();
+            $icc = Icc::iccInUserDistribution($requestIcc)->with('company', 'type')->first();
         } else {
-            $icc = Icc::iccInUserInventario($requestIcc)->with('company','type')->first();
+            $icc = Icc::iccInUserInventario($requestIcc)->with('company', 'type')->first();
         }
 
         if ($icc->linea()->first() == null) {
@@ -76,41 +81,71 @@ class LineaController extends Controller
      */
     public function preactivarPrepago(Request $request)
     {
-        
+     
 
         $user = Auth::user();
 
-        if($user->can('preactivar linea'))
-        
-        $requestIcc = $request->icc;
+        if ($user->can('preactivar linea'))
 
-        $dn = $request->dn;
+            $iccs = json_decode($request->data);
 
-        if ($user->can('distribution inventarios')) {
+            $errores = [];
 
-            $icc = Icc::iccInUserDistribution($requestIcc)->first();
-        } else {
-            $icc = Icc::iccInUserInventario($requestIcc)->first();
+            $exitosos = [];
+
+        if ($request->hasFile('file')) {
+
+            $file = $request->file('file');
+
+
+            $lineaImport = new LineaImport();
+
+            $lineaImport->import($file);
+
+            //obtiene los los mensales de error
+            $lineaValidationErrors = $lineaImport->getErrors();
+            $lineaValidationSuccess = $lineaImport->getsuccess();
+
+            //pushea los mensajes a los arrays
+            foreach ($lineaValidationErrors as $validationErr) {
+                 array_push($errores, $validationErr);
+            }
+            foreach ($lineaValidationSuccess as $validationSucc) {
+                 array_push($exitosos, $validationSucc);
+            }
         }
-        if($icc->linea()->first() != null){
-            return $icc->linea()->first();
+
+        if ($iccs) {
+            foreach ($iccs as $item) {
+                $dn = $item->dn;
+
+                $requestIcc  = $item->icc;
+
+                if ($user->can('distribution inventarios')) {
+
+                    $icc = Icc::iccInUserDistribution($requestIcc)->first();
+                } else {
+                    $icc = Icc::iccInUserInventario($requestIcc)->first();
+                }
+                //si el icc ya tiene linea acitva, aqui falta meter al array de errores 
+                if ($icc->linea()->first() != null) {
+                    return $icc->linea()->first();
+                }
+
+                $chip = Chip::create([]);
+                $linea = $chip->linea()->create([
+                    'dn' => $dn,
+                    'icc_product_id' => 1,
+                    'icc_id' => $icc->id,
+
+                ]);
+                $linea->setStatus('Preactivo');
+            }
         }
+       
 
-
-        $chip = Chip::create([
-
-        ]);
-        $linea = $chip->linea()->create([
-            'dn' => $dn,
-            'icc_product_id' => 1,
-            'icc_id' => $icc->id,
-
-        ]);
-        $linea->setStatus('Preactivo');
-
-        $response = "hola";
-
-        return $response;
+         //regresa los mensajes de errores y exitosos
+        return ['errors' => $errores, 'success' => $exitosos];
     }
 
 
@@ -118,54 +153,90 @@ class LineaController extends Controller
 
 
 
-    public function activaChip(Request $request){
+    public function activaChip(Request $request)
+    {
+   
+        $message = [];
+    
+    $monto = 100;
 
-        $recarga = Recarga::find(1);
+    $user = Auth::user();
 
-        $dn = $request->dn;
+    $dn = $request->dn;
 
-        $linea = Linea::where('dn',$dn);
+    $linea = Linea::where('dn',$dn)->first();
+
+    $taecelKey = $linea->icc->inventario->distribution->taecel_key; 
+
+    $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
+
+
+
+    
+
+  
 
         if($linea == null){
-            return 'ni madres';
+
+            $message = [
+                'success' => false,
+                'message' => 'Numero no existe en la base de datos',
+
+            ];
+
+            return json_encode($message);
         }
-    
-        $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
-            'key' => 'c490127ff864a719bd89877f32a574de',
-            'nip' => '0c4ae19986107edd5ebcec3c6e08a0d0',
-            'producto'=> $recarga->taecel_code,
-            'referencia' => $dn
-        ]);
-        $response = json_decode($res);
-    
-        $trasnsaction = new Transaction;
-    
-        $trasnsaction->taecel = true;
-    
-        $trasnsaction->taecel_success = $response->success;
-    
-        if($response->data){
-            $trasnsaction->taecel_transID = $response->data->transID;
+        if($linea->status() == 'asdasd'){
+            $message = [
+                'success' => false,
+                'message' => 'Numero ya activado anteriormente',
+
+            ];
+
+            return json_encode($message);
         }
-        
+
+
+    $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
+
+       
+
+    $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
+        'key' => $taecelKey,
+        'nip' => $taecelNip,
+        'producto'=> $recarga->taecel_code,
+        'referencia' => $dn
+    ]);
+    $response = json_decode($res);
+
+    $trasnsaction = new Transaction;
+
+    $trasnsaction->taecel = true;
+
+    $trasnsaction->taecel_success = $response->success;
+
+    if($response->data){
+        $trasnsaction->taecel_transID = $response->data->transID;
+    }
     
-        $trasnsaction->taecel_message =  $response->message;
-    
-        $trasnsaction->monto = $recarga->monto;
-    
-        $trasnsaction->dn = $dn;
-    
-        $trasnsaction->company_id = $recarga->company_id;
-    
-        $trasnsaction->recarga_id = $recarga->id;
-    
-        $trasnsaction->inventario_id = 2;
-    
-        $trasnsaction->save();
-    
-    
-    
-        return $trasnsaction;
+
+    $trasnsaction->taecel_message =  $response->message;
+
+    $trasnsaction->monto = $recarga->monto;
+
+    $trasnsaction->dn = $dn;
+
+    $trasnsaction->company_id = $recarga->company_id;
+
+    $trasnsaction->recarga_id = $recarga->id;
+
+    $trasnsaction->inventario_id = $linea->icc->inventario_id;
+
+    $trasnsaction->save();
+
+
+
+    return $trasnsaction;
     }
 
 

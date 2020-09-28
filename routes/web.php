@@ -82,13 +82,21 @@ Route::get('/pruebas', function (Request $request) {
     
     $monto = 100;
 
-    
+    $user = Auth::user();
 
     $dn = '3310512007';
 
     $linea = Linea::where('dn',$dn)->first();
 
+    $taecelKey = $linea->icc->inventario->distribution->taecel_key; 
 
+    $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
+
+
+
+    
+
+  
 
         if($linea == null){
 
@@ -113,11 +121,11 @@ Route::get('/pruebas', function (Request $request) {
 
     $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
 
-
+       
 
     $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
-        'key' => 'c490127ff864a719bd89877f32a574de',
-        'nip' => '0c4ae19986107edd5ebcec3c6e08a0d0',
+        'key' => $taecelKey,
+        'nip' => $taecelNip,
         'producto'=> $recarga->taecel_code,
         'referencia' => $dn
     ]);
@@ -151,6 +159,8 @@ Route::get('/pruebas', function (Request $request) {
 
 
     return $trasnsaction;
+
+ 
 
 });
 
