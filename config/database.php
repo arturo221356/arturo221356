@@ -17,9 +17,9 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    //'default' => env('DB_CONNECTION', 'mysql'),
 
-    'default' => env('DB_CONNECTION', 'promoviles'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -90,11 +90,11 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-            // 'host' => $DATABASE_URL["host"],
-            // 'port' => $DATABASE_URL["port"],
-            // 'database' => ltrim($DATABASE_URL["host"],"/"),
-            // 'username' => $DATABASE_URL["user"],
-            // 'password' => $DATABASE_URL["password"],
+             'host' => $DATABASE_URL["host"],
+             'port' => $DATABASE_URL["port"],
+            'database' => ltrim($DATABASE_URL["host"],"/"),
+             'username' => $DATABASE_URL["user"],
+             'password' => $DATABASE_URL["password"],
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
