@@ -16,9 +16,9 @@ class CreateRecargasTable extends Migration
         Schema::create('recargas', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->char('codigo')->unique();
-            $table->char('taecel_code')->unique();
-            $table->char('name');
+            $table->string('codigo')->unique();
+            $table->string('taecel_code')->unique();
+            $table->string('name');
             $table->integer('monto');
             $table->unsignedInteger('company_id');
         });

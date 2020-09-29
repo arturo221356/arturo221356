@@ -269,7 +269,7 @@ class LineaController extends Controller
         }
 
 
-        return $recarga->taecel_code;
+        return $response;
     }
 
 
