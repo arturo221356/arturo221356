@@ -77,20 +77,21 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/pruebas', function (Request $request) {
-
-    $message = [];
     
-    $monto = 100;
 
-    $user = Auth::user();
+    // $message = [];
+    
+    // $monto = 100;
 
-    $dn = '3310512007';
+    // $user = Auth::user();
 
-    $linea = Linea::where('dn',$dn)->first();
+    // $dn = '3310512007';
 
-    $taecelKey = $linea->icc->inventario->distribution->taecel_key; 
+    // $linea = Linea::where('dn',$dn)->first();
 
-    $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
+    // $taecelKey = $linea->icc->inventario->distribution->taecel_key; 
+
+    // $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
 
 
 
@@ -98,69 +99,71 @@ Route::get('/pruebas', function (Request $request) {
 
   
 
-        if($linea == null){
+    //     if($linea == null){
 
-            $message = [
-                'success' => false,
-                'message' => 'Numero no existe en la base de datos',
+    //         $message = [
+    //             'success' => false,
+    //             'message' => 'Numero no existe en la base de datos',
 
-            ];
+    //         ];
 
-            return json_encode($message);
-        }
-        if($linea->status() == 'asdasd'){
-            $message = [
-                'success' => false,
-                'message' => 'Numero ya activado anteriormente',
+    //         return json_encode($message);
+    //     }
+    //     if($linea->status() == 'asdasd'){
+    //         $message = [
+    //             'success' => false,
+    //             'message' => 'Numero ya activado anteriormente',
 
-            ];
+    //         ];
 
-            return json_encode($message);
-        }
+    //         return json_encode($message);
+    //     }
 
 
-    $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
+    // $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
 
        
 
-    $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
-        'key' => $taecelKey,
-        'nip' => $taecelNip,
-        'producto'=> $recarga->taecel_code,
-        'referencia' => $dn
-    ]);
-    $response = json_decode($res);
+    // $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
+    //     'key' => $taecelKey,
+    //     'nip' => $taecelNip,
+    //     'producto'=> $recarga->taecel_code,
+    //     'referencia' => $dn
+    // ]);
+    // $response = json_decode($res);
 
-    $trasnsaction = new Transaction;
+    // $trasnsaction = new Transaction;
 
-    $trasnsaction->taecel = true;
+    // $trasnsaction->taecel = true;
 
-    $trasnsaction->taecel_success = $response->success;
+    // $trasnsaction->taecel_success = $response->success;
 
-    if($response->data){
-        $trasnsaction->taecel_transID = $response->data->transID;
-    }
+    // if($response->data){
+    //     $trasnsaction->taecel_transID = $response->data->transID;
+    // }
     
 
-    $trasnsaction->taecel_message =  $response->message;
+    // $trasnsaction->taecel_message =  $response->message;
 
-    $trasnsaction->monto = $recarga->monto;
+    // $trasnsaction->monto = $recarga->monto;
 
-    $trasnsaction->dn = $dn;
+    // $trasnsaction->dn = $dn;
 
-    $trasnsaction->company_id = $recarga->company_id;
+    // $trasnsaction->company_id = $recarga->company_id;
 
-    $trasnsaction->recarga_id = $recarga->id;
+    // $trasnsaction->recarga_id = $recarga->id;
 
-    $trasnsaction->inventario_id = $linea->icc->inventario_id;
+    // $trasnsaction->inventario_id = $linea->icc->inventario_id;
 
-    $trasnsaction->save();
+    // $trasnsaction->save();
 
 
 
-    return $trasnsaction;
+    // return $trasnsaction;
 
- 
+        $inventarios = Inventario::all();
+
+        return $inventarios;
 
 });
 
