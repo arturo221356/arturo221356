@@ -16,6 +16,7 @@ use App\Icc;
 use App\Linea;
 use App\Imei;
 use App\Inventario;
+use App\Http\Resources\InventarioResource;
 use App\Distribution;
 use App\IccProduct;
 use App\User;
@@ -161,9 +162,12 @@ Route::get('/pruebas', function (Request $request) {
 
     // return $trasnsaction;
 
-        $inventarios = Inventario::find(1);
+        $inventarios = Inventario::all();
 
-        return $inventarios->inventarioable->name;
+        $response = json_encode(InventarioResource::collection($inventarios));
+            return $response;
+
+        
 
         
 
