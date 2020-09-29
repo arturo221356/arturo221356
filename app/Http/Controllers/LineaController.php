@@ -12,11 +12,15 @@ use App\Recarga;
 
 use App\Transaction;
 
+use App\Inventario;
+
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
 use App\Imports\LineaImport;
+
+use Illuminate\Support\Facades\Http;
 
 
 use Maatwebsite\Excel\Excel;
@@ -81,7 +85,7 @@ class LineaController extends Controller
      */
     public function preactivarPrepago(Request $request)
     {
-     
+
 
         $user = Auth::user();
 
@@ -89,9 +93,9 @@ class LineaController extends Controller
 
             $iccs = json_decode($request->data);
 
-            $errores = [];
+        $errores = [];
 
-            $exitosos = [];
+        $exitosos = [];
 
         if ($request->hasFile('file')) {
 
@@ -108,10 +112,10 @@ class LineaController extends Controller
 
             //pushea los mensajes a los arrays
             foreach ($lineaValidationErrors as $validationErr) {
-                 array_push($errores, $validationErr);
+                array_push($errores, $validationErr);
             }
             foreach ($lineaValidationSuccess as $validationSucc) {
-                 array_push($exitosos, $validationSucc);
+                array_push($exitosos, $validationSucc);
             }
         }
 
@@ -142,9 +146,9 @@ class LineaController extends Controller
                 $linea->setStatus('Preactivo');
             }
         }
-       
 
-         //regresa los mensajes de errores y exitosos
+
+        //regresa los mensajes de errores y exitosos
         return ['errors' => $errores, 'success' => $exitosos];
     }
 
@@ -153,30 +157,26 @@ class LineaController extends Controller
 
 
 
-    public function activaChip(Request $request)
+    public function recargaChip(Request $request)
     {
-   
+
         $message = [];
-    
-    $monto = 100;
 
-    $user = Auth::user();
+        $monto = 50;
 
-    $dn = $request->dn;
+        $dn = $request->dn;
 
-    $linea = Linea::where('dn',$dn)->first();
-
-    $taecelKey = $linea->icc->inventario->distribution->taecel_key; 
-
-    $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
+        $linea = Linea::where('dn', $dn)->first();
 
 
 
-    
 
-  
 
-        if($linea == null){
+
+
+
+
+        if ($linea == null) {
 
             $message = [
                 'success' => false,
@@ -186,7 +186,7 @@ class LineaController extends Controller
 
             return json_encode($message);
         }
-        if($linea->status() == 'asdasd'){
+        if ($linea->status() != 'Preactivo') {
             $message = [
                 'success' => false,
                 'message' => 'Numero ya activado anteriormente',
@@ -197,46 +197,77 @@ class LineaController extends Controller
         }
 
 
-    $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
+        $inventario = $linea->icc->inventario;
 
-       
+        if (!$inventario->hasPermissionTo('activar chip', 'web')) {
 
-    $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
-        'key' => $taecelKey,
-        'nip' => $taecelNip,
-        'producto'=> $recarga->taecel_code,
-        'referencia' => $dn
-    ]);
-    $response = json_decode($res);
+            $message = [
+                'success' => false,
+                'message' => 'No tienes permiso de activar chips portate bien',
 
-    $trasnsaction = new Transaction;
+            ];
 
-    $trasnsaction->taecel = true;
-
-    $trasnsaction->taecel_success = $response->success;
-
-    if($response->data){
-        $trasnsaction->taecel_transID = $response->data->transID;
-    }
-    
-
-    $trasnsaction->taecel_message =  $response->message;
-
-    $trasnsaction->monto = $recarga->monto;
-
-    $trasnsaction->dn = $dn;
-
-    $trasnsaction->company_id = $recarga->company_id;
-
-    $trasnsaction->recarga_id = $recarga->id;
-
-    $trasnsaction->inventario_id = $linea->icc->inventario_id;
-
-    $trasnsaction->save();
+            return json_encode($message);
+        }
 
 
+        $recarga = Recarga::where([['monto', '=', $monto], ['company_id', '=', $linea->icc->company_id]])->first();
 
-    return $trasnsaction;
+        $taecelKey = $linea->icc->inventario->distribution->taecel_key;
+
+        $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
+
+        $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
+            'key' => $taecelKey,
+            'nip' => $taecelNip,
+            'producto' => $recarga->taecel_code,
+            'referencia' => $dn
+        ]);
+
+        $response = json_decode($res);
+
+        $trasnsaction = new Transaction;
+
+        $trasnsaction->taecel = true;
+
+        $trasnsaction->taecel_success = $response->success;
+
+        if ($response->data) {
+            $trasnsaction->taecel_transID = $response->data->transID;
+        }
+
+
+        $trasnsaction->taecel_message =  $response->message;
+
+        $trasnsaction->monto = $recarga->monto;
+
+        $trasnsaction->dn = $dn;
+
+        $trasnsaction->company_id = $recarga->company_id;
+
+        $trasnsaction->recarga_id = $recarga->id;
+
+        $trasnsaction->inventario_id = $linea->icc->inventario_id;
+
+        $trasnsaction->save();
+
+        if ($response->message == 'Consulta Exitosa') {
+
+            $linea->setStatus('Activado');
+
+            $response = [
+                'success' =>  true,
+                'message' => 'Numero recargado con exito'
+            ];
+        } else {
+            $response = [
+                'success' =>  $response->success,
+                'message' => $response->message
+            ];
+        }
+
+
+        return $response;
     }
 
 

@@ -11,49 +11,39 @@
                     >
                     </b-input>
                 </b-form-group>
-                <b-button type="button" block @click="recargarChip"> Recargar</b-button>
+                <b-button type="button" block @click="recargarChip">
+                    Recargar</b-button
+                >
                 <b-form-group> </b-form-group>
             </b-form>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <b-alert :variant="response.success == true ? 'success':'danger'" show v-if="response">{{response.message}}</b-alert>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    data: function(){
-        return{
+    data: function () {
+        return {
+            dn: null,
 
-            dn: null
-
-
-        }
+            response: null,
+        };
     },
-    methods:{
-        recargarChip(){
-            axios
-                    .post("/activa-chip", { icc: this.icc })
-                    .then((response) => {
-                        console.log(response.data);
+    methods: {
+        recargarChip() {
+            axios.post("/recarga-chip", { dn: this.dn }).then((response) => {
+                console.log(response.data);
 
-                        if (response.data.success == true) {
-                            this.lineaDetail = true;
-
-                            this.currentIcc.icc = response.data.data.icc;
-
-                            this.currentIcc.company =
-                                response.data.data.company.name;
-
-                            this.currentIcc.type = response.data.data.type.name;
-
-                            this.icc = null;
-                        } else {
-                            alert(response.data.message);
-                        }
-                    })
-                   
-        }
-    }
-
+                this.response = response.data;
+            });
+        },
+    },
 };
 </script>
 

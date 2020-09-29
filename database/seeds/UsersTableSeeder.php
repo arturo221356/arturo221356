@@ -46,6 +46,8 @@ class UsersTableSeeder extends Seeder
 
     Permission::create(['name' => 'preactivar linea']);
 
+    Permission::create(['guard_name' => 'web','name' => 'activar chip']);
+
     //roles
     //super Admin
     $superAdminRole = Role::create(['name' => 'super-admin']);

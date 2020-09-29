@@ -42,6 +42,8 @@ Route::view('/','home')->name('home')->middleware('auth');
 
 Route::view('/activa-chip','linea.activa-chip')->name('activa-chip');
 
+Route::post('/recarga-chip','LineaController@recargaChip');
+
 
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
    
@@ -79,97 +81,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-
-    // $message = [];
-    
-    // $monto = 100;
-
-    // $user = Auth::user();
-
-    // $dn = '3310512007';
-
-    // $linea = Linea::where('dn',$dn)->first();
-
-    // $taecelKey = $linea->icc->inventario->distribution->taecel_key; 
-
-    // $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
-
-
-
-    
-
-  
-
-    //     if($linea == null){
-
-    //         $message = [
-    //             'success' => false,
-    //             'message' => 'Numero no existe en la base de datos',
-
-    //         ];
-
-    //         return json_encode($message);
-    //     }
-    //     if($linea->status() == 'asdasd'){
-    //         $message = [
-    //             'success' => false,
-    //             'message' => 'Numero ya activado anteriormente',
-
-    //         ];
-
-    //         return json_encode($message);
-    //     }
-
-
-    // $recarga = Recarga::where([['monto','=',$monto],['company_id','=',$linea->icc->company_id]])->first();
-
-       
-
-    // $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
-    //     'key' => $taecelKey,
-    //     'nip' => $taecelNip,
-    //     'producto'=> $recarga->taecel_code,
-    //     'referencia' => $dn
-    // ]);
-    // $response = json_decode($res);
-
-    // $trasnsaction = new Transaction;
-
-    // $trasnsaction->taecel = true;
-
-    // $trasnsaction->taecel_success = $response->success;
-
-    // if($response->data){
-    //     $trasnsaction->taecel_transID = $response->data->transID;
-    // }
-    
-
-    // $trasnsaction->taecel_message =  $response->message;
-
-    // $trasnsaction->monto = $recarga->monto;
-
-    // $trasnsaction->dn = $dn;
-
-    // $trasnsaction->company_id = $recarga->company_id;
-
-    // $trasnsaction->recarga_id = $recarga->id;
-
-    // $trasnsaction->inventario_id = $linea->icc->inventario_id;
-
-    // $trasnsaction->save();
-
-
-
-    // return $trasnsaction;
-
-        $inventarios = Inventario::all();
-
-        $response = json_encode(InventarioResource::collection($inventarios));
-            return $response;
-
-        
-
-        
 
 });
 
