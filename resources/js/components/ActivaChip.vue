@@ -11,7 +11,7 @@
                     >
                     </b-input>
                 </b-form-group>
-                <b-button type="submit" block> Recargar</b-button>
+                <b-button type="button" block @click="recargarChip"> Recargar</b-button>
                 <b-form-group> </b-form-group>
             </b-form>
         </div>
@@ -29,7 +29,7 @@ export default {
         }
     },
     methods:{
-        recargar(){
+        recargarChip(){
             axios
                     .post("/activa-chip", { icc: this.icc })
                     .then((response) => {
