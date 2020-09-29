@@ -22,7 +22,7 @@ class InventarioResource extends JsonResource
         return [
 
             'id'=> $this->id,
-            // 'name'=>$this->inventarioable->name
+            'name'=>$this->inventarioable->name
 
             
     
