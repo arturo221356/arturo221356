@@ -29,7 +29,7 @@ export default {
         }
     },
     methods:{
-        recargarChip(){
+        recargar(){
             axios
                     .post("/activa-chip", { icc: this.icc })
                     .then((response) => {
@@ -50,9 +50,7 @@ export default {
                             alert(response.data.message);
                         }
                     })
-                    .catch(function (error) {
-                        // handle error
-                        co
+                   
         }
     }
 
