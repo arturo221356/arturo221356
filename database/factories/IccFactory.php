@@ -27,5 +27,6 @@ class IccFactory extends Factory
             'inventario_id' =>  $this->faker->numberBetween($min = 1, $max = 4),
             'company_id' => 2,
         ];
+        
     }
 }

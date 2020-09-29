@@ -33,9 +33,17 @@ class DatabaseSeeder extends Seeder
         
          Equipo::factory()->count(10)->create();
 
-         Icc::factory()->times(10)->create();
+         $iccs = Icc::factory()->times(10)->create();
 
-         Imei::factory()->times(10)->create();
+         foreach($iccs as $icc){
+             $icc->setStatus('Disponible');
+         }
+
+        $imeis = Imei::factory()->times(10)->create();
+
+        foreach($imeis as $imei){
+            $imei->setStatus('Disponible');
+        }
 
     }
 }

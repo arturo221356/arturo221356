@@ -16,7 +16,15 @@ class IccResource extends JsonResource
      */
     public function toArray($request)
     {
+        $lineaStatus = "";
 
+        $lineaDn = "";
+
+        if($this->linea){
+            $lineaStatus = $this->linea->status;
+
+            $lineaDn = $this->linea->dn;
+        }
 
 
         return [
@@ -29,6 +37,8 @@ class IccResource extends JsonResource
             'type' => $this->type,
             'comment'  => $this->comment,
             'status'    => $this->status,
+            'linea_status'    => $lineaStatus,
+            'linea_dn' => $lineaDn,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
 

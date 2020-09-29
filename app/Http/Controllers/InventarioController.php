@@ -115,14 +115,19 @@ class InventarioController extends Controller
 
                     if($user->can('distribution inventarios')){
 
-                    $iccs = $userDistribution->iccs()->otherCurrentStatus('Vendido')->get();
+                    $iccs = $userDistribution->iccs()
+                    // ->otherCurrentStatus('Vendido')
+                    ->get();
 
                     $response = IccResource::collection($iccs);
 
                     }else{
+                        
                         $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
-                        $iccs = Icc::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get(); 
+                        $iccs = Icc::whereIn('inventario_id',$inventariosIds)
+                        // ->otherCurrentStatus('Vendido')
+                        ->get(); 
                         
 
                     $response = IccResource::collection($iccs);
@@ -143,7 +148,9 @@ class InventarioController extends Controller
                 return $response;
                 
             } else if ($producto === 'Icc') {
-                $iccs = $inventario->iccs()->otherCurrentStatus('Vendido')->get();
+                $iccs = $inventario->iccs()
+                // ->otherCurrentStatus('Vendido')
+                ->get();
                 $response = IccResource::collection($iccs);
                 return $response;
                 

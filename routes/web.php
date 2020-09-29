@@ -25,6 +25,7 @@ use App\Porta;
 use App\Recarga;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Http;
+use App\Http\Resources\IccResource;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -80,6 +81,12 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/pruebas', function (Request $request) {
+
+    $iccs = Icc::all();
+
+    $response = IccResource::collection($iccs);
+
+    return $response;
 
 
 });

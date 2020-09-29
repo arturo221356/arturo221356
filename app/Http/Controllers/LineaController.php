@@ -199,23 +199,23 @@ class LineaController extends Controller
 
         $inventario = $linea->icc->inventario;
 
-        if (!$inventario->hasPermissionTo('activar chip', 'web')) {
+        // if (!$inventario->hasPermissionTo('activar chip', 'web')) {
 
-            $message = [
-                'success' => false,
-                'message' => 'No tienes permiso de activar chips portate bien',
+        //     $message = [
+        //         'success' => false,
+        //         'message' => 'No tienes permiso de activar chips portate bien',
 
-            ];
+        //     ];
 
-            return json_encode($message);
-        }
+        //     return json_encode($message);
+        // }
 
 
         $recarga = Recarga::where([['monto', '=', $monto], ['company_id', '=', $linea->icc->company_id]])->first();
 
-        $taecelKey = $linea->icc->inventario->distribution->taecel_key;
+        $taecelKey = $inventario->distribution->taecel_key;
 
-        $taecelNip = $linea->icc->inventario->distribution->taecel_nip;
+        $taecelNip = $inventario->distribution->taecel_nip;
 
         $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
             'key' => $taecelKey,
@@ -254,6 +254,8 @@ class LineaController extends Controller
         if ($response->message == 'Consulta Exitosa') {
 
             $linea->setStatus('Activado');
+
+            $linea->icc->setStatus('Vendido');
 
             $response = [
                 'success' =>  true,

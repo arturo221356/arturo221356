@@ -71,7 +71,11 @@
                                     <b-icon
                                         icon="x-circle-fill"
                                         variant="danger"
-                                        @click="function(){editMode = false; resetEditableItem()}"
+                                        @click="function(){
+                                                editMode = false;
+                                                resetEditableItem();
+                                            }
+                                        "
                                     ></b-icon>
                                 </h1>
                             </div>
@@ -339,7 +343,6 @@ export default {
                 });
         },
         editItem(item, row) {
-            
             this.resetEditableItem();
             console.log(item);
 
@@ -352,7 +355,9 @@ export default {
 
             this.editableItem.serie = item.serie;
 
-            if(item.comment){this.editableItem.comment = item.comment.comment;}
+            if (item.comment) {
+                this.editableItem.comment = item.comment.comment;
+            }
 
             this.editableItem.company = item.company;
 
@@ -447,62 +452,49 @@ export default {
                     break;
 
                 case "Icc":
-                    $response = [];
+
+                    $response = [
+                        { key: "serie", label: "Icc" },
+                        {
+                            key: "inventario_name",
+                            label: "Inventario",
+                            sortable: true,
+                        },
+                        { key: "status", label: "Estatus", sortable: true },
+                        {
+                            key: "company.name",
+                            label: "Compañia",
+                            sortable: true,
+                        },
+                        { key: "type.name", label: "Tipo", sortable: true },
+                        {
+                            key: "created_at",
+                            label: "Creado",
+                            sortable: true,
+                        },
+                        {
+                            key: "updated_at",
+                            label: "Modificado",
+                            sortable: true,
+                        },
+                        {
+                            key: "linea_status",
+                            label: "Estatus Linea",
+                            sortable: true,
+                        },
+                        {
+                            key: "linea_dn",
+                            label: "DN",
+                            sortable: true,
+                        },
+
+                        
+                    ];
 
                     if (this.can("update stock")) {
-                        $response = [
-                            { key: "serie", label: "Icc" },
-                            {
-                                key: "inventario_name",
-                                label: "Inventario",
-                                sortable: true,
-                            },
-                            { key: "status", label: "Estatus", sortable: true },
-                            {
-                                key: "company.name",
-                                label: "Compañia",
-                                sortable: true,
-                            },
-                            { key: "type.name", label: "Tipo", sortable: true },
-                            {
-                                key: "created_at",
-                                label: "Creado",
-                                sortable: true,
-                            },
-                            {
-                                key: "updated_at",
-                                label: "Modificado",
-                                sortable: true,
-                            },
-                            { key: "editar", label: "Editar" },
-                        ];
-                    } else {
-                        $response = [
-                            { key: "serie", label: "Icc" },
-                            {
-                                key: "inventario_name",
-                                label: "Inventario",
-                                sortable: true,
-                            },
-                            { key: "status", label: "Estatus", sortable: true },
-                            {
-                                key: "company.name",
-                                label: "Compañia",
-                                sortable: true,
-                            },
-                            { key: "type.name", label: "Tipo", sortable: true },
-                            {
-                                key: "created_at",
-                                label: "Creado",
-                                sortable: true,
-                            },
-                            {
-                                key: "updated_at",
-                                label: "Modificado",
-                                sortable: true,
-                            },
-                        ];
-                    }
+                        $response.push({ key: "editar", label: "Editar" })
+                    } 
+
 
                     return $response;
 
