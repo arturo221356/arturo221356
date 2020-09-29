@@ -77,7 +77,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/pruebas', function (Request $request) {
-    
+
 
     // $message = [];
     
@@ -161,9 +161,11 @@ Route::get('/pruebas', function (Request $request) {
 
     // return $trasnsaction;
 
-        $inventarios = Inventario::all();
+        $inventarios = Inventario::find(1);
 
-        return $inventarios;
+        return $inventarios->inventarioable->name;
+
+        
 
 });
 
