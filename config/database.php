@@ -2,12 +2,14 @@
 
 use Illuminate\Support\Str;
 
-$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+$DATABASE_URL=parse_url('postgres://sujiakylqnrkqk:cededc65c295f827420830614538f47314e58169af5e493572fe61c13f70460e@ec2-34-192-122-0.compute-1.amazonaws.com:5432/dav9mcapv1jpbq');
 
-$host = $url["host"];
-$username = $url["user"];
-$password = $url["pass"];
-$database = substr($url["path"], 1);
+// $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+// $host = $url["host"];
+// $username = $url["user"];
+// $password = $url["pass"];
+// $database = substr($url["path"], 1);
 
 return [
 
@@ -22,9 +24,9 @@ return [
     |
     */
 
-    //'default' => env('DB_CONNECTION', 'mysql'),
+    // 'default' => env('DB_CONNECTION', 'mysql'),
 
-    'default' => env('DB_CONNECTION', 'promoviles'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -75,11 +77,11 @@ return [
         'promoviles' => [
             'driver' => 'mysql',
             'url' => '',
-            'host' => $host,
-            'port' => env('DB_PORT', '3306'),
-            'database' => $database,
-            'username' => $username,
-            'password' => $password,
+            // 'host' => $host,
+            // 'port' => env('DB_PORT', '3306'),
+            // 'database' => $database,
+            // 'username' => $username,
+            // 'password' => $password,
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -95,11 +97,11 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-      //       'host' => $DATABASE_URL["host"],
-        //     'port' => $DATABASE_URL["port"],
-      //      'database' => ltrim($DATABASE_URL["host"],"/"),
-         //    'username' => $DATABASE_URL["user"],
-      //       'password' => $DATABASE_URL["password"],
+            'host' => $DATABASE_URL["host"],
+            'port' => $DATABASE_URL["port"],
+           'database' => ltrim($DATABASE_URL["host"],"/"),
+            'username' => $DATABASE_URL["user"],
+            'password' => $DATABASE_URL["password"],
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
