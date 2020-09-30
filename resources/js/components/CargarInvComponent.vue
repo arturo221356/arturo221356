@@ -68,7 +68,7 @@
                                 v-for="(detail, index) in alert.list"
                                 :key="index"
                             >
-                                {{ detail.serie }}
+                                {{ detail.icc }} {{detail.dn}}
                                 <em
                                     v-for="(errs, index) in detail.errores"
                                     :key="index"

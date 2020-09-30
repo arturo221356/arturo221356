@@ -92,8 +92,6 @@ class LineaImport implements ToCollection
     
                         $errorList = [];
                         
-
-
                         $message = "Icc ya cuenta con linea activa ".$icc->linea->dn;
     
                         array_push($errorList, $message);
@@ -103,7 +101,7 @@ class LineaImport implements ToCollection
                         array_push($this->errores, $err);
 
                     } else {
-                       $exitoso = ['icc'=>$icc, 'dn'=>$dn];
+                       $exitoso = ['icc'=>$icc->icc, 'dn'=>$dn];
 
                          array_push($this->exitosos, $exitoso);
 

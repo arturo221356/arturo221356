@@ -19,74 +19,7 @@ class UsersTableSeeder extends Seeder
    */
   public function run()
   {
-    app()[PermissionRegistrar::class]->forgetCachedPermissions();
-
-    //permisions
-    Permission::create(['name' => 'get inventarios']);
-
-    Permission::create(['name' => 'all inventarios']);
-
-    Permission::create(['name' => 'distribution inventarios']);
-
-    Permission::create(['name' => 'full update stock']);
-
-    Permission::create(['name' => 'update stock']);
-
-    Permission::create(['name' => 'store stock']);
-
-    Permission::create(['name' => 'destroy stock']);
-
-    Permission::create(['name' => 'traspasar stock']);
-
-    Permission::create(['name' => 'aceptar traspaso']);
-
-    Permission::create(['name' => 'cancelar traspaso']);
-
-    Permission::create(['name' => 'ver traspasos']);
-
-    Permission::create(['name' => 'preactivar linea']);
-
-    Permission::create(['guard_name' => 'web','name' => 'activar chip']);
-
-    //roles
-    //super Admin
-    $superAdminRole = Role::create(['name' => 'super-admin']);
-    $superAdminRole->givePermissionTo('all inventarios', 'get inventarios');
-
-
-    //admin
-    $administradorRole = Role::create(['name' => 'administrador']);
-    $administradorRole->givePermissionTo(
-      'get inventarios',
-      'distribution inventarios',
-      'full update stock',
-      'update stock',
-      'store stock',
-      'destroy stock',
-      'traspasar stock',
-      'aceptar traspaso',
-      'cancelar traspaso',
-      'ver traspasos',
-      'preactivar linea',
-    );
-
-
-    //supervisor
-
-    $supervisorRole = Role::create(['name' => 'supervisor']);
-    $supervisorRole->givePermissionTo('get inventarios','update stock','ver traspasos');
-
-    //vendedor
-    $vendedorRole = Role::create(['name' => 'vendedor']);
-
-    $vendedorRole->givePermissionTo('ver traspasos','aceptar traspaso');
-
-    // externo
-
-    $externoRole = Role::create(['name' => 'externo']);
-
-    $externoRole->givePermissionTo('ver traspasos','aceptar traspaso');
-
+    
 
 
     //seeds Users
@@ -97,7 +30,7 @@ class UsersTableSeeder extends Seeder
       'distribution_id' => 1,
 
     ]);
-    $superAdmin->assignRole($superAdminRole);
+    $superAdmin->assignRole('super-admin');
 
     $admin = User::create([
       'name' => 'Admin User',
@@ -106,7 +39,7 @@ class UsersTableSeeder extends Seeder
       'distribution_id' => 1,
 
     ]);
-    $admin->assignRole($administradorRole);
+    $admin->assignRole('administrador');
 
 
     $supervisor = User::create([
@@ -116,7 +49,7 @@ class UsersTableSeeder extends Seeder
       'distribution_id' => 1,
 
     ]);
-    $supervisor->assignRole($supervisorRole);
+    $supervisor->assignRole('supervisor');
 
     $vendedor = User::create([
       'name' => 'Vendedor User',
@@ -125,7 +58,7 @@ class UsersTableSeeder extends Seeder
       'distribution_id' => 1,
 
     ]);
-    $vendedor->assignRole($vendedorRole);
+    $vendedor->assignRole('vendedor');
 
     $vendedor2 = User::create([
       'name' => 'Vendedor 2 User',
@@ -134,7 +67,7 @@ class UsersTableSeeder extends Seeder
       'distribution_id' => 1,
 
     ]);
-    $vendedor2->assignRole($vendedorRole);
+    $vendedor2->assignRole('vendedor');
 
 
     $externo = User::create([
@@ -145,6 +78,6 @@ class UsersTableSeeder extends Seeder
       'inventario_propio' => true,
 
     ]);
-    $externo->assignRole($externoRole);
+    $externo->assignRole('externo');
   }
 }

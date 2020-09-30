@@ -14,6 +14,8 @@ use App\Transaction;
 
 use App\Inventario;
 
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -51,6 +53,14 @@ class LineaController extends Controller
         } else {
             $icc = Icc::iccInUserInventario($requestIcc)->with('company', 'type')->first();
         }
+        if ($icc === null) {
+            $response = [
+                'success' => false,
+                'message' => 'Icc no existe en la base de datos'
+            ];
+
+            return $response;
+        }
 
         if ($icc->linea()->first() == null) {
             $response = [
@@ -60,8 +70,8 @@ class LineaController extends Controller
         } else {
             $response = [
                 "success" => false,
-                "message" => "Icc ya tiene linea activa",
-                "data" => $icc->with('linea', 'linea.product')->first(),
+                "message" => "Icc ya tiene linea activa: " . $icc->linea->dn,
+
             ];
         }
 
@@ -86,6 +96,13 @@ class LineaController extends Controller
     public function preactivarPrepago(Request $request)
     {
 
+        $recargable = $request->recargable;
+
+        $montoRecarga = $request->monto;
+
+        // // $recargable == 'true' ? $response = 'verdadero' : $response = 'falso';
+
+        // return $response;
 
         $user = Auth::user();
 
@@ -121,29 +138,122 @@ class LineaController extends Controller
 
         if ($iccs) {
             foreach ($iccs as $item) {
+
                 $dn = $item->dn;
 
                 $requestIcc  = $item->icc;
 
-                if ($user->can('distribution inventarios')) {
 
-                    $icc = Icc::iccInUserDistribution($requestIcc)->first();
+                // Crea la matriz de mensajes.
+                $mensajes = array(
+
+                    'digits' => 'La Icc/DN tiene que se numerica y de 19/10 digitos'
+                );
+
+                $activacion = ['serie' => $requestIcc, 'dn' => $dn];
+
+                //reglas del validador
+                $validator = Validator::make($activacion, [
+                    'serie' => 'required|digits:19',
+                    'dn' => 'required|digits:10'
+
+
+                ], $mensajes);
+
+                if ($validator->fails()) {
+
+
+                    $err = [];
+
+                    $errorList = [];
+
+                    $err['icc'] = $requestIcc;
+
+                    $err['dn'] = $dn;
+
+                    foreach ($validator->errors()->toArray() as $error) {
+
+
+
+                        foreach ($error as $sub_error) {
+                            array_push($errorList, $sub_error);
+                        }
+                    }
+                    $err['errores'] = $errorList;
+
+                    array_push($errores, $err);
                 } else {
-                    $icc = Icc::iccInUserInventario($requestIcc)->first();
-                }
-                //si el icc ya tiene linea acitva, aqui falta meter al array de errores 
-                if ($icc->linea()->first() != null) {
-                    return $icc->linea()->first();
-                }
 
-                $chip = Chip::create([]);
-                $linea = $chip->linea()->create([
-                    'dn' => $dn,
-                    'icc_product_id' => 1,
-                    'icc_id' => $icc->id,
+                    if ($user->can('distribution inventarios')) {
 
-                ]);
-                $linea->setStatus('Preactivo');
+                        $icc = Icc::iccInUserDistribution($requestIcc)->first();
+                    } else {
+                        $icc = Icc::iccInUserInventario($requestIcc)->first();
+                    }
+
+
+
+                    if ($icc != null) {
+
+                        if ($icc->linea()->first() != null) {
+
+                            $err['icc'] = $requestIcc;
+
+                            $err['dn'] = $dn;
+
+                            $errorList = [];
+
+                            $message = "Icc ya cuenta con linea activa " . $icc->linea->dn;
+
+                            array_push($errorList, $message);
+
+                            $err['errores'] = $errorList;
+
+                            array_push($errores, $err);
+
+
+                        } else {
+
+
+                             $exitoso = ['icc' => $icc->icc, 'dn' => $dn];
+
+                             array_push($exitosos, $exitoso);
+
+                            $chip = Chip::create([]);
+
+                            $linea = $chip->linea()->create([
+                                'dn' => $dn,
+                                'icc_product_id' => 1,
+                                'icc_id' => $icc->id,
+
+                            ]);
+
+                            
+                            $recargable == 'true' ? $linea->setStatus('Recargable',$montoRecarga) : $linea->setStatus('Preactiva');
+                            
+
+                        
+                        
+                        }
+                    } else {
+
+
+                        $err['icc'] = $requestIcc;
+
+                        $err['dn'] = $dn;
+
+                        $errorList = [];
+
+                        $message = "Icc no encontrado en la base de datos";
+
+                        array_push($errorList, $message);
+
+                        $err['errores'] = $errorList;
+
+                        array_push($errores, $err);
+
+                    }
+                }
             }
         }
 
@@ -168,12 +278,7 @@ class LineaController extends Controller
 
         $linea = Linea::where('dn', $dn)->first();
 
-
-
-
-
-
-
+        $monto = $linea->status()->reason;
 
 
         if ($linea == null) {
@@ -186,12 +291,21 @@ class LineaController extends Controller
 
             return json_encode($message);
         }
-        if ($linea->status() != 'Preactivo') {
+        if ($linea->status() != 'Recargable') {
             $message = [
                 'success' => false,
-                'message' => 'Numero ya activado anteriormente',
 
             ];
+
+            switch ($linea->status()) {
+                case 'Preactiva':
+                    $message['message'] = 'Numero no tiene recarga asignada';
+                    break;
+                default:
+                    $message['message'] = 'Numero activado anteriormente';
+                    break;
+            }
+
 
             return json_encode($message);
         }

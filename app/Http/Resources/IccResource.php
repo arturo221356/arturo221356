@@ -21,9 +21,17 @@ class IccResource extends JsonResource
         $lineaDn = "";
 
         if($this->linea){
-            $lineaStatus = $this->linea->status;
+            $status = $this->linea->status();
 
             $lineaDn = $this->linea->dn;
+
+            if($status){
+                $lineaStatus = $status." ".$status->reason;
+            }else{
+                $lineaStatus = $status;
+            }
+        
+            
         }
 
 
