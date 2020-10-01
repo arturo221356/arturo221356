@@ -14,6 +14,8 @@ use App\Transaction;
 
 use App\Inventario;
 
+use Illuminate\Http\Client\RequestException;
+
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\Auth;
@@ -23,8 +25,7 @@ use Illuminate\Http\Request;
 use App\Imports\LineaImport;
 
 use Illuminate\Support\Facades\Http;
-
-
+use Illuminate\Support\Facades\Request as FacadesRequest;
 use Maatwebsite\Excel\Excel;
 
 class LineaController extends Controller
@@ -100,9 +101,6 @@ class LineaController extends Controller
 
         $montoRecarga = $request->monto;
 
-        // // $recargable == 'true' ? $response = 'verdadero' : $response = 'falso';
-
-        // return $response;
 
         $user = Auth::user();
 
@@ -118,8 +116,13 @@ class LineaController extends Controller
 
             $file = $request->file('file');
 
+            $data = [
+                'recargable' => $recargable,
+                'monto' => $montoRecarga,
+            ];
 
-            $lineaImport = new LineaImport();
+
+            $lineaImport = new LineaImport($data);
 
             $lineaImport->import($file);
 
@@ -210,14 +213,12 @@ class LineaController extends Controller
                             $err['errores'] = $errorList;
 
                             array_push($errores, $err);
-
-
                         } else {
 
 
-                             $exitoso = ['icc' => $icc->icc, 'dn' => $dn];
+                            $exitoso = ['icc' => $icc->icc, 'dn' => $dn];
 
-                             array_push($exitosos, $exitoso);
+                            array_push($exitosos, $exitoso);
 
                             $chip = Chip::create([]);
 
@@ -228,12 +229,8 @@ class LineaController extends Controller
 
                             ]);
 
-                            
-                            $recargable == 'true' ? $linea->setStatus('Recargable',$montoRecarga) : $linea->setStatus('Preactiva');
-                            
 
-                        
-                        
+                            $recargable == 'true' ? $linea->setStatus('Recargable', $montoRecarga) : $linea->setStatus('Preactiva');
                         }
                     } else {
 
@@ -251,7 +248,6 @@ class LineaController extends Controller
                         $err['errores'] = $errorList;
 
                         array_push($errores, $err);
-
                     }
                 }
             }
@@ -272,15 +268,14 @@ class LineaController extends Controller
 
         $message = [];
 
-        $monto = 50;
-
         $dn = $request->dn;
 
+
+        //selecciona la linea que tiene el valor DN que corresponda con la request
         $linea = Linea::where('dn', $dn)->first();
 
-        $monto = $linea->status()->reason;
 
-
+        // si no encuenta la linea retorna numero no existe en la DB
         if ($linea == null) {
 
             $message = [
@@ -291,6 +286,8 @@ class LineaController extends Controller
 
             return json_encode($message);
         }
+
+        // revisa que el status de la liena sea recargble 
         if ($linea->status() != 'Recargable') {
             $message = [
                 'success' => false,
@@ -313,6 +310,9 @@ class LineaController extends Controller
 
         $inventario = $linea->icc->inventario;
 
+
+        // revisa que el inventario tenga permisos para activar chips desde activa chip
+
         // if (!$inventario->hasPermissionTo('activar chip', 'web')) {
 
         //     $message = [
@@ -325,11 +325,28 @@ class LineaController extends Controller
         // }
 
 
+
+
+        //monto de recarga esta guardado en la razon del status
+
+        $monto = $linea->status()->reason;
+
+
+        //selecciona la recarga conforme a la compañia del icc seleccionado y monto igual a la razon del status
+
         $recarga = Recarga::where([['monto', '=', $monto], ['company_id', '=', $linea->icc->company_id]])->first();
+
+
+        // claves taecel pertenecientes a la distribucion
 
         $taecelKey = $inventario->distribution->taecel_key;
 
         $taecelNip = $inventario->distribution->taecel_nip;
+
+
+
+
+        //peticion HTTP requestTXN
 
         $res = Http::asForm()->post('https://taecel.com/app/api/RequestTXN', [
             'key' => $taecelKey,
@@ -338,20 +355,45 @@ class LineaController extends Controller
             'referencia' => $dn
         ]);
 
-        $response = json_decode($res);
+        if($res->serverError()){
+           
+            $response = [
+                'success' =>  false,
+                'message' => 'Error del servidor',
+            ];
 
+            return $response;
+        }
+
+        if($res->clientError()){
+            $response = [
+                'success' =>  false,
+                'message' => 'Error ',
+            ];
+
+            return $response;
+        }
+        // Determine if the status code was >= 400...
+        if($res->failed()){
+
+            $response = [
+                'success' =>  false,
+                'message' => 'Error',
+            ];
+
+            return $response;
+
+        }
+
+        
+        $requestTXN = json_decode($res);
+
+       
+
+        // crea una transaccion nueva
         $trasnsaction = new Transaction;
 
         $trasnsaction->taecel = true;
-
-        $trasnsaction->taecel_success = $response->success;
-
-        if ($response->data) {
-            $trasnsaction->taecel_transID = $response->data->transID;
-        }
-
-
-        $trasnsaction->taecel_message =  $response->message;
 
         $trasnsaction->monto = $recarga->monto;
 
@@ -363,29 +405,186 @@ class LineaController extends Controller
 
         $trasnsaction->inventario_id = $linea->icc->inventario_id;
 
-        $trasnsaction->save();
 
-        if ($response->message == 'Consulta Exitosa') {
+        // si el requestTXN falla 
 
-            $linea->setStatus('Activado');
+        if ($requestTXN->success == false) {
 
-            $linea->icc->setStatus('Vendido');
+            $trasnsaction->taecel_success = $requestTXN->success;
+
+            $trasnsaction->taecel_message =  $requestTXN->message;
+
+            $trasnsaction->save();
 
             $response = [
-                'success' =>  true,
-                'message' => 'Numero recargado con exito'
+                'success' =>  $requestTXN->success,
+                'message' => $requestTXN->message
             ];
-        } else {
-            $response = [
-                'success' =>  $response->success,
-                'message' => $response->message
-            ];
+
+            return $response;
+        }
+        /// si el requestTXN es correcto 
+        else if ($requestTXN->success == true) {
+
+            $trasnsaction->taecel_transID = $requestTXN->data->transID;
+
+            // peticion HTTP statusTXN
+
+            
+            try{
+                $status = Http::asForm()->timeout(60)->retry(3, 1000)->post('https://taecel.com/app/api/statusTXN', [
+                    'key' => $taecelKey,
+                    'nip' => $taecelNip,
+                    'transID' => $trasnsaction->taecel_transID,
+                ]);
+                
+
+            } catch(RequestException $e){
+                
+                $response = [
+                    'success' =>  false,
+                    'message' => 'Error de conexion',
+                ];
+
+                $trasnsaction->save();
+
+                return $response;
+
+              
+            }
+
+            if($status->serverError()){
+                
+                $response = [
+                    'success' =>  false,
+                    'message' => 'Error del servidor',
+                ];
+    
+                return $response;
+
+            }
+            if($status->clientError()){
+                
+                $response = [
+                    'success' =>  false,
+                    'message' => 'Error del servidor',
+                ];
+    
+                return $response;
+
+            }
+            if($status->failed()){
+                
+                $response = [
+                    'success' =>  false,
+                    'message' => 'Error del servidor',
+                ];
+    
+                return $response;
+
+            }
+
+           
+
+             $statusTXN = json_decode($status);
+
+             $aa = json_last_error();
+
+             return $aa;
+
+            // $trasnsaction->taecel_success = $statusTXN->success;
+
+            // $trasnsaction->taecel_message =  $requestTXN->message;
+
+            // // si la recarga se rechaza despues de la peticion
+            // if ($statusTXN->success == false) {
+
+                
+
+            //     if ($statusTXN->data) {
+
+            //         $trasnsaction->taecel_status = $statusTXN->data->Status;
+
+            //         $trasnsaction->taecel_message = $statusTXN->message;
+
+            //         $trasnsaction->taecel_timeout = $statusTXN->data->Timeout;
+
+                   
+            //     }
+
+            //     $response = [
+            //         'success' => $statusTXN->success,
+            //         'message' => $statusTXN->message
+            //     ];
+
+            //     $trasnsaction->save();
+
+            //     return $response;
+            // } else if ($statusTXN->success == true) {
+
+
+            //     $trasnsaction->taecel_status = $statusTXN->data->Status;
+
+            //     $trasnsaction->taecel_nota = $statusTXN->data->Nota;
+
+            //     $trasnsaction->taecel_folio = $statusTXN->data->Folio;
+
+            //     $trasnsaction->taecel_timeout = $statusTXN->data->Timeout;
+
+            //     $trasnsaction->save();
+
+            //     $response = [
+            //         'success' => $statusTXN->success,
+            //         'message' => $statusTXN->data->Nota
+            //     ];
+
+            //     //cambia el estatus de la linea y el icc a activado y vendido
+            //     $linea->setStatus('Activado');
+
+            //     $linea->icc->setStatus('Vendido');
+
+            //     return $response;
+            // }
         }
 
 
-        return $response;
     }
 
+
+
+    public function taecel($key, $nip, $producto, $referencia, $transId, $method)
+    {
+        Http::fake([
+            
+            'https://taecel.com/app/api/RequestTXN' => Http::response([
+                'success' => true,
+                'message'=> 'Consulta Exitosa',
+                'data' => ['transID' => '200901979343'],
+
+
+            
+            ], 200, ['Headers']),
+
+
+            'https://taecel.com/app/api/statusTXN' => Http::response(':(
+                 Error intencional en formato de respuesta, se debe de ejecutar nuevamente el Método StatusTXN para Revisar el Status de la Transacción
+                  :/', 200, ['Headers']),
+        
+          
+        
+        ]);
+        
+        
+        $response = Http::asForm()->post("https://taecel.com/app/api/".$method, [
+            'key' => $key,
+            'nip' => $nip,
+            'producto' => $producto,
+            'referencia' => $referencia,
+
+        ]);
+
+        return $response;
+    }
 
     /**
      * Display the specified resource.
