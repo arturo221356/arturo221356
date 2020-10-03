@@ -43,7 +43,7 @@ Route::view('/','home')->name('home')->middleware('auth');
 
 Route::view('/activa-chip','linea.activa-chip')->name('activa-chip');
 
-Route::post('/recarga-chip','LineaController@recargaChip');
+Route::post('/recarga-chip','ChipController@recargaChip');
 
 
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
@@ -65,7 +65,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/icc', 'IccController');
 
-    Route::post('/preactivar-prepago', 'LineaController@preactivarPrepago');
+    Route::post('/preactivar-prepago', 'ChipController@preactivarPrepago');
 
     Route::get('/get/icctypes', 'IccTypeController@index');
 
@@ -82,13 +82,21 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $iccs = Icc::all();
+    Http::fake(function ($request) {
+        return Http::response('Hello World', 500);
+    });
+   
+   
+    $response = Http::timeout(50)->asForm()->post('https://taecel.com/app/api/statusTXN', [
+        'key' => 'c490127ff864a719bd89877f32a574de',
+        'nip' => '0c4ae19986107edd5ebcec3c6e08a0d0',
+         'transID'=>'200901909623'
+    ]);
+    
 
-    $response = IccResource::collection($iccs);
+    
 
-    return $response;
-
-
+        return $response;
 });
 
 

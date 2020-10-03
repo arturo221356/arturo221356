@@ -20,6 +20,10 @@ class CreateTransactionsTable extends Migration
             $table->boolean('taecel_success')->nullable();
             $table->string('taecel_transID')->nullable();
             $table->string('taecel_message')->nullable();
+            $table->string('taecel_folio')->nullable();
+            $table->string('taecel_status')->nullable();
+            $table->string('taecel_nota')->nullable();
+            $table->string('taecel_timeout')->nullable();
             $table->integer('monto');
             $table->string('dn');
             $table->integer('company_id');

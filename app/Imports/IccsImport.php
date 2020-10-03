@@ -112,10 +112,10 @@ class IccsImport implements ToCollection
         return $this->exitosos;
     }
 
-    public function rules(): array
-    {
-        return [
-            '0' => 'required|unique:iccs,icc|digits:19',
-        ];
-    }
+    // public function rules(): array
+    // {
+    //     return [
+    //         '0' => 'required|unique:iccs,icc|digits:19',
+    //     ];
+    // }
 }

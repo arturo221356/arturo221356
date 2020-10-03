@@ -21,15 +21,24 @@ class LineaImport implements ToCollection
     private $errores = [];
 
     private $exitosos = [];
+    
+    private $data;
+
+    public function __construct(array $data = [])
+    {
+        $this->data = $data;
+    }
 
 
     public function collection(Collection $rows)
     {
         $user = Auth::user();
 
-        foreach ($rows as $row) {
+        $rows = $rows->toArray();
 
+        foreach ($rows as $key => $row) {
 
+            
 
             $requestIcc =  substr($row[0], 0, 19);
 
@@ -113,7 +122,10 @@ class LineaImport implements ToCollection
                             'icc_id' => $icc->id,
 
                         ]);
-                        $linea->setStatus('Preactivo');
+
+                        $this->data['recargable'] == 'true' ? $linea->setStatus('Recargable', $this->data['monto']) : $linea->setStatus('Preactiva');
+
+                        
                     }
                 }else{
                     $err['icc'] = $requestIcc;

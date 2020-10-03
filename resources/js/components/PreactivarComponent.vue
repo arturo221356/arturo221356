@@ -223,6 +223,7 @@
                                 <b-form-group label="Numero" label-size="lg">
                                     <b-input
                                         v-model="currentIcc.dn"
+                                        type="number"
                                         :state="
                                             getValidationState(
                                                 validationContext
@@ -414,7 +415,7 @@ export default {
         },
 
         preactivarIcc() {
-            // this.isLoading = true;
+             this.isLoading = true;
 
             const settings = {
                 headers: {
