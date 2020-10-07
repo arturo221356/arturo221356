@@ -138,23 +138,40 @@
                                     accept=".xlsx, .csv"
                                 ></b-form-file>
                             </b-form-group>
-
+                            
+                            <Validation-Provider
+                                v-if="can('asignar recarga')"
+                              
+                                name="recargable"
+                                v-slot="validationContext"
+                                rules="required"
+                            >
                             <b-form-group
-                                label="Recargable"
+                                label="Recargables"
                                 label-size="lg"
-                                description="Aqui es para seleccionar la recarga de activacion. para la funcion de primera recarga ¡Activa chip!"
+                                description="Aqui es para seleccionar la recarga de activacion. para la funcion de primera recarga ¡Activa chip! aplica para todas las lineas de la lista"
                             >
                                 <b-form-radio-group
+                                
                                     v-model="recargable"
                                     :options="[
                                         { text: 'Si', value: true },
                                         { text: 'No', value: false },
                                     ]"
-                                    buttons
-                                    button-variant="outline-primary"
-                                    size="md"
+     
+                                    size="lg"
+                                    :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                            
                                 ></b-form-radio-group>
+                                <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
                             </b-form-group>
+                            </Validation-Provider>
                             <Validation-Provider
                                 
                                 v-if="recargable == true"
@@ -172,9 +189,9 @@
                                         v-model="montoRecarga"
                                         :options="recargaOptions"
                                     ></b-form-select>
-                                    <b-form-invalid-feedback>{{
-                                        validationContext.errors[0]
-                                    }}</b-form-invalid-feedback>
+                                   <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
                                 </b-form-group>
                             </Validation-Provider>
                         </b-form>
@@ -282,7 +299,7 @@
 export default {
     data() {
         return {
-            recargable: false,
+            recargable: null,
 
             isLoading: false,
 

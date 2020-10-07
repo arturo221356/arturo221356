@@ -11,8 +11,6 @@
             :loading="isLoading"
             :class="stateClass"
             @input="emitToParent"
-            
-            
         ></multiselect>
         <label class="typo__label form__label invalid" v-show="state === false"
             >Elige un valor</label
@@ -28,10 +26,10 @@ export default {
             required: false,
             default: false,
         },
-        multiple:{
+        multiple: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
         empty: {
             type: Boolean,
@@ -44,78 +42,74 @@ export default {
             required: true,
         },
 
-
-
         pholder: {
             type: String,
             required: false,
             detault: "Seleccionar Estatus",
         },
 
-         value:{},
+        value: {},
 
         state: {
             type: Boolean,
             required: false,
             default: null,
         },
-
-
     },
-    mounted() {
-        switch (this.estatusable){
-               case 'inventario':
-                   
-                  const  $optionsArray =['Disponible','Incompleto','Perdido','Robado']
-                   
-                   $optionsArray.forEach(element => {
-                        this.options.push({id: element, name: element});
-                   });
-                break;
-           }
-    },
+    mounted() {},
     data() {
         return {
-            
             isLoading: false,
 
-            options: [],
-
             selected: null,
-
-           
-
-           
         };
     },
     methods: {
         emitToParent() {
-            
-            
-             this.$emit("input", this.selected);
-
+            this.$emit("input", this.selected);
         },
-
-
     },
 
     created: function () {
         this.selected = this.value;
-
     },
-    watch:{
-
-        
-
-        value: function (){
-            
-           
-
+    watch: {
+        value: function () {
             this.selected = this.value;
         },
-
     },
     computed: {
+        options: function () {
+            var optionsArray = [];
+
+            switch (this.estatusable) {
+                case "inventario":
+                    var options = [
+                        "Disponible",
+                        "Incompleto",
+                        "Perdido",
+                        "Robado",
+                    ];
+
+                    break;
+                case "linea":
+                    var options = [
+                        "Preactiva",
+                        "Exportada",
+                    ];
+                    if(this.can('asignar recarga')){
+                        options.push('Recargable');
+                    }
+
+                break;
+            }
+            options.forEach((element) => {
+                optionsArray.push({ id: element, name: element });
+            });
+
+            return optionsArray;
+        },
+
         stateClass: function () {
             var response;
 
@@ -133,7 +127,6 @@ export default {
             }
             return response;
         },
-
     },
 };
 </script>

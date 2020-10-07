@@ -114,7 +114,9 @@ class LineaImport implements ToCollection
 
                          array_push($this->exitosos, $exitoso);
 
-                        $chip = Chip::create([]);
+                        $chip = Chip::create([
+                            'preactivated_at' => now()
+                        ]);
 
                         $linea = $chip->linea()->create([
                             'dn' => $dn,

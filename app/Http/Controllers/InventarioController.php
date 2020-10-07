@@ -35,14 +35,14 @@ class InventarioController extends Controller
                 $inventarios =  Inventario::all();
             } elseif ($user->can('distribution inventarios')) {
 
-               
 
-                    $inventarios =  $userDistribution->inventarios()->get();
-                } else {
 
-                    $inventarios =    $user->inventariosAsignados()->get();
-                }
-            
+                $inventarios =  $userDistribution->inventarios()->get();
+            } else {
+
+                $inventarios =    $user->inventariosAsignados()->get();
+            }
+
 
             $response = json_encode(InventarioResource::collection($inventarios));
             return $response;
@@ -86,25 +86,43 @@ class InventarioController extends Controller
 
         $producto = $request->producto;
 
-        if($id == 'all'){
+        $onlyTrash = json_decode($request->onlyTrash);
+
+        if ($id == 'all') {
 
             switch ($producto) {
 
 
                 case 'Imei':
 
-                    
 
-                    if($user->can('distribution inventarios')){
 
-                        $imeis = $userDistribution->imeis()->otherCurrentStatus('Vendido')->get(); 
-                        
+                    if ($user->can('distribution inventarios')) {
+
+                        if ($onlyTrash == true) {
+                            $imeis = $userDistribution->imeis()->onlyTrashed()->get();
+                        }else if ($onlyTrash == false) {
+                            $imeis = $userDistribution->imeis()->otherCurrentStatus('Vendido')->get();
+                        }
+                       
+
+
+
+
                         $response = ImeiResource::collection($imeis);
-                    }else{
-                        $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-    
-                        $imeis = Imei::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get();    
+                    } else {
+
                         
+                        $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+
+
+                        if ($onlyTrash == true) {
+
+                            $imeis = Imei::whereIn('inventario_id', $inventariosIds)->onlyTrashed()->get();
+
+                        }else if ($onlyTrash == false){
+                            $imeis = Imei::whereIn('inventario_id', $inventariosIds)->otherCurrentStatus('Vendido')->get();
+                        }
                         $response = ImeiResource::collection($imeis);
                     }
 
@@ -113,59 +131,84 @@ class InventarioController extends Controller
 
                 case 'Icc':
 
-                    if($user->can('distribution inventarios')){
 
-                    $iccs = $userDistribution->iccs()
-                    // ->otherCurrentStatus('Vendido')
-                    ->get();
+                    if ($user->can('distribution inventarios')) {
 
-                    $response = IccResource::collection($iccs);
 
-                    }else{
-                        
+                        if ($onlyTrash == true) {
+                            $iccs = $userDistribution->iccs()->onlyTrashed()->get();
+                        } else if ($onlyTrash == false) {
+                            $iccs = $userDistribution->iccs()
+                                ->otherCurrentStatus('Vendido')
+                                ->get();
+                        }
+
+
+
+
+                        $response = IccResource::collection($iccs);
+                    } else {
+
                         $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
-                        $iccs = Icc::whereIn('inventario_id',$inventariosIds)
-                        // ->otherCurrentStatus('Vendido')
-                        ->get(); 
-                        
+                        if ($onlyTrash == true) {
 
-                    $response = IccResource::collection($iccs);
-                    }    
-    
+                            $iccs = Icc::whereIn('inventario_id', $inventariosIds)
+                                ->onlyTrashed()
+                                ->get();
+                        } else if ($onlyTrash == false) {
+
+                            $iccs = Icc::whereIn('inventario_id', $inventariosIds)
+                                ->otherCurrentStatus('Vendido')
+                                ->get();
+                        }
+
+
+
+
+
+
+
+                        $response = IccResource::collection($iccs);
+                    }
+
                     break;
             }
             return $response;
-           
-        }else{
+        } else {
 
             $inventario = Inventario::find($id);
-            
+
 
             if ($producto === 'Imei') {
-                $imeis = $inventario->imeis()->otherCurrentStatus('Vendido')->get();
-                $response = ImeiResource::collection($imeis);
-                return $response;
+
+                if ($onlyTrash == true) {
+
+                    $imeis = $inventario->imeis()->onlyTrashed()->get();
+
+                }else if ($onlyTrash == false) {
+
+                    $imeis = $inventario->imeis()->otherCurrentStatus('Vendido')->get();
+                }
                 
+                
+
+                $response = ImeiResource::collection($imeis);
+
+                return $response;
             } else if ($producto === 'Icc') {
-                $iccs = $inventario->iccs()
-                // ->otherCurrentStatus('Vendido')
-                ->get();
+                if ($onlyTrash == true) {
+                    $iccs = $inventario->iccs()
+                        ->onlyTrashed()
+                        ->get();
+                } else if ($onlyTrash == false) {
+                    $iccs = $inventario->iccs()
+                        ->otherCurrentStatus('Vendido')
+                        ->get();
+                }
                 $response = IccResource::collection($iccs);
                 return $response;
-                
             }
- 
-
-
-            
-            
-       
-            
-           
-
-
-
         }
     }
 

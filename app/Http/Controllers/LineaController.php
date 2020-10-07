@@ -25,7 +25,7 @@ class LineaController extends Controller
      */
     public function index()
     {
-        //
+        
     }
     public function verificarIcc(Request $request)
     {
@@ -123,6 +123,16 @@ class LineaController extends Controller
      */
     public function destroy(Linea $linea)
     {
-        //
+        $user = Auth::user();
+        if($user->can('destroy stock')){
+            $linea = $linea;
+
+            $chip = $linea->productoable();
+
+            $chip->delete();
+    
+            $linea->forceDelete();
+        }
+
     }
 }

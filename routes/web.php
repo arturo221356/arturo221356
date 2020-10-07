@@ -57,14 +57,9 @@ Route::group(['middleware' => ['role:super-admin|administrador']], function () {
 
 Route::group(['middleware' => ['auth']], function () {
 
-    Route::resource('/inventario/traspasos', 'TraspasoController')->middleware('can:ver traspasos');
-
-    Route::resource('/inventario','InventarioController');
-
-    Route::resource('/imei', 'ImeisController');
-
-    Route::resource('/icc', 'IccController');
-
+    
+    
+    
     Route::post('/preactivar-prepago', 'ChipController@preactivarPrepago');
 
     Route::get('/get/icctypes', 'IccTypeController@index');
@@ -76,6 +71,23 @@ Route::group(['middleware' => ['auth']], function () {
     Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar linea');
 
     Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar linea');
+
+    Route::post('/icc/restore', 'IccController@restore')->middleware('can:destroy stock');
+
+    Route::post('/imei/restore', 'ImeisController@restore')->middleware('can:destroy stock');
+    
+    
+    Route::resource('/inventario/traspasos', 'TraspasoController')->middleware('can:ver traspasos');
+
+    Route::resource('/inventario','InventarioController');
+
+    Route::resource('/imei', 'ImeisController');
+
+    Route::resource('/icc', 'IccController');
+
+    Route::resource('/linea', 'lineaController');
+
+
   
 
 });

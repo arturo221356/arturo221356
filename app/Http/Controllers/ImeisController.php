@@ -195,13 +195,13 @@ class ImeisController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::user();
-        if($user->can(' full update stock')){
+        
+        if($user->can('update stock')){
+
             $imei = Imei::findorfail($id);
 
+            $imei->setStatus($request->status);
 
-            $imei->update($request->all());
-    
-    
             if ($request->comment != NULL) {
     
                 $imei->comment()->updateOrCreate([], ['comment' => $request->comment]);
@@ -209,7 +209,21 @@ class ImeisController extends Controller
     
                 $imei->comment()->delete();
             }
+
+            if($user->can('full update stock')){
+            
+
+
+                $imei->update($request->all());
+        
+        
+               
+            }
+
+            $imei->save();
         }
+        
+
 
     }
 
@@ -223,9 +237,27 @@ class ImeisController extends Controller
     {
 
         $user = Auth::user();
-        if($user->can('destroy stock')){
+
+        if ($user->can('destroy stock')) {
+
             $imei->delete();
         }
+        
+    }
+
+    
+    public function restore(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->can('destroy stock')) {
+        $id = $request;
+        
+        $imei = Imei::onlyTrashed()->findOrfail($id)->first();
+
+        $imei->restore();
+
+        }
+
         
     }
 }

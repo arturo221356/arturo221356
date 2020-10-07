@@ -2,7 +2,7 @@
     <div>
         <b-overlay :show="isLoading" rounded="sm">
             <div class="jumbotron">
-                <div class="col-md-4 mx-auto">
+                <div class="col-md-8 mx-auto">
                     <div v-show="editMode == false">
                         <h1>Reporte de Inventario</h1>
                         <validation-observer
@@ -55,6 +55,21 @@
                                         >
                                     </b-form-group>
                                 </ValidationProvider>
+                                <b-form-group
+                                    label="Eliminados"
+                                    label-size="lg"
+                                >
+                                    <b-form-radio-group
+                                        buttons
+                                        v-model="onlyTrash"
+                                        button-variant="outline-danger"
+                                        :options="[
+                                            { text: 'Si', value: true },
+                                            { text: 'No', value: false },
+                                        ]"
+                                    >
+                                    </b-form-radio-group>
+                                </b-form-group>
                                 <b-button block variant="primary" type="submit"
                                     >Cargar</b-button
                                 >
@@ -71,11 +86,7 @@
                                     <b-icon
                                         icon="x-circle-fill"
                                         variant="danger"
-                                        @click="function(){
-                                                editMode = false;
-                                                resetEditableItem();
-                                            }
-                                        "
+                                        @click="cancelEdit"
                                     ></b-icon>
                                 </h1>
                             </div>
@@ -96,80 +107,252 @@
                             </div>
                         </div>
 
-                        <b-form>
-                            <b-form-group
-                                label="Inventario"
-                                label-size="lg"
-                                v-if="can('full update stock')"
-                            >
-                                <select-general
-                                    url="/inventario"
-                                    pholder="Seleccionar Inventario"
-                                    v-model="editableItem.inventario"
+                        <validation-observer
+                            ref="observer"
+                            v-slot="{ handleSubmit }"
+                        >
+                            <b-form @submit.prevent="handleSubmit(updateItem)">
+                                <ValidationProvider
+                                    name="inventario"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                    v-if="can('full update stock')"
                                 >
-                                </select-general>
-                            </b-form-group>
-                            <b-form-group label="Estatus:" label-size="lg">
-                                <select-statuses
-                                    estatusable="inventario"
-                                    v-model="editableItem.status"
-                                ></select-statuses>
-                            </b-form-group>
+                                    <b-form-group
+                                        label="Inventario"
+                                        label-size="lg"
+                                    >
+                                        <select-general
+                                            url="/inventario"
+                                            pholder="Seleccionar Inventario"
+                                            v-model="editableItem.inventario"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        >
+                                        </select-general>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
 
-                            <b-form-group
-                                label="Compañia:"
-                                label-size="lg"
-                                v-if="renderCompany"
-                            >
-                                <select-general
-                                    url="/get/companies"
-                                    pholder="Seleccionar Compañia"
-                                    v-model="editableItem.company"
+                                <ValidationProvider
+                                    name="estatus"
+                                    v-slot="validationContext"
+                                    rules="required"
                                 >
-                                </select-general>
-                            </b-form-group>
-                            <b-form-group
-                                label="Tipo:"
-                                label-size="lg"
-                                v-if="renderSimType"
-                            >
-                                <select-general
-                                    url="/get/icctypes"
-                                    pholder="Seleccionar tipo de sim"
-                                    v-model="editableItem.iccType"
-                                    :query="editableItem.company.id"
-                                >
-                                </select-general>
-                            </b-form-group>
+                                    <b-form-group
+                                        label="Estatus:"
+                                        label-size="lg"
+                                    >
+                                        <select-statuses
+                                            estatusable="inventario"
+                                            v-model="editableItem.status"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        ></select-statuses>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
 
-                            <b-form-group
-                                label="Equipo:"
-                                label-size="lg"
-                                v-if="renderEquipo"
-                            >
-                                <select-general
-                                    url="/get/equipos"
-                                    pholder="Seleccionar Equipo"
-                                    v-model="editableItem.equipo"
-                                    :equipo="true"
+                                <ValidationProvider
+                                    name="compañia"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                    v-if="fullUpdateIcc"
                                 >
-                                </select-general>
-                            </b-form-group>
+                                    <b-form-group
+                                        label="Compañia:"
+                                        label-size="lg"
+                                    >
+                                        <select-general
+                                            url="/get/companies"
+                                            pholder="Seleccionar Compañia"
+                                            v-model="editableItem.company"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        >
+                                        </select-general>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
 
-                            <b-form-group label="Comentario" label-size="lg"
-                                ><b-form-textarea
-                                    v-model="editableItem.comment"
-                                    max-rows="6"
-                                    placeholder="Comentario"
-                                ></b-form-textarea
-                            ></b-form-group>
-
-                            <b-form-group>
-                                <b-button block variant="success"
-                                    >Guardar</b-button
+                                <ValidationProvider
+                                    name="tipo sim"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                    v-if="renderSimType"
                                 >
-                            </b-form-group>
-                        </b-form>
+                                    <b-form-group label="Tipo:" label-size="lg">
+                                        <select-general
+                                            url="/get/icctypes"
+                                            pholder="Seleccionar tipo de sim"
+                                            v-model="editableItem.iccType"
+                                            :query="editableItem.company.id"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        >
+                                        </select-general>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <ValidationProvider
+                                    name="dn"
+                                    v-slot="validationContext"
+                                    rules="numeric|required|length:10"
+                                    v-if="renderDn"
+                                >
+                                    <b-form-group label="DN:" label-size="lg">
+                                        <b-input-group>
+                                            <b-input
+                                                type="number"
+                                                placeholder="Inserta DN"
+                                                v-model="editableItem.lineaDn"
+                                                :state="
+                                                    getValidationState(
+                                                        validationContext
+                                                    )
+                                                "
+                                            ></b-input>
+                                            <b-input-group-append>
+                                                <b-button
+                                                    v-if="can('destroy stock')"
+                                                    variant="outline-danger"
+                                                    @click="deleteLinea"
+                                                    >Eliminar linea</b-button
+                                                >
+                                            </b-input-group-append>
+                                        </b-input-group>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+                                <ValidationProvider
+                                    name="estatus linea"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                    v-if="renderDn"
+                                >
+                                    <b-form-group
+                                        label="Estatus linea:"
+                                        label-size="lg"
+                                    >
+                                        <select-statuses
+                                            estatusable="linea"
+                                            v-model="
+                                                editableItem.lineaStatus.name
+                                            "
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        ></select-statuses>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <ValidationProvider
+                                    name="recarga"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                    v-if="renderRecarga"
+                                >
+                                    <b-form-group
+                                        label="Recarga:"
+                                        label-size="lg"
+                                    >
+                                        <b-form-select
+                                            v-model="
+                                                editableItem.lineaStatus.reason
+                                            "
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                            :options="recargaOptions"
+                                        ></b-form-select>
+                                        <b-form-invalid-feedback>{{
+                                            validationContext.errors[0]
+                                        }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <ValidationProvider
+                                    name="equipo"
+                                    v-slot="validationContext"
+                                    rules="required"
+                                    v-if="renderEquipo"
+                                >
+                                    <b-form-group
+                                        label="Equipo:"
+                                        label-size="lg"
+                                    >
+                                        <select-general
+                                            url="/get/equipos"
+                                            pholder="Seleccionar Equipo"
+                                            v-model="editableItem.equipo"
+                                            :equipo="true"
+                                            :state="
+                                                getValidationState(
+                                                    validationContext
+                                                )
+                                            "
+                                        >
+                                        </select-general>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <b-form-group label="Comentario" label-size="lg"
+                                    ><b-form-textarea
+                                        v-model="editableItem.comment"
+                                        max-rows="6"
+                                        placeholder="Comentario"
+                                    ></b-form-textarea
+                                ></b-form-group>
+
+                                <b-form-group>
+                                    <b-button
+                                        block
+                                        variant="success"
+                                        type="submit"
+                                        >Guardar</b-button
+                                    >
+                                </b-form-group>
+
+                                <b-form-group v-if="can('destroy stock')">
+                                    <b-button
+                                        block
+                                        variant="danger"
+                                        @click="deleteItem"
+                                        >Eliminar</b-button
+                                    >
+                                </b-form-group>
+                            </b-form>
+                        </validation-observer>
                     </div>
                 </div>
                 <div
@@ -198,7 +381,7 @@
                         hover
                         responsive
                         striped
-                        stacked="md"
+                        stacked="sm"
                         head-variant="dark"
                         table-variant="light"
                         :busy="tableBusy"
@@ -218,8 +401,21 @@
 
                         <!--boton de editar -->
                         <template v-slot:cell(editar)="row">
-                            <b-button @click="editItem(row.item, row.index)">
+                            <b-button
+                                @click="editItem(row.item, row.index)"
+                                variant="info"
+                            >
                                 Editar
+                                {{ producto }}</b-button
+                            >
+                        </template>
+                        <!--boton de editar -->
+                        <template v-slot:cell(restaurar)="row">
+                            <b-button
+                                @click="restoreItem(row.item.id)"
+                                variant="warning"
+                            >
+                                Restaurar
                                 {{ producto }}</b-button
                             >
                         </template>
@@ -263,33 +459,41 @@ export default {
         return {
             tableBusy: false,
 
+            onlyTrash: false,
+
             tableFilter: null,
 
             isLoading: false,
 
             editMode: false,
 
+            recargaOptions: [
+                { value: 50, text: "Recarga de $50" },
+
+                { value: 100, text: "Recarga de $100" },
+            ],
+
             editableItem: {
                 inventario: null,
                 status: null,
                 iccType: null,
                 company: null,
-                marca: null,
-                modelo: null,
+                equipo: { marca: null, modelo: null, id: null },
                 comment: null,
+                // editableItem: null,
+                lineaDn: null,
+                lineaId: null,
+                lineaStatus: { name: { name: null, id: null }, reason: null },
+                id: null,
             },
 
             productoOptions: [
                 { text: "Sims", value: "Icc" },
                 { text: "Equipos", value: "Imei" },
             ],
-            inventario: [],
-
-            inventarioStatus: [],
+            inventario: null,
 
             item: {},
-
-            lineaStatus: [],
 
             producto: "Icc",
 
@@ -304,19 +508,19 @@ export default {
             return dirty || validated ? valid : null;
         },
         resetEditableItem() {
-            this.editableItem.inventario = null;
-
-            this.editableItem.serie = null;
-
-            this.editableItem.comment = null;
-
-            this.editableItem.company = null;
-
-            this.editableItem.status = null;
-
-            this.editableItem.equipo = null;
-
-            this.editableItem.iccType = null;
+            this.editableItem = {
+                inventario: null,
+                status: null,
+                iccType: null,
+                equipo: { marca: null, modelo: null, id: null },
+                modelo: null,
+                comment: null,
+                // editableItem: null,
+                lineaDn: null,
+                lineaId: null,
+                lineaStatus: { name: { name: null, id: null }, reason: null },
+                id: null,
+            };
         },
         loadInventario() {
             this.tableBusy = true;
@@ -325,6 +529,8 @@ export default {
                 .get(`/inventario/${this.inventario.id}`, {
                     params: {
                         producto: this.producto,
+
+                        onlyTrash: this.onlyTrash,
                     },
                 })
                 .then(
@@ -344,7 +550,6 @@ export default {
         },
         editItem(item, row) {
             this.resetEditableItem();
-            console.log(item);
 
             this.editMode = true;
 
@@ -353,33 +558,183 @@ export default {
                 name: item.inventario_name,
             };
 
+            this.editableItem.id = item.id;
+
             this.editableItem.serie = item.serie;
+
+            this.editableItem.status = {
+                id: item.status,
+                name: item.status,
+            };
 
             if (item.comment) {
                 this.editableItem.comment = item.comment.comment;
             }
 
-            this.editableItem.company = item.company;
+            switch (this.producto) {
+                case "Icc":
+                    this.editableItem.lineaDn = item.linea_dn;
 
-            this.editableItem.status = { id: item.status, name: item.status };
+                    this.editableItem.lineaId = item.linea_id;
 
-            this.editableItem.equipo = item.equipo;
+                    this.editableItem.company = item.company;
 
-            this.editableItem.iccType = item.type;
+                    this.editableItem.lineaStatus.name = {
+                        name: item.linea_status.name,
+                        id: item.linea_status.name,
+                    };
+
+                    this.editableItem.lineaStatus.reason =
+                        item.linea_status.reason;
+
+                    this.editableItem.iccType = item.type;
+
+                    break;
+
+                case "Imei":
+                    this.editableItem.equipo = item.equipo;
+                    break;
+            }
 
             window.scrollTo(0, 0);
+        },
+        updateItem() {
+            this.isLoading = true;
+            axios
+                .put(
+                    `/${this.producto.toLowerCase()}/${this.editableItem.id}`,
+                    this.updateItemData
+                )
+                .then(
+                    function (response) {
+                        this.isLoading = false;
+
+                        this.reloadTable();
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        deleteItem() {
+            this.isLoading = true;
+            axios
+
+                .delete(
+                    `/${this.producto.toLowerCase()}/${this.editableItem.id}`,
+                    {}
+                )
+                .then(
+                    function (response) {
+                        this.isLoading = false;
+
+                        this.reloadTable();
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        restoreItem(id) {
+            this.isLoading = true;
+            axios
+                .post(`/${this.producto.toLowerCase()}/restore/`, { id })
+                .then(
+                    function (response) {
+                        this.isLoading = false;
+
+                        this.reloadTable();
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         tableFiltered(filteredItems) {
             this.countItems = filteredItems.length;
         },
+        cancelEdit() {
+            this.editMode = false;
+            this.resetEditableItem();
+        },
+        deleteLinea() {
+            axios
+                .delete(`/linea/${this.editableItem.lineaId}`, {})
+                .then(
+                    function (response) {
+                        console.log("posajdaposjd");
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        tableFiltered(filteredItems) {
+            this.countItems = filteredItems.length;
+        },
+        cancelEdit() {
+            this.editMode = false;
+            this.resetEditableItem();
+        },
+        reloadTable() {
+            this.editMode = false;
+            this.resetEditableItem();
+            this.loadInventario();
+        },
     },
     computed: {
+        updateItemData: function () {
+            var response = {
+                comment: this.editableItem.comment,
+
+                inventario_id: this.editableItem.inventario.id,
+
+                status: this.editableItem.status.name,
+            };
+
+            switch (this.producto) {
+                case "Icc":
+                    response.company_id = this.editableItem.company.id;
+
+                    response.icc_type_id = this.editableItem.iccType.id;
+
+                    response.lineaDn = this.editableItem.lineaDn;
+
+                    response.lineaStatus = this.editableItem.lineaStatus.name.name;
+
+                    response.montoRecarga = this.editableItem.lineaStatus.reason;
+
+                    break;
+
+                case "Imei":
+                    response.equipo_id = this.editableItem.equipo.id;
+                    break;
+            }
+
+            return response;
+        },
+
         renderSimType: function () {
             if (this.can("full update stock") && this.editableItem.company) {
                 return true;
             }
         },
-        renderCompany: function () {
+
+        renderDn: function () {
+            if (this.can("full update stock") && this.editableItem.lineaId) {
+                return true;
+            }
+        },
+        renderRecarga: function () {
+            if (
+                this.can("full update stock") &&
+                this.editableItem.lineaStatus.name &&
+                this.editableItem.lineaStatus.name.id == "Recargable"
+            ) {
+                return true;
+            }
+        },
+        fullUpdateIcc: function () {
             if (this.can("full update stock") && this.producto == "Icc") {
                 return true;
             }
@@ -417,11 +772,7 @@ export default {
                                 label: "Precio",
                                 sortable: true,
                             },
-                            {
-                                key: "equipo.costo",
-                                label: "Costo",
-                                sortable: true,
-                            },
+
                             {
                                 key: "created_at",
                                 label: "Creado",
@@ -432,19 +783,31 @@ export default {
                                 label: "Modificado",
                                 sortable: true,
                             },
-                            { key: "editar", label: "Editar" },
                         ];
-                    } else {
-                        $response = [
-                            { key: "serie", label: "Imei" },
-                            { key: "inventario_name", label: "Inventario" },
-                            { key: "status", label: "Estatus" },
-                            { key: "equipo.marca", label: "Marca" },
-                            { key: "equipo.modelo", label: "Modelo" },
-                            { key: "precio", label: "Precio" },
-                            { key: "created_at", label: "Creado" },
-                            { key: "updated_at", label: "Modificado" },
-                        ];
+                        if (this.can("full update stock")) {
+                            $response.splice(6, 0, {
+                                key: "equipo.costo",
+                                label: "Costo",
+                                sortable: true,
+                            });
+                        }
+
+                        if (this.can("update stock")) {
+                            if (
+                                this.onlyTrash == true &&
+                                this.can("full update stock")
+                            ) {
+                                $response.push({
+                                    key: "restaurar",
+                                    label: "Restaurar",
+                                });
+                            } else if (this.onlyTrash == false) {
+                                $response.push({
+                                    key: "editar",
+                                    label: "Editar",
+                                });
+                            }
+                        }
                     }
 
                     return $response;
@@ -452,7 +815,6 @@ export default {
                     break;
 
                 case "Icc":
-
                     $response = [
                         { key: "serie", label: "Icc" },
                         {
@@ -478,8 +840,18 @@ export default {
                             sortable: true,
                         },
                         {
-                            key: "linea_status",
+                            key: `linea_status.name`,
                             label: "Estatus Linea",
+                            sortable: true,
+                        },
+                        {
+                            key: `linea_status.reason`,
+                            label: "Rercarga asignada",
+                            sortable: true,
+                        },
+                        {
+                            key: "preactivated_at",
+                            label: "Preactivado",
                             sortable: true,
                         },
                         {
@@ -487,18 +859,32 @@ export default {
                             label: "DN",
                             sortable: true,
                         },
-
-                        
                     ];
 
                     if (this.can("update stock")) {
-                        $response.push({ key: "editar", label: "Editar" })
-                    } 
-
+                        if (
+                            this.onlyTrash == true &&
+                            this.can("full update stock")
+                        ) {
+                            $response.push({
+                                key: "restaurar",
+                                label: "Restaurar",
+                            });
+                        } else if (this.onlyTrash == false) {
+                            $response.push({ key: "editar", label: "Editar" });
+                        }
+                    }
 
                     return $response;
 
                     break;
+            }
+        },
+    },
+    watch: {
+        onlyTrash: function () {
+            if (this.inventario) {
+                this.loadInventario();
             }
         },
     },

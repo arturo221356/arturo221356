@@ -42,6 +42,8 @@ class PermissionsSeeder extends Seeder
         Permission::create(['name' => 'ver traspasos']);
     
         Permission::create(['name' => 'preactivar linea']);
+
+        Permission::create(['name' => 'asignar recarga']);
     
         Permission::create(['guard_name' => 'web','name' => 'activar chip']);
     
@@ -67,6 +69,7 @@ class PermissionsSeeder extends Seeder
           'cancelar traspaso',
           'ver traspasos',
           'preactivar linea',
+           'asignar recarga'
         );
     
     

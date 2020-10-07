@@ -16,19 +16,40 @@ class IccResource extends JsonResource
      */
     public function toArray($request)
     {
+        Carbon::setLocale('es');
+
         $lineaStatus = "";
 
         $lineaDn = "";
 
-        if($this->linea){
-            $status = $this->linea->status();
+        $lineaId = "";
 
-            $lineaDn = $this->linea->dn;
+        $chipActivatedAt = null;
 
-            if($status){
-                $lineaStatus = $status." ".$status->reason;
-            }else{
-                $lineaStatus = $status;
+        $chipPreactivatedAt = null;
+
+        if($this->status() == 'Eliminado'){
+            $linea = $this->linea()->withTrashed()->first();
+        }else{
+            $linea = $this->linea()->first();
+        }
+
+        
+
+        if($linea){
+             $lineaStatus = $linea->status();
+
+            $lineaDn = $linea->dn;
+
+            $lineaId = $linea->id;
+
+
+            if($linea->productoable){
+
+
+                $chipActivatedAt = $linea->activated_at;
+
+                $chipPreactivatedAt = $linea->productoable->preactivated_at;
             }
         
             
@@ -46,9 +67,13 @@ class IccResource extends JsonResource
             'comment'  => $this->comment,
             'status'    => $this->status,
             'linea_status'    => $lineaStatus,
+            'linea_id' => $lineaId,
             'linea_dn' => $lineaDn,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
-            'updated_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
+            'updated_at' => Carbon::parse($this->updated_at)->format('d/m/y h:i:s'),
+            'preactivated_at' =>  $chipPreactivatedAt ? Carbon::parse($chipPreactivatedAt)->diffForHumans() : null,
+            'activated_at' => $chipActivatedAt ? Carbon::parse($chipActivatedAt)->diffForHumans() : null,
+            
 
         ];
     }

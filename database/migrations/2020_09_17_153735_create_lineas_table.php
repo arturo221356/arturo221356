@@ -22,6 +22,7 @@ class CreateLineasTable extends Migration
             $table->unsignedInteger('icc_product_id')->nullable();
             // $table->unsignedInteger('icc_sub_product_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

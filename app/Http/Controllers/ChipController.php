@@ -139,6 +139,10 @@ class ChipController extends Controller
                 case 'Preactiva':
                     $message['message'] = 'Numero no tiene recarga asignada';
                     break;
+
+                case 'Exportada':
+                    $message['message'] = 'Numero exportado';
+                    break;
                 case 'Proceso':
                     $message['message'] = 'Numero con falla durante proceso de recarga contacta al distribuidor';
                     break;
@@ -157,16 +161,16 @@ class ChipController extends Controller
 
         //revisa que el inventario tenga permisos para activar chips desde activa chip
 
-        if (!$inventario->hasPermissionTo('activar chip', 'web')) {
+        // if (!$inventario->hasPermissionTo('activar chip', 'web')) {
 
-            $message = [
-                'success' => false,
-                'message' => 'No tienes permiso de activar chips portate bien',
+        //     $message = [
+        //         'success' => false,
+        //         'message' => 'No tienes permiso de activar chips portate bien',
 
-            ];
+        //     ];
 
-            return json_encode($message);
-        }
+        //     return json_encode($message);
+        // }
 
 
 
@@ -257,6 +261,14 @@ class ChipController extends Controller
 
             $linea->setStatus('Activado');
 
+            $chip = $linea->productoable;
+
+            $chip->activated_at = now();
+
+            $chip->transaction_id = $trasnsaction->id;
+
+            $chip->save();
+
             $linea->icc->setStatus('Vendido');
 
 
@@ -281,10 +293,17 @@ class ChipController extends Controller
 
         $recargable = $request->recargable;
 
+
+
         $montoRecarga = $request->monto;
 
 
         $user = Auth::user();
+
+        if ($recargable == 'true' && !$user->hasPermissionTo('asignar recarga')) {
+
+            $recargable = 'false';
+        }
 
         if ($user->hasPermissionTo('preactivar linea'))
 
@@ -402,7 +421,9 @@ class ChipController extends Controller
 
                             array_push($exitosos, $exitoso);
 
-                            $chip = Chip::create([]);
+                            $chip = Chip::create([
+                                'preactivated_at' => now()
+                            ]);
 
                             $linea = $chip->linea()->create([
                                 'dn' => $dn,

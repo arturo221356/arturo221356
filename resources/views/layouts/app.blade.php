@@ -46,6 +46,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="/inventario/">Reporte de Inventario</a>
+                      
                       @can ('store stock')
                       <a class="dropdown-item" href="/inventario/cargar">Cargar Inventario</a>
                       @endcan
