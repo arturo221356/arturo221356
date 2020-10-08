@@ -31,28 +31,28 @@ class SearchController extends Controller
             
             $modelSearchAspect
                 ->limit(5)
-                ->addSearchableAttribute('icc');
-        //         ->otherCurrentStatus(['Vendido', 'Traslado'])
-        //         ->whereHas('inventario', function($query) {
-        //             $user = Auth::user();
-        //             $query->where('distribution_id', $user->distribution->id);
-        //         })
-        //         ;
-        // })
-        // ->registerModel(Imei::class, function ($modelSearchAspect) {
-        //     $modelSearchAspect
-        //         ->limit(5)
-        //         ->addSearchableAttribute('imei')
-        //         ->otherCurrentStatus(['Vendido', 'Traslado'])
+                ->addSearchableAttribute('icc')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })
+                ;
+        })
+        ->registerModel(Imei::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+                ->limit(5)
+                ->addSearchableAttribute('imei')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
                 
-        //         ->whereHas('inventario', function($query) {
-        //             $user = Auth::user();
-        //             $query->where('distribution_id', $user->distribution->id);
-        //         })
-        //         ;
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })
+                ;
         })
         
-        ->search("895203");
+        ->search(a$request->search);
         
 
     return $searchResults;
@@ -94,7 +94,7 @@ class SearchController extends Controller
                 
         })
 
-        ->search("895203");
+        ->search($request->search);
         
 
     return $searchResult;
