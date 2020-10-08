@@ -24,7 +24,7 @@ class InventarioController extends Controller
      */
     public function index(Request $request)
     {
-        // if ($request->ajax()) {
+        if ($request->ajax()) {
 
             $user = Auth::user();
 
@@ -44,10 +44,10 @@ class InventarioController extends Controller
             }
 
 
-            // $response = json_encode(InventarioResource::collection($inventarios));
-            return $inventarios;
-        // }
-        // return view('inventario.index');
+            $response = json_encode(InventarioResource::collection($inventarios));
+            return $response;
+        }
+        return view('inventario.index');
     }
 
     /**
