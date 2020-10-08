@@ -107,8 +107,12 @@ export default {
             chips: [],
         };
     },
+<<<<<<< HEAD
     computed:
      {
+=======
+    computed: {
+>>>>>>> 8f198022769f7ec71ef6722ab67ece266d5a5d55
         maxDate: function () {
             const now = new Date();
             const today = new Date(
