@@ -52,7 +52,7 @@ class SearchController extends Controller
                 ;
         })
         
-        ->search(a$request->search);
+        ->search($request->search);
         
 
     return $searchResults;
