@@ -1,7 +1,7 @@
 <template>
     <b-overlay :show="isLoading" rounded="sm">
         <div class="jumbotron">
-            <div class="col-md-6 mx-auto">
+            <div class="col-md-8 mx-auto">
                 <validation-observer ref="observer" v-slot="{ handleSubmit }">
                     <b-form @submit.prevent="handleSubmit(recargarChip)">
                         <h1>Ingresa el numero de telefono</h1>

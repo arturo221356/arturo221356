@@ -56,6 +56,7 @@
                                     </b-form-group>
                                 </ValidationProvider>
                                 <b-form-group
+                                    v-if="can('update stock')"
                                     label="Eliminados"
                                     label-size="lg"
                                 >
@@ -355,10 +356,7 @@
                         </validation-observer>
                     </div>
                 </div>
-                <div
-                    class="col-md-11 mx-auto mt-5"
-                    v-if="tableItems.length > 0"
-                >
+                <div class="col-md-11 mx-auto mt-5">
                     <div class="row">
                         <div class="col-sm mt-auto">
                             <h5>Resultado: {{ countItems }}</h5>
@@ -383,7 +381,7 @@
                         striped
                         stacked="sm"
                         head-variant="dark"
-                        table-variant="light"
+                        :table-variant="onlyTrash == true ? 'danger' : 'light'"
                         :busy="tableBusy"
                         @filtered="tableFiltered"
                     >
@@ -524,7 +522,7 @@ export default {
         },
         loadInventario() {
             this.tableBusy = true;
-            this.isLoading = true;
+
             axios
                 .get(`/inventario/${this.inventario.id}`, {
                     params: {
@@ -540,8 +538,6 @@ export default {
                         this.countItems = this.tableItems.length;
 
                         this.tableBusy = false;
-
-                        this.isLoading = false;
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -609,7 +605,15 @@ export default {
                     function (response) {
                         this.isLoading = false;
 
+                        this.$bvToast.toast("Actualizado con exito", {
+                            title: `${this.producto} ${this.editableItem.serie}`,
+                            variant: "success",
+                            solid: true,
+                        });
+
                         this.reloadTable();
+
+                        
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -628,7 +632,16 @@ export default {
                     function (response) {
                         this.isLoading = false;
 
+                         this.$bvToast.toast("Eliminado con exito", {
+                            title: `${this.producto} ${this.editableItem.serie}`,
+                            variant: "danger",
+                            solid: true,
+                        });
+
                         this.reloadTable();
+                        
+                       
+                        
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -642,6 +655,12 @@ export default {
                 .then(
                     function (response) {
                         this.isLoading = false;
+
+                        this.$bvToast.toast("Restaurado con exito", {
+                            title: `${this.producto}`,
+                            variant: "warning",
+                            solid: true,
+                        });
 
                         this.reloadTable();
                     }.bind(this)
@@ -658,11 +677,18 @@ export default {
             this.resetEditableItem();
         },
         deleteLinea() {
+            this.isLoading = true;
             axios
                 .delete(`/linea/${this.editableItem.lineaId}`, {})
                 .then(
                     function (response) {
-                        console.log("posajdaposjd");
+                        this.$bvToast.toast("Linea eliminada con exito", {
+                            title: `${this.editableItem.lineaDn}`,
+                            variant: "danger",
+                            solid: true,
+                        });
+                        this.isLoading = false;
+                        this.reloadTable();
                     }.bind(this)
                 )
                 .catch(function (error) {
@@ -748,65 +774,63 @@ export default {
             var $response = [];
             switch (this.producto) {
                 case "Imei":
+                    $response = [
+                        { key: "serie", label: "Imei" },
+                        {
+                            key: "inventario_name",
+                            label: "Inventario",
+                            sortable: true,
+                        },
+                        { key: "status", label: "Estatus", sortable: true },
+                        {
+                            key: "equipo.marca",
+                            label: "Marca",
+                            sortable: true,
+                        },
+                        {
+                            key: "equipo.modelo",
+                            label: "Modelo",
+                            sortable: true,
+                        },
+                        {
+                            key: "equipo.precio",
+                            label: "Precio",
+                            sortable: true,
+                        },
+
+                        {
+                            key: "created_at",
+                            label: "Creado",
+                            sortable: true,
+                        },
+                        {
+                            key: "updated_at",
+                            label: "Modificado",
+                            sortable: true,
+                        },
+                    ];
+                    if (this.can("full update stock")) {
+                        $response.splice(6, 0, {
+                            key: "equipo.costo",
+                            label: "Costo",
+                            sortable: true,
+                        });
+                    }
+
                     if (this.can("update stock")) {
-                        $response = [
-                            { key: "serie", label: "Imei" },
-                            {
-                                key: "inventario_name",
-                                label: "Inventario",
-                                sortable: true,
-                            },
-                            { key: "status", label: "Estatus", sortable: true },
-                            {
-                                key: "equipo.marca",
-                                label: "Marca",
-                                sortable: true,
-                            },
-                            {
-                                key: "equipo.modelo",
-                                label: "Modelo",
-                                sortable: true,
-                            },
-                            {
-                                key: "equipo.precio",
-                                label: "Precio",
-                                sortable: true,
-                            },
-
-                            {
-                                key: "created_at",
-                                label: "Creado",
-                                sortable: true,
-                            },
-                            {
-                                key: "updated_at",
-                                label: "Modificado",
-                                sortable: true,
-                            },
-                        ];
-                        if (this.can("full update stock")) {
-                            $response.splice(6, 0, {
-                                key: "equipo.costo",
-                                label: "Costo",
-                                sortable: true,
+                        if (
+                            this.onlyTrash == true &&
+                            this.can("full update stock")
+                        ) {
+                            $response.push({
+                                key: "restaurar",
+                                label: "Restaurar",
                             });
-                        }
-
-                        if (this.can("update stock")) {
-                            if (
-                                this.onlyTrash == true &&
-                                this.can("full update stock")
-                            ) {
-                                $response.push({
-                                    key: "restaurar",
-                                    label: "Restaurar",
-                                });
-                            } else if (this.onlyTrash == false) {
-                                $response.push({
-                                    key: "editar",
-                                    label: "Editar",
-                                });
-                            }
+                        } else if (this.onlyTrash == false) {
+                            $response.push({
+                                key: "editar",
+                                label: "Editar",
+                            });
                         }
                     }
 
