@@ -30,29 +30,29 @@ class SearchController extends Controller
             
             
             $modelSearchAspect
-                
-                ->addSearchableAttribute("icc")
-                // ->otherCurrentStatus(['Vendido', 'Traslado'])
-                // ->whereHas('inventario', function($query) {
-                //     $user = Auth::user();
-                //     $query->where('distribution_id',, 1);
-                // })
+                ->limit(5)
+                ->addSearchableAttribute('icc')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })
                 ;
         })
-        // ->registerModel(Imei::class, function ($modelSearchAspect) {
-        //     $modelSearchAspect
-        //         ->limit(5)
-        //         ->addSearchableAttribute('imei')
-        //         ->otherCurrentStatus(['Vendido', 'Traslado'])
+        ->registerModel(Imei::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+                ->limit(5)
+                ->addSearchableAttribute('imei')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
                 
-        //         ->whereHas('inventario', function($query) {
-        //             $user = Auth::user();
-        //             $query->where('distribution_id', $user->distribution->id);
-        //         })
-        //         ;
-        // })
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })
+                ;
+        })
         
-        ->search($request->search);
+        ->search("$request->search");
         
 
     return $searchResults;
@@ -94,7 +94,7 @@ class SearchController extends Controller
                 
         })
 
-        ->search($request->search);
+        ->search("$request->search");
         
 
     return $searchResult;
