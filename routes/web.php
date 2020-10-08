@@ -70,11 +70,15 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar linea');
 
+    Route::view('/linea/reporte', 'linea.reporte');
+
     Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar linea');
 
     Route::post('/icc/restore', 'IccController@restore')->middleware('can:destroy stock');
 
     Route::post('/imei/restore', 'ImeisController@restore')->middleware('can:destroy stock');
+
+    Route::post('/chip/activated', 'ChipController@getActivated');
     
     
     Route::resource('/inventario/traspasos', 'TraspasoController')->middleware('can:ver traspasos');
@@ -86,6 +90,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/icc', 'IccController');
 
     Route::resource('/linea', 'lineaController');
+
+    Route::resource('/chip', 'ChipController');
 
 
   

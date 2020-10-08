@@ -65,10 +65,13 @@
                     Lineas
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    
                     <a class="dropdown-item" href="/linea/preactivar">Preactivar</a>
                     
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
+
+                    <a class="dropdown-item" href="/linea/reporte">Reporte</a>
+
                   </div>
                 </li>
                 <li class="nav-item">

@@ -138,49 +138,43 @@
                                     accept=".xlsx, .csv"
                                 ></b-form-file>
                             </b-form-group>
-                            
+
                             <Validation-Provider
                                 v-if="can('asignar recarga')"
-                              
                                 name="recargable"
                                 v-slot="validationContext"
                                 rules="required"
                             >
-                            <b-form-group
-                                label="Recargables"
-                                label-size="lg"
-                                description="Aqui es para seleccionar la recarga de activacion. para la funcion de primera recarga ¡Activa chip! aplica para todas las lineas de la lista"
-                            >
-                                <b-form-radio-group
-                                
-                                    v-model="recargable"
-                                    :options="[
-                                        { text: 'Si', value: true },
-                                        { text: 'No', value: false },
-                                    ]"
-     
-                                    size="lg"
-                                    :state="
-                                                getValidationState(
-                                                    validationContext
-                                                )
-                                            "
-                                            
-                                ></b-form-radio-group>
-                                <b-form-invalid-feedback>{{
+                                <b-form-group
+                                    label="Recargables"
+                                    label-size="lg"
+                                    description="Aqui es para seleccionar la recarga de activacion. para la funcion de primera recarga ¡Activa chip! aplica para todas las lineas de la lista"
+                                >
+                                    <b-form-radio-group
+                                        v-model="recargable"
+                                        :options="[
+                                            { text: 'Si', value: true },
+                                            { text: 'No', value: false },
+                                        ]"
+                                        size="lg"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    ></b-form-radio-group>
+                                    <b-form-invalid-feedback>{{
                                         validationContext.errors[0]
                                     }}</b-form-invalid-feedback>
-                            </b-form-group>
+                                </b-form-group>
                             </Validation-Provider>
                             <Validation-Provider
-                                
                                 v-if="recargable == true"
                                 name="recarga"
                                 v-slot="validationContext"
                                 rules="required"
                             >
                                 <b-form-group
-                                    
                                     label="Monto de recarga"
                                     label-size="lg"
                                     description="Selecciona el monto de recarga para la activacion de la funcion ¡Activa chip!"
@@ -189,9 +183,9 @@
                                         v-model="montoRecarga"
                                         :options="recargaOptions"
                                     ></b-form-select>
-                                   <b-form-invalid-feedback>{{
-                                            validationContext.errors[0]
-                                        }}</b-form-invalid-feedback>
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
                                 </b-form-group>
                             </Validation-Provider>
                         </b-form>
@@ -313,12 +307,10 @@ export default {
 
             lineaDetail: false,
 
-            recargaOptions:[
-                
-                { value: 50, text: 'Recarga de $50' },
+            recargaOptions: [
+                { value: 50, text: "Recarga de $50" },
 
-                { value: 100, text: 'Recarga de $100' },
-            
+                { value: 100, text: "Recarga de $100" },
             ],
 
             file: null,
@@ -376,7 +368,11 @@ export default {
         },
         verificarIcc() {
             if (this.iccs.some((item) => item.icc === this.icc)) {
-                alert("Icc duplicado");
+                this.$bvToast.toast("Duplicado", {
+                    title: `${this.icc}`,
+                    variant: "warning",
+                    solid: true,
+                });
             } else {
                 this.isLoading = true;
                 axios
@@ -407,7 +403,11 @@ export default {
         },
         agregarIcc() {
             if (this.iccs.some((item) => item.dn === this.currentIcc.dn)) {
-                alert("Numero duplicado");
+                this.$bvToast.toast("Duplicado", {
+                    title: `${this.currentIcc.dn}`,
+                    variant: "warning",
+                    solid: true,
+                });
             } else {
                 const serie = this.currentIcc;
 
@@ -432,7 +432,11 @@ export default {
         },
 
         preactivarIcc() {
-             this.isLoading = true;
+            this.isLoading = true;
+
+             this.errores = [];
+
+             this.exitosos = [];
 
             const settings = {
                 headers: {
@@ -448,8 +452,6 @@ export default {
             axios
                 .post("/preactivar-prepago", data, settings)
                 .then((response) => {
-                    console.log(response.data);
-
                     if (response.data.success == true) {
                         this.lineaDetail = true;
 
@@ -461,8 +463,12 @@ export default {
                         this.currentIcc.type = response.data.data.type.name;
 
                         this.icc = null;
+
+                        
                     }
                     this.iccs = [];
+
+                    this.file = null;
 
                     this.isLoading = false;
 
@@ -470,7 +476,23 @@ export default {
 
                     this.exitosos = response.data.success;
 
+                    if(this.errores.length > 0){
+                        this.$bvToast.toast("Ocurrieron algunos errores", {
+                            title: `Errores`,
+                            variant: "warning",
+                            solid: true,
+                        });
+                    }else{
+                        this.$bvToast.toast("Exitosa", {
+                            title: `Preactivacion`,
+                            variant: "success",
+                            solid: true,
+                        });
+                    }
+
                     this.verifyError = null;
+
+                    
                 })
                 .catch(function (error) {
                     // handle error

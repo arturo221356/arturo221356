@@ -33,6 +33,11 @@ class Linea extends Model
         return $this->belongsTo('App\IccProduct','icc_product_id');
     }
 
+    public static function scopeInventario($linea)
+    {
+        return "asjdiasjd";
+    }
+
 
 
 

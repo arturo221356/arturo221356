@@ -130,6 +130,8 @@ class LineaController extends Controller
             $chip = $linea->productoable();
 
             $chip->delete();
+
+            $linea->deleteStatus($linea->statuses);
     
             $linea->forceDelete();
         }

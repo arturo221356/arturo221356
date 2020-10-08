@@ -25,6 +25,10 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
+use App\Http\Resources\ChipResource;
+
+use Illuminate\Support\Carbon;
+
 
 class ChipController extends Controller
 {
@@ -33,9 +37,9 @@ class ChipController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+       
     }
 
     /**
@@ -101,6 +105,43 @@ class ChipController extends Controller
     public function destroy(Chip $chip)
     {
         //
+    }
+
+    public function getActivated(Request $request){
+        
+        $user = Auth::user();
+
+        if($request->ajax()){
+
+            $inventario_id = $request->inventario_id;
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+            
+            
+            if($inventario_id === 'all'){
+
+                if ($user->can('distribution inventarios')) {
+
+                    $chips = Chip::DistributionActivatedChips($initialDate,$finalDate);
+                }else{
+                    $chips = Chip::InUserInventarioActivatedChips($initialDate,$finalDate);
+                }
+                
+            }else{
+
+                 $chips = Chip::InventarioActivatedChips($initialDate,$finalDate,$inventario_id);
+
+                
+            }
+            
+
+            $response = ChipResource::collection($chips);
+
+
+           return $response;
+        }
     }
 
 
