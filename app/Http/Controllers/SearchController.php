@@ -30,8 +30,8 @@ class SearchController extends Controller
             
             
             $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('icc')
+                
+                ->addSearchableAttribute("icc")
                 // ->otherCurrentStatus(['Vendido', 'Traslado'])
                 // ->whereHas('inventario', function($query) {
                 //     $user = Auth::user();
