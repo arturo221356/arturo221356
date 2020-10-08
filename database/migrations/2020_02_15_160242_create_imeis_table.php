@@ -17,9 +17,7 @@ class CreateImeisTable extends Migration
             $table->bigIncrements('id');
             $table->string('imei')->unique();
             $table->integer('equipo_id');
-            $table->unsignedBigInteger('inventario_id')->nullable();
-            // $table->foreign('sucursal_id')->references('id')->on('sucursales'); 
-
+            $table->integer('inventario_id'); 
             $table->softDeletes();
             $table->timestamps();
         });
