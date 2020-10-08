@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-// $DATABASE_URL=parse_url('postgres://sujiakylqnrkqk:cededc65c295f827420830614538f47314e58169af5e493572fe61c13f70460e@ec2-34-192-122-0.compute-1.amazonaws.com:5432/dav9mcapv1jpbq');
+ $DATABASE_URL=parse_url('postgres://sujiakylqnrkqk:cededc65c295f827420830614538f47314e58169af5e493572fe61c13f70460e@ec2-34-192-122-0.compute-1.amazonaws.com:5432/dav9mcapv1jpbq');
 
 // $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
