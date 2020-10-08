@@ -32,11 +32,11 @@ class SearchController extends Controller
             $modelSearchAspect
                 ->limit(5)
                 ->addSearchableAttribute('icc')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $query->where('distribution_id', 1);
-                })
+                // ->otherCurrentStatus(['Vendido', 'Traslado'])
+                // ->whereHas('inventario', function($query) {
+                //     $user = Auth::user();
+                //     $query->where('distribution_id',, 1);
+                // })
                 ;
         })
         // ->registerModel(Imei::class, function ($modelSearchAspect) {
