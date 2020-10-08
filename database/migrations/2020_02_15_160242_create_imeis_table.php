@@ -15,7 +15,7 @@ class CreateImeisTable extends Migration
     {
         Schema::create('imeis', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('imei')->unique();
+            $table->string('imei')->unique();
             $table->integer('equipo_id');
             $table->unsignedBigInteger('inventario_id')->nullable();
             // $table->foreign('sucursal_id')->references('id')->on('sucursales'); 
