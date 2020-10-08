@@ -35,22 +35,22 @@ class SearchController extends Controller
                 ->otherCurrentStatus(['Vendido', 'Traslado'])
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
+                    $query->where('distribution_id', 1);
                 })
                 ;
         })
-        ->registerModel(Imei::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('imei')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
+        // ->registerModel(Imei::class, function ($modelSearchAspect) {
+        //     $modelSearchAspect
+        //         ->limit(5)
+        //         ->addSearchableAttribute('imei')
+        //         ->otherCurrentStatus(['Vendido', 'Traslado'])
                 
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
-                })
-                ;
-        })
+        //         ->whereHas('inventario', function($query) {
+        //             $user = Auth::user();
+        //             $query->where('distribution_id', $user->distribution->id);
+        //         })
+        //         ;
+        // })
         
         ->search($request->search);
         
