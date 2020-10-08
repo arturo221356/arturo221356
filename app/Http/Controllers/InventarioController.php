@@ -45,7 +45,7 @@ class InventarioController extends Controller
 
 
             $response = json_encode(InventarioResource::collection($inventarios));
-            return $response;
+            return $inventarios;
         // }
         // return view('inventario.index');
     }
