@@ -52,7 +52,7 @@ class SearchController extends Controller
                 ;
         })
         
-        ->search("$request->search");
+        ->search("895203");
         
 
     return $searchResults;
@@ -94,7 +94,7 @@ class SearchController extends Controller
                 
         })
 
-        ->search("$request->search");
+        ->search("895203");
         
 
     return $searchResult;
