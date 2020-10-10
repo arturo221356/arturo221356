@@ -52,11 +52,11 @@ Vue.component('inventario-component', require('./components/InventarioComponent.
 Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
 Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
-Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
-Vue.component('table-component', require('./components/TableComponent.vue').default);
-Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
+// Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
+// Vue.component('table-component', require('./components/TableComponent.vue').default);
+// Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
 Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
-Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
+// Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
 Vue.component('sucursales-component', require('./components/SucursalesComponent.vue').default);
 Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);

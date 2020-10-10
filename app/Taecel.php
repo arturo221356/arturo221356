@@ -15,7 +15,7 @@ class Taecel extends Model
     {
         Http::fake([
 
-            'https://taecel.com/app/api/RequestTXN' => Http::response([
+            'https://taecel.com/app/api/RequestTX N' => Http::response([
                 'success' => true,
                 'message' => 'Consulta Exitosa',
                 'data' => ['transID' => '201000043313'],

@@ -14,7 +14,7 @@ class VentaController extends Controller
      */
     public function index()
     {
-        //
+        return view('venta.index');
     }
 
     /**

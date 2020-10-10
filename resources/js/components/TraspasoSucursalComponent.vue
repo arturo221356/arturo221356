@@ -97,7 +97,7 @@
                                     </b-form-group>
                                 </ValidationProvider>
 
-                                <b-form-group label="¿Aceptacion requerida?">
+                                <b-form-group label="¿Aceptacion requerida?" v-if="can('aceptar traspaso')">
                                     <b-form-radio-group
                                         v-model="aceptacionRequired"
                                         :options="[

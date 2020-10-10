@@ -93,6 +93,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/chip', 'ChipController');
 
+    Route::resource('/venta', 'VentaController');
+
 
   
 
@@ -126,6 +128,9 @@ Route::get('/pruebas', function (Request $request) {
 Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
 
 Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
+
+
+Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
 
 
 

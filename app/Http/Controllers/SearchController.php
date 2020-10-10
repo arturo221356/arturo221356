@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Auth;
 class SearchController extends Controller
 {
     
-
-
-
-    public function traspasoPrediction(Request $request){
+    public function ventaPrediction(Request $request){
 
         
         // falta hacer los filtros para la distribucion y de la sucursal 
@@ -50,6 +47,87 @@ class SearchController extends Controller
                     $query->where('distribution_id', $user->distribution->id);
                 })
                 ;
+        })
+        
+        ->search($request->search);
+        
+
+    return $searchResults;
+
+    }
+
+
+
+
+
+
+
+
+
+
+    public function traspasoPrediction(Request $request){
+
+        
+        // falta hacer los filtros para la distribucion y de la sucursal 
+
+        $searchResults = (new Search())
+        ->registerModel(Icc::class, function ($modelSearchAspect) {
+            
+            $user = Auth::user();
+            
+            if($user->hasPermissionTo('distribution inventarios')){
+                $modelSearchAspect
+                ->limit(5)
+                ->addSearchableAttribute('icc')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })
+                ;
+            }else{
+                $modelSearchAspect
+                ->limit(5)
+                ->addSearchableAttribute('icc')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                    $query->whereIn('inventario_id', $inventariosIds);
+                })
+                ;
+            }
+
+           
+        })
+        ->registerModel(Imei::class, function ($modelSearchAspect) {
+            $user = Auth::user();
+            if($user->hasPermissionTo('distribution inventarios')){
+
+            $modelSearchAspect
+                ->limit(5)
+                ->addSearchableAttribute('imei')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })
+                ;
+            }else{
+                $modelSearchAspect
+                ->limit(5)
+                ->addSearchableAttribute('imei')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                    $query->whereIn('inventario_id', $inventariosIds);
+                })
+                ;
+
+            }
         })
         
         ->search($request->search);
