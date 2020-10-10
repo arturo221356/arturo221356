@@ -34,7 +34,7 @@ use SebastianBergmann\CodeUnit\TraitMethodUnit;
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
-Route::view('/home','home')->name('home')->middleware('auth');
+// Route::view('/home','home')->name('home')->middleware('auth');
 
 
 
