@@ -55,7 +55,7 @@
                       @endcan
                       
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="/inventario/traspasos">Traspasos</a>
+                      <a class="dropdown-item" href="/inventario/traspasos"> Traspasos</a>
                      
                       
                     </div>
