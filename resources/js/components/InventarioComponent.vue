@@ -679,7 +679,7 @@ export default {
         deleteLinea() {
             this.isLoading = true;
             axios
-                .delete(`/linea/${this.editableItem.lineaId}`, {})
+                .delete(`/linea/${this.editableItem.lineaId}`)
                 .then(
                     function (response) {
                         this.$bvToast.toast("Linea eliminada con exito", {
