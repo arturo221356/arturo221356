@@ -651,7 +651,7 @@ export default {
         restoreItem(id) {
             this.isLoading = true;
             axios
-                .post(`/${this.producto.toLowerCase()}/restore/`, { id })
+                .post(`/${this.producto.toLowerCase()}/restore`, { id })
                 .then(
                     function (response) {
                         this.isLoading = false;
