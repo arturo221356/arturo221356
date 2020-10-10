@@ -691,7 +691,7 @@ export default {
             data.append("inventario_id", this.inventario.id);
             data.append("aceptacion_required", this.aceptacionRequired);
 
-            axios.post(`/inventario/traspasos/`, data).then((res) => {
+            axios.post(`/inventario/traspasos`, data).then((res) => {
                 this.$bvToast.toast(`Traspaso creado con exito`, {
                     title: "Exito",
                     autoHideDelay: 5000,

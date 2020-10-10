@@ -651,7 +651,7 @@ export default {
         restoreItem(id) {
             this.isLoading = true;
             axios
-                .post(`/${this.producto.toLowerCase()}/restore/`, { id })
+                .post(`/${this.producto.toLowerCase()}/restore`, { id })
                 .then(
                     function (response) {
                         this.isLoading = false;
@@ -679,7 +679,7 @@ export default {
         deleteLinea() {
             this.isLoading = true;
             axios
-                .delete(`/linea/${this.editableItem.lineaId}`, {})
+                .delete(`/linea/${this.editableItem.lineaId}`)
                 .then(
                     function (response) {
                         this.$bvToast.toast("Linea eliminada con exito", {

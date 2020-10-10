@@ -89,7 +89,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/icc', 'IccController');
 
-    Route::resource('/linea', 'lineaController');
+    Route::resource('/linea', 'App\Http\Controllers\LineaController');
 
     Route::resource('/chip', 'ChipController');
 
