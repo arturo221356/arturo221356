@@ -124,7 +124,9 @@ class LineaController extends Controller
     public function destroy(Linea $linea)
     {
         $user = Auth::user();
+
         if($user->can('destroy stock')){
+            
             $linea = $linea;
 
             $chip = $linea->productoable();
