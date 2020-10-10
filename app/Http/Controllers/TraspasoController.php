@@ -35,6 +35,7 @@ class TraspasoController extends Controller
         
 
             if ($request->ajax()) {
+                
                 $response = [];
 
 
