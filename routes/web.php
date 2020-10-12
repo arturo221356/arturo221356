@@ -132,8 +132,14 @@ Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middlewa
 
 Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
 
+Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
 
 
+// apis 
+
+Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
+
+Route::post('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
 
 
 // Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
@@ -200,7 +206,7 @@ Route::get('/get/icctypes', 'IccTypeController@index')->middleware('auth');
 
 // Route::post('/post/iccs/', 'InventarioController@geticcs')->middleware('auth');
 
-// Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
 
-// Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
+
+Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
 //apis

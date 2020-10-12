@@ -24,7 +24,7 @@ class IccProductController extends Controller
             // $distribution = Distribution::find($userDistribution);
         
             // $productos = $distribution->IccProducts()->get();
-            $productos = IccProduct::with('subproducts')->get();
+            $productos = IccProduct::all();
             return response()->json($productos);
 
         // } else {

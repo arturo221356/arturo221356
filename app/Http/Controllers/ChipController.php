@@ -39,7 +39,6 @@ class ChipController extends Controller
      */
     public function index(Request $request)
     {
-       
     }
 
     /**
@@ -107,40 +106,38 @@ class ChipController extends Controller
         //
     }
 
-    public function getActivated(Request $request){
-        
+    public function getActivated(Request $request)
+    {
+
         $user = Auth::user();
 
-        if($request->ajax()){
+        if ($request->ajax()) {
 
             $inventario_id = $request->inventario_id;
 
             $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
 
             $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
-            
-            
-            if($inventario_id === 'all'){
+
+
+            if ($inventario_id === 'all') {
 
                 if ($user->can('distribution inventarios')) {
 
-                    $chips = Chip::DistributionActivatedChips($initialDate,$finalDate);
-                }else{
-                    $chips = Chip::InUserInventarioActivatedChips($initialDate,$finalDate);
+                    $chips = Chip::DistributionActivatedChips($initialDate, $finalDate);
+                } else {
+                    $chips = Chip::InUserInventarioActivatedChips($initialDate, $finalDate);
                 }
-                
-            }else{
+            } else {
 
-                 $chips = Chip::InventarioActivatedChips($initialDate,$finalDate,$inventario_id);
-
-                
+                $chips = Chip::InventarioActivatedChips($initialDate, $finalDate, $inventario_id);
             }
-            
+
 
             $response = ChipResource::collection($chips);
 
 
-           return $response;
+            return $response;
         }
     }
 
@@ -295,28 +292,33 @@ class ChipController extends Controller
                 $trasnsaction->taecel_nota = $taecelStatusTXN->data->Nota;
             }
 
+            if ($taecelStatusTXN->success  == true) {
 
+                $linea->setStatus('Activado');
 
-            //cambia el estatus de la linea y el icc a activado y vendido
-            $linea->deleteStatus('Proceso');
+                $linea->icc->setStatus('Vendido');
 
-            $linea->setStatus('Activado');
+                $chip = $linea->productoable;
 
-            $chip = $linea->productoable;
+                $chip->transaction_id = $trasnsaction->id;
 
-            $chip->activated_at = now();
+                $chip->activated_at = now();
 
-            $chip->transaction_id = $trasnsaction->id;
+                $chip->save();
 
-            $chip->save();
+                $response =  json_encode([
+                    'success' =>  true,
+                    'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
+                ]);
+            } else if ($taecelStatusTXN->success  == false) {
+                //cambia el estatus de la linea y el icc a activado y vendido
+                $linea->deleteStatus('Proceso');
 
-            $linea->icc->setStatus('Vendido');
-
-
-            $response =  json_encode([
-                'success' =>  true,
-                'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
-            ]);;
+                $response =  json_encode([
+                    'success' =>  false,
+                    'message' => $taecelRequest->message,
+                ]);
+            }
         }
 
         $trasnsaction->save();

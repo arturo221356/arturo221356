@@ -56,6 +56,45 @@ class SearchController extends Controller
 
     }
 
+    public function ventaExact(Request $request){
+
+        
+        // falta hacer los filtros para la distribucion y de la sucursal 
+
+        $searchResults = (new Search())
+        ->registerModel(Icc::class, function ($modelSearchAspect) {
+            
+            
+            $modelSearchAspect
+                ->limit(5)
+                ->addExactSearchableAttribute('icc')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })->with(['linea','inventario.inventarioable','type','company'])
+                ;
+        })
+        ->registerModel(Imei::class, function ($modelSearchAspect) {
+            $modelSearchAspect
+                ->limit(5)
+                ->addExactSearchableAttribute('imei')
+                ->otherCurrentStatus(['Vendido', 'Traslado'])
+                
+                ->whereHas('inventario', function($query) {
+                    $user = Auth::user();
+                    $query->where('distribution_id', $user->distribution->id);
+                })->with(['equipo','inventario.inventarioable'])
+                ;
+        })
+        
+        ->search(substr($request->search,0,19));
+        
+
+    return $searchResults;
+
+    }
+
 
 
 
@@ -172,7 +211,7 @@ class SearchController extends Controller
                 
         })
 
-        ->search($request->search);
+        ->search(substr($request->search,0,19));
         
 
     return $searchResult;

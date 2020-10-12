@@ -126,7 +126,7 @@
                                         autocomplete="off"
                                         placeholder="Buscar Producto"
                                         list="search-results"
-                                        @update="searchProduct"
+                                        @update="handleSearch"
                                     ></b-form-input>
 
                                     <datalist id="search-results">
@@ -585,6 +585,10 @@ export default {
         },
     },
     methods: {
+        handleSearch: _.debounce(function () {
+            this.searchProduct();
+        }, 300),
+
         cancelarTraspaso(item) {
             this.isLoading = true;
             axios
