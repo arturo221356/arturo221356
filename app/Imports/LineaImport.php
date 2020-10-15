@@ -38,7 +38,12 @@ class LineaImport implements ToCollection
 
         foreach ($rows as $key => $row) {
 
-            
+            if ( ! isset($row[1])) {
+                $row[1] = null;
+             }
+
+             
+             
 
             $requestIcc =  substr($row[0], 0, 19);
 

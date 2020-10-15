@@ -19,9 +19,9 @@ class IccSubProductTableSeeder extends Seeder
         'company_id'=>2,
         'distribution_id' =>1,
         'icc_product_id' =>1,
-        'precio'=>30,
+        'precio'=>80,
         'recarga_required'=>true,
-        'recarga_id'=>3
+        'recarga_id'=>5
         ]);
 
         IccSubProduct::create(['name'=>'Chip telcel 80 ',

@@ -19,7 +19,8 @@
         "spatie/laravel-model-status": "^1.10",
         "spatie/laravel-permission": "^3.17",
         "spatie/laravel-searchable": "^1.6",
-        "staudenmeir/belongs-to-through": "^2.5"
+        "staudenmeir/belongs-to-through": "^2.5",
+        "twilio/sdk": "^6.11"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
