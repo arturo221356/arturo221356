@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -14,14 +15,14 @@ class InventarioTableSeeder extends Seeder
      */
     public function run()
     {
-        
 
-         Inventario::create([
+
+        Inventario::create([
 
             'distribution_id' => 1,
             'inventarioable_id' => 1,
             'inventarioable_type' => 'App\Sucursal',
-        ])->usuariosAsignados()->sync([3,4,5]);
+        ])->usuariosAsignados()->sync([3, 4, 5]);
         Inventario::create([
 
             'distribution_id' => 2,
@@ -29,22 +30,69 @@ class InventarioTableSeeder extends Seeder
             'inventarioable_type' => 'App\Sucursal',
         ]);
         Inventario::create([
-    
+
             'distribution_id' => 1,
             'inventarioable_id' => 3,
             'inventarioable_type' => 'App\Sucursal',
         ])->usuariosAsignados()->attach(1);
         Inventario::create([
-          
+
             'distribution_id' => 2,
             'inventarioable_id' => 4,
             'inventarioable_type' => 'App\Sucursal',
         ]);
         Inventario::create([
-          
+
             'distribution_id' => 1,
             'inventarioable_id' => 6,
             'inventarioable_type' => 'App\User',
-        ])->usuariosAsignados()->sync([1,5,3]);
+        ])->usuariosAsignados()->sync([1, 5, 2, 3]);
+
+
+        //donvic
+        Inventario::create([
+
+            'distribution_id' => 1,
+            'inventarioable_id' => 7,
+            'inventarioable_type' => 'App\User',
+
+        ])->usuariosAsignados()->sync([1, 2, 3, 7]);
+
+
+        //daniel
+        Inventario::create([
+
+            'distribution_id' => 1,
+            'inventarioable_id' => 8,
+            'inventarioable_type' => 'App\User',
+
+        ])->usuariosAsignados()->sync([1, 2, 3, 8]);
+
+
+        //ricardo
+        Inventario::create([
+
+            'distribution_id' => 1,
+            'inventarioable_id' => 9,
+            'inventarioable_type' => 'App\User',
+
+        ])->usuariosAsignados()->sync([1, 2, 3, 9]);
+
+
+        
+        //ana
+        Inventario::create([
+
+            'distribution_id' => 1,
+            'inventarioable_id' => 10,
+            'inventarioable_type' => 'App\User',
+
+        ])->usuariosAsignados()->sync([1, 2, 3, 10]);
+
+        $inventarios = Inventario::all();
+
+        foreach($inventarios as $inventario){
+            $inventario->givePermissionTo('activar chip');
+        }
     }
 }

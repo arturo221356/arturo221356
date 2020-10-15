@@ -12,7 +12,7 @@
             :class="stateClass"
             @input="emitToParent"
             :custom-label="customLabel"
-            
+            :disabled="disabled"
         ></multiselect>
         <label class="typo__label form__label invalid" v-show="state === false"
             >Elige un valor</label
@@ -22,31 +22,39 @@
 
 <script>
 export default {
+    prop: ["value"],
+
     props: {
         todas: {
             type: Boolean,
             required: false,
             default: false,
         },
-        multiple:{
+        disabled: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
+        },
+        multiple: {
+            type: Boolean,
+            required: false,
+            default: false,
         },
         empty: {
             type: Boolean,
             required: false,
             default: false,
         },
+        value: {},
 
         url: {
             type: String,
             required: true,
         },
 
-        equipo:{
-            type:Boolean,
-            required:false,
+        equipo: {
+            type: Boolean,
+            required: false,
             default: false,
         },
 
@@ -56,19 +64,22 @@ export default {
             detault: "Seleccionar Opcion",
         },
 
-         value:{},
-
         state: {
             type: Boolean,
             required: false,
             default: null,
         },
 
-        query:{
+        query: {
             type: Number,
             required: false,
-            default: null
-        }
+            default: null,
+        },
+        query2: {
+            type: Number,
+            required: false,
+            default: null,
+        },
     },
     mounted() {},
     data() {
@@ -78,37 +89,41 @@ export default {
             options: [],
 
             selected: null,
-
-           
-
-           
         };
     },
     methods: {
         emitToParent() {
-            
-            
-             this.$emit("input", this.selected);
-
+            this.$emit("input", this.selected);
         },
-        customLabel({name, marca, modelo}){
-            
-            if(this.equipo === true){
-
+        customLabel({ name, marca, modelo }) {
+            if (this.equipo === true) {
                 return `${marca}--${modelo}`;
-            }else{
-            
-            return name;}
+            } else {
+                return name;
+            }
         },
         loadData() {
             this.isLoading = true;
-             
+
             const param = this.query;
 
-            axios.get(`${this.url}?param=${param}`).then(
+            const param2 = this.query2;
+
+            axios.get(`${this.url}?param=${param}&param2=${param2}`).then(
                 function (response) {
                     this.options = response.data;
-                    if(this.todas){ this.options.unshift({id:'all',name:'Todos'});}
+                    if (this.todas) {
+                        this.options.unshift({ id: "all", name: "Todos" });
+                    }
+                    if (this.value && this.value.hasOwnProperty("id")) {
+                        this.selected = this.value;
+                    } else {
+                        this.selected = this.options.find(
+                            (option) => option.id == this.value
+                        );
+                        this.emitToParent();
+                    }
+
                     this.isLoading = false;
                 }.bind(this)
             );
@@ -116,27 +131,30 @@ export default {
     },
 
     created: function () {
-        this.selected = this.value;
         this.loadData();
+
+        
     },
-    watch:{
-        url: function(){
+    watch: {
+        url: function () {
             this.loadData();
         },
-        
 
-        query: function(){
+        query: function () {
             this.loadData();
             this.selected = null;
             this.emitToParent();
         },
-        value: function (){
-            
-            //this.selected = this.options.find((option) => option.id === this.value.id);
-
-            this.selected = this.value;
+        value: function () {
+            if (this.value && this.value.hasOwnProperty("id")) {
+                this.selected = this.value;
+            } else {
+                this.selected = this.options.find(
+                    (option) => option.id == this.value
+                );
+                this.emitToParent();
+            }
         },
-
     },
     computed: {
         stateClass: function () {
@@ -156,7 +174,6 @@ export default {
             }
             return response;
         },
-
     },
 };
 </script>

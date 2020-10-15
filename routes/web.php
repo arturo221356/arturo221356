@@ -139,7 +139,9 @@ Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('au
 
 Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
 
-Route::post('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
+Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
+
+Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
 
 
 // Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {

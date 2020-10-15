@@ -68,6 +68,7 @@
                                                     validationContext
                                                 )
                                             "
+                                            @keyup.stop="handleSearch"
                                             placeholder="Agregar Icc"
                                         ></b-form-input>
                                         <datalist id="search-results">
@@ -338,6 +339,28 @@ export default {
         };
     },
     methods: {
+        handleSearch: _.debounce(function () {
+            this.searchProduct();
+        }, 300),
+        
+        searchProduct(){
+
+            if (this.icc >= 5) {
+                axios
+                    .get("/search/traspaso-prediction", {
+                        params: { search: this.icc },
+                    })
+                    .then(function (response) {
+                        self.searchResults = response.data;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            } else {
+                self.searchResults = [];
+            }
+        },
+
         //crea el boton de errores y regresa un alert con los valores
         erroresButton() {
             this.alert.show = true;
@@ -501,23 +524,8 @@ export default {
         },
     },
     watch: {
-        icc: function (val) {
-            self = this;
-            if (val >= 5) {
-                axios
-                    .get("/search/traspaso-prediction", {
-                        params: { search: val },
-                    })
-                    .then(function (response) {
-                        self.searchResults = response.data;
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            } else {
-                self.searchResults = [];
-            }
-        },
+
+
     },
     computed: {
         preactivarButtonVisible: function () {

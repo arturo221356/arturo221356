@@ -16,7 +16,11 @@ class IccSubProductController extends Controller
     public function index(Request $request)
     {
         
-            $subProductos = IccSubProduct::where('icc_product_id','=',$request->icc_product_id)->get();
+            $subProductos = IccSubProduct::where([
+                ['icc_product_id','=',$request->param],
+                ['company_id','=',$request->param2]
+                
+                ])->get();
             
             return response()->json($subProductos);
 

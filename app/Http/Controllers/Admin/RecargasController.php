@@ -19,19 +19,18 @@ class RecargasController extends Controller
     public function index(Request $request)
     {
 
-        // $userDistribution = Auth::User()->distribution()->id;
-
-        // $distribution = Distribution::find($userDistribution);
-
-        // $recargas = $distribution->recargas()->get();
-
-        // return RecargaResource::collection($recargas);
 
         if ($request->ajax()) {
 
-            $recargas = Recarga::all();
+            if($request->param){
+                $recargas = Recarga::where('company_id',$request->param)->get();
+            }else{
+                $recargas = Recarga::all();
+            }
+            
 
-            return RecargaResource::collection($recargas);
+            return response()->json($recargas);
+
         } else {
             return view('admin.productos.recargas.index');
         }

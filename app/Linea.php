@@ -16,6 +16,8 @@ class Linea extends Model
 
     use SoftDeletes;
 
+    protected $appends = ['status','reason'];
+
 
     protected $fillable = ["icc_id", "dn", "icc_product_id", "icc_sub_product_id"];
 
@@ -33,10 +35,13 @@ class Linea extends Model
         return $this->belongsTo('App\IccProduct','icc_product_id');
     }
 
-    public static function scopeInventario($linea)
+    public function getReasonAttribute()
     {
-        return "asjdiasjd";
+        return $this->latestStatus()->reason;
     }
+ 
+
+    
 
 
 

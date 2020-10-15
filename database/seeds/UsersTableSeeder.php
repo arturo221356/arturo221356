@@ -19,10 +19,12 @@ class UsersTableSeeder extends Seeder
    */
   public function run()
   {
-    
+
 
 
     //seeds Users
+
+    // 1
     $superAdmin = User::create([
       'name' => 'Super Admin User',
       'email' => 'superadmin@promoviles.com',
@@ -32,6 +34,7 @@ class UsersTableSeeder extends Seeder
     ]);
     $superAdmin->assignRole('super-admin');
 
+    // 2
     $admin = User::create([
       'name' => 'Admin User',
       'email' => 'admin@promoviles.com',
@@ -41,7 +44,7 @@ class UsersTableSeeder extends Seeder
     ]);
     $admin->assignRole('administrador');
 
-
+    // 3
     $supervisor = User::create([
       'name' => 'supervisor User',
       'email' => 'supervisor@promoviles.com',
@@ -51,6 +54,8 @@ class UsersTableSeeder extends Seeder
     ]);
     $supervisor->assignRole('supervisor');
 
+
+    // 4
     $vendedor = User::create([
       'name' => 'Vendedor User',
       'email' => 'vendedor@promoviles.com',
@@ -60,6 +65,8 @@ class UsersTableSeeder extends Seeder
     ]);
     $vendedor->assignRole('vendedor');
 
+
+    // 5
     $vendedor2 = User::create([
       'name' => 'Vendedor 2 User',
       'email' => 'vendedor2@promoviles.com',
@@ -69,7 +76,7 @@ class UsersTableSeeder extends Seeder
     ]);
     $vendedor2->assignRole('vendedor');
 
-
+    // 6
     $externo = User::create([
       'name' => 'externo User',
       'email' => 'externo@promoviles.com',
@@ -79,5 +86,53 @@ class UsersTableSeeder extends Seeder
 
     ]);
     $externo->assignRole('externo');
+
+    // 7
+    $donVic = User::create([
+      'name' => 'Don victor',
+      'email' => 'donvic@promoviles.com',
+      'password' => Hash::make('secreta123'),
+      'distribution_id' => 1,
+      'inventario_propio' => true,
+
+    ]);
+
+    $donVic->assignRole('externo');
+
+    // 8
+    $daniel = User::create([
+      'name' => 'Daniel',
+      'email' => 'daniel@promoviles.com',
+      'password' => Hash::make('secreta123'),
+      'distribution_id' => 1,
+      'inventario_propio' => true,
+
+    ]);
+
+    $daniel->assignRole('externo');
+
+    // 9
+    $ricardo = User::create([
+      'name' => 'Ricardo',
+      'email' => 'ricardo@promoviles.com',
+      'password' => Hash::make('secreta123'),
+      'distribution_id' => 1,
+      'inventario_propio' => true,
+
+    ]);
+
+    $ricardo->assignRole('externo');
+
+    // 10
+    $ana = User::create([
+      'name' => 'Ana',
+      'email' => 'ana@promoviles.com',
+      'password' => Hash::make('secreta123'),
+      'distribution_id' => 1,
+      'inventario_propio' => true,
+
+    ]);
+
+    $ana->assignRole('externo');
   }
 }

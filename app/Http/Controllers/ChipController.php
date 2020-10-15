@@ -199,16 +199,16 @@ class ChipController extends Controller
 
         //revisa que el inventario tenga permisos para activar chips desde activa chip
 
-        // if (!$inventario->hasPermissionTo('activar chip', 'web')) {
+        if (!$inventario->hasPermissionTo('activar chip', 'web')) {
 
-        //     $message = [
-        //         'success' => false,
-        //         'message' => 'No tienes permiso de activar chips portate bien',
+            $message = [
+                'success' => false,
+                'message' => 'No tienes permiso de activar chips portate bien',
 
-        //     ];
+            ];
 
-        //     return json_encode($message);
-        // }
+            return json_encode($message);
+        }
 
 
 
@@ -316,7 +316,7 @@ class ChipController extends Controller
 
                 $response =  json_encode([
                     'success' =>  false,
-                    'message' => $taecelRequest->message,
+                    'message' => $taecelStatusTXN->message,
                 ]);
             }
         }
