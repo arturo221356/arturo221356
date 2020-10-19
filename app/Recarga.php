@@ -20,7 +20,7 @@ class Recarga extends Model implements Searchable
     
         return new \Spatie\Searchable\SearchResult(
            $this,
-           $this->codigo,
+           $this->name,
            // $url
         );
     }

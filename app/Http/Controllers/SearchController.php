@@ -14,6 +14,8 @@ use Spatie\Searchable\Search;
 
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Str;
+
 class SearchController extends Controller
 {
     
@@ -48,6 +50,8 @@ class SearchController extends Controller
                 })
                 ;
         })
+
+
         
         ->search($request->search);
         
@@ -57,6 +61,15 @@ class SearchController extends Controller
     }
 
     public function ventaExact(Request $request){
+
+        $searchValue = $request->search;
+
+
+        if( !Str::is('recar*', $request->search) || !Str::is('paque*', $request->search) ){
+
+            $searchValue = substr($request->search,0,19);
+
+        };
 
         
         // falta hacer los filtros para la distribucion y de la sucursal 
@@ -87,8 +100,9 @@ class SearchController extends Controller
                 })->with(['equipo','inventario.inventarioable'])
                 ;
         })
+
         
-        ->search(substr($request->search,0,19));
+        ->search($searchValue);
         
 
     return $searchResults;

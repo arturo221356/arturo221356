@@ -329,6 +329,7 @@ export default {
         },
     },
     methods: {
+
         searchProduct() {
             const self = this;
             if (this.searchValue.length >= 5) {
@@ -392,7 +393,7 @@ export default {
                 .catch(function (error) {
                     console.log(error);
                 });
-                this.searchValue = null;
+            this.searchValue = null;
         },
         eliminarItem(item, index) {
             this.articulos.splice(index, 1);
@@ -406,13 +407,13 @@ export default {
             this.resetNewIcc();
         },
         addRecarga(item, numero) {
-            
             var dn = null;
 
-            if(!numero){
+            if (!numero) {
                 dn = prompt("Please enter your name", "Harry Potter");
+            } else {
+                dn = numero;
             }
-            else{ dn = numero; }
 
             const nuevaRecarga = {
                 title: `${item.searchable.name}`,
@@ -425,8 +426,7 @@ export default {
 
                 type: item.type,
             };
-             this.articulos.unshift(nuevaRecarga);
-
+            this.articulos.unshift(nuevaRecarga);
         },
         newIcc(icc) {
             this.showList = false;

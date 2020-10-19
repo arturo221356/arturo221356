@@ -24,6 +24,41 @@ class IccSubProductTableSeeder extends Seeder
         'recarga_id'=>5
         ]);
 
+        IccSubProduct::create(['name'=>'Chip telcel sin saldo',
+        'company_id'=>1,
+        'distribution_id' =>1,
+        'icc_product_id' =>1,
+        'precio'=>30,
+        'recarga_required'=>false,
+        'recarga_id'=> null
+        ]);
+
+        IccSubProduct::create(['name'=>'Chip movistar sin saldo',
+        'company_id'=>2,
+        'distribution_id' =>1,
+        'icc_product_id' =>1,
+        'precio'=>30,
+        'recarga_required'=>false,
+        'recarga_id'=> null
+        ]);
+
+        IccSubProduct::create(['name'=>'Chip movistar libre',
+        'company_id'=>2,
+        'distribution_id' =>1,
+        'icc_product_id' =>1,
+        'precio'=>100,
+        'recarga_required'=>true,
+        'recarga_id'=> null
+        ]);
+        IccSubProduct::create(['name'=>'Chip telcel libre',
+        'company_id'=>2,
+        'distribution_id' =>1,
+        'icc_product_id' =>1,
+        'precio'=>100,
+        'recarga_required'=>true,
+        'recarga_id'=> null
+        ]);
+
         IccSubProduct::create(['name'=>'Chip telcel 80 ',
         'company_id'=>1,
         'distribution_id' =>1,

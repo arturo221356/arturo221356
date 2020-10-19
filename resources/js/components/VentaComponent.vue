@@ -2,45 +2,269 @@
     <div>
         <b-overlay :show="isLoading" rounded="sm">
             <div class="jumbotron jumbotron-fluid">
-                <div class="row">
-                    <div class="col-md-8 mx-auto">
+                <div>
+                    <div class="col-xl-6 mx-auto">
                         <div v-if="iccDetails == false">
-                            <h1>Nueva venta</h1>
+                            <div class="col-xl-12">
+                                <h1>Nueva venta</h1>
+                            </div>
 
-                            <b-form @submit.prevent="agregarProducto">
-                                <b-form-group
-                                    class="mt-4"
-                                    label="Buscar producto:"
-                                    label-size="lg"
+                            <div class="col-xl-auto ml-auto">
+                                <b-button class="mr-3" @click="openRecargaModal"
+                                    >Agregar Recarga</b-button
                                 >
-                                    <b-input-group>
-                                        <b-form-input
-                                            v-model="searchValue"
-                                            autocomplete="off"
-                                            placeholder="Buscar Producto"
-                                            list="search-results"
-                                            @keyup.stop="handleSearch"
-                                        ></b-form-input>
 
-                                        <datalist id="search-results">
-                                            <option
-                                                v-for="(list,
-                                                index) in searchResults"
-                                                :key="index"
-                                                >{{ list.title }}</option
-                                            >
-                                        </datalist>
+                                <b-button @click="openGeneralModal">
+                                    Agregar venta general
+                                </b-button>
 
-                                        <b-input-group-append>
-                                            <b-button
-                                                type="submit"
-                                                variant="success"
-                                                >Agregar</b-button
+                                <b-modal
+                                    id="recarga-modal"
+                                    hide-footer
+                                    @hide="hideRecargaModal"
+                                >
+                                    <b-form>
+                                        <b-form-group
+                                            label="Numero"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                placeholder="Insertar Numero"
+                                                v-model="newRecarga.dn"
+                                                type="number"
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-form-group
+                                            label="Compañia"
+                                            label-size="lg"
+                                        >
+                                            <select-general
+                                                url="/get/companies"
+                                                v-model="newRecarga.company"
                                             >
-                                        </b-input-group-append>
-                                    </b-input-group>
-                                </b-form-group>
-                            </b-form>
+                                            </select-general>
+                                        </b-form-group>
+
+                                        <b-form-group
+                                            v-if="newRecarga.company"
+                                            label="Recarga"
+                                            label-size="lg"
+                                        >
+                                            <select-general
+                                                url="/get/recargas"
+                                                :query="newRecarga.company.id"
+                                                v-model="newRecarga.recarga"
+                                            >
+                                            </select-general>
+                                        </b-form-group>
+                                    </b-form>
+                                    <b-button
+                                        variant="success"
+                                        @click="addRecarga"
+                                        >Agregar</b-button
+                                    >
+                                    <b-button @click="hideRecargaModal"
+                                        >Cancelar</b-button
+                                    >
+                                </b-modal>
+
+                                <!-- modal de venta -->
+                                <b-modal
+                                    id="venta-modal"
+                                    hide-footer
+                                    @hide="hideVentaModal"
+                                >
+                                    <b-form>
+                                        <b-form-group
+                                            label="Nombre Cliente"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                placeholder="Insertar nombre del cliente"
+                                                v-model="cliente.nombre"
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-form-group
+                                            label="Curp"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                v-model="cliente.curp"
+                                                placeholder="Insertar Curp del cliente"
+                                            ></b-input>
+                                        </b-form-group>
+                                        <b-form-group
+                                            label="RFC"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                placeholder="Insertar RFC del cliente"
+                                                v-model="cliente.rfc"
+                                            ></b-input>
+                                        </b-form-group>
+                                        <b-form-group
+                                            label="Referencia"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                v-model="cliente.referencia"
+                                                placeholder="Insertar Referencia del cliente"
+                                            ></b-input>
+                                        </b-form-group>
+                                        <b-form-group
+                                            label="Email"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                v-model="cliente.email"
+                                                placeholder="Insertar Email del cliente"
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-form-group
+                                            label="Comentario"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                v-model="comentario"
+                                                placeholder="Comentario venta"
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-form-group label="Total">
+                                            <b-input
+                                                type="number"
+                                                placeholder="Pago"
+                                                :value="totalVenta"
+                                                readonly
+                                            ></b-input>
+                                        </b-form-group>
+                                        <b-form-group
+                                            label="Pago:"
+                                            label-size="lg"
+                                            description="Ingresa el pago del cliente para calcular el cambio"
+                                        >
+                                            <b-input
+                                                type="number"
+                                                placeholder="Pago"
+                                                v-model.number="pago"
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-form-group
+                                            label="Cambio"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                type="number"
+                                                placeholder="Pago"
+                                                :value="pago - totalVenta"
+                                                readonly
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-button variant="success" block @click="newVenta"
+                                            >Vender</b-button
+                                        >
+                                        <b-button block @click="hideVentaModal"
+                                            >Cancelar</b-button
+                                        >
+                                    </b-form>
+                                </b-modal>
+
+                                <b-modal
+                                    id="general-modal"
+                                    hide-footer
+                                    title="Venta general"
+                                    @hide="hideGeneralModal"
+                                >
+                                    <b-form>
+                                        <b-form-group
+                                            label="Nombre"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                placeholder="Nombre"
+                                                v-model="ventaGeneral.nombre"
+                                            ></b-input>
+                                        </b-form-group>
+                                        <b-form-group
+                                            label="Descripcion"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                placeholder="Descripcion"
+                                                v-model="
+                                                    ventaGeneral.descripcion
+                                                "
+                                            ></b-input>
+                                        </b-form-group>
+
+                                        <b-form-group
+                                            label="Precio"
+                                            label-size="lg"
+                                        >
+                                            <b-input
+                                                placeholder="Precio"
+                                                type="number"
+                                                v-model.number="
+                                                    ventaGeneral.precio
+                                                "
+                                            ></b-input>
+                                        </b-form-group>
+                                    </b-form>
+
+                                    <b-form-group>
+                                        <b-button
+                                            variant="success"
+                                            @click="addGeneral"
+                                            >Agregar</b-button
+                                        >
+                                        <b-button @click="hideGeneralModal"
+                                            >Cancelar</b-button
+                                        >
+                                    </b-form-group>
+                                </b-modal>
+                            </div>
+
+                            <div class="col-xl-12">
+                                <b-form @submit.prevent="agregarProducto">
+                                    <b-form-group
+                                        class="mt-4"
+                                        label="Buscar producto:"
+                                        label-size="lg"
+                                    >
+                                        <b-input-group>
+                                            <b-form-input
+                                                v-model="searchValue"
+                                                autocomplete="off"
+                                                placeholder="Buscar Producto"
+                                                list="search-results"
+                                                @keyup.stop="handleSearch"
+                                            ></b-form-input>
+
+                                            <datalist id="search-results">
+                                                <option
+                                                    v-for="(list,
+                                                    index) in searchResults"
+                                                    :key="index"
+                                                    >{{ list.title }}</option
+                                                >
+                                            </datalist>
+
+                                            <b-input-group-append>
+                                                <b-button
+                                                    type="submit"
+                                                    variant="success"
+                                                    >Agregar</b-button
+                                                >
+                                            </b-input-group-append>
+                                        </b-input-group>
+                                    </b-form-group>
+                                </b-form>
+                            </div>
                         </div>
                         <div v-if="iccDetails == true">
                             <div class="row">
@@ -98,6 +322,7 @@
                                         pholder="Seleccionar Producto"
                                         v-model.number="iccData.iccProduct"
                                         :disabled="disableLineaInputs"
+                                        v-on:input="productUpdated"
                                     >
                                     </select-general>
                                 </b-form-group>
@@ -134,6 +359,7 @@
                                     >
                                     </select-general>
                                 </b-form-group>
+                                <a>{{ simPrice }}</a>
                                 <!-- inputs de portabilidad -->
                                 <div
                                     v-if="
@@ -158,13 +384,14 @@
                                         label-size="lg"
                                         class="mt-3"
                                     >
-                                        
                                         <b-form-radio-group
                                             v-model="iccData.porta.trafico"
                                             buttons
                                             button-variant="primary"
-                                            :options="[{text:'Si',value: true},{text:'No',value:false}]"
-                                            
+                                            :options="[
+                                                { text: 'Si', value: true },
+                                                { text: 'No', value: false },
+                                            ]"
                                         ></b-form-radio-group>
                                     </b-form-group>
 
@@ -183,11 +410,7 @@
                                 </div>
 
                                 <b-form-group class="mt-3">
-                                    <b-button
-                                        
-                                        block
-                                        @click="buildIcc"
-                                    >
+                                    <b-button block @click="buildIcc">
                                         Agregar
                                     </b-button>
                                 </b-form-group>
@@ -195,16 +418,52 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-4">
-                    <div class="col-md-10 mx-auto">
-                        <b-list-group>
-                            <b-list-group-item
-                                v-for="(producto, index) in productos"
-                                :key="index"
-                                >{{ producto.serie }}
-                                {{ producto.descripcion }} {{ producto.precio }}
-                            </b-list-group-item>
-                        </b-list-group>
+                <div class="mt-4">
+                    <div class="col-xl-6 mx-auto">
+                        <div
+                            v-for="(producto, index) in productos"
+                            :key="index"
+                        >
+                            <b-card :title="producto.serie">
+                                <div class="row">
+                                    <div class="col-xl-10">
+                                        <b-card-text>
+                                            {{ producto.descripcion }}
+                                        </b-card-text>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <b-button
+                                            href="#"
+                                            variant="danger"
+                                            @click="eliminarItem(index)"
+                                            >Eliminar</b-button
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2 ml-auto mt-3">
+                                    <h5 class="ml-auto">
+                                        Precio: ${{ producto.precio }}
+                                    </h5>
+                                </div>
+                            </b-card>
+                        </div>
+                        <b-card
+                            align="right"
+                            border-variant="primary"
+                            v-if="totalVenta > 0"
+                        >
+                            <b-button
+                                block
+                                variant="success"
+                                @click="openVentaModal"
+                            >
+                                Vender</b-button
+                            >
+                            <h4 class="ml-auto mt-4">
+                                Total: ${{ totalVenta }}.00
+                            </h4>
+                        </b-card>
                     </div>
                 </div>
             </div>
@@ -245,7 +504,18 @@ export default {
         maxDate.setDate(maxDate.getDate() + 8);
 
         return {
+            pago: null,
+
             iccDetails: false,
+
+            cliente: {
+                nombre: null,
+                referencia: null,
+                email: null,
+                curp: null,
+                rfc: null,
+            },
+            comentario: null,
 
             isLoading: false,
 
@@ -254,6 +524,19 @@ export default {
             searchResults: [],
 
             currentIcc: null,
+
+            ventaGeneral: {
+                nombre: null,
+                descripcion: null,
+                precio: null,
+                type: "generales",
+            },
+            newRecarga: {
+                dn: null,
+                recarga: null,
+                company: null,
+                type: "recargas",
+            },
 
             fvc: {
                 min: minDate,
@@ -282,6 +565,97 @@ export default {
             this.searchProduct();
         }, 300),
 
+        addGeneral() {
+            const general = {
+                serie: this.ventaGeneral.nombre,
+                precio: this.ventaGeneral.precio,
+                descripcion: this.ventaGeneral.descripcion,
+                type:"generales"
+            };
+
+            this.productos.unshift({ ...general });
+
+            this.hideGeneralModal();
+        },
+        openGeneralModal() {
+            this.$root.$emit("bv::show::modal", "general-modal");
+        },
+        openVentaModal() {
+            this.$root.$emit("bv::show::modal", "venta-modal");
+
+            this.pago = this.totalVenta;
+        },
+        openRecargaModal() {
+            this.$root.$emit("bv::show::modal", "recarga-modal");
+        },
+        newVenta() {
+
+            const params = {
+                productos: this.productos,
+                comentario: this.comentario,
+                cliente: this.cliente
+            };
+
+            axios
+                .post("/venta",params)
+
+                .then((response) => {
+
+                    console.log(response.data);
+
+                })
+                .catch(function (error) {
+                   
+                    console.log(error);
+                });
+        },
+        addRecarga() {
+            const recarga = {
+                serie: this.newRecarga.recarga.name,
+                precio: this.newRecarga.recarga.monto,
+                recargaId: this.newRecarga.recarga.id,
+                dn: this.newRecarga.dn,
+                descripcion: `${this.newRecarga.recarga.name} Numero: ${this.newRecarga.dn}`,
+                type: "recargas",
+            };
+
+            this.productos.unshift({ ...recarga });
+
+            this.hideRecargaModal();
+        },
+        hideRecargaModal() {
+            this.$root.$emit("bv::hide::modal", "recarga-modal");
+
+            this.newRecarga = {
+                dn: null,
+                recarga: null,
+                company: null,
+                type: "recargas",
+            };
+        },
+        hideGeneralModal() {
+            this.$root.$emit("bv::hide::modal", "general-modal");
+
+            this.ventaGeneral = {
+                nombre: null,
+                descripcion: null,
+                precio: null,
+                type: "generales",
+            };
+        },
+        hideVentaModal() {
+            this.$root.$emit("bv::hide::modal", "venta-modal");
+
+            this.cliente = {
+                nombre: null,
+                referencia: null,
+                email: null,
+                curp: null,
+                rfc: null,
+            };
+            this.comentario = null;
+        },
+
         subproductUpdated() {
             if (
                 this.iccData.iccSubProduct &&
@@ -292,6 +666,9 @@ export default {
                 this.iccData.recarga = null;
             }
         },
+        productUpdated() {
+            this.iccSubProduct = null;
+        },
 
         buildIcc() {
             var icc = {
@@ -299,21 +676,23 @@ export default {
                 serie: this.currentIcc.icc,
                 status: this.currentIcc.status,
                 inventario: this.currentIcc.inventario.inventarioable.name,
+                companyName: this.currentIcc.company.name,
                 dn: this.iccData.dn,
                 iccProduct: this.iccData.iccProduct,
                 iccSubProduct: this.iccData.iccSubProduct,
                 recarga: this.iccData.recarga,
                 porta: this.iccData.porta,
                 type: "iccs",
+                precio: this.simPrice,
             };
 
-            if(this.iccData.iccSubProduct){
-                icc.precio = this.iccData.iccSubProduct.precio;
+            if (icc.recarga) {
+                this.iccData.recarga;
             }
-            if(this.iccData.iccProduct === 2){
-                icc.descripcion = `Numero: ${icc.dn}   Producto: ${icc.iccProduct.name}`;
-            }else{
-                icc.descripcion = `Numero: ${icc.dn}   Producto: ${icc.iccProduct.name}   Subproducto: ${icc.iccSubProduct.name}`;
+            if (this.iccData.iccProduct === 2) {
+                icc.descripcion = `Producto: ${icc.iccProduct.name}   Numero: ${icc.dn}   Compañia: ${icc.companyName}`;
+            } else {
+                icc.descripcion = `Producto: ${icc.iccProduct.name}   ${icc.iccSubProduct.name}   Compañia: ${icc.companyName}   Numero: ${icc.dn}`;
             }
 
             this.productos.unshift({ ...icc });
@@ -331,6 +710,9 @@ export default {
 
                 this.iccData.iccProduct = icc.linea.icc_product_id;
             }
+        },
+        eliminarItem(index) {
+            this.productos.splice(index, 1);
         },
         closeIccDetails() {
             this.iccDetails = false;
@@ -367,10 +749,10 @@ export default {
                 )
                 .then((response) => {
                     if (response.data.length > 0) {
+                        const item = response.data[0].searchable;
+
                         switch (response.data[0].type) {
                             case "imeis":
-                                const item = response.data[0].searchable;
-
                                 const imei = {
                                     id: item.id,
                                     serie: item.imei,
@@ -387,6 +769,17 @@ export default {
                                 break;
                             case "iccs":
                                 this.newIcc(response.data[0].searchable);
+
+                                break;
+
+                            case "recargas":
+                                const recarga = {
+                                    id: item.id,
+                                    precio: item.monto,
+                                    descripcion: item.name,
+                                };
+
+                                this.productos.unshift({ ...recarga });
 
                                 break;
                         }
@@ -457,6 +850,32 @@ export default {
             } else {
                 return false;
             }
+        },
+
+        simPrice: function () {
+            if (this.iccData.iccSubProduct) {
+                var price = this.iccData.iccSubProduct.precio;
+
+                if (this.iccData.recarga) {
+                    price =
+                        this.iccData.iccSubProduct.precio +
+                        this.iccData.recarga.monto;
+
+                    if (isNaN(price)) price = 0;
+                }
+
+                return price;
+            } else return 0;
+        },
+
+        totalVenta: function () {
+            var total = 0;
+
+            this.productos.forEach((element) => {
+                total += element.precio;
+            });
+
+            return total;
         },
     },
 };

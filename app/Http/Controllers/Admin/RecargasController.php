@@ -20,20 +20,26 @@ class RecargasController extends Controller
     {
 
 
-        if ($request->ajax()) {
+        // if ($request->ajax()) {
 
             if($request->param){
+
                 $recargas = Recarga::where('company_id',$request->param)->get();
             }else{
+
                 $recargas = Recarga::all();
             }
             
 
-            return response()->json($recargas);
+        //     return response()->json($recargas);
 
-        } else {
-            return view('admin.productos.recargas.index');
-        }
+        // } else {
+        //     return view('admin.productos.recargas.index');
+        // }
+
+        
+
+        return response()->json($recargas);
     }
 
     /**

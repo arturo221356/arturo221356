@@ -194,8 +194,6 @@ Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth'
 
 
 
-Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
-
 Route::get('/get/icctypes', 'IccTypeController@index')->middleware('auth');
 
 // Route::get('/get/companies', 'Admin\CompaniesController@index')->middleware('auth');

@@ -105,11 +105,43 @@ export default {
         loadData() {
             this.isLoading = true;
 
-            const param = this.query;
+            
+            // const param = this.query;
 
-            const param2 = this.query2;
+            // const param2 = this.query2;
 
-            axios.get(`${this.url}?param=${param}&param2=${param2}`).then(
+
+
+            // axios.get(`${this.url}?param=${param}&param2=${param2}`).then(
+            //     function (response) {
+            //         this.options = response.data;
+            //         if (this.todas) {
+            //             this.options.unshift({ id: "all", name: "Todos" });
+            //         }
+            //         if (this.value && this.value.hasOwnProperty("id")) {
+            //             this.selected = this.value;
+            //         } else {
+            //             this.selected = this.options.find(
+            //                 (option) => option.id == this.value
+            //             );
+            //             this.emitToParent();
+            //         }
+
+            //         this.isLoading = false;
+            //     }.bind(this)
+            // );
+
+            
+            axios.get(`${this.url}`,{
+
+                params: {
+                        param: this.query,
+
+                        param2: this.query2,
+                    },
+            }
+            
+            ).then(
                 function (response) {
                     this.options = response.data;
                     if (this.todas) {
@@ -127,6 +159,8 @@ export default {
                     this.isLoading = false;
                 }.bind(this)
             );
+
+
         },
     },
 
