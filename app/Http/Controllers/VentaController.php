@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use App\ProductoGeneral;
 use App\Transaction;
 use App\Taecel;
+use App\Imei;
+use App\Icc;
+use App\Recarga;
 
 class VentaController extends Controller
 {
@@ -41,43 +44,137 @@ class VentaController extends Controller
     {
         $user = Auth::user();
 
+        $inventario = $user->inventariosAsignados()->first();
+
+        $taecelKey = $inventario->distribution->taecel_key;
+
+        $taecelNip = $inventario->distribution->taecel_nip;
+
         $productos = json_decode(json_encode($request->productos));
 
         $venta = new Venta;
 
         $venta->user()->associate($user);
 
-        $venta->inventario()->associate($user->inventariosAsignados()->first());
+        $venta->inventario()->associate($inventario);
 
         $total = 0;
 
         $venta->save();
 
         if ($request->comentario) {
-    
+
             $venta->comment()->create(['comment' => $request->comentario]);
         }
 
-        if($productos){
+        if ($productos) {
 
-            foreach($productos as $producto){
+            foreach ($productos as $producto) {
 
-               $total += $producto->precio; 
+                $total += $producto->precio;
 
-                switch($producto->type){
-                    
-                    
+                switch ($producto->type) {
+
+
                     case 'recargas':
 
+                        $dn = $producto->dn;
+
+                        $recarga = Recarga::findOrFail($producto->recargaId);
+
+                        $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+
+                        $taecelRequest = json_decode($requestTXN);
+
+                        $trasnsaction = Transaction::create([
+
+                            'taecel' => true,
+
+                            'monto' => $recarga->monto,
+
+                            'dn' => $dn,
+
+                            'company_id' => $recarga->company_id,
+
+                            'recarga_id' => $recarga->id,
+
+                            'inventario_id' => $inventario->id,
+
+                            'taecel_success' => $taecelRequest->success,
+
+                            'taecel_message' => $taecelRequest->message,
+
+                        ]);
+                        if ($taecelRequest->data) {
+                            $trasnsaction->taecel_transID = $taecelRequest->data->transID;
+                
+                            $trasnsaction->save();
+                        }
+                        if ($taecelRequest->success == false) {
+
+                            $response =  json_encode([
+                                'success' =>  false,
+                                'message' => $taecelRequest->message,
+                            ]);
+                
+                           
+                        } else if ($taecelRequest->success == true) {
+                
+                            $transID = $taecelRequest->data->transID;
+                
+                            $statusTXN =  (new Taecel)->TaecelStatusTXN($taecelKey, $taecelNip, $transID);
+                
+                            $taecelStatusTXN = json_decode($statusTXN);
+                
+                            if ($taecelStatusTXN->data) {
+                
+                                $trasnsaction->taecel_status = $taecelStatusTXN->data->Status;
+                
+                                $trasnsaction->taecel_message = $taecelStatusTXN->message;
+                
+                                $trasnsaction->taecel_timeout = $taecelStatusTXN->data->Timeout;
+                
+                                $trasnsaction->taecel_folio = $taecelStatusTXN->data->Folio;
+                
+                                $trasnsaction->taecel_nota = $taecelStatusTXN->data->Nota;
+                            }
+                
+                            if ($taecelStatusTXN->success  == true) {
+                
+                                $response =  json_encode([
+                                    'success' =>  true,
+                                    'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
+                                ]);
+                            } else if ($taecelStatusTXN->success  == false) {
+                               
+                               
+                
+                                $response =  json_encode([
+                                    'success' =>  false,
+                                    'message' => $taecelStatusTXN->message,
+                                ]);
+                            }
+                        }
+                
+                        $trasnsaction->save();
+
+                        $venta->transactions()->attach($trasnsaction, ['price' => $recarga->monto]);
 
 
 
-                    break;
+                        break;
 
                     case 'imeis':
 
+                        $imei = Imei::findOrFail($producto->id);
 
-                    break;
+                        $imei->setStatus('Vendido');
+
+                        $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio]);
+
+
+
+                        break;
 
                     case 'generales':
 
@@ -91,34 +188,22 @@ class VentaController extends Controller
 
                         $productoGeneral->save();
 
-                        $venta->generalProducts()->attach($productoGeneral,['price' => $producto->precio]);
-                
+                        $venta->generalProducts()->attach($productoGeneral, ['price' => $producto->precio]);
 
-                    break;
+
+                        break;
 
                     case 'iccs':
 
 
-                    break;
-
-
-
-
-
-                    
+                        break;
                 }
-
-
-
             }
-           
         }
 
         $venta->total = $total;
 
         $venta->save();
-
-
     }
 
     /**

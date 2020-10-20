@@ -11,7 +11,7 @@ class Taecel extends Model
 {
     use HasFactory;
 
-    public static function TaecelRequestTXN($key, $nip, $producto, $referencia)
+    public  function TaecelRequestTXN($key, $nip, $producto, $referencia)
     {
         Http::fake([
 
@@ -29,59 +29,11 @@ class Taecel extends Model
 
         ]);
 
-        function requestTXN($key, $nip, $producto, $referencia)
-        {
-            try {
-
-                $request =  Http::asForm()->timeout(70)->post("https://taecel.com/app/api/RequestTXN", [
-                    'key' => $key,
-                    'nip' => $nip,
-                    'producto' => $producto,
-                    'referencia' => $referencia,
-
-                ]);
-            } catch (RequestException $e) {
-                $response = json_encode([
-                    'success' =>  false,
-                    'message' => "Error de conexion ",
-                ]);
-            }
-
-
-            if ($request->serverError()) {
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => 'Error servidor' . $request->status(),
-                ]);
-            }
-            if ($request->clientError()) {
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => 'Error del cliente ' . $request->status(),
-                ]);
-            }
-            if ($request->failed()) {
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => 'Error ' . $request->status(),
-                ]);
-            }
-
-            if ($request->successful()) {
-                $response =  $request;
-            }
-
-            return $response;
-        }
 
 
 
 
-
-        $taecelRequest = requestTXN($key, $nip, $producto, $referencia);
+        $taecelRequest = $this->requestTXN($key, $nip, $producto, $referencia);
 
         $respuesta = json_decode($taecelRequest);
 
@@ -89,7 +41,7 @@ class Taecel extends Model
             $prueba = [];
             for ($i = 1; $i <= 3; $i++) {
 
-                $taecelRequest = requestTXN($key, $nip, $producto, $referencia);
+                $taecelRequest = $this->requestTXN($key, $nip, $producto, $referencia);
 
                 array_push($prueba, $taecelRequest);
             }
@@ -98,11 +50,58 @@ class Taecel extends Model
         return $taecelRequest;
     }
 
+    private  function requestTXN($key, $nip, $producto, $referencia)
+    {
+        try {
 
-    
-    
-    
-    public static function TaecelStatusTXN($key, $nip, $transId)
+            $request =  Http::asForm()->timeout(70)->post("https://taecel.com/app/api/RequestTXN", [
+                'key' => $key,
+                'nip' => $nip,
+                'producto' => $producto,
+                'referencia' => $referencia,
+
+            ]);
+        } catch (RequestException $e) {
+            $response = json_encode([
+                'success' =>  false,
+                'message' => "Error de conexion ",
+            ]);
+        }
+
+
+        if ($request->serverError()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error servidor' . $request->status(),
+            ]);
+        }
+        if ($request->clientError()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error del cliente ' . $request->status(),
+            ]);
+        }
+        if ($request->failed()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error ' . $request->status(),
+            ]);
+        }
+
+        if ($request->successful()) {
+            $response =  $request;
+        }
+
+        return $response;
+    }
+
+
+
+
+    public function TaecelStatusTXN($key, $nip, $transId)
     {
 
         Http::fake([
@@ -124,70 +123,69 @@ class Taecel extends Model
 
         ]);
 
-        function statusTXN($key, $nip, $transId)
-        {
-            try {
 
-                $request =  Http::asForm()->timeout(70)->post("https://taecel.com/app/api/StatusTXN", [
-                    'key' => $key,
-                    'nip' => $nip,
-                    'transID' => $transId,
-
-                ]);
-            } catch (RequestException $e) {
-                $response = json_encode([
-                    'success' =>  false,
-                    'message' => "Error de conexion ",
-                ]);
-            }
-
-
-            if ($request->serverError()) {
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => 'Error servidor' . $request->status(),
-                ]);
-            }
-            if ($request->clientError()) {
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => 'Error del cliente ' . $request->status(),
-                ]);
-            }
-            if ($request->failed()) {
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => 'Error ' . $request->status(),
-                ]);
-            }
-
-            if ($request->successful()) {
-                $response =  $request;
-            }
-
-            return $response;
-        }
-
-
-        $taecelRequest = statusTXN($key, $nip,$transId);
+        $taecelRequest = $this->statusTXN($key, $nip, $transId);
 
         $respuesta = json_decode($taecelRequest);
-        
+
         if ($respuesta == null) {
             $prueba = [];
             for ($i = 1; $i <= 3; $i++) {
-                
-                $taecelRequest = statusTXN($key, $nip, $transId);
 
-                array_push($prueba,$taecelRequest);
+                $taecelRequest = $this->statusTXN($key, $nip, $transId);
 
+                array_push($prueba, $taecelRequest);
             }
-            
         }
 
         return $taecelRequest;
+    }
+
+
+    private function statusTXN($key, $nip, $transId)
+    {
+        try {
+
+            $request =  Http::asForm()->timeout(70)->post("https://taecel.com/app/api/StatusTXN", [
+                'key' => $key,
+                'nip' => $nip,
+                'transID' => $transId,
+
+            ]);
+        } catch (RequestException $e) {
+            $response = json_encode([
+                'success' =>  false,
+                'message' => "Error de conexion ",
+            ]);
+        }
+
+
+        if ($request->serverError()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error servidor' . $request->status(),
+            ]);
+        }
+        if ($request->clientError()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error del cliente ' . $request->status(),
+            ]);
+        }
+        if ($request->failed()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error ' . $request->status(),
+            ]);
+        }
+
+        if ($request->successful()) {
+            $response =  $request;
+        }
+
+        return $response;
     }
 }

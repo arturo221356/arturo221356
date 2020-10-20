@@ -24,4 +24,17 @@ class Venta extends Model
     {
         return $this->morphedByMany('App\ProductoGeneral', 'ventaable')->withPivot(['price']);
     }
+    public function imeis()
+    {
+        return $this->morphedByMany('App\Imei', 'ventaable')->withPivot(['price']);
+    }
+    
+    public function iccs()
+    {
+        return $this->morphedByMany('App\Icc', 'ventaable')->withPivot(['price']);
+    }
+    public function transactions()
+    {
+        return $this->morphedByMany('App\Transaction', 'ventaable')->withPivot(['price']);
+    }
 }

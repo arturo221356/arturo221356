@@ -232,7 +232,7 @@ class ChipController extends Controller
         //cambia el status de la linea a proceso para evitar errores que se duplique la recarga 
         $linea->setStatus('Proceso', 'si ves esto es porque hubo un error al procesar la recarga, verifica la transaccion');
 
-        $requestTXN =  Taecel::taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+        $requestTXN = (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
 
         $taecelRequest = json_decode($requestTXN);
 
@@ -275,7 +275,7 @@ class ChipController extends Controller
 
             $transID = $taecelRequest->data->transID;
 
-            $statusTXN =  Taecel::TaecelStatusTXN($taecelKey, $taecelNip, $transID);
+            $statusTXN = (new Taecel)->TaecelStatusTXN($taecelKey, $taecelNip, $transID);
 
             $taecelStatusTXN = json_decode($statusTXN);
 
