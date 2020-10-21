@@ -10,7 +10,12 @@ use App\Transaction;
 use App\Taecel;
 use App\Imei;
 use App\Icc;
+use App\IccSubProduct;
 use App\Recarga;
+use App\Chip;
+use App\Porta;
+use App\Remplazo;
+
 
 class VentaController extends Controller
 {
@@ -71,7 +76,7 @@ class VentaController extends Controller
 
             foreach ($productos as $producto) {
 
-                $total += $producto->precio;
+
 
                 switch ($producto->type) {
 
@@ -107,7 +112,7 @@ class VentaController extends Controller
                         ]);
                         if ($taecelRequest->data) {
                             $trasnsaction->taecel_transID = $taecelRequest->data->transID;
-                
+
                             $trasnsaction->save();
                         }
                         if ($taecelRequest->success == false) {
@@ -116,46 +121,46 @@ class VentaController extends Controller
                                 'success' =>  false,
                                 'message' => $taecelRequest->message,
                             ]);
-                
-                           
                         } else if ($taecelRequest->success == true) {
-                
+
                             $transID = $taecelRequest->data->transID;
-                
+
                             $statusTXN =  (new Taecel)->TaecelStatusTXN($taecelKey, $taecelNip, $transID);
-                
+
                             $taecelStatusTXN = json_decode($statusTXN);
-                
+
                             if ($taecelStatusTXN->data) {
-                
+
                                 $trasnsaction->taecel_status = $taecelStatusTXN->data->Status;
-                
+
                                 $trasnsaction->taecel_message = $taecelStatusTXN->message;
-                
+
                                 $trasnsaction->taecel_timeout = $taecelStatusTXN->data->Timeout;
-                
+
                                 $trasnsaction->taecel_folio = $taecelStatusTXN->data->Folio;
-                
+
                                 $trasnsaction->taecel_nota = $taecelStatusTXN->data->Nota;
                             }
-                
+
                             if ($taecelStatusTXN->success  == true) {
-                
+
                                 $response =  json_encode([
                                     'success' =>  true,
                                     'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
                                 ]);
+
+                                $total += $producto->precio;
                             } else if ($taecelStatusTXN->success  == false) {
-                               
-                               
-                
+
+
+
                                 $response =  json_encode([
                                     'success' =>  false,
                                     'message' => $taecelStatusTXN->message,
                                 ]);
                             }
                         }
-                
+
                         $trasnsaction->save();
 
                         $venta->transactions()->attach($trasnsaction, ['price' => $recarga->monto]);
@@ -172,7 +177,7 @@ class VentaController extends Controller
 
                         $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio]);
 
-
+                        $total += $producto->precio;
 
                         break;
 
@@ -190,10 +195,64 @@ class VentaController extends Controller
 
                         $venta->generalProducts()->attach($productoGeneral, ['price' => $producto->precio]);
 
+                        $total += $producto->precio;
 
                         break;
 
                     case 'iccs':
+
+                        $icc = Icc::findOrFail($producto->id);
+
+                        if ($icc->linea) {
+
+                            $linea = $icc->linea;
+
+                            $dn = $linea->dn;
+                        } else {
+                            switch ($producto->iccProduct->id) {
+                                case 1:
+
+                                    $chip = Chip::create([
+                                        'preactivated_at' => now()
+                                    ]);
+
+                                    $linea = $chip->linea()->create([
+                                        'dn' => $producto->dn,
+                                        'icc_product_id' => 1,
+                                        'icc_id' => $icc->id,
+
+                                    ]);
+                                    break;
+                            }
+                        }
+
+                        switch ($linea->product->id) {
+                                // en caso de que la linea sea linea nueva prepago
+                            case 1:
+
+                                $subproduct = IccSubProduct::find($producto->iccSubProduct->id);
+
+                                if ($subproduct->recarga_required) {
+
+                                    if ($subproduct->recarga_id) {
+
+                                        $recarga =  Recarga::find($subproduct->recarga_id);
+                                    } else {
+
+                                        $recarga =  Recarga::find($producto->recarga_id);
+                                    }
+
+                                    return $recarga;
+                                } else {
+                                    return 'aosidjaos';
+                                }
+
+
+
+                                break;
+                        }
+
+
 
 
                         break;
