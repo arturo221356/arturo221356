@@ -37,4 +37,8 @@ class Venta extends Model
     {
         return $this->morphedByMany('App\Transaction', 'ventaable')->withPivot(['price']);
     }
+    public function cliente()
+    {
+        return $this->hasOne('App\Cliente');
+    }
 }

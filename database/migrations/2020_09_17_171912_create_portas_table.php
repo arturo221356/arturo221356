@@ -19,7 +19,10 @@ class CreatePortasTable extends Migration
             $table->char('temporal',10)->nullable();
             $table->boolean('trafico')->nullable();
             $table->boolean('trafico_real')->nullable();
-            $table->date('fvc')->nullable();
+            $table->integer('transaction_id')->nullable();
+            $table->dateTimeTz('preactivated_at')->nullable();
+            $table->dateTimeTz('activated_at')->nullable();
+            $table->dateTimeTz('fvc')->nullable();
             $table->timestamps();
         });
     }

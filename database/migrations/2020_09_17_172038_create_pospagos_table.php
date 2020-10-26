@@ -15,7 +15,8 @@ class CreatePospagosTable extends Migration
     {
         Schema::create('pospagos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('pospago_type');
+            $table->dateTimeTz('preactivated_at')->nullable();
+            $table->dateTimeTz('activated_at')->nullable();
             $table->timestamps();
         });
     }

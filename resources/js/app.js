@@ -66,7 +66,7 @@ Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalCompone
 Vue.component('preactivar-linea', require('./components/PreactivarComponent.vue').default);
 Vue.component('activa-chip', require('./components/ActivaChip.vue').default);
 Vue.component('linea-reporte', require('./components/LineaReporte.vue').default);
-
+Vue.component('show-venta', require('./components/ShowVenta.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

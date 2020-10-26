@@ -11,26 +11,14 @@
 |
 */
 //para pruebas
-use App\Transaction;
-use App\Icc;
-use App\Linea;
-use App\Imei;
-use App\Inventario;
-use App\Http\Resources\InventarioResource;
-use App\Distribution;
-use App\IccProduct;
-use App\User;
-use App\Chip;
-use App\Porta;
-use App\Recarga;
-use GuzzleHttp\Middleware;
+
 use Illuminate\Support\Facades\Http;
-use App\Http\Resources\IccResource;
+
 
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
-use SebastianBergmann\CodeUnit\TraitMethodUnit;
+
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
 
@@ -93,7 +81,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/chip', 'ChipController');
 
-    Route::resource('/venta', 'VentaController');
+    Route::resource('/ventas', 'VentaController');
 
 
   

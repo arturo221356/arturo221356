@@ -10,7 +10,7 @@ class Porta extends Model
 {
     use HasStatuses;
     
-    protected $fillable = ["nip", "temporal", "trafico", "fvc"];
+    protected $fillable = ["nip", "temporal", "trafico","transaction_id", "fvc"];
 
     public function linea()
     {
@@ -18,5 +18,10 @@ class Porta extends Model
 
 
         return $this->morphOne('App\Linea', 'productoable');
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo('App\Transaction');
     }
 }

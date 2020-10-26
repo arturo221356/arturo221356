@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 
+
 class Taecel extends Model
 {
     use HasFactory;
@@ -188,4 +189,7 @@ class Taecel extends Model
 
         return $response;
     }
+
+
+
 }

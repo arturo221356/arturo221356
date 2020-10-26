@@ -451,7 +451,7 @@
                         <b-card
                             align="right"
                             border-variant="primary"
-                            v-if="totalVenta > 0"
+                            v-if="productos.length > 0"
                         >
                             <b-button
                                 block
@@ -597,7 +597,7 @@ export default {
             };
 
             axios
-                .post("/venta",params)
+                .post("/ventas",params)
 
                 .then((response) => {
 
@@ -689,7 +689,7 @@ export default {
             if (icc.recarga) {
                 this.iccData.recarga;
             }
-            if (this.iccData.iccProduct === 2) {
+            if (this.iccData.iccProduct.id == 2) {
                 icc.descripcion = `Producto: ${icc.iccProduct.name}   Numero: ${icc.dn}   Compañia: ${icc.companyName}`;
             } else {
                 icc.descripcion = `Producto: ${icc.iccProduct.name}   ${icc.iccSubProduct.name}   Compañia: ${icc.companyName}   Numero: ${icc.dn}`;
@@ -820,7 +820,7 @@ export default {
     watch: {},
     computed: {
         showSubProductoSelect: function () {
-            if (this.iccData.iccProduct && this.iccData.iccProduct.id != 2) {
+            if (this.iccData.iccProduct ) {
                 return true;
             } else {
                 return false;

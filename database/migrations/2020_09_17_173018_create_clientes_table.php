@@ -21,6 +21,7 @@ class CreateClientesTable extends Migration
             $table->string('rfc')->nullable();
             $table->string('referencia')->nullable();
             $table->date('birthday')->nullable();
+            $table->integer('venta_id');
             $table->timestamps();
         });
     }

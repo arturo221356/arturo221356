@@ -41,7 +41,7 @@
                   <a class="nav-link" href="#">Inicio <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/venta">Ventas</a>
+                  <a class="nav-link" href="/ventas/create">Ventas</a>
                 </li>
                 <li class="nav-item dropdown {{ Request::is('inventario') ? 'active' : '' }}">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

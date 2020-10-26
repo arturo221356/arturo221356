@@ -51,7 +51,7 @@ class IccSubProductTableSeeder extends Seeder
         'recarga_id'=> null
         ]);
         IccSubProduct::create(['name'=>'Chip telcel libre',
-        'company_id'=>2,
+        'company_id'=>1,
         'distribution_id' =>1,
         'icc_product_id' =>1,
         'precio'=>100,
@@ -98,7 +98,23 @@ class IccSubProductTableSeeder extends Seeder
         'company_id'=>2,
         'distribution_id' =>1,
         'icc_product_id' =>5,
-        'precio'=>100,
+        'precio'=>50,
+        
+        ]);
+
+        IccSubProduct::create(['name'=>'Portabilidad Movistar',
+        'company_id'=>2,
+        'distribution_id' =>1,
+        'icc_product_id' =>2,
+        'precio'=> 0,
+        
+        ]);
+
+        IccSubProduct::create(['name'=>'Portabilidad Telcel',
+        'company_id'=>1,
+        'distribution_id' =>1,
+        'icc_product_id' =>2,
+        'precio'=> 0,
         
         ]);
     }

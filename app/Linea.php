@@ -34,6 +34,10 @@ class Linea extends Model
     {
         return $this->belongsTo('App\IccProduct','icc_product_id');
     }
+    public function subProduct()
+    {
+        return $this->belongsTo('App\IccSubProduct','icc_sub_product_id');
+    }
 
     public function getReasonAttribute()
     {

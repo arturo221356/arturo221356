@@ -171,7 +171,7 @@ class IccController extends Controller
      */
     public function show(Icc $icc)
     {
-        //
+        return $icc;
     }
 
     /**

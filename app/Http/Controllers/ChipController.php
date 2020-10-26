@@ -69,7 +69,7 @@ class ChipController extends Controller
      */
     public function show(Chip $chip)
     {
-        //
+        return $chip;
     }
 
     /**
