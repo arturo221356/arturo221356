@@ -14,10 +14,16 @@
 
 use Illuminate\Support\Facades\Http;
 
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\VentaComprobante;
+
 
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+
+
 
 
 Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
@@ -90,21 +96,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    Http::fake(function ($request) {
-        return Http::response('Hello World', 500);
-    });
-   
-   
-    $response = Http::timeout(50)->asForm()->post('https://taecel.com/app/api/statusTXN', [
-        'key' => 'c490127ff864a719bd89877f32a574de',
-        'nip' => '0c4ae19986107edd5ebcec3c6e08a0d0',
-         'transID'=>'200901909623'
-    ]);
-    
+    Mail::to('arturo221355@gmail.com')->send(new VentaComprobante);
 
-    
 
-        return $response;
 });
 
 

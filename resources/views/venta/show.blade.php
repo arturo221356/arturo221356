@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Generate Pdf</title>
-</head>
+@section('content')
 
-<body>
-    <h1>{{ $heading}}</h1>
-    <div>
-        <p>{{$content}}</p>
-    </div>
-</body>
+{{$venta}}
 
-</html>
+
+@endsection

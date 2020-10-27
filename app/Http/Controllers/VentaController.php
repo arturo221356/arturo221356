@@ -18,6 +18,8 @@ use App\Remplazo;
 use App\Cliente;
 use Illuminate\Support\Carbon;
 use App\Telemarketing;
+use App\Mail\VentaComprobante;
+use Illuminate\Support\Facades\Mail;
 
 
 class VentaController extends Controller
@@ -375,8 +377,12 @@ class VentaController extends Controller
      */
     public function show(Venta $venta)
     {   
+        Mail::to('arturo221355@gmail.com')->send(new VentaComprobante($venta));
         
-        return view('venta.show');
+        return view('venta.show',['venta'=>$venta]);
+
+      
+
     }
 
     /**
