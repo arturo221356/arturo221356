@@ -67,6 +67,7 @@ Vue.component('preactivar-linea', require('./components/PreactivarComponent.vue'
 Vue.component('activa-chip', require('./components/ActivaChip.vue').default);
 Vue.component('linea-reporte', require('./components/LineaReporte.vue').default);
 Vue.component('show-venta', require('./components/ShowVenta.vue').default);
+Vue.component('venta-reporte', require('./components/VentaReporte.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

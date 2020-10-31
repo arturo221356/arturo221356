@@ -13,6 +13,15 @@ class Transaction extends Model
 
     protected $fillable = ["taecel", "taecel_success", "taecel_timeout", "taecel_folio", "taecel_message", "taecel_transID", "taecel_nota", "taecel_status", "monto", "dn", 'company_id', 'recarga_id', 'inventario_id'];
 
+    public function recarga()
+    {
+        return $this->belongsTo('App\Recarga');
+    }
+    public function company()
+    {
+        return $this->belongsTo('App\Company');
+    }
+
 
     public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId)
     {

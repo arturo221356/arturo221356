@@ -163,9 +163,13 @@ export default {
                     function (response) {
                         // this.chips.value = response.data;
                         console.log(response.data.data);
+
                         this.chips = response.data.data;
 
                         this.chipsBar.value = response.data.data.length;
+
+                        this.showLineas();
+                        
                     }.bind(this)
                 )
                 .catch(function (error) {

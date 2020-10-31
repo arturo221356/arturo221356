@@ -29,9 +29,20 @@ class VentaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        
+    public function index(Request $request)
+    {   
+        if($request->ajax()){
+
+            $ventas = Venta::all();
+
+            return $ventas;
+
+        }else{
+
+            return view('venta.index');
+
+        }
+       
     }
 
     /**
@@ -377,9 +388,40 @@ class VentaController extends Controller
      */
     public function show(Venta $venta)
     {   
-        Mail::to('arturo221355@gmail.com')->send(new VentaComprobante($venta));
         
-        return view('venta.show',['venta'=>$venta]);
+
+        
+
+        
+
+        $ventaData = [
+
+            'inventario'=>$venta->inventario->inventarioable,
+
+            'distribution'=>$venta->inventario->distribution->name,
+
+            'venta'=>$venta,
+            
+            'fecha' => Carbon::parse($venta->created_at)->format('d/m/y h:i:s' ),
+
+            'vendedor' => $venta->user->name,
+
+            'cliente' => $venta->cliente,
+
+            'productosGenerales' =>$venta->generalProducts,
+
+            'imeis' => $venta->imeis()->with('equipo')->get(),
+
+            'iccs' => $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get(),
+
+            'transactions' => $venta->transactions()->with('recarga')->get(),
+            
+        ];
+
+           Mail::to('arturo221355@gmail.com')->send(new VentaComprobante($venta));
+
+        return view('venta.show',$ventaData);
+       
 
       
 
