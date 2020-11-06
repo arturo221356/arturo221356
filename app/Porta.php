@@ -10,7 +10,7 @@ class Porta extends Model
 {
     use HasStatuses;
     
-    protected $fillable = ["nip", "temporal", "trafico","transaction_id", "fvc"];
+    protected $fillable = ["nip", "temporal", "trafico","transaction_id", "fvc", 'preactivated_at', 'activated_at',];
 
     public function linea()
     {

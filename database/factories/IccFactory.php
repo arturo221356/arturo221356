@@ -26,6 +26,7 @@ class IccFactory extends Factory
             'icc' => $this->faker->numerify('895203#############'),
             'inventario_id' =>  $this->faker->numberBetween($min = 1, $max = 4),
             'company_id' => 2,
+            'icc_type_id' => 2,
         ];
         
     }

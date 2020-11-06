@@ -16,6 +16,7 @@ use App\Porta;
 use App\Pospago;
 use App\Remplazo;
 use App\Cliente;
+use App\Http\Resources\VentaResource;
 use Illuminate\Support\Carbon;
 use App\Telemarketing;
 use App\Mail\VentaComprobante;
@@ -367,14 +368,22 @@ class VentaController extends Controller
             $cliente = json_decode(json_encode($request->cliente));
 
             $venta->cliente()->create([
-                'name' => isset($cliente->nombre) ? $cliente->nombre : null,
+                'name' => isset($cliente->nombre) ? $cliente->nombre : 'público en general',
                 'email' => isset($cliente->email )? $cliente->email : null,
                 'curp' => isset($cliente->curp) ? $cliente->curp : null,
                 'rfc' => isset($cliente->rfc) ? $cliente->rfc : null,
                 'referencia'=> isset($cliente->referencia) ? $cliente->referencia : null,
             ]);
 
+            if(isset($cliente->email)){
+
+                Mail::to($cliente->email)->send(new VentaComprobante($venta));
+
+            }
+
         }
+
+        return $venta->id;
         
         
 
@@ -392,35 +401,37 @@ class VentaController extends Controller
 
         
 
-        
+        $response = new VentaResource($venta);
 
-        $ventaData = [
+        // $ventaData = [
 
-            'inventario'=>$venta->inventario->inventarioable,
+        //     'inventario'=>$venta->inventario->inventarioable,
 
-            'distribution'=>$venta->inventario->distribution->name,
+        //     'distribution'=>$venta->inventario->distribution->name,
 
-            'venta'=>$venta,
+        //     'venta'=>$venta,
             
-            'fecha' => Carbon::parse($venta->created_at)->format('d/m/y h:i:s' ),
+        //     'fecha' => Carbon::parse($venta->created_at)->format('d/m/y h:i:s' ),
 
-            'vendedor' => $venta->user->name,
+        //     'vendedor' => $venta->user->name,
 
-            'cliente' => $venta->cliente,
+        //     'cliente' => $venta->cliente,
 
-            'productosGenerales' =>$venta->generalProducts,
+        //     'productosGenerales' =>$venta->generalProducts,
 
-            'imeis' => $venta->imeis()->with('equipo')->get(),
+        //     'imeis' => $venta->imeis()->with('equipo')->get(),
 
-            'iccs' => $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get(),
+        //     'iccs' => $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get(),
 
-            'transactions' => $venta->transactions()->with('recarga')->get(),
+        //     'transactions' => $venta->transactions()->with('recarga')->get(),
             
-        ];
+        // ];
 
-           Mail::to('arturo221355@gmail.com')->send(new VentaComprobante($venta));
+        //    Mail::to('arturo221355@gmail.com')->send(new VentaComprobante($venta));
 
-        return view('venta.show',$ventaData);
+        // return view('venta.show',$ventaData);
+
+        return $response;
        
 
       

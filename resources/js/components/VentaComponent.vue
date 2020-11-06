@@ -1,5 +1,9 @@
 <template>
     <div>
+        
+        <b-modal id="show-venta" title="Venta"  :ok-only="true" v-if="currentVenta">
+            <show-venta :venta-id="currentVenta"></show-venta>
+        </b-modal>
         <b-overlay :show="isLoading" rounded="sm">
             <div class="jumbotron jumbotron-fluid">
                 <div>
@@ -32,6 +36,7 @@
                                                 placeholder="Insertar Numero"
                                                 v-model="newRecarga.dn"
                                                 type="number"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
 
@@ -83,6 +88,7 @@
                                             <b-input
                                                 placeholder="Insertar nombre del cliente"
                                                 v-model="cliente.nombre"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
 
@@ -93,6 +99,7 @@
                                             <b-input
                                                 v-model="cliente.curp"
                                                 placeholder="Insertar Curp del cliente"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
                                         <b-form-group
@@ -102,6 +109,7 @@
                                             <b-input
                                                 placeholder="Insertar RFC del cliente"
                                                 v-model="cliente.rfc"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
                                         <b-form-group
@@ -111,6 +119,7 @@
                                             <b-input
                                                 v-model="cliente.referencia"
                                                 placeholder="Insertar Referencia del cliente"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
                                         <b-form-group
@@ -120,6 +129,7 @@
                                             <b-input
                                                 v-model="cliente.email"
                                                 placeholder="Insertar Email del cliente"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
 
@@ -130,6 +140,7 @@
                                             <b-input
                                                 v-model="comentario"
                                                 placeholder="Comentario venta"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
 
@@ -150,6 +161,7 @@
                                                 type="number"
                                                 placeholder="Pago"
                                                 v-model.number="pago"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
 
@@ -161,11 +173,15 @@
                                                 type="number"
                                                 placeholder="Pago"
                                                 :value="pago - totalVenta"
+                                               
                                                 readonly
                                             ></b-input>
                                         </b-form-group>
 
-                                        <b-button variant="success" block @click="newVenta"
+                                        <b-button
+                                            variant="success"
+                                            block
+                                            @click="newVenta"
                                             >Vender</b-button
                                         >
                                         <b-button block @click="hideVentaModal"
@@ -173,7 +189,7 @@
                                         >
                                     </b-form>
                                 </b-modal>
-
+                                <!-- modal de venta general -->
                                 <b-modal
                                     id="general-modal"
                                     hide-footer
@@ -188,6 +204,7 @@
                                             <b-input
                                                 placeholder="Nombre"
                                                 v-model="ventaGeneral.nombre"
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
                                         <b-form-group
@@ -199,6 +216,7 @@
                                                 v-model="
                                                     ventaGeneral.descripcion
                                                 "
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
 
@@ -212,6 +230,7 @@
                                                 v-model.number="
                                                     ventaGeneral.precio
                                                 "
+                                                autocomplete="off"
                                             ></b-input>
                                         </b-form-group>
                                     </b-form>
@@ -298,7 +317,7 @@
                                     </h5>
                                 </div>
 
-                                <div v-else></div>
+                                
 
                                 <b-form-group
                                     label="Numero"
@@ -310,6 +329,7 @@
                                         v-model="iccData.dn"
                                         placeholder="Ingresa numero de telefono"
                                         :disabled="disableLineaInputs"
+                                        autocomplete="off"
                                     ></b-input>
                                 </b-form-group>
                                 <b-form-group
@@ -376,6 +396,7 @@
                                             placeholder="Nip"
                                             type="number"
                                             v-model="iccData.porta.nip"
+                                            autocomplete="off"
                                         ></b-input>
                                     </b-form-group>
 
@@ -525,6 +546,8 @@ export default {
 
             currentIcc: null,
 
+            currentVenta: 1,
+
             ventaGeneral: {
                 nombre: null,
                 descripcion: null,
@@ -565,12 +588,16 @@ export default {
             this.searchProduct();
         }, 300),
 
+        clearSearchValue(){
+            this.searchValue = null;
+        },
+
         addGeneral() {
             const general = {
                 serie: this.ventaGeneral.nombre,
                 precio: this.ventaGeneral.precio,
                 descripcion: this.ventaGeneral.descripcion,
-                type:"generales"
+                type: "generales",
             };
 
             this.productos.unshift({ ...general });
@@ -590,24 +617,42 @@ export default {
         },
         newVenta() {
 
+            this.isLoading = true;
+
+            
+
+            
+
             const params = {
                 productos: this.productos,
                 comentario: this.comentario,
-                cliente: this.cliente
+                cliente: this.cliente,
             };
 
+            this.hideVentaModal();
+
             axios
-                .post("/ventas",params)
+                .post("/ventas", params)
 
                 .then((response) => {
-
                     console.log(response.data);
 
+                    this.currentVenta = response.data;
+
+                    this.$bvModal.show('show-venta');
+
+
+                    this.productos = [];
+
+                    this.isLoading = false;
                 })
                 .catch(function (error) {
-                   
                     console.log(error);
                 });
+
+            
+
+            
         },
         addRecarga() {
             const recarga = {
@@ -748,6 +793,7 @@ export default {
                     }
                 )
                 .then((response) => {
+
                     if (response.data.length > 0) {
                         const item = response.data[0].searchable;
 
@@ -783,6 +829,7 @@ export default {
 
                                 break;
                         }
+                        this.clearSearchValue();
                     } else {
                         this.$bvToast.toast("No encontrado", {
                             title: `${this.searchValue}`,
@@ -820,7 +867,7 @@ export default {
     watch: {},
     computed: {
         showSubProductoSelect: function () {
-            if (this.iccData.iccProduct ) {
+            if (this.iccData.iccProduct) {
                 return true;
             } else {
                 return false;
