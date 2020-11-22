@@ -34,7 +34,9 @@ class SearchController extends Controller
                 ->otherCurrentStatus(['Vendido', 'Traslado'])
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
+                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                    
+                    $query->whereIn('inventario_id', $inventariosIds);
                 })
                 ;
         })
@@ -46,7 +48,9 @@ class SearchController extends Controller
                 
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
+                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                    
+                    $query->whereIn('inventario_id', $inventariosIds);
                 })
                 ;
         })
@@ -83,8 +87,13 @@ class SearchController extends Controller
                 ->addExactSearchableAttribute('icc')
                 ->otherCurrentStatus(['Vendido', 'Traslado'])
                 ->whereHas('inventario', function($query) {
+                    
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
+
+                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                    
+                    $query->whereIn('inventario_id', $inventariosIds);
+
                 })->with(['linea','inventario.inventarioable','type','company'])
                 ;
         })
@@ -96,7 +105,11 @@ class SearchController extends Controller
                 
                 ->whereHas('inventario', function($query) {
                     $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
+
+                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+
+                    $query->whereIn('inventario_id', $inventariosIds);
+
                 })->with(['equipo','inventario.inventarioable'])
                 ;
         })

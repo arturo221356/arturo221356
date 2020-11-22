@@ -1,7 +1,11 @@
 <template>
     <div>
-        
-        <b-modal id="show-venta" title="Venta"  :ok-only="true" v-if="currentVenta">
+        <b-modal
+            id="show-venta"
+            title="Venta"
+            :ok-only="true"
+            v-if="currentVenta"
+        >
             <show-venta :venta-id="currentVenta"></show-venta>
         </b-modal>
         <b-overlay :show="isLoading" rounded="sm">
@@ -14,7 +18,10 @@
                             </div>
 
                             <div class="col-xl-auto ml-auto">
-                                <b-button class="mr-3" @click="openRecargaModal"
+                                <b-button
+                                    class="mr-3"
+                                    @click="openRecargaModal"
+                                    v-if="can('create transaction')"
                                     >Agregar Recarga</b-button
                                 >
 
@@ -27,51 +34,112 @@
                                     hide-footer
                                     @hide="hideRecargaModal"
                                 >
-                                    <b-form>
-                                        <b-form-group
-                                            label="Numero"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                placeholder="Insertar Numero"
-                                                v-model="newRecarga.dn"
-                                                type="number"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
-
-                                        <b-form-group
-                                            label="Compañia"
-                                            label-size="lg"
-                                        >
-                                            <select-general
-                                                url="/get/companies"
-                                                v-model="newRecarga.company"
-                                            >
-                                            </select-general>
-                                        </b-form-group>
-
-                                        <b-form-group
-                                            v-if="newRecarga.company"
-                                            label="Recarga"
-                                            label-size="lg"
-                                        >
-                                            <select-general
-                                                url="/get/recargas"
-                                                :query="newRecarga.company.id"
-                                                v-model="newRecarga.recarga"
-                                            >
-                                            </select-general>
-                                        </b-form-group>
-                                    </b-form>
-                                    <b-button
-                                        variant="success"
-                                        @click="addRecarga"
-                                        >Agregar</b-button
+                                    <validation-observer
+                                        ref="observer"
+                                        v-slot="{ handleSubmit }"
                                     >
-                                    <b-button @click="hideRecargaModal"
-                                        >Cancelar</b-button
-                                    >
+                                        <b-form
+                                            @submit.prevent="
+                                                handleSubmit(addRecarga)
+                                            "
+                                        >
+                                            <ValidationProvider
+                                                name="numero"
+                                                v-slot="validationContext"
+                                                rules="required|digits:10|numeric"
+                                            >
+                                                <b-form-group
+                                                    label="Numero"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        placeholder="Insertar Numero"
+                                                        v-model="newRecarga.dn"
+                                                        type="number"
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+
+                                            <ValidationProvider
+                                                name="compañia"
+                                                v-slot="validationContext"
+                                                rules="required"
+                                            >
+                                                <b-form-group
+                                                    label="Compañia"
+                                                    label-size="lg"
+                                                >
+                                                    <select-general
+                                                        url="/get/companies"
+                                                        v-model="
+                                                            newRecarga.company
+                                                        "
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    >
+                                                    </select-general>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+
+                                            <ValidationProvider
+                                                name="recarga"
+                                                v-slot="validationContext"
+                                                rules="required"
+                                            >
+                                                <b-form-group
+                                                    v-if="newRecarga.company"
+                                                    label="Recarga"
+                                                    label-size="lg"
+                                                >
+                                                    <select-general
+                                                        url="/get/recargas"
+                                                        :query="
+                                                            newRecarga.company
+                                                                .id
+                                                        "
+                                                        v-model="
+                                                            newRecarga.recarga
+                                                        "
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    >
+                                                    </select-general>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+                                            <b-button
+                                                variant="success"
+                                                type="submit"
+                                                >Agregar</b-button
+                                            >
+                                            <b-button @click="hideRecargaModal"
+                                                >Cancelar</b-button
+                                            >
+                                        </b-form>
+                                    </validation-observer>
                                 </b-modal>
 
                                 <!-- modal de venta -->
@@ -80,114 +148,202 @@
                                     hide-footer
                                     @hide="hideVentaModal"
                                 >
-                                    <b-form>
-                                        <b-form-group
-                                            label="Nombre Cliente"
-                                            label-size="lg"
+                                    <validation-observer
+                                        ref="venta"
+                                        v-slot="{ handleSubmit }"
+                                    >
+                                        <b-form
+                                            @submit.prevent="
+                                                handleSubmit(newVenta)
+                                            "
                                         >
-                                            <b-input
-                                                placeholder="Insertar nombre del cliente"
-                                                v-model="cliente.nombre"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
+                                            <ValidationProvider
+                                                name="nombre cliente"
+                                                v-slot="validationContext"
+                                                rules=""
+                                            >
+                                                <b-form-group
+                                                    label="Nombre Cliente"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        placeholder="Insertar nombre del cliente"
+                                                        v-model="cliente.nombre"
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+                                            <ValidationProvider
+                                                name="curp"
+                                                v-slot="validationContext"
+                                                rules=""
+                                            >
+                                                <b-form-group
+                                                    label="Curp"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        v-model="cliente.curp"
+                                                        placeholder="Insertar Curp del cliente"
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+                                            <ValidationProvider
+                                                name="rfc"
+                                                v-slot="validationContext"
+                                                rules=""
+                                            >
+                                                <b-form-group
+                                                    label="RFC"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        placeholder="Insertar RFC del cliente"
+                                                        v-model="cliente.rfc"
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
 
-                                        <b-form-group
-                                            label="Curp"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                v-model="cliente.curp"
-                                                placeholder="Insertar Curp del cliente"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
-                                        <b-form-group
-                                            label="RFC"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                placeholder="Insertar RFC del cliente"
-                                                v-model="cliente.rfc"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
-                                        <b-form-group
-                                            label="Referencia"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                v-model="cliente.referencia"
-                                                placeholder="Insertar Referencia del cliente"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
-                                        <b-form-group
-                                            label="Email"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                v-model="cliente.email"
-                                                placeholder="Insertar Email del cliente"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
+                                            <ValidationProvider
+                                                name="referencia"
+                                                v-slot="validationContext"
+                                                rules="digits:10"
+                                            >
+                                                <b-form-group
+                                                    label="Referencia"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        v-model="
+                                                            cliente.referencia
+                                                        "
+                                                        placeholder="Insertar Referencia del cliente"
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
 
-                                        <b-form-group
-                                            label="Comentario"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                v-model="comentario"
-                                                placeholder="Comentario venta"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
+                                            <ValidationProvider
+                                                name="email"
+                                                v-slot="validationContext"
+                                                rules="email"
+                                            >
+                                                <b-form-group
+                                                    label="Email"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        v-model="cliente.email"
+                                                        placeholder="Insertar Email del cliente"
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
 
-                                        <b-form-group label="Total">
-                                            <b-input
-                                                type="number"
-                                                placeholder="Pago"
-                                                :value="totalVenta"
-                                                readonly
-                                            ></b-input>
-                                        </b-form-group>
-                                        <b-form-group
-                                            label="Pago:"
-                                            label-size="lg"
-                                            description="Ingresa el pago del cliente para calcular el cambio"
-                                        >
-                                            <b-input
-                                                type="number"
-                                                placeholder="Pago"
-                                                v-model.number="pago"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
+                                            <b-form-group
+                                                label="Comentario"
+                                                label-size="lg"
+                                            >
+                                                <b-input
+                                                    v-model="comentario"
+                                                    placeholder="Comentario venta"
+                                                    autocomplete="off"
+                                                ></b-input>
+                                            </b-form-group>
 
-                                        <b-form-group
-                                            label="Cambio"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                type="number"
-                                                placeholder="Pago"
-                                                :value="pago - totalVenta"
-                                               
-                                                readonly
-                                            ></b-input>
-                                        </b-form-group>
+                                            <b-form-group label="Total">
+                                                <b-input
+                                                    type="number"
+                                                    placeholder="Pago"
+                                                    :value="totalVenta"
+                                                    readonly
+                                                ></b-input>
+                                            </b-form-group>
+                                            <b-form-group
+                                                label="Pago:"
+                                                label-size="lg"
+                                                description="Ingresa el pago del cliente para calcular el cambio"
+                                            >
+                                                <b-input
+                                                    type="number"
+                                                    placeholder="Pago"
+                                                    v-model.number="pago"
+                                                    autocomplete="off"
+                                                ></b-input>
+                                            </b-form-group>
 
-                                        <b-button
-                                            variant="success"
-                                            block
-                                            @click="newVenta"
-                                            >Vender</b-button
-                                        >
-                                        <b-button block @click="hideVentaModal"
-                                            >Cancelar</b-button
-                                        >
-                                    </b-form>
+                                            <b-form-group
+                                                label="Cambio"
+                                                label-size="lg"
+                                            >
+                                                <b-input
+                                                    type="number"
+                                                    placeholder="Pago"
+                                                    :value="pago - totalVenta"
+                                                    readonly
+                                                ></b-input>
+                                            </b-form-group>
+
+                                            <b-button
+                                                variant="success"
+                                                block
+                                                type="submit"
+                                                >Vender</b-button
+                                            >
+                                            <b-button
+                                                block
+                                                @click="hideVentaModal"
+                                                >Cancelar</b-button
+                                            >
+                                        </b-form>
+                                    </validation-observer>
                                 </b-modal>
                                 <!-- modal de venta general -->
                                 <b-modal
@@ -196,55 +352,111 @@
                                     title="Venta general"
                                     @hide="hideGeneralModal"
                                 >
-                                    <b-form>
-                                        <b-form-group
-                                            label="Nombre"
-                                            label-size="lg"
+                                    <validation-observer
+                                        ref="general"
+                                        v-slot="{ handleSubmit }"
+                                    >
+                                        <b-form
+                                            @submit.prevent="
+                                                handleSubmit(addGeneral)
+                                            "
                                         >
-                                            <b-input
-                                                placeholder="Nombre"
-                                                v-model="ventaGeneral.nombre"
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
-                                        <b-form-group
-                                            label="Descripcion"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                placeholder="Descripcion"
-                                                v-model="
-                                                    ventaGeneral.descripcion
-                                                "
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
+                                            <ValidationProvider
+                                                name="nombre"
+                                                v-slot="validationContext"
+                                                rules="required"
+                                            >
+                                                <b-form-group
+                                                    label="Nombre"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        placeholder="Nombre"
+                                                        v-model="
+                                                            ventaGeneral.nombre
+                                                        "
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+                                            <ValidationProvider
+                                                name="Descripcion"
+                                                v-slot="validationContext"
+                                                rules="required"
+                                            >
+                                                <b-form-group
+                                                    label="Descripcion"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        placeholder="Descripcion"
+                                                        v-model="
+                                                            ventaGeneral.descripcion
+                                                        "
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
+                                            <ValidationProvider
+                                                name="precio"
+                                                v-slot="validationContext"
+                                                rules="required|numeric"
+                                            >
+                                                <b-form-group
+                                                    label="Precio"
+                                                    label-size="lg"
+                                                >
+                                                    <b-input
+                                                        placeholder="Precio"
+                                                        type="number"
+                                                        v-model.number="
+                                                            ventaGeneral.precio
+                                                        "
+                                                        autocomplete="off"
+                                                        :state="
+                                                            getValidationState(
+                                                                validationContext
+                                                            )
+                                                        "
+                                                    ></b-input>
+                                                    <b-form-invalid-feedback>{{
+                                                        validationContext
+                                                            .errors[0]
+                                                    }}</b-form-invalid-feedback>
+                                                </b-form-group>
+                                            </ValidationProvider>
 
-                                        <b-form-group
-                                            label="Precio"
-                                            label-size="lg"
-                                        >
-                                            <b-input
-                                                placeholder="Precio"
-                                                type="number"
-                                                v-model.number="
-                                                    ventaGeneral.precio
-                                                "
-                                                autocomplete="off"
-                                            ></b-input>
-                                        </b-form-group>
-                                    </b-form>
-
-                                    <b-form-group>
-                                        <b-button
-                                            variant="success"
-                                            @click="addGeneral"
-                                            >Agregar</b-button
-                                        >
-                                        <b-button @click="hideGeneralModal"
-                                            >Cancelar</b-button
-                                        >
-                                    </b-form-group>
+                                            <b-form-group>
+                                                <b-button
+                                                    variant="success"
+                                                    type="submit"
+                                                    >Agregar</b-button
+                                                >
+                                                <b-button
+                                                    @click="hideGeneralModal"
+                                                    >Cancelar</b-button
+                                                >
+                                            </b-form-group>
+                                        </b-form>
+                                    </validation-observer>
                                 </b-modal>
                             </div>
 
@@ -300,142 +512,260 @@
                                     </h1>
                                 </div>
                             </div>
-                            <b-form>
-                                <h3>Icc: {{ currentIcc.icc }}</h3>
 
-                                <h5>Compañia: {{ currentIcc.company.name }}</h5>
+                            <validation-observer
+                                ref="general"
+                                v-slot="{ handleSubmit }"
+                            >
+                                <b-form
+                                    @submit.prevent="handleSubmit(buildIcc)"
+                                >
+                                    <h3>Icc: {{ currentIcc.icc }}</h3>
 
-                                <h5>Tipo sim: {{ currentIcc.type.name }}</h5>
-
-                                <h5>Estatus: {{ currentIcc.status }}</h5>
-
-                                <div v-if="currentIcc.linea">
                                     <h5>
-                                        Estatus Linea:
-                                        {{ currentIcc.linea.status }}
-                                        {{ currentIcc.linea.reason }}
+                                        Compañia: {{ currentIcc.company.name }}
                                     </h5>
-                                </div>
 
-                                
+                                    <h5>
+                                        Tipo sim: {{ currentIcc.type.name }}
+                                    </h5>
 
-                                <b-form-group
-                                    label="Numero"
-                                    label-size="lg"
-                                    class="mt-3"
-                                >
-                                    <b-input
-                                        type="number"
-                                        v-model="iccData.dn"
-                                        placeholder="Ingresa numero de telefono"
-                                        :disabled="disableLineaInputs"
-                                        autocomplete="off"
-                                    ></b-input>
-                                </b-form-group>
-                                <b-form-group
-                                    label="Producto"
-                                    label-size="lg"
-                                    class="mt-3"
-                                >
-                                    <select-general
-                                        url="/get/icc-products"
-                                        pholder="Seleccionar Producto"
-                                        v-model.number="iccData.iccProduct"
-                                        :disabled="disableLineaInputs"
-                                        v-on:input="productUpdated"
-                                    >
-                                    </select-general>
-                                </b-form-group>
-                                <b-form-group
-                                    label="SubProducto"
-                                    label-size="lg"
-                                    class="mt-3"
-                                    v-if="showSubProductoSelect"
-                                >
-                                    <select-general
-                                        url="/get/icc-subproducts"
-                                        :query="iccData.iccProduct.id"
-                                        :query2="currentIcc.company.id"
-                                        pholder="Seleccionar Subproducto"
-                                        v-model="iccData.iccSubProduct"
-                                        v-on:input="subproductUpdated"
-                                    >
-                                    </select-general>
-                                </b-form-group>
-                                <!-- inputs de linea nueva -->
+                                    <h5>Estatus: {{ currentIcc.status }}</h5>
 
-                                <b-form-group
-                                    label="Recarga"
-                                    label-size="lg"
-                                    class="mt-3"
-                                    v-if="showRecargaInputs"
-                                >
-                                    <select-general
-                                        url="/get/recargas"
-                                        :query="currentIcc.company.id"
-                                        pholder="Seleccionar Recarga"
-                                        v-model="iccData.recarga"
-                                        :disabled="disableRecargaInputs"
+                                    <div v-if="currentIcc.linea">
+                                        <h5>
+                                            Estatus Linea:
+                                            {{ currentIcc.linea.status }}
+                                            {{ currentIcc.linea.reason }}
+                                        </h5>
+                                    </div>
+                                    <ValidationProvider
+                                        name="numero"
+                                        v-slot="validationContext"
+                                        rules="required|digits:10"
                                     >
-                                    </select-general>
-                                </b-form-group>
-                                <a>{{ simPrice }}</a>
-                                <!-- inputs de portabilidad -->
-                                <div
-                                    v-if="
-                                        iccData.iccProduct &&
-                                        iccData.iccProduct.id == 2
-                                    "
-                                >
-                                    <b-form-group
-                                        label="Nip"
-                                        label-size="lg"
-                                        class="mt-3"
+                                        <b-form-group
+                                            label="Numero"
+                                            label-size="lg"
+                                            class="mt-3"
+                                        >
+                                            <b-input
+                                                type="number"
+                                                v-model="iccData.dn"
+                                                placeholder="Ingresa numero de telefono"
+                                                :disabled="disableLineaInputs"
+                                                autocomplete="off"
+                                                :state="
+                                                    getValidationState(
+                                                        validationContext
+                                                    )
+                                                "
+                                            ></b-input>
+                                            <b-form-invalid-feedback>{{
+                                                validationContext.errors[0]
+                                            }}</b-form-invalid-feedback>
+                                        </b-form-group>
+                                    </ValidationProvider>
+
+                                    <ValidationProvider
+                                        name="producto"
+                                        v-slot="validationContext"
+                                        rules="required"
                                     >
-                                        <b-input
-                                            placeholder="Nip"
-                                            type="number"
-                                            v-model="iccData.porta.nip"
-                                            autocomplete="off"
-                                        ></b-input>
+                                        <b-form-group
+                                            label="Producto"
+                                            label-size="lg"
+                                            class="mt-3"
+                                        >
+                                            <select-general
+                                                url="/get/icc-products"
+                                                pholder="Seleccionar Producto"
+                                                v-model.number="
+                                                    iccData.iccProduct
+                                                "
+                                                :disabled="disableLineaInputs"
+                                                v-on:input="productUpdated"
+                                                :state="
+                                                    getValidationState(
+                                                        validationContext
+                                                    )
+                                                "
+                                            >
+                                            </select-general>
+                                            <b-form-invalid-feedback>{{
+                                                validationContext.errors[0]
+                                            }}</b-form-invalid-feedback>
+                                        </b-form-group>
+                                    </ValidationProvider>
+                                    <ValidationProvider
+                                        name="subproducto"
+                                        v-slot="validationContext"
+                                        rules="required"
+                                        v-if="showSubProductoSelect"
+                                    >
+                                        <b-form-group
+                                            label="SubProducto"
+                                            label-size="lg"
+                                            class="mt-3"
+                                        >
+                                            <select-general
+                                                url="/get/icc-subproducts"
+                                                :query="iccData.iccProduct.id"
+                                                :query2="currentIcc.company.id"
+                                                pholder="Seleccionar Subproducto"
+                                                v-model="iccData.iccSubProduct"
+                                                v-on:input="subproductUpdated"
+                                                :state="
+                                                    getValidationState(
+                                                        validationContext
+                                                    )
+                                                "
+                                            >
+                                            </select-general>
+
+                                            <b-form-invalid-feedback>{{
+                                                validationContext.errors[0]
+                                            }}</b-form-invalid-feedback>
+                                        </b-form-group>
+                                    </ValidationProvider>
+                                    <!-- inputs de linea nueva -->
+
+                                    <ValidationProvider
+                                        name="recarga"
+                                        v-slot="validationContext"
+                                        rules="required"
+                                        v-if="showRecargaInputs"
+                                    >
+                                        <b-form-group
+                                            label="Recarga"
+                                            label-size="lg"
+                                            class="mt-3"
+                                        >
+                                            <select-general
+                                                url="/get/recargas"
+                                                :query="currentIcc.company.id"
+                                                pholder="Seleccionar Recarga"
+                                                v-model="iccData.recarga"
+                                                :disabled="disableRecargaInputs"
+                                                :state="
+                                                    getValidationState(
+                                                        validationContext
+                                                    )
+                                                "
+                                            >
+                                            </select-general>
+                                            <b-form-invalid-feedback>{{
+                                                validationContext.errors[0]
+                                            }}</b-form-invalid-feedback>
+                                        </b-form-group>
+                                    </ValidationProvider>
+                                    <a>{{ simPrice }}</a>
+                                    <!-- inputs de portabilidad -->
+                                    <div
+                                        v-if="
+                                            iccData.iccProduct &&
+                                            iccData.iccProduct.id == 2
+                                        "
+                                    >
+                                        <ValidationProvider
+                                            name="nip"
+                                            v-slot="validationContext"
+                                            rules="required|digits:4"
+                                        >
+                                            <b-form-group
+                                                label="Nip"
+                                                label-size="lg"
+                                                class="mt-3"
+                                            >
+                                                <b-input
+                                                    placeholder="Nip"
+                                                    type="number"
+                                                    v-model="iccData.porta.nip"
+                                                    autocomplete="off"
+                                                    :state="
+                                                        getValidationState(
+                                                            validationContext
+                                                        )
+                                                    "
+                                                ></b-input>
+                                                <b-form-invalid-feedback>{{
+                                                    validationContext.errors[0]
+                                                }}</b-form-invalid-feedback>
+                                            </b-form-group>
+                                        </ValidationProvider>
+                                        <ValidationProvider
+                                            name="trafico"
+                                            v-slot="validationContext"
+                                            rules="required"
+                                        >
+                                            <b-form-group
+                                                label="Trafico"
+                                                label-size="lg"
+                                                class="mt-3"
+                                            >
+                                                <b-form-radio-group
+                                                    v-model="
+                                                        iccData.porta.trafico
+                                                    "
+                                                    buttons
+                                                    button-variant="primary"
+                                                    :options="[
+                                                        {
+                                                            text: 'Si',
+                                                            value: true,
+                                                        },
+                                                        {
+                                                            text: 'No',
+                                                            value: false,
+                                                        },
+                                                    ]"
+                                                    :state="
+                                                        getValidationState(
+                                                            validationContext
+                                                        )
+                                                    "
+                                                ></b-form-radio-group>
+                                                <b-form-invalid-feedback>{{
+                                                    validationContext.errors[0]
+                                                }}</b-form-invalid-feedback>
+                                            </b-form-group>
+                                        </ValidationProvider>
+
+                                        <ValidationProvider
+                                            name="fvc"
+                                            v-slot="validationContext"
+                                            rules="required"
+                                        >
+                                            <b-form-group
+                                                label="Fvc"
+                                                label-size="lg"
+                                                class="mt-3"
+                                            >
+                                                <b-form-datepicker
+                                                    :max="fvc.max"
+                                                    :min="fvc.min"
+                                                    placeholder="Fecha ventana de cambio"
+                                                    v-model="iccData.porta.fvc"
+                                                    :state="
+                                                        getValidationState(
+                                                            validationContext
+                                                        )
+                                                    "
+                                                ></b-form-datepicker>
+                                                <b-form-invalid-feedback>{{
+                                                    validationContext.errors[0]
+                                                }}</b-form-invalid-feedback>
+                                            </b-form-group>
+                                        </ValidationProvider>
+                                    </div>
+
+                                    <b-form-group class="mt-3">
+                                        <b-button block type="submit">
+                                            Agregar
+                                        </b-button>
                                     </b-form-group>
-
-                                    <b-form-group
-                                        label="Trafico"
-                                        label-size="lg"
-                                        class="mt-3"
-                                    >
-                                        <b-form-radio-group
-                                            v-model="iccData.porta.trafico"
-                                            buttons
-                                            button-variant="primary"
-                                            :options="[
-                                                { text: 'Si', value: true },
-                                                { text: 'No', value: false },
-                                            ]"
-                                        ></b-form-radio-group>
-                                    </b-form-group>
-
-                                    <b-form-group
-                                        label="Fvc"
-                                        label-size="lg"
-                                        class="mt-3"
-                                    >
-                                        <b-form-datepicker
-                                            :max="fvc.max"
-                                            :min="fvc.min"
-                                            placeholder="Fecha ventana de cambio"
-                                            v-model="iccData.porta.fvc"
-                                        ></b-form-datepicker>
-                                    </b-form-group>
-                                </div>
-
-                                <b-form-group class="mt-3">
-                                    <b-button block @click="buildIcc">
-                                        Agregar
-                                    </b-button>
-                                </b-form-group>
-                            </b-form>
+                                </b-form>
+                            </validation-observer>
                         </div>
                     </div>
                 </div>
@@ -588,8 +918,12 @@ export default {
             this.searchProduct();
         }, 300),
 
-        clearSearchValue(){
+        clearSearchValue() {
             this.searchValue = null;
+        },
+
+        getValidationState({ dirty, validated, valid = null }) {
+            return dirty || validated ? valid : null;
         },
 
         addGeneral() {
@@ -616,12 +950,7 @@ export default {
             this.$root.$emit("bv::show::modal", "recarga-modal");
         },
         newVenta() {
-
             this.isLoading = true;
-
-            
-
-            
 
             const params = {
                 productos: this.productos,
@@ -639,8 +968,7 @@ export default {
 
                     this.currentVenta = response.data;
 
-                    this.$bvModal.show('show-venta');
-
+                    this.$bvModal.show("show-venta");
 
                     this.productos = [];
 
@@ -649,10 +977,6 @@ export default {
                 .catch(function (error) {
                     console.log(error);
                 });
-
-            
-
-            
         },
         addRecarga() {
             const recarga = {
@@ -782,65 +1106,70 @@ export default {
 
             const source = CancelToken.source();
 
-            axios
-                .get(
-                    "/search/venta-exact",
-                    {
-                        params: { search: this.searchValue },
-                    },
-                    {
-                        cancelToken: source.token,
-                    }
-                )
-                .then((response) => {
-
-                    if (response.data.length > 0) {
-                        const item = response.data[0].searchable;
-
-                        switch (response.data[0].type) {
-                            case "imeis":
-                                const imei = {
-                                    id: item.id,
-                                    serie: item.imei,
-                                    status: item.status,
-                                    descripcion: `${item.equipo.marca}  ${item.equipo.modelo}`,
-                                    inventario:
-                                        item.inventario.inventarioable.name,
-                                    precio: item.equipo.precio,
-                                    type: "imeis",
-                                };
-
-                                this.productos.unshift({ ...imei });
-
-                                break;
-                            case "iccs":
-                                this.newIcc(response.data[0].searchable);
-
-                                break;
-
-                            case "recargas":
-                                const recarga = {
-                                    id: item.id,
-                                    precio: item.monto,
-                                    descripcion: item.name,
-                                };
-
-                                this.productos.unshift({ ...recarga });
-
-                                break;
+            if (
+                !this.productos.find((item) => item.serie == this.searchValue)
+            ) {
+                axios
+                    .get(
+                        "/search/venta-exact",
+                        {
+                            params: { search: this.searchValue },
+                        },
+                        {
+                            cancelToken: source.token,
                         }
-                        this.clearSearchValue();
-                    } else {
-                        this.$bvToast.toast("No encontrado", {
-                            title: `${this.searchValue}`,
-                            variant: "warning",
-                            solid: true,
-                        });
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                    )
+                    .then((response) => {
+                        if (response.data.length > 0) {
+                            const item = response.data[0].searchable;
+
+                            switch (response.data[0].type) {
+                                case "imeis":
+                                    const imei = {
+                                        id: item.id,
+                                        serie: item.imei,
+                                        status: item.status,
+                                        descripcion: `${item.equipo.marca}  ${item.equipo.modelo}`,
+                                        inventario:
+                                            item.inventario.inventarioable.name,
+                                        precio: item.equipo.precio,
+                                        type: "imeis",
+                                    };
+
+                                    this.productos.unshift({ ...imei });
+
+                                    break;
+                                case "iccs":
+                                    this.newIcc(response.data[0].searchable);
+
+                                    break;
+
+                                case "recargas":
+                                    const recarga = {
+                                        id: item.id,
+                                        precio: item.monto,
+                                        descripcion: item.name,
+                                    };
+
+                                    this.productos.unshift({ ...recarga });
+
+                                    break;
+                            }
+                            this.clearSearchValue();
+                        } else {
+                            this.$bvToast.toast("No encontrado", {
+                                title: `${this.searchValue}`,
+                                variant: "warning",
+                                solid: true,
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            } else {
+                alert("duplicado");
+            }
         },
         searchProduct() {
             const self = this;

@@ -18,10 +18,10 @@ class Sucursal extends Model
 
     protected $fillable = ["name", "address", "email"];
 
-    public function users()
-    {
-        return $this->belongsToMany('App\User');
-    }
+    // public function users()
+    // {
+    //     return $this->inventario()->users();
+    // }
     public function distribution()
     {
         return $this->belongsTo('App\Distribution');

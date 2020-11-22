@@ -25,25 +25,29 @@ use Illuminate\Support\Facades\Mail;
 
 class VentaController extends Controller
 {
+
+
+    public function __construct()
+    {
+        $this->middleware('role:vendedor', ['only' => ['create', 'store']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {   
-        if($request->ajax()){
+    {
+        if ($request->ajax()) {
 
             $ventas = Venta::all();
 
             return $ventas;
-
-        }else{
+        } else {
 
             return view('venta.index');
-
         }
-       
     }
 
     /**
@@ -100,25 +104,30 @@ class VentaController extends Controller
 
                     case 'recargas':
 
-                        $dn = $producto->dn;
+                        if ($user->can('create transaction')) {
 
-                        $recarga = Recarga::findOrFail($producto->recargaId);
+                            $dn = $producto->dn;
 
-                        $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id);
+                            $recarga = Recarga::findOrFail($producto->recargaId);
 
-                        $transaction = json_decode($newTrasnsaction);
+                            $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id);
 
-                        $montoRecargaVirtual = 0;
+                            $transaction = json_decode($newTrasnsaction);
 
-                        if ($transaction->success == true) {
-                            $montoRecargaVirtual = $recarga->monto;
-                            $total += $recarga->monto;
-                        } else if ($transaction->success == false) {
+                            $montoRecargaVirtual = 0;
+
+                            if ($transaction->success == true) {
+                                $montoRecargaVirtual = $recarga->monto;
+                                $total += $recarga->monto;
+                            } else if ($transaction->success == false) {
+                            }
+
+                            $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
+
+                            $venta->transactions()->attach($currentTransaction, ['price' => $montoRecargaVirtual]);
                         }
 
-                        $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
 
-                        $venta->transactions()->attach($currentTransaction, ['price' => $montoRecargaVirtual]);
 
 
                         break;
@@ -128,15 +137,14 @@ class VentaController extends Controller
                         $statuses = array("Vendido", "Traslado");
 
                         $imei = Imei::findOrFail($producto->id);
- 
+
                         if (!in_array($imei->status, $statuses)) {
 
-                        $imei->setStatus('Vendido');
+                            $imei->setStatus('Vendido');
 
-                        $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio]);
+                            $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio]);
 
-                        $total += $imei->equipo->precio;
-
+                            $total += $imei->equipo->precio;
                         }
 
                         break;
@@ -164,11 +172,11 @@ class VentaController extends Controller
                         $icc = Icc::findOrFail($producto->id);
 
                         $statuses = array("Vendido", "Traslado");
- 
+
                         if (!in_array($icc->status, $statuses)) {
 
 
-                            
+
 
 
                             // en caso de que el chip ya tenga linea asignada 
@@ -348,8 +356,7 @@ class VentaController extends Controller
                                     break;
                             }
                         } //termina el if icc tiene estatus diferente a vendido
-                        else{
-                          
+                        else {
                         }
 
 
@@ -363,30 +370,25 @@ class VentaController extends Controller
 
         $venta->save();
 
-        if($request->cliente){
-            
+        if ($request->cliente) {
+
             $cliente = json_decode(json_encode($request->cliente));
 
             $venta->cliente()->create([
                 'name' => isset($cliente->nombre) ? $cliente->nombre : 'público en general',
-                'email' => isset($cliente->email )? $cliente->email : null,
+                'email' => isset($cliente->email) ? $cliente->email : null,
                 'curp' => isset($cliente->curp) ? $cliente->curp : null,
                 'rfc' => isset($cliente->rfc) ? $cliente->rfc : null,
-                'referencia'=> isset($cliente->referencia) ? $cliente->referencia : null,
+                'referencia' => isset($cliente->referencia) ? $cliente->referencia : null,
             ]);
 
-            if(isset($cliente->email)){
+            if (isset($cliente->email)) {
 
-                Mail::to($cliente->email)->send(new VentaComprobante($venta));
-
+                // Mail::to($cliente->email)->send(new VentaComprobante($venta));
             }
-
         }
 
         return $venta->id;
-        
-        
-
     }
 
     /**
@@ -396,10 +398,10 @@ class VentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Venta $venta)
-    {   
-        
+    {
 
-        
+
+
 
         $response = new VentaResource($venta);
 
@@ -410,7 +412,7 @@ class VentaController extends Controller
         //     'distribution'=>$venta->inventario->distribution->name,
 
         //     'venta'=>$venta,
-            
+
         //     'fecha' => Carbon::parse($venta->created_at)->format('d/m/y h:i:s' ),
 
         //     'vendedor' => $venta->user->name,
@@ -424,7 +426,7 @@ class VentaController extends Controller
         //     'iccs' => $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get(),
 
         //     'transactions' => $venta->transactions()->with('recarga')->get(),
-            
+
         // ];
 
         //    Mail::to('arturo221355@gmail.com')->send(new VentaComprobante($venta));
@@ -432,10 +434,6 @@ class VentaController extends Controller
         // return view('venta.show',$ventaData);
 
         return $response;
-       
-
-      
-
     }
 
     /**

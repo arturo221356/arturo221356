@@ -33,18 +33,27 @@ class InventarioController extends Controller
             if ($user->can('all inventarios')) {
 
                 $inventarios =  Inventario::all();
+
             } elseif ($user->can('distribution inventarios')) {
 
 
 
                 $inventarios =  $userDistribution->inventarios()->get();
+
             } else {
 
                 $inventarios =    $user->inventariosAsignados()->get();
+                
             }
 
+            if($request->param){
+                $response = json_encode(InventarioResource::collection($inventarios->where('inventarioable_type',$request->param)));
+            }else{
+                $response = json_encode(InventarioResource::collection($inventarios));
+            }
+            
 
-            $response = json_encode(InventarioResource::collection($inventarios));
+            
             return $response;
         }
         return view('inventario.index');

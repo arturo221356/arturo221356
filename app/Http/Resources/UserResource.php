@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use Illuminate\Support\Arr;
+
 class UserResource extends JsonResource
 {
     /**
@@ -14,12 +16,34 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $roles = $this->roles->pluck('name');
+
+        $inventariosData = $this->inventariosAsignados()->with('inventarioable')->get();
+
+        $inventariosNames = Arr::pluck($inventariosData, 'inventarioable.name');
+
+        $arrInventariosIds = Arr::pluck($inventariosData, 'id');
+
+        if($arrInventariosIds){
+            if(count($arrInventariosIds) > 1){
+                $inventariosIds = $arrInventariosIds;
+            }else{
+                $inventariosIds  = $arrInventariosIds[0];
+            }
+        }else{
+            $inventariosIds = null;
+        }
+        
+
         return [
             'id'       => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'role' => $this->role,
-            'sucursal' => $this->sucursal,
+            'telefono' => $this->telefono,
+            'permisos' => $this->getDirectPermissions()->pluck('name'),
+            'roles' => $roles,
+            'inventarios' => implode(',  ',$inventariosNames),
+            'inventarios_ids' =>  $inventariosIds
         ];
     }
 }

@@ -111,6 +111,7 @@
                         <validation-observer
                             ref="observer"
                             v-slot="{ handleSubmit }"
+                            v-if="editMode == true"
                         >
                             <b-form @submit.prevent="handleSubmit(updateItem)">
                                 <ValidationProvider

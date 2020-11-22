@@ -22,7 +22,7 @@ class InventarioTableSeeder extends Seeder
             'distribution_id' => 1,
             'inventarioable_id' => 1,
             'inventarioable_type' => 'App\Sucursal',
-        ])->usuariosAsignados()->sync([3, 4, 5]);
+        ])->usuariosAsignados()->sync([ 4, 5,3]);
         Inventario::create([
 
             'distribution_id' => 2,
@@ -34,7 +34,7 @@ class InventarioTableSeeder extends Seeder
             'distribution_id' => 1,
             'inventarioable_id' => 3,
             'inventarioable_type' => 'App\Sucursal',
-        ])->usuariosAsignados()->attach(1);
+        ]);
         Inventario::create([
 
             'distribution_id' => 2,
@@ -46,7 +46,7 @@ class InventarioTableSeeder extends Seeder
             'distribution_id' => 1,
             'inventarioable_id' => 6,
             'inventarioable_type' => 'App\User',
-        ])->usuariosAsignados()->sync([1, 5, 2, 3]);
+        ])->usuariosAsignados()->sync([ 6, 2]);
 
 
         //donvic
@@ -56,7 +56,7 @@ class InventarioTableSeeder extends Seeder
             'inventarioable_id' => 7,
             'inventarioable_type' => 'App\User',
 
-        ])->usuariosAsignados()->sync([1, 2, 3, 7]);
+        ])->usuariosAsignados()->sync([ 3, 7]);
 
 
         //daniel
@@ -66,7 +66,7 @@ class InventarioTableSeeder extends Seeder
             'inventarioable_id' => 8,
             'inventarioable_type' => 'App\User',
 
-        ])->usuariosAsignados()->sync([1, 2, 3, 8]);
+        ])->usuariosAsignados()->sync([ 3, 8]);
 
 
         //ricardo
@@ -76,7 +76,7 @@ class InventarioTableSeeder extends Seeder
             'inventarioable_id' => 9,
             'inventarioable_type' => 'App\User',
 
-        ])->usuariosAsignados()->sync([1, 2, 3, 9]);
+        ])->usuariosAsignados()->sync([ 2, 3, 9]);
 
 
         
@@ -87,12 +87,12 @@ class InventarioTableSeeder extends Seeder
             'inventarioable_id' => 10,
             'inventarioable_type' => 'App\User',
 
-        ])->usuariosAsignados()->sync([1, 2, 3, 10]);
+        ])->usuariosAsignados()->sync([ 2, 3, 10]);
 
-        $inventarios = Inventario::all();
+        // $inventarios = Inventario::all();
 
-        foreach($inventarios as $inventario){
-            $inventario->givePermissionTo('activar chip');
-        }
+        // foreach($inventarios as $inventario){
+        //     $inventario->givePermissionTo('activar chip');
+        // }
     }
 }

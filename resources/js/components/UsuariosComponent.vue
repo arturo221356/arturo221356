@@ -11,7 +11,7 @@
 
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
-                    <b-link @click="newUser">Agregar usuario</b-link>
+                    <b-link @click="newUser" v-if="can('create user')">Agregar usuario</b-link>
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
@@ -47,7 +47,7 @@
                 </template>
 
                 <!--boton de editar -->
-                <template v-slot:cell(editar)="row">
+                <template v-slot:cell(editar)="row" v-if="can('update user')">
                     <b-button @click="editUser(row.item, row.index)">
                         Editar</b-button
                     >
@@ -78,7 +78,6 @@
                                 name="nombre"
                                 v-slot="validationContext"
                                 rules="required|min:4"
-                                autocomplete="off"
                             >
                                 <b-form-group label="Nombre">
                                     <b-form-input
@@ -90,6 +89,7 @@
                                                 validationContext
                                             )
                                         "
+                                        autocomplete="off"
                                     >
                                     </b-form-input>
                                     <b-form-invalid-feedback>{{
@@ -128,13 +128,9 @@
                                 name="contraseña"
                                 v-slot="validationContext"
                                 rules="min:5|required"
-                                autocomplete="off"
-                                 v-if="editMode == false"
+                                v-if="editMode == false"
                             >
-                                <b-form-group
-                                    label="Contraseña"
-                                   
-                                >
+                                <b-form-group label="Contraseña">
                                     <b-form-input
                                         type="text"
                                         v-model="user.password"
@@ -144,6 +140,7 @@
                                                 validationContext
                                             )
                                         "
+                                        autocomplete="off"
                                     >
                                     </b-form-input>
                                     <b-form-invalid-feedback>{{
@@ -152,18 +149,69 @@
                                 </b-form-group>
                             </ValidationProvider>
 
+                            <ValidationProvider
+                                name="telefono"
+                                v-slot="validationContext"
+                                rules="digits:10|required"
+                            >
+                                <b-form-group label="Telefono">
+                                    <b-form-input
+                                        type="text"
+                                        v-model="user.telefono"
+                                        placeholder="Telefono"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                        autocomplete="off"
+                                    >
+                                    </b-form-input>
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
+
+                            <ValidationProvider
+                                name="Rol"
+                                v-slot="validationContext"
+                                rules="required"
+                                autocomplete="off"
+                                v-if="editMode == false"
+                            >
+                                <b-form-group label="Rol">
+                                    <select-general
+                                        url="/get/roles"
+                                        pholder="Seleccionar Rol"
+                                        v-model="user.role"
+                                        :state="
+                                            getValidationState(
+                                                validationContext
+                                            )
+                                        "
+                                    ></select-general>
+
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
 
                             <ValidationProvider
                                 name="sucursal"
                                 v-slot="validationContext"
                                 rules="required"
                                 autocomplete="off"
+                                v-if="sucursalExternoComputed"
                             >
                                 <b-form-group label="Sucursal">
                                     <select-general
-                                        url="/get/sucursales"
+                                        url="/inventario"
+                                        :query="querySucursalSelectComputed"
                                         pholder="Seleccionar Sucursal"
                                         v-model="user.sucursal"
+                                        :multiple="sucursalMultipleComputed"
                                         :state="
                                             getValidationState(
                                                 validationContext
@@ -179,28 +227,24 @@
                             </ValidationProvider>
 
                             <ValidationProvider
-                                name="Rol"
+                                name="permisos"
                                 v-slot="validationContext"
-                                rules="required"
                                 autocomplete="off"
+                                v-if="can('update permissions')"
                             >
-                                <b-form-group label="Rol">
-                                    <select-general
-                                        url="/admin/roles"
-                                        pholder="Seleccionar Rol"
-                                        v-model="user.role"
-                                        :state="
-                                            getValidationState(
-                                                validationContext
-                                            )
-                                        "
-                                    ></select-general>
-
-                                    <b-form-invalid-feedback>{{
-                                        validationContext.errors[0]
-                                    }}</b-form-invalid-feedback>
+                                <b-form-group label="Permisos:" v-if="user.role">
+                                    <b-form-checkbox-group
+                                        v-model="user.permisos"
+                                        :options="permisosOptionsComputed"
+                                        switches
+                                        stacked
+                                    ></b-form-checkbox-group>
                                 </b-form-group>
+                                <b-form-invalid-feedback>{{
+                                    validationContext.errors[0]
+                                }}</b-form-invalid-feedback>
                             </ValidationProvider>
+
                             <b-button size="sm" variant="primary" type="submit">
                                 Guardar
                             </b-button>
@@ -253,6 +297,8 @@ export default {
                 email: "",
                 sucursal: null,
                 password: null,
+                telefono: null,
+                permisos: null,
             },
             fields: [
                 {
@@ -274,14 +320,18 @@ export default {
                     sortDirection: "desc",
                 },
                 {
-                    key: "role.name",
+                    key: "telefono",
+                    label: "Telefono",
+                },
+                {
+                    key: "roles[0]",
                     label: "Rol",
                     sortable: true,
                     sortDirection: "desc",
                 },
                 {
-                    key: "sucursal.name",
-                    label: "Sucursal",
+                    key: "inventarios",
+                    label: "Inventario",
                     sortable: true,
                     sortDirection: "desc",
                 },
@@ -303,9 +353,8 @@ export default {
         loadData() {
             this.isBusy = true;
             axios
-                .get("/admin/users")
+                .get("/users")
                 .then((response) => {
-                    console.log(response.data);
                     this.items = response.data.data;
                     this.countItems = this.items.length;
 
@@ -333,11 +382,12 @@ export default {
             this.infoModal.title = `Row index: ${this.infoModal.content.id}`;
             this.user.name = item.name;
             this.user.email = item.email;
-            this.user.sucursal = item.sucursal;
-            this.user.role = item.role;
+            this.user.telefono = item.telefono;
+            this.user.permisos = item.permisos;
+
+            this.user.role = { name: item.roles[0] };
+            this.user.sucursal = item.inventarios_ids;
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
-            console.log(this.infoModal.content);
-            console.log(item);
         },
         resetInfoModal() {
             this.infoModal.title = "";
@@ -346,15 +396,16 @@ export default {
             this.user.name = "";
             this.user.role = null;
             this.user.email = "";
+            this.user.telefono = null;
             this.user.password = null;
             this.user.sucursal = null;
+            this.user.permisos = null;
             this.modalLoading = false;
         },
         deleteUser(id) {
-            axios.delete(`/admin/users/${id}`).then((res) => {
+            axios.delete(`/users/${id}`).then((res) => {
                 this.$refs["modal"].hide();
                 this.loadData();
-                console.log(res.data);
 
                 this.$bvToast.toast(`${res.data.message}`, {
                     title: res.data.title,
@@ -368,13 +419,27 @@ export default {
         },
         updateUser() {
             const id = this.infoModal.content.id;
+
+            var inventariosIds = [];
+
+            if (this.user.sucursal) {
+                if (Array.isArray(this.user.sucursal)) {
+                    this.user.sucursal.forEach((element) => {
+                        inventariosIds.push(element.id);
+                    });
+                } else {
+                    inventariosIds.push(this.user.sucursal.id);
+                }
+            }
+
             const params = {
-                sucursal_id: this.user.sucursal.id,
+                inventarios: inventariosIds,
                 name: this.user.name,
                 email: this.user.email,
-                role_id: this.user.role.id,
+                telefono: this.user.telefono,
+                permisos: this.user.permisos,
             };
-            axios.put(`/admin/users/${id}`, params).then((res) => {
+            axios.put(`/users/${id}`, params).then((res) => {
                 alert("Editado");
 
                 this.$refs["modal"].hide();
@@ -383,14 +448,26 @@ export default {
             });
         },
         storeUser() {
+            var inventariosIds = [];
+
+            if (this.user.sucursal) {
+                if (Array.isArray(this.user.sucursal)) {
+                    this.user.sucursal.forEach((element) => {
+                        inventariosIds.push(element.id);
+                    });
+                } else {
+                    inventariosIds.push(this.user.sucursal.id);
+                }
+            }
             const params = {
-                sucursal_id: this.user.sucursal.id,
+                inventarios: inventariosIds,
                 name: this.user.name,
                 password: this.user.password,
                 email: this.user.email,
-                role_id: this.user.role.id,
+                role: this.user.role.name,
+                telefono: this.user.telefono,
             };
-            axios.post(`/admin/users/`, params).then((res) => {
+            axios.post(`/users`, params).then((res) => {
                 this.$refs["modal"].hide();
 
                 this.loadData();
@@ -409,11 +486,99 @@ export default {
         newUser() {
             this.editMode = false;
             this.$refs["modal"].show();
-           
         },
     },
     created() {
         this.loadData();
+    },
+    computed: {
+        permisosOptionsComputed: function () {
+            var options = [];
+            if (this.user.role) {
+                switch (this.user.role.name) {
+                    case 'externo':
+                        options = [
+                            { text: "Activar chips por sistema activa chip", value: "activar chip" },
+
+                        ];
+
+                        break;
+                    case 'supervisor':
+                        options = [
+                            
+
+                            { text: "Preactivar lineas masivas", value: "preactivar masivo" },
+
+                            { text: "Asignar recarga sistema activa chip", value: "asignar recarga" },
+
+                            { text: "Crear sucursales", value: "create sucursal" },
+
+                            { text: "Editar usuarios", value: "update user" },
+
+                            { text: "Crear usuarios vendedores", value: "create vendedor" },
+
+                            { text: "Crear usuarios externos", value: "create externo" },
+
+                            { text: "Modificar permisos de usuarios", value: "update permissions" },
+
+                           
+                            
+
+                        ];
+                        break;
+                    case 'vendedor':
+
+                        options = [
+
+                            { text: "Vender recargas", value: "create transaction" },
+
+                            { text: "Preactivar lineas masivas", value: "preactivar masivo" },
+
+                            
+
+                        ];
+                    break;
+                }
+            }
+
+            return options;
+        },
+        sucursalMultipleComputed: function () {
+            if (this.user.role && this.user.role.name == "supervisor") {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        sucursalExternoComputed: function () {
+            if(this.user.role){
+                if(this.user.role.name == 'externo'){
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            }else{
+                return false;
+            }
+
+        },
+        querySucursalSelectComputed: function () {
+            if (this.user.role) {
+                switch (this.user.role.name) {
+                    case "vendedor":
+                        return "App\\Sucursal";
+
+                        break;
+
+                    default:
+                        return null;
+                        break;
+                }
+            } else {
+                return null;
+            }
+        },
     },
 };
 </script>

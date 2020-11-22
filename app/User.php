@@ -29,7 +29,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'sucursal_id',
+        'name', 'email', 'sucursal_id','telefono'
     ];
 
     /**
@@ -50,10 +50,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     
-    public function sucursal()
-    {
-        return $this->belongsTo('App\Sucursal');
-    }
+
+
+
     public function distribution()
     {
 

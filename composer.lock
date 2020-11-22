@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9937837777aabaa00b85d90af1287b3",
+    "content-hash": "7094adaf7b99d4c27000a539b8816e8b",
     "packages": [
         {
             "name": "ahmedsaoud31/laravel-permission-to-vuejs",
@@ -4665,16 +4665,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "6.11.0",
+            "version": "6.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "463282c0091ba65ba9e9b249e7288cb59fb5ec77"
+                "reference": "df14c92ae0c6604ffe88c9880ad78851c42f7b21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/463282c0091ba65ba9e9b249e7288cb59fb5ec77",
-                "reference": "463282c0091ba65ba9e9b249e7288cb59fb5ec77",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/df14c92ae0c6604ffe88c9880ad78851c42f7b21",
+                "reference": "df14c92ae0c6604ffe88c9880ad78851c42f7b21",
                 "shasum": ""
             },
             "require": {
@@ -4711,7 +4711,7 @@
                 "sms",
                 "twilio"
             ],
-            "time": "2020-10-14T19:06:26+00:00"
+            "time": "2020-11-19T00:40:06+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

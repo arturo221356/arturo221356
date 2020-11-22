@@ -196,19 +196,32 @@ class ChipController extends Controller
 
         $inventario = $linea->icc->inventario;
 
-
-        //revisa que el inventario tenga permisos para activar chips desde activa chip
-
-        if (!$inventario->hasPermissionTo('activar chip', 'web')) {
+        if ($inventario->inventarioable_type != 'App\User') {
 
             $message = [
                 'success' => false,
-                'message' => 'No tienes permiso de activar chips portate bien',
+                'message' => 'No tienes permiso de activar chips',
 
             ];
 
             return json_encode($message);
         }
+
+        $user = $inventario->inventarioable;
+
+        //revisa que el inventario tenga permisos para activar chips desde activa chip
+        //cambie de inventario a user
+        if (!$user->hasPermissionTo('activar chip')) {
+
+            $message = [
+                'success' => false,
+                'message' => 'No tienes permiso de activar chips',
+
+            ];
+
+            return json_encode($message);
+        }
+
 
 
 
@@ -348,9 +361,11 @@ class ChipController extends Controller
             $recargable = 'false';
         }
 
-        if ($user->hasPermissionTo('preactivar linea'))
+        if ($user->hasPermissionTo('preactivar linea')){
+            return 'no tienes permiso';
+        }
 
-            $iccs = json_decode($request->data);
+        $iccs = json_decode($request->data);
 
         $errores = [];
 

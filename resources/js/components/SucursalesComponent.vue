@@ -209,7 +209,7 @@ export default {
         loadData() {
             this.isBusy = true;
             axios
-                .get("/get/sucursales")
+                .get("/sucursales")
                 .then((response) => {
                     console.log(response.data);
                     this.items = response.data;
@@ -284,7 +284,7 @@ export default {
                 name: this.sucursal.name,
                 address: this.sucursal.address,
             };
-            axios.post(`/admin/sucursales/`, params).then((res) => {
+            axios.post(`/sucursales`, params).then((res) => {
                 this.$refs["modal"].hide();
 
                 this.loadData();

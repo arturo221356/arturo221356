@@ -56,7 +56,7 @@ Vue.component('radio-producto', require('./components/RadioProductoComponent.vue
 // Vue.component('table-component', require('./components/TableComponent.vue').default);
 // Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
 Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
-// Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
+ Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
 Vue.component('sucursales-component', require('./components/SucursalesComponent.vue').default);
 Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);

@@ -51,10 +51,11 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               
-
+              @role('vendedor')
               <a class="dropdown-item" href="/ventas/create">Nueva Venta</a>
-
               <div class="dropdown-divider"></div>
+              @endrole
+              
               <a class="dropdown-item" href="/ventas">Reporte</a>
 
 
@@ -87,15 +88,25 @@
               Lineas
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-
+              @can('preactivar masivo')
               <a class="dropdown-item" href="/linea/preactivar">Preactivar</a>
 
               <div class="dropdown-divider"></div>
-
+              @endcan
               <a class="dropdown-item" href="/linea/reporte">Reporte</a>
 
             </div>
           </li>
+          @can('create sucursal')
+          <li class="nav-item">
+            <a class="nav-link" href="/sucursales">Sucursales</a>
+          </li>
+          @endcan
+          @can('create user')
+          <li class="nav-item">
+            <a class="nav-link" href="/users">Usuarios</a>
+          </li>
+          @endcan
 
         </ul>
         <ul class="navbar-nav ml-auto">

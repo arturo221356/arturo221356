@@ -10,6 +10,8 @@ class Inventario extends Model
 {
     use HasRoles;
 
+    protected $fillable = ["distribution_id"];
+
     protected $guard_name = 'web';
 
     protected $table = "inventarios";

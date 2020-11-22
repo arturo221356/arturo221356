@@ -31,8 +31,12 @@ class Distribution extends Model
 
     public function users()
     {
-        return $this->hasManyThrough('App\User', 'App\Inventario');
+        return $this->hasMany('App\User');
     }
+    // public function sucursales()
+    // {
+    //     return $this->hasManyThrough('App\Sucursal', 'App\Inventario');
+    // }
     public function imeis()
     {
         return $this->hasManyThrough('App\Imei', 'App\Inventario');

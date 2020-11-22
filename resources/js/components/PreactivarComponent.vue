@@ -68,6 +68,7 @@
                                                     validationContext
                                                 )
                                             "
+                                            autocomplete="off"
                                             @keyup.stop="handleSearch"
                                             placeholder="Agregar Icc"
                                         ></b-form-input>
@@ -242,6 +243,7 @@
                                             )
                                         "
                                         placeholder="Insertar numero"
+                                        autocomplete="off"
                                     ></b-input>
                                     <b-form-invalid-feedback>{{
                                         validationContext.errors[0]
@@ -345,6 +347,7 @@ export default {
         
         searchProduct(){
 
+            self = this;
             if (this.icc >= 5) {
                 axios
                     .get("/search/traspaso-prediction", {

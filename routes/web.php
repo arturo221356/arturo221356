@@ -16,7 +16,14 @@ use Illuminate\Support\Facades\Http;
 
 use Illuminate\Support\Facades\Mail;
 
+use App\Sucursal;
+
+use App\Inventario;
+use App\Linea;
 use App\Mail\VentaComprobante;
+
+use App\User;
+use Spatie\Permission\Models\Permission;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -62,11 +69,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/get/equipos', 'EquiposController@index');
 
-    Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar linea');
+    Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar masivo');
 
     Route::view('/linea/reporte', 'linea.reporte');
 
-    Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar linea');
+    Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar masivo');
 
     Route::post('/icc/restore', 'IccController@restore')->middleware('can:destroy stock');
 
@@ -89,6 +96,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/ventas', 'VentaController');
 
+    Route::resource('/users', 'UsersController')->middleware('can:create user');
+
+    Route::resource('/sucursales', 'SucursalController')->middleware('can:create sucursal');
+
 
   
 
@@ -96,7 +107,11 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    Mail::to('arturo221355@gmail.com')->send(new VentaComprobante);
+
+    $permissions = Permission::all();
+
+
+    return $permissions;
 
 
 });
@@ -125,12 +140,13 @@ Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middl
 
 Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
 
+Route::get('/get/roles', 'RoleController@getRoles')->middleware('auth');
 
 // Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
 
-//     Route::resource('/users', 'UsersController');
+  
 
-//     Route::resource('/sucursales', 'SucursalController');
+//     
 
 //     Route::resource('/productos/recargas', 'RecargasController');
 

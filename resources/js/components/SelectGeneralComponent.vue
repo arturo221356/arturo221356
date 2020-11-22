@@ -71,7 +71,6 @@ export default {
         },
 
         query: {
-            type: Number,
             required: false,
             default: null,
         },
@@ -102,76 +101,65 @@ export default {
                 return name;
             }
         },
+
         loadData() {
             this.isLoading = true;
 
-            
-            // const param = this.query;
-
-            // const param2 = this.query2;
-
-
-
-            // axios.get(`${this.url}?param=${param}&param2=${param2}`).then(
-            //     function (response) {
-            //         this.options = response.data;
-            //         if (this.todas) {
-            //             this.options.unshift({ id: "all", name: "Todos" });
-            //         }
-            //         if (this.value && this.value.hasOwnProperty("id")) {
-            //             this.selected = this.value;
-            //         } else {
-            //             this.selected = this.options.find(
-            //                 (option) => option.id == this.value
-            //             );
-            //             this.emitToParent();
-            //         }
-
-            //         this.isLoading = false;
-            //     }.bind(this)
-            // );
-
-            
-            axios.get(`${this.url}`,{
-
-                params: {
+            axios
+                .get(`${this.url}`, {
+                    params: {
                         param: this.query,
 
                         param2: this.query2,
                     },
-            }
-            
-            ).then(
-                function (response) {
-                    this.options = response.data;
-                    if (this.todas) {
-                        this.options.unshift({ id: "all", name: "Todos" });
-                    }
-                    if (this.value && this.value.hasOwnProperty("id")) {
-                        this.selected = this.value;
-                    } else {
-                        this.selected = this.options.find(
-                            (option) => option.id == this.value
-                        );
-                        this.emitToParent();
-                    }
+                })
+                .then(
+                    function (response) {
+                        this.options = response.data;
 
-                    this.isLoading = false;
-                }.bind(this)
-            );
+                        if (this.todas) {
+                            this.options.unshift({ id: "all", name: "Todos" });
+                        }
 
+                        if (this.value) {
+                            if (Array.isArray(this.value)) {
+                                var selectedArray = [];
 
+                                this.value.forEach((element) => {
+                                    var opcion = this.options.find(
+                                        (option) => option.id == element
+                                    );
+
+                                    selectedArray.push(opcion);
+                                });
+
+                                this.selected = selectedArray;
+                            } else if (this.value.hasOwnProperty("id")) {
+                                this.selected = this.value;
+                                
+                            } else {
+                                this.selected = this.options.find(
+                                    (option) => option.id == this.value
+                                );
+                            }
+                            
+                        }
+
+                        this.isLoading = false;
+                    }.bind(this)
+                );
         },
     },
 
     created: function () {
         this.loadData();
-
-        
     },
     watch: {
         url: function () {
             this.loadData();
+        },
+        selected: function(){
+             this.emitToParent();
         },
 
         query: function () {
@@ -179,14 +167,11 @@ export default {
             this.selected = null;
             this.emitToParent();
         },
-        value: function () {
-            if (this.value && this.value.hasOwnProperty("id")) {
-                this.selected = this.value;
-            } else {
-                this.selected = this.options.find(
-                    (option) => option.id == this.value
-                );
-                this.emitToParent();
+        value: function (newVal, oldVal) {
+            if (newVal != oldVal) {
+                if (!newVal) {
+                    this.selected = null;
+                }
             }
         },
     },
