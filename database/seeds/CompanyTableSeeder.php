@@ -15,8 +15,8 @@ class CompanyTableSeeder extends Seeder
      */
     public function run()
     {
-        Company::create(['name'=>'Telcel']);
-        Company::create(['name'=>'Movistar']);
+        Company::create(['name'=>'Telcel','code'=>188]);
+        Company::create(['name'=>'Movistar','code'=>118]);
         Company::create(['name'=>'AT&T']);
 
     }

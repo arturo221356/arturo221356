@@ -32,19 +32,19 @@ class DatabaseSeeder extends Seeder
         $this->call(InventarioTableSeeder::class);
 
         
-         Equipo::factory()->count(10)->create();
+        //  Equipo::factory()->count(10)->create();
 
-         $iccs = Icc::factory()->times(100)->create();
+        //  $iccs = Icc::factory()->times(100)->create();
 
-         foreach($iccs as $icc){
-             $icc->setStatus('Disponible');
-         }
+        //  foreach($iccs as $icc){
+        //      $icc->setStatus('Disponible');
+        //  }
 
-        $imeis = Imei::factory()->times(100)->create();
+        // $imeis = Imei::factory()->times(100)->create();
 
-        foreach($imeis as $imei){
-            $imei->setStatus('Disponible');
-        }
+        // foreach($imeis as $imei){
+        //     $imei->setStatus('Disponible');
+        // }
 
     }
 }

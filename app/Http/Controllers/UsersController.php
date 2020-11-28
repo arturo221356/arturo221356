@@ -107,7 +107,7 @@ class UsersController extends Controller
         $notPermmitedRoles = ['administrador', 'super-admin'];
 
         // si el usuario NO tiene permisos para crear supervisores agregra supervisores a roles no permitidos
-        if (!$loggedUser->hasPermissionTo('create supervisor')) {
+        if (!$loggedUser->hasPermissionTo('create supervisor')) {
             array_push($notPermmitedRoles, 'supervisor');
         }
 

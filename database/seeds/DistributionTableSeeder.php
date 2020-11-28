@@ -18,12 +18,18 @@ class DistributionTableSeeder extends Seeder
     {
         // Distribution::truncate();
         Distribution::create([
-            'name' => 'promoviles 1',
+            'name' => 'AlarmMovil',
             'taecel_key' => 'c490127ff864a719bd89877f32a574de',
             'taecel_nip' => '0c4ae19986107edd5ebcec3c6e08a0d0'
         ]);
         Distribution::create([
-            'name' => 'promoviles 2',
+            'name' => 'Promoviles',
+            'taecel_key' => 'c490127ff864a719bd89877f32a574de',
+            'taecel_nip' => '0c4ae19986107edd5ebcec3c6e08a0d0'
+
+        ]);
+        Distribution::create([
+            'name' => 'Pruebas',
             'taecel_key' => 'c490127ff864a719bd89877f32a574de',
             'taecel_nip' => '0c4ae19986107edd5ebcec3c6e08a0d0'
 

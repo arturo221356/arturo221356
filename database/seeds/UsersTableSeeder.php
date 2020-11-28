@@ -36,103 +36,65 @@ class UsersTableSeeder extends Seeder
 
     // 2
     $admin = User::create([
-      'name' => 'Admin User',
-      'email' => 'admin@promoviles.com',
+      'name' => 'Arturo Alvarez',
+      'email' => 'arturo221355@gmail.com',
       'password' => Hash::make('password'),
       'distribution_id' => 1,
 
     ]);
     $admin->assignRole('administrador');
 
-    // 3
-    $supervisor = User::create([
-      'name' => 'supervisor User',
-      'email' => 'supervisor@promoviles.com',
+
+    $admin = User::create([
+      'name' => 'Arturo Alvarez',
+      'email' => 'Arturo_alvareze@hotmail.com',
       'password' => Hash::make('password'),
-      'distribution_id' => 1,
+      'distribution_id' => 2,
 
     ]);
-    $supervisor->assignRole('supervisor');
-
-
-    // 4
-    $vendedor = User::create([
-      'name' => 'Vendedor User',
-      'email' => 'vendedor@promoviles.com',
+    $admin->assignRole('administrador');
+    
+    $admin = User::create([
+      'name' => 'Admin de prueba',
+      'email' => 'admin@promoviles.com',
       'password' => Hash::make('password'),
-      'distribution_id' => 1,
+      'distribution_id' => 3,
 
     ]);
-    $vendedor->assignRole('vendedor');
+    $admin->assignRole('administrador');
 
 
-    // 5
-    $vendedor2 = User::create([
-      'name' => 'Vendedor 2 User',
-      'email' => 'vendedor2@promoviles.com',
-      'password' => Hash::make('password'),
-      'distribution_id' => 1,
+    // // 3
+    // $supervisor = User::create([
+    //   'name' => 'supervisor de prueba',
+    //   'email' => 'supervisor@promoviles.com',
+    //   'password' => Hash::make('password'),
+    //   'distribution_id' => 3,
 
-    ]);
-    $vendedor2->assignRole('vendedor');
+    // ]);
+    // $supervisor->assignRole('supervisor');
 
-    // 6
-    $externo = User::create([
-      'name' => 'externo User',
-      'email' => 'externo@promoviles.com',
-      'password' => Hash::make('password'),
-      'distribution_id' => 1,
-      'inventario_propio' => true,
 
-    ]);
-    $externo->assignRole('externo');
+    // // 4
+    // $vendedor = User::create([
+    //   'name' => 'Vendedor de prueba',
+    //   'email' => 'vendedor@promoviles.com',
+    //   'password' => Hash::make('password'),
+    //   'distribution_id' => 3,
 
-    // 7
-    $donVic = User::create([
-      'name' => 'Don victor',
-      'email' => 'donvic@promoviles.com',
-      'password' => Hash::make('secreta123'),
-      'distribution_id' => 1,
-      'inventario_propio' => true,
+    // ]);
+    // $vendedor->assignRole('vendedor');
 
-    ]);
+    // // 6
+    // $externo = User::create([
+    //   'name' => 'externo de prueba',
+    //   'email' => 'externo@promoviles.com',
+    //   'password' => Hash::make('password'),
+    //   'distribution_id' => 3,
+    //   'inventario_propio' => true,
 
-    $donVic->assignRole('externo');
+    // ]);
+    // $externo->assignRole('externo');
 
-    // 8
-    $daniel = User::create([
-      'name' => 'Daniel',
-      'email' => 'daniel@promoviles.com',
-      'password' => Hash::make('secreta123'),
-      'distribution_id' => 1,
-      'inventario_propio' => true,
-
-    ]);
-
-    $daniel->assignRole('externo');
-
-    // 9
-    $ricardo = User::create([
-      'name' => 'Ricardo',
-      'email' => 'ricardo@promoviles.com',
-      'password' => Hash::make('secreta123'),
-      'distribution_id' => 1,
-      'inventario_propio' => true,
-
-    ]);
-
-    $ricardo->assignRole('externo');
-
-    // 10
-    $ana = User::create([
-      'name' => 'Ana',
-      'email' => 'ana@promoviles.com',
-      'password' => Hash::make('secreta123'),
-      'distribution_id' => 1,
-      'inventario_propio' => true,
-
-    ]);
-
-    $ana->assignRole('externo');
   }
 }
