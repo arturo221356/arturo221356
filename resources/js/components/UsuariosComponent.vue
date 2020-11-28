@@ -519,7 +519,13 @@ export default {
 
                             { text: "Crear usuarios externos", value: "create externo" },
 
-                            { text: "Modificar permisos de usuarios", value: "update permissions" },
+                            { text: "Modificar permisos de usuarios", value: "store stock" },
+
+                             { text: "Cargar nuevo inventario", value: "traspasar stock" },
+
+                            { text: "Traspasar Inventario", value: "traspasar stock" },
+
+                            { text: "Cancelar Traspaso", value: "cancelar traspaso" },
 
                            
                             

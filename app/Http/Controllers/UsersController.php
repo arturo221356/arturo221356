@@ -127,7 +127,8 @@ class UsersController extends Controller
         $user->save();
 
         if ($loggedUser->hasPermissionTo('update permissions')) {
-            $loggedUser->syncPermissions($request->permisos);
+            $user->syncPermissions($request->permisos);
+           
         }
 
 
@@ -203,7 +204,9 @@ class UsersController extends Controller
 
         $user->save();
 
+        if ($loggedUser->hasPermissionTo('update permissions')) {
         $user->syncPermissions($request->permisos);
+        }
 
         if ($user->getRoleNames()->first() != 'externo') {
 
