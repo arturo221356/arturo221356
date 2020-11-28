@@ -33,7 +33,12 @@ use Illuminate\Http\Request;
 
 
 
-Auth::routes(['register' => false, 'reset' => false, 'password.reset' => false]);
+Auth::routes([
+    'register' => false,
+    //  'reset' => false, 
+    //  'password.reset' => false
+     ]
+    );
 
 // Route::view('/home','home')->name('home')->middleware('auth');
 
@@ -100,7 +105,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/sucursales', 'SucursalController')->middleware('can:create sucursal');
 
-    Route::resource('/recargas', 'RecargasController');
+    Route::resource('/recargas', 'Admin\RecargasController');
 
     Route::resource('/equipos', 'EquiposController');
 
