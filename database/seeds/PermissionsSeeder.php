@@ -101,7 +101,8 @@ class PermissionsSeeder extends Seeder
             'create user',
             'update user',
             'create sucursal',
-            'preactivar masivo'
+            'preactivar masivo',
+            
         );
 
 
