@@ -21,6 +21,10 @@ class Transaction extends Model
     {
         return $this->belongsTo('App\Company');
     }
+    public function inventario()
+    {
+        return $this->belongsTo('App\Inventario');
+    }
 
 
     public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId)

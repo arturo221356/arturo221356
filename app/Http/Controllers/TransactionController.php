@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Transaction;
 use Illuminate\Http\Request;
+use App\Http\Resources\TransactionResource;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -12,9 +14,43 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if($request->ajax()){
+
+            $user = Auth::user();
+
+            $userDistribution = $user->distribution;
+
+
+            if ($user->can('distribution inventarios')) {
+
+                $transactions =  $userDistribution->transactions()->whereBetween('updated_at',[$request->initial_date,$request->final_date])->orderBy('updated_at', 'asc')->get();
+            }else{
+
+
+                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+
+                $transactions = Transaction::whereIn('inventario_id', $inventariosIds)->whereBetween('updated_at',[$request->initial_date,$request->final_date])->orderBy('updated_at', 'asc')->get();
+            }
+
+                if($request->inventario_id == "all"){
+                    $response = TransactionResource::collection($transactions);
+                }else{
+                    $response = TransactionResource::collection($transactions->where('inventario_id',$request->inventario_id));
+                }   
+
+                
+           
+
+            return $response;
+        }else{
+            return view('transaction.index');
+        }
+
+        // $transactions = Transaction::all();
+
+        // return $transactions;
     }
 
     /**

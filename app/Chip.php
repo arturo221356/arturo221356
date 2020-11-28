@@ -46,7 +46,7 @@ class Chip extends Model
             //             $query->where('distribution_id', $user->distribution->id);
             //         });
             // }])
-            ->get();
+            ->orderBy('activated_at','asc')->get();
 
         return $chips;
     }
@@ -75,6 +75,7 @@ class Chip extends Model
             //             $query->whereIn('inventario_id',$inventariosIds);
             //         });
             // }])
+            ->orderBy('activated_at','asc')
             ->get();
 
         return $chips;
@@ -96,6 +97,7 @@ class Chip extends Model
             $query->where('inventario_id',$inventario_id);
             
         })
+        ->orderBy('activated_at','asc')
 
             ->get();
 

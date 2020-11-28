@@ -23,6 +23,7 @@ use App\Mail\VentaComprobante;
 use Illuminate\Support\Facades\Mail;
 
 
+
 class VentaController extends Controller
 {
 
@@ -43,7 +44,8 @@ class VentaController extends Controller
 
             $ventas = Venta::all();
 
-            return $ventas;
+            return VentaResource::collection($ventas);
+            
         } else {
 
             return view('venta.index');

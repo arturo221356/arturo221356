@@ -160,7 +160,7 @@
                                             <ValidationProvider
                                                 name="nombre cliente"
                                                 v-slot="validationContext"
-                                                rules=""
+                                                :rules="nombreClienteRequired"
                                             >
                                                 <b-form-group
                                                     label="Nombre Cliente"
@@ -236,7 +236,7 @@
                                             <ValidationProvider
                                                 name="referencia"
                                                 v-slot="validationContext"
-                                                rules="digits:10"
+                                                :rules="`digits:10|${nombreClienteRequired}`"
                                             >
                                                 <b-form-group
                                                     label="Referencia"
@@ -264,7 +264,7 @@
                                             <ValidationProvider
                                                 name="email"
                                                 v-slot="validationContext"
-                                                rules="email"
+                                                :rules="`email|${nombreClienteRequired}`"
                                             >
                                                 <b-form-group
                                                     label="Email"
@@ -1195,6 +1195,15 @@ export default {
     },
     watch: {},
     computed: {
+        nombreClienteRequired(){
+            // const products = ['iccs','imeis'];
+            // if(this.productos.find(element => products.includes(element.type))){
+            //     return 'required';
+            // }else{
+            //     return '';
+            // }
+            return '';
+        },
         showSubProductoSelect: function () {
             if (this.iccData.iccProduct) {
                 return true;

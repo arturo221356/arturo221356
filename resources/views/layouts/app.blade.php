@@ -97,6 +97,36 @@
 
             </div>
           </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Equipos
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              
+              <a class="dropdown-item" href="/equipos">Lista</a>
+
+              <div class="dropdown-divider"></div>
+             
+              <a class="dropdown-item disabled" href="/linea/reporte">Reporte</a>
+
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Recargas
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              
+              <a class="dropdown-item disabled" href="/equipos">Lista</a>
+
+              <div class="dropdown-divider"></div>
+             
+              <a class="dropdown-item " href="/transaction">Reporte</a>
+
+            </div>
+          </li>
           @can('create sucursal')
           <li class="nav-item">
             <a class="nav-link" href="/sucursales">Sucursales</a>

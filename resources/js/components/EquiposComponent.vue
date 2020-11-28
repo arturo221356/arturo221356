@@ -278,23 +278,23 @@ export default {
             
         },
 
-        deleteEquipo(id) {
-            axios.delete(`/admin/productos/equipos/${id}`).then((res) => {
-                this.$refs["modal"].hide();
-                this.loadData();
+        // deleteEquipo(id) {
+        //     axios.delete(`/admin/productos/equipos/${id}`).then((res) => {
+        //         this.$refs["modal"].hide();
+        //         this.loadData();
                 
-                console.log(res.data);
+        //         console.log(res.data);
 
-                this.$bvToast.toast(`${res.data.message}`, {
-                    title: res.data.title,
-                    autoHideDelay: 5000,
-                    appendToast: true,
-                    solid: true,
-                    variant: res.data.variant,
-                    toaster: "b-toaster-bottom-full",
-                });
-            });
-        },
+        //         this.$bvToast.toast(`${res.data.message}`, {
+        //             title: res.data.title,
+        //             autoHideDelay: 5000,
+        //             appendToast: true,
+        //             solid: true,
+        //             variant: res.data.variant,
+        //             toaster: "b-toaster-bottom-full",
+        //         });
+        //     });
+        // },
         updateEquipo() {
             const id = this.infoModal.content.id;
             const params = {
@@ -303,7 +303,7 @@ export default {
                 precio: this.equipo.precio,
                 costo: this.equipo.costo,
             };
-            axios.put(`/admin/productos/equipos/${id}`, params).then((res) => {
+            axios.put(`/equipos/${id}`, params).then((res) => {
                 alert("Editado");
 
                 this.$refs["modal"].hide();
@@ -320,7 +320,7 @@ export default {
                 precio: this.equipo.precio,
                 costo: this.equipo.costo,
             };
-            axios.post(`/admin/productos/equipos/`, params).then((res) => {
+            axios.post(`/equipos`, params).then((res) => {
                 
                 this.$refs["modal"].hide();
 

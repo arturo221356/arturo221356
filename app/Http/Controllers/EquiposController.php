@@ -41,7 +41,7 @@ class EquiposController extends Controller
      */
     public function create()
     {
-        return view('admin.productos.equipos.create');
+        // return view('admin.productos.equipos.create');
     }
 
     /**

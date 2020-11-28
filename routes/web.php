@@ -100,18 +100,77 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/sucursales', 'SucursalController')->middleware('can:create sucursal');
 
+    Route::resource('/recargas', 'RecargasController');
 
+    Route::resource('/equipos', 'EquiposController');
+
+    Route::resource('/transaction', 'TransactionController');
   
 
 });
 
 Route::get('/pruebas', function (Request $request) {
 
+    $dns= [
+        3327581876,
+        3327628630,
+        3324415433,
+        3327636679,
+        3316848943,
+        3320777868,
+        3327591515,
+        3324118766,
+        3314944689,
+        3324366404,
+        3327603115,
+        3327570366,
+        3327517416,
+        3321180128,
+        3314209760,
+        3311003743,
+        3327543742,
+        3316379959,
+        3320854148,
+        3327593809,
+        3327617097,
+        3323943788,
+        3327620365,
+        3327598269,
+        3316297424,
+        3327597428,
+        3327592429,
+        3320868719,
+        3312122993,
+        3327623074,
+        3316348321,
+        3327632836,
+        3324377443,
+        3324364635,
+        3327594334,
+        3322974257,
+        3322951300,
+        3310512007
+        
+    ];
 
-    $permissions = Permission::all();
+    // $response = [];
+    foreach ($dns as $dn){
+
+        $linea = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+            'id' => mt_rand(100000, 999999),
+            'method' => "getOperatorByMsisdn",
+            'params' => [$dn]
+    
+        ]);
+
+      echo "$linea <br>";
+    }
+        
+    
 
 
-    return $permissions;
+
+     
 
 
 });
@@ -148,9 +207,7 @@ Route::get('/get/roles', 'RoleController@getRoles')->middleware('auth');
 
 //     
 
-//     Route::resource('/productos/recargas', 'RecargasController');
 
-//     Route::resource('/productos/equipos', 'EquiposController');
 
 //     Route::resource('/productos/sims', 'IccProductController');
 

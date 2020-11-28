@@ -25,6 +25,7 @@ class VentaResource extends JsonResource
             'cliente' => $this->cliente->name,
             'productosGenerales' =>$this->generalProducts,
             'total' => $this->total,
+            'comment' => $this->comment ? $this->comment->comment : '',
             'imeis'  => $this->imeis()->with('equipo')->get(),
             'iccs' => $this->iccs()->with('linea', 'company', 'linea.product', 'linea.subProduct')->get(),
             'transactions' => $this->transactions()->with('recarga','company')->get(),
