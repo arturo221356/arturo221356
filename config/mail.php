@@ -56,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'notificaciones@ventachip.com'),
-        'name' => env('MAIL_FROM_NAME', 'Promoviles'),
+        'address' => 'notificaciones@ventachip.com',
+        'name' => 'Promoviles',
     ],
 
     /*
