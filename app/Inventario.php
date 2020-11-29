@@ -18,7 +18,7 @@ class Inventario extends Model
 
     public function inventarioable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
     public function imeis()
     {

@@ -62,6 +62,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                     <div class="mt-4">
                         <b-table
                         :items="tableItems"
@@ -70,7 +71,7 @@
                         hover
                         responsive
                         striped
-                        stacked="sm"
+                        stacked="xl"
                         head-variant="dark"
                         
                         :busy="tableBusy"
@@ -78,7 +79,7 @@
                     >
                         </b-table>
                     </div>
-                </div>
+                
             </div>
         </b-overlay>
     </div>

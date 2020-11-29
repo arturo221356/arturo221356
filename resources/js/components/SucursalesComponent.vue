@@ -32,6 +32,7 @@
                 :fields="fields"
                 :busy="isBusy"
                 :filter="filter"
+                stacked="sm"
             >
                 <!--busy template-->
                 <template v-slot:table-busy>
