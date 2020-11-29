@@ -1254,11 +1254,11 @@ export default {
         },
 
         totalVenta: function () {
-            var total = 0;
+            let total =  0;
 
             this.productos.forEach((element) => {
 
-                total += parseInt(element.precio,10);
+                total += Number(element.precio);
             });
 
             return total;

@@ -466,6 +466,7 @@ export default {
                 email: this.user.email,
                 role: this.user.role.name,
                 telefono: this.user.telefono,
+                permisos: this.user.permisos,
             };
             axios.post(`/users`, params).then((res) => {
                 this.$refs["modal"].hide();

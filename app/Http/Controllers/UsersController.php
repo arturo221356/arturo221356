@@ -128,7 +128,6 @@ class UsersController extends Controller
 
         if ($loggedUser->hasPermissionTo('update permissions')) {
             $user->syncPermissions($request->permisos);
-           
         }
 
 
@@ -190,7 +189,7 @@ class UsersController extends Controller
 
         $loggedUser = Auth::user();
 
-        if(!$loggedUser->hasPermissionTo('update user')){
+        if (!$loggedUser->hasPermissionTo('update user')) {
             return 'error no tienes permiso';
         }
 
@@ -205,7 +204,7 @@ class UsersController extends Controller
         $user->save();
 
         if ($loggedUser->hasPermissionTo('update permissions')) {
-        $user->syncPermissions($request->permisos);
+            $user->syncPermissions($request->permisos);
         }
 
         if ($user->getRoleNames()->first() != 'externo') {
