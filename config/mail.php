@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'direccion@pro-moviles.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'notificaciones@ventachip.com'),
         'name' => env('MAIL_FROM_NAME', 'Promoviles'),
     ],
 
@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME','direccion@pro-moviles.com'),
+    'username' => env('MAIL_USERNAME'),
 
-    'password' => env('MAIL_PASSWORD','Aa221356'),
+    'password' => env('MAIL_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
