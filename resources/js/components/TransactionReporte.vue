@@ -230,7 +230,7 @@ export default {
                 let sum = filteredItems
                 .map((o) => Number(o.monto))
                 .reduce((a, c) => {
-                    return a + c;
+                    return Number(a) + Number(c);
                 });
 
             this.totalRecargas = sum;

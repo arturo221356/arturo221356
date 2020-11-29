@@ -363,7 +363,7 @@ export default {
                             let sum = response.data.data
                                 .map((o) => Number(o.total))
                                 .reduce((a, c) => {
-                                    return a + c;
+                                    return Number(a) + Number(c);
                                 });
 
                             this.totalVentas = sum;
