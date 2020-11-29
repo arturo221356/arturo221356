@@ -285,7 +285,7 @@ export default {
 
             isLoading: false,
 
-            initialDate: null,
+            initialDate: new Date().toISOString().substr(0, 10),
 
             finalDate: new Date().toISOString().substr(0, 10),
 
@@ -339,20 +339,20 @@ export default {
                 this.totalVentas = 0;
             }
         },
-        getMonthFirst() {
-            var today = new Date();
 
-            this.initialDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                1
-            );
-        },
 
         getVentas() {
             this.tableBusy = true;
             axios
-                .get(`/ventas`, {})
+                .get(`/ventas`, {
+                    params:{
+                        initial_date: this.initialDate,
+                       
+                        final_date: this.finalDate,
+                        
+                        inventario_id: this.inventario.id,
+                    }
+                })
                 .then(
                     function (response) {
                         this.tableItems = response.data.data;
@@ -377,9 +377,7 @@ export default {
                 });
         },
     },
-    created() {
-        this.getMonthFirst();
-    },
+
 };
 </script>
 

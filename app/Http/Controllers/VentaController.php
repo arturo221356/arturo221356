@@ -42,10 +42,50 @@ class VentaController extends Controller
     {
         if ($request->ajax()) {
 
-            $ventas = Venta::all();
+            // $ventas = Venta::all();
 
-            return VentaResource::collection($ventas);
-            
+            // return VentaResource::collection($ventas);
+
+            $user = Auth::user();
+
+            $userDistribution = $user->distribution;
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+
+
+            if ($user->can('distribution inventarios')) {
+
+                if ($request->inventario_id == "all") {
+
+                    $ventas = Venta::DistributionVentas($initialDate, $finalDate);
+                } else {
+
+                    $ventas =  Venta::VentaInInventario($initialDate, $finalDate, $request->inventario_id);
+                }
+            } else {
+
+
+                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+
+                if ($request->inventario_id == "all") {
+                    $ventas = Venta::whereIn('inventario_id', $inventariosIds)->whereBetween('created_at', [$initialDate, $finalDate])->orderBy('created_at', 'asc')->get();
+                } else {
+                    $ventas = Venta::whereBetween('created_at', [$initialDate, $finalDate])->whereIn('inventario_id', $inventariosIds)->where('inventario_id', $request->inventario_id)->orderBy('created_at', 'asc')->get();
+                }
+            }
+
+            // if($request->inventario_id == "all"){
+            //    
+            // }else{
+            //     $response = VentaResource::collection($ventas->where('inventario_id',$request->inventario_id));
+            // }   
+
+
+            $response = VentaResource::collection($ventas);
+
+            return $response;
         } else {
 
             return view('venta.index');
@@ -372,23 +412,23 @@ class VentaController extends Controller
 
         $venta->save();
 
-        
 
-            $cliente = json_decode(json_encode($request->cliente));
 
-            $venta->cliente()->create([
-                'name' => isset($cliente->nombre) ? $cliente->nombre : 'público en general',
-                'email' => isset($cliente->email) ? $cliente->email : null,
-                'curp' => isset($cliente->curp) ? $cliente->curp : null,
-                'rfc' => isset($cliente->rfc) ? $cliente->rfc : null,
-                'referencia' => isset($cliente->referencia) ? $cliente->referencia : null,
-            ]);
+        $cliente = json_decode(json_encode($request->cliente));
 
-            if (isset($cliente->email)) {
+        $venta->cliente()->create([
+            'name' => isset($cliente->nombre) ? $cliente->nombre : 'público en general',
+            'email' => isset($cliente->email) ? $cliente->email : null,
+            'curp' => isset($cliente->curp) ? $cliente->curp : null,
+            'rfc' => isset($cliente->rfc) ? $cliente->rfc : null,
+            'referencia' => isset($cliente->referencia) ? $cliente->referencia : null,
+        ]);
 
-                // Mail::to($cliente->email)->send(new VentaComprobante($venta));
-            }
-        
+        if (isset($cliente->email)) {
+
+            // Mail::to($cliente->email)->send(new VentaComprobante($venta));
+        }
+
 
         return $venta->id;
     }

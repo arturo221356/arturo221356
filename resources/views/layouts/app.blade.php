@@ -103,7 +103,7 @@
               Equipos
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              @can('full update stock')
+              @can('create equipo')
               <a class="dropdown-item" href="/equipos">Lista</a>
 
               <div class="dropdown-divider"></div>

@@ -41,6 +41,7 @@ class PermissionsSeeder extends Seeder
 
         Permission::create(['name' => 'update permissions']);
         
+        Permission::create(['name' => 'create equipo']);
 
         Permission::create(['name' => 'aceptar traspaso']);
 
@@ -57,6 +58,8 @@ class PermissionsSeeder extends Seeder
         Permission::create(['name' => 'create user']);
 
         Permission::create(['name' => 'update user']);
+
+        Permission::create(['name' => 'delete user']);
 
         Permission::create(['name' => 'create supervisor']);
 
@@ -102,6 +105,8 @@ class PermissionsSeeder extends Seeder
             'update user',
             'create sucursal',
             'preactivar masivo',
+            'delete user',
+            'create equipo'
             
         );
 

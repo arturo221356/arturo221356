@@ -49,6 +49,10 @@ class Distribution extends Model
     {
         return $this->hasManyThrough('App\Transaction', 'App\Inventario');
     }
+    public function ventas()
+    {
+        return $this->hasManyThrough('App\Venta', 'App\Inventario');
+    }
     public function equipos()
     {
         return $this->hasMany('App\Equipo');

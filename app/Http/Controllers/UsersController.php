@@ -222,23 +222,23 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        //     $message = '';
+            $message = '';
 
-        //     $variant = '';
+            $variant = '';
 
-        //     $title = '';
+            $title = '';
 
-        //     if ($user->role_id == 1) {
-        //         $message = "No es posible eliminar administradores";
-        //         $variant = "danger";
-        //         $title = 'Error';
-        //     } else {
-        //         $user->delete();
-        //         $message = "$user->name Eliminado con exito";
-        //         $variant = "warning";
-        //         $title = 'Exito';
-        //     }
+            if ($user->role_id == 1) {
+                $message = "No es posible eliminar administradores";
+                $variant = "danger";
+                $title = 'Error';
+            } else {
+                $user->delete();
+                $message = "$user->name Eliminado con exito";
+                $variant = "warning";
+                $title = 'Exito';
+            }
 
-        //     return ['message' => $message, 'variant' => $variant, 'title' => $title];
+            return ['message' => $message, 'variant' => $variant, 'title' => $title];
     }
 }

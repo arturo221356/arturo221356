@@ -26,6 +26,45 @@ class Transaction extends Model
         return $this->belongsTo('App\Inventario');
     }
 
+    
+    public function scopeDistributionTransactions($transaction, $initialDate, $finalDate)
+    {
+        $transactions = $transaction
+        
+        ->whereBetween('created_at',[$initialDate,$finalDate])
+        ->whereHas('inventario', function ($query)  {
+            $user = Auth::user();
+            $query->where('distribution_id', $user->distribution->id);
+           
+            
+        })
+            ->orderBy('created_at','asc')->get();
+
+        return $transactions;
+    }
+
+    public function scopeTransactionInInventario($transaction, $initialDate, $finalDate,$inventario_id)
+    {
+        $transactions = $transaction
+        
+        ->whereBetween('created_at',[$initialDate,$finalDate])
+
+        ->whereHas('inventario', function ($query) use ($inventario_id)  {
+            $user = Auth::user();
+            $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+            $query->whereIn('inventario_id',$inventariosIds)
+            ->where('inventario_id',$inventario_id)
+            ;
+           
+            
+        })
+
+            ->orderBy('created_at','asc')
+            ->get();
+
+        return $transactions;
+    }
+
 
     public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId)
     {

@@ -30,13 +30,11 @@ class TransactionController extends Controller
 
             if ($user->can('distribution inventarios')) {
 
-                $transactions =  $userDistribution->transactions()->whereBetween('updated_at',[$initialDate,$finalDate])->orderBy('updated_at', 'asc')->get();
+                $transactions =  Transaction::DistributionTransactions($initialDate, $finalDate);
             }else{
 
-
-                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-
-                $transactions = Transaction::whereIn('inventario_id', $inventariosIds)->whereBetween('updated_at',[$initialDate,$finalDate])->orderBy('updated_at', 'asc')->get();
+                $transactions =  Transaction::TransactionInInventario($initialDate, $finalDate, $request->inventario_id);
+                
             }
 
                 if($request->inventario_id == "all"){

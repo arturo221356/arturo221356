@@ -32,6 +32,8 @@
                 :fields="fields"
                 :busy="isBusy"
                 :filter="filter"
+                stacked="sm"
+                head-variant="dark"
             >
                 <!--busy template-->
                 <template v-slot:table-busy>
@@ -254,7 +256,7 @@
                                 size="sm"
                                 variant="outline-danger"
                                 @click="deleteUser(infoModal.content.id)"
-                                v-if="user.role != 1 && editMode == true"
+                                v-if="can('delete user') && editMode == true"
                             >
                                 Eliminar
                             </b-button>
