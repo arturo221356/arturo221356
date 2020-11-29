@@ -230,7 +230,7 @@ export default {
                 let sum = filteredItems
                 .map((o) => Number(o.monto))
                 .reduce((a, c) => {
-                    return Number(a) + Number(c);
+                   return Number(a) + Number(c);
                 });
 
             this.totalRecargas = sum;
@@ -258,7 +258,7 @@ export default {
 
                         if(response.data.data.length >0){
                             let sum = response.data.data
-                            .map((o) =>  Number(o.total))
+                            .map((o) =>  Number(o.monto))
                             .reduce((a, c) => {
                                  return Number(a) + Number(c);
                             });
@@ -273,7 +273,7 @@ export default {
 
                         this.tableBusy = false;
 
-                        // this.chipsBar.value = response.data.data.length;
+                        
                     }.bind(this)
                 )
                 .catch(function (error) {
