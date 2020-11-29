@@ -228,7 +228,7 @@ export default {
             
             if(filteredItems.length > 0 ){
                 let sum = filteredItems
-                .map((o) => o.monto)
+                .map((o) => Number(o.monto))
                 .reduce((a, c) => {
                     return a + c;
                 });
