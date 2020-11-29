@@ -6,6 +6,7 @@ use App\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Resources\TransactionResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class TransactionController extends Controller
 {
@@ -22,16 +23,20 @@ class TransactionController extends Controller
 
             $userDistribution = $user->distribution;
 
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+
 
             if ($user->can('distribution inventarios')) {
 
-                $transactions =  $userDistribution->transactions()->whereBetween('updated_at',[$request->initial_date,$request->final_date])->orderBy('updated_at', 'asc')->get();
+                $transactions =  $userDistribution->transactions()->whereBetween('updated_at',[$initialDate,$finalDate])->orderBy('updated_at', 'asc')->get();
             }else{
 
 
                 $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
-                $transactions = Transaction::whereIn('inventario_id', $inventariosIds)->whereBetween('updated_at',[$request->initial_date,$request->final_date])->orderBy('updated_at', 'asc')->get();
+                $transactions = Transaction::whereIn('inventario_id', $inventariosIds)->whereBetween('updated_at',[$initialDate,$finalDate])->orderBy('updated_at', 'asc')->get();
             }
 
                 if($request->inventario_id == "all"){

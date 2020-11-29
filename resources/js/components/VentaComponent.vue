@@ -1257,7 +1257,8 @@ export default {
             var total = 0;
 
             this.productos.forEach((element) => {
-                total += element.precio;
+
+                total += parseInt(element.precio,10);
             });
 
             return total;

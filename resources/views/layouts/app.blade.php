@@ -103,11 +103,11 @@
               Equipos
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              
+              @can('full update stock')
               <a class="dropdown-item" href="/equipos">Lista</a>
 
               <div class="dropdown-divider"></div>
-             
+             @endcan
               <a class="dropdown-item disabled" href="/linea/reporte">Reporte</a>
 
             </div>

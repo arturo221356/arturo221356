@@ -249,29 +249,29 @@ export default {
             this.sucursal.address = "";
             this.modalLoading = false;
         },
-        deleteSucursal(id) {
-            axios.delete(`/admin/sucursales/${id}`).then((res) => {
-                this.$refs["modal"].hide();
-                this.loadData();
-                console.log(res.data);
+        // deleteSucursal(id) {
+        //     axios.delete(`/admin/sucursales/${id}`).then((res) => {
+        //         this.$refs["modal"].hide();
+        //         this.loadData();
+        //         console.log(res.data);
 
-                this.$bvToast.toast(`${res.data.message}`, {
-                    title: res.data.title,
-                    autoHideDelay: 5000,
-                    appendToast: true,
-                    solid: true,
-                    variant: res.data.variant,
-                    toaster: "b-toaster-bottom-full",
-                });
-            });
-        },
+        //         this.$bvToast.toast(`${res.data.message}`, {
+        //             title: res.data.title,
+        //             autoHideDelay: 5000,
+        //             appendToast: true,
+        //             solid: true,
+        //             variant: res.data.variant,
+        //             toaster: "b-toaster-bottom-full",
+        //         });
+        //     });
+        // },
         updateSucursal() {
             const id = this.infoModal.content.id;
             const params = {
                 name: this.sucursal.name,
                 address: this.sucursal.address,
             };
-            axios.put(`/admin/sucursales/${id}`, params).then((res) => {
+            axios.put(`/sucursales/${id}`, params).then((res) => {
                 alert("Editado");
 
                 this.$refs["modal"].hide();
