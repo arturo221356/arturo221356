@@ -372,7 +372,7 @@ class VentaController extends Controller
 
         $venta->save();
 
-        if ($request->cliente) {
+        
 
             $cliente = json_decode(json_encode($request->cliente));
 
@@ -388,7 +388,7 @@ class VentaController extends Controller
 
                 // Mail::to($cliente->email)->send(new VentaComprobante($venta));
             }
-        }
+        
 
         return $venta->id;
     }
