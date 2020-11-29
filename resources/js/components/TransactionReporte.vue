@@ -258,9 +258,9 @@ export default {
 
                         if(response.data.data.length >0){
                             let sum = response.data.data
-                            .map((o) => o.monto)
+                            .map((o) =>  Number(o.total))
                             .reduce((a, c) => {
-                                return a + c;
+                                 return Number(a) + Number(c);
                             });
 
                         this.totalRecargas = sum;
