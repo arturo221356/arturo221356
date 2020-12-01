@@ -1243,8 +1243,8 @@ export default {
 
                 if (this.iccData.recarga) {
                     price =
-                        this.iccData.iccSubProduct.precio +
-                        this.iccData.recarga.monto;
+                        Number(this.iccData.iccSubProduct.precio) +
+                        Number(this.iccData.recarga.monto);
 
                     if (isNaN(price)) price = 0;
                 }
