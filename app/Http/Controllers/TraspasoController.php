@@ -119,6 +119,7 @@ class TraspasoController extends Controller
 
             if ($aceptacionRequired == false) {
                 $traspaso->user_id = $user->id;
+                // $traspaso->accepted = true;
             }
             $traspaso->save();
 
