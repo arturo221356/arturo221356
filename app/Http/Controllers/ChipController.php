@@ -361,7 +361,7 @@ class ChipController extends Controller
             $recargable = 'false';
         }
 
-        if (!$user->hasPermissionTo('preactivar linea')){
+        if (!$user->hasPermissionTo('preactivar masivo')){
             return 'no tienes permiso';
         }
 

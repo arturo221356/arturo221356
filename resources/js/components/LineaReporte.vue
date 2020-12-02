@@ -103,7 +103,10 @@ export default {
 
             finalDate: new Date().toISOString().substr(0, 10),
 
-            chipsBar: { name: "Chips", value: 0, variant: "primary" },
+            chipsBar: { 
+                name: "Chips", value: 0, variant: "primary",
+                
+                 },
 
             chips: [],
         };
