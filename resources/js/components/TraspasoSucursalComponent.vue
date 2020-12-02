@@ -538,7 +538,7 @@ export default {
 
             inventario: null,
 
-            aceptacionRequired: true,
+            aceptacionRequired: false,
 
             showList: true,
 
