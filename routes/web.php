@@ -40,11 +40,11 @@ Auth::routes([
      ]
     );
 
-// Route::view('/home','home')->name('home')->middleware('auth');
+ Route::view('/home','home')->name('home')->middleware('auth');
 
 
 
-Route::view('/','home')->name('home')->middleware('auth');
+Route::view('/','home')->name('root')->middleware('auth');
 
 
 Route::view('/activa-chip','linea.activa-chip')->name('activa-chip');

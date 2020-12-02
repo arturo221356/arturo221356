@@ -107,9 +107,9 @@ class IccController extends Controller
 
                         'icc' => $datos->serie,
                         'status_id' => 1,
-                        'inventario_id' => $inventario,
-                        'company_id' => $company,
-                        'icc_type_id' => $type,
+                        'inventario_id' => $datos->inventario->id,
+                        'company_id' => $datos->company->id,
+                        'icc_type_id' => $datos->simType->id,
 
 
 

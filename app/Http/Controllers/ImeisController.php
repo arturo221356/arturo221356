@@ -106,8 +106,8 @@ class ImeisController extends Controller
 
             $imei = new Imei([
                 'imei' => $data->serie,
-                'inventario_id' =>  $inventario,
-                'equipo_id' => $equipo,
+                'inventario_id' => $data->inventario->id,
+                'equipo_id' => $data->equipo->id,
                 'status_id' =>1
 
             ]);
