@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Porta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class PortaController extends Controller
 {
@@ -82,4 +84,39 @@ class PortaController extends Controller
     {
         //
     }
+
+    public function getPortas(){
+        
+        $user = Auth::user();
+
+        if ($request->ajax()) {
+
+            $inventario_id = $request->inventario_id;
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+
+
+            if ($inventario_id === 'all') {
+
+                if ($user->can('distribution inventarios')) {
+
+                    $chips = Porta::DistributionPortas($initialDate, $finalDate);
+                } else {
+                    $chips = Porta::InUserInventarioPortas($initialDate, $finalDate);
+                }
+            } else {
+
+                $chips = Porta::InventarioPortas($initialDate, $finalDate, $inventario_id);
+            }
+
+
+            $response = ChipResource::collection($chips);
+
+
+            return $response;
+        }
+    }
+
 }

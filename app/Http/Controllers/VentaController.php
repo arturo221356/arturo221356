@@ -242,7 +242,7 @@ class VentaController extends Controller
                                         $chip = Chip::create([
                                             'preactivated_at' => now()
                                         ]);
-
+                                        $status = 'Preactiva';
                                         break;
                                         //en caso de que la request sea portabilidad 
                                     case 2:
@@ -267,6 +267,8 @@ class VentaController extends Controller
 
                                             ]);
 
+                                            $status = 'Porta subida';
+
                                         break;
 
                                     case 3:
@@ -278,7 +280,7 @@ class VentaController extends Controller
                                             'activated_at' => now(),
 
                                         ]);
-
+                                        $status = 'Pospago';
                                         break;
 
                                     case 4:
@@ -290,7 +292,7 @@ class VentaController extends Controller
                                             'preactivated_at' => now(),
                                             'activated_at' => now(),
                                         ]);
-
+                                        $status = 'Remplazo';
                                         break;
                                     case 5:
 
@@ -301,6 +303,7 @@ class VentaController extends Controller
                                             'preactivated_at' => now(),
                                             'activated_at' => now(),
                                         ]);
+                                        $status = 'Telemarketing';
 
                                         break;
                                 }
@@ -314,7 +317,7 @@ class VentaController extends Controller
 
                                 ]);
 
-                                $linea->setStatus('Preactiva');
+                                $linea->setStatus($status);
                             }
 
                             switch ($linea->product->id) {

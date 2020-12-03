@@ -108,6 +108,15 @@ export default {
                 
                  },
 
+            portasBar: { 
+                name: "Portas", value: 0, variant: "primary",
+                
+                 },
+             exportadosBar: { 
+                name: "Portados", value: 0, variant: "danger",
+                
+                 },
+
             chips: [],
         };
     },
@@ -128,6 +137,10 @@ export default {
             var bars = [];
 
             bars.push(this.chipsBar);
+
+            bars.push(this.portasBar);
+
+             bars.push(this.exportadosBar);
 
             return bars;
         },
@@ -157,6 +170,33 @@ export default {
             
             axios
                 .post(`/chip/activated`, {
+                    
+                     inventario_id: this.inventario.id,
+                     initial_date: this.initialDate,
+                     final_date: this.finalDate,
+                   
+                })
+                .then(
+                    function (response) {
+                        // this.chips.value = response.data;
+                        console.log(response.data.data);
+
+                        this.chips = response.data.data;
+
+                        this.chipsBar.value = response.data.data.length;
+
+                        this.showLineas();
+                        
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+                getPortas(){
+            
+            axios
+                .post(`/get/porta`, {
                     
                      inventario_id: this.inventario.id,
                      initial_date: this.initialDate,

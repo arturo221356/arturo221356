@@ -39,13 +39,6 @@ class Chip extends Model
            
             
         })
-            // ->with(['linea' => function ($linea) {
-            //     $linea
-            //         ->whereHas('icc.inventario', function ($query) {
-            //             $user = Auth::user();
-            //             $query->where('distribution_id', $user->distribution->id);
-            //         });
-            // }])
             ->orderBy('activated_at','asc')->get();
 
         return $chips;
@@ -67,14 +60,6 @@ class Chip extends Model
            
             
         })
-            // ->with(['linea' => function ($linea) {
-            //     $linea
-            //         ->whereHas('icc.inventario', function ($query) {
-            //             $user = Auth::user();
-            //             $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-            //             $query->whereIn('inventario_id',$inventariosIds);
-            //         });
-            // }])
             ->orderBy('activated_at','asc')
             ->get();
 

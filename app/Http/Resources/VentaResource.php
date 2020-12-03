@@ -22,7 +22,7 @@ class VentaResource extends JsonResource
             'inventario_name' => $this->inventario->inventarioable->name,
             'sucursal_domicilio' => $this->inventario->inventarioable->address,
             'vendedor' => $this->user->name,
-            'cliente' => $this->cliente->name,
+            'cliente' => isset($this->cliente->name)?$this->cliente->name:'',
             'productosGenerales' =>$this->generalProducts,
             'total' => $this->total,
             'comment' => $this->comment ? $this->comment->comment : '',

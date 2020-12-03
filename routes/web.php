@@ -85,6 +85,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/imei/restore', 'ImeisController@restore')->middleware('can:destroy stock');
 
     Route::post('/chip/activated', 'ChipController@getActivated');
+
+    Route::post('/get/porta', 'PortaController@getPortas');
     
     
     Route::resource('/inventario/traspasos', 'TraspasoController')->middleware('can:ver traspasos');
