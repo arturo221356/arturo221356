@@ -2,7 +2,7 @@
     <div>
         <b-overlay :show="isLoading" rounded="sm">
             <div>
-                <div class="col-lg-8 mx-auto">
+                <div class="col-lg-10 mx-auto">
                     <div class="row"><h1>Reporte de Lineas</h1></div>
 
                     <b-form>
@@ -36,7 +36,9 @@
                             >
                             </select-general>
                         </b-form-group>
-                        <b-button block @click="getActivatedChips">Cargar</b-button>
+                        <b-button block @click="loadData"
+                            >Cargar</b-button
+                        >
                     </b-form>
                     <div class="mt-4">
                         <div
@@ -46,10 +48,13 @@
                         >
                             <div class="col-sm-2">
                                 <b-button
-                                @click="showLineas(bar.name)" 
-                                :variant="bar.variant">{{
-                                    bar.name
-                                }}  <b-badge variant="light">{{bar.value}}</b-badge></b-button>
+                                    @click="showLineas(bar.name)"
+                                    :variant="bar.variant"
+                                    >{{ bar.name }}
+                                    <b-badge variant="light">{{
+                                        bar.value
+                                    }}</b-badge></b-button
+                                >
                             </div>
                             <div class="col-sm-10 pt-1">
                                 <b-progress
@@ -62,24 +67,20 @@
                             </div>
                         </div>
                     </div>
-                    </div>
-                    <div class="mt-4">
-                        <b-table
+                </div>
+                <div class="mt-4">
+                    <b-table
                         :items="tableItems"
-                        
                         :filter="tableFilter"
                         hover
                         responsive
                         striped
                         stacked="xl"
                         head-variant="dark"
-                        
                         :busy="tableBusy"
-                        
                     >
-                        </b-table>
-                    </div>
-                
+                    </b-table>
+                </div>
             </div>
         </b-overlay>
     </div>
@@ -94,7 +95,7 @@ export default {
             tableBusy: false,
 
             tableItems: [],
-            
+
             tableFilter: null,
 
             isLoading: false,
@@ -103,25 +104,29 @@ export default {
 
             finalDate: new Date().toISOString().substr(0, 10),
 
-            chipsBar: { 
-                name: "Chips", value: 0, variant: "primary",
-                
-                 },
+            chipsBar: {
+                name: "Chips",
+                value: 0,
+                variant: "primary",
+            },
 
-            portasBar: { 
-                name: "Portas", value: 0, variant: "primary",
-                
-                 },
-             exportadosBar: { 
-                name: "Portados", value: 0, variant: "danger",
-                
-                 },
+            portasBar: {
+                name: "Portas",
+                value: 0,
+                variant: "primary",
+            },
+            exportadosBar: {
+                name: "Exportados",
+                value: 0,
+                variant: "danger",
+            },
 
             chips: [],
+
+            portas:[],
         };
     },
-    computed:
-     {
+    computed: {
         maxDate: function () {
             const now = new Date();
             const today = new Date(
@@ -140,20 +145,26 @@ export default {
 
             bars.push(this.portasBar);
 
-             bars.push(this.exportadosBar);
+            bars.push(this.exportadosBar);
 
             return bars;
         },
     },
     methods: {
-        showLineas($producto){
+        loadData(){
+            this.getPortas();
+            this.getActivatedChips();
+        },
+        showLineas($producto) {
             this.tableItems = [];
 
-            switch ($producto){
-                case 'Chips':
+            switch ($producto) {
+                case "Chips":
                     this.tableItems = this.chips;
-                break;
-
+                    break;
+                case "Portas":
+                    this.tableItems = this.portas;
+                    break;
             }
         },
         getMonthFirst() {
@@ -166,15 +177,12 @@ export default {
             );
         },
 
-        getActivatedChips(){
-            
+        getActivatedChips() {
             axios
                 .post(`/chip/activated`, {
-                    
-                     inventario_id: this.inventario.id,
-                     initial_date: this.initialDate,
-                     final_date: this.finalDate,
-                   
+                    inventario_id: this.inventario.id,
+                    initial_date: this.initialDate,
+                    final_date: this.finalDate,
                 })
                 .then(
                     function (response) {
@@ -186,45 +194,38 @@ export default {
                         this.chipsBar.value = response.data.data.length;
 
                         this.showLineas();
-                        
                     }.bind(this)
                 )
                 .catch(function (error) {
                     console.log(error);
                 });
         },
-                getPortas(){
-            
+        getPortas() {
             axios
                 .post(`/get/porta`, {
-                    
-                     inventario_id: this.inventario.id,
-                     initial_date: this.initialDate,
-                     final_date: this.finalDate,
-                   
+                    inventario_id: this.inventario.id,
+                    initial_date: this.initialDate,
+                    final_date: this.finalDate,
                 })
                 .then(
                     function (response) {
                         // this.chips.value = response.data;
                         console.log(response.data.data);
 
-                        this.chips = response.data.data;
+                        this.portas = response.data.data;
 
-                        this.chipsBar.value = response.data.data.length;
+                        this.portasBar.value = response.data.data.length;
 
                         this.showLineas();
-                        
                     }.bind(this)
                 )
                 .catch(function (error) {
                     console.log(error);
                 });
-        }
+        },
     },
     created() {
         this.getMonthFirst();
-
-        
     },
 };
 </script>

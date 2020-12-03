@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PortaResource;
 use App\Porta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -85,7 +86,7 @@ class PortaController extends Controller
         //
     }
 
-    public function getPortas(){
+    public function getPortas(Request $request){
         
         $user = Auth::user();
 
@@ -112,7 +113,7 @@ class PortaController extends Controller
             }
 
 
-            $response = ChipResource::collection($chips);
+            $response = PortaResource::collection($chips);
 
 
             return $response;

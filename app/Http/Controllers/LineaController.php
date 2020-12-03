@@ -6,6 +6,8 @@ use App\Linea;
 
 use App\Icc;
 
+use Illuminate\Support\Carbon;Linea
+
 
 use Illuminate\Support\Facades\Auth;
 
@@ -67,11 +69,47 @@ class LineaController extends Controller
         return  json_encode($response);
     }
 
+   
+
 
 
 
     
-   
+    public function getExportadas(Request $request){
+
+        $user = Auth::user();
+
+        if ($request->ajax()) {
+
+            $inventario_id = $request->inventario_id;
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+
+
+            if ($inventario_id === 'all') {
+
+                if ($user->can('distribution inventarios')) {
+
+                    $chips = Linea::DistributionExportadas($initialDate, $finalDate);
+                } else {
+                    $chips = Linea::InUserInventarioExportadas($initialDate, $finalDate);
+                }
+            } else {
+
+                $chips = Linea::InventarioExportadas($initialDate, $finalDate, $inventario_id);
+            }
+
+
+            $response = ExportadaResource::collection($chips);
+
+
+            return $response;
+        }
+    }
+
+    }
 
 
 
