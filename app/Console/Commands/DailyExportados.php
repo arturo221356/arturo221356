@@ -78,25 +78,25 @@ class DailyExportados extends Command
                 $linea->save();
             }
         }
-        foreach ($chipsActivados as $linea) {
+        // foreach ($chipsActivados as $linea) {
 
-            $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-                'id' => mt_rand(1000000, 9999999),
-                'method' => "getOperatorByMsisdn",
-                'params' => [$linea->dn]
+        //     $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+        //         'id' => mt_rand(1000000, 9999999),
+        //         'method' => "getOperatorByMsisdn",
+        //         'params' => [$linea->dn]
 
-            ]);
+        //     ]);
 
-            $response = json_decode(substr($consulta, 4));
+        //     $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
+        //     if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
 
-                $linea->setStatus('Exportada');
+        //         $linea->setStatus('Exportada');
 
-                $linea->updated_at = Carbon::now();
+        //         $linea->updated_at = Carbon::now();
 
-                $linea->save();
-            }
-        }
+        //         $linea->save();
+        //     }
+        // }
     }
 }
