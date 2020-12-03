@@ -22,6 +22,8 @@ use App\Inventario;
 use App\Linea;
 use App\Mail\VentaComprobante;
 
+use Illuminate\Support\Carbon;
+
 use App\User;
 use Spatie\Permission\Models\Permission;
 
@@ -87,6 +89,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/chip/activated', 'ChipController@getActivated');
 
     Route::post('/get/porta', 'PortaController@getPortas');
+
+    Route::post('/get/exportada', 'LineaController@getExportadas');
     
     
     Route::resource('/inventario/traspasos', 'TraspasoController')->middleware('can:ver traspasos');
@@ -118,25 +122,23 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $dns= [
-        3321233580,   
-        
-    ];
+    $lineas = Linea::
 
-    // $response = [];
-    foreach ($dns as $dn){
+    
 
-        $linea = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-            'id' => mt_rand(100000, 999999),
-            'method' => "getOperatorByMsisdn",
-            'params' => [$dn]
+    currentStatus('Exportada') 
+
+
     
-        ]);
+    ->orderBy('created_at', 'asc')
     
-        $response = json_decode(substr($linea, 4));
-     
-        echo $response->result[0]->key;
-    }
+    ->first();
+
+    $lineas->updated_at = Carbon::now();
+
+    $lineas->save();
+
+return $lineas;
         
     
 

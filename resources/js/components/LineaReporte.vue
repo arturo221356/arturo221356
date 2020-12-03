@@ -36,9 +36,7 @@
                             >
                             </select-general>
                         </b-form-group>
-                        <b-button block @click="loadData"
-                            >Cargar</b-button
-                        >
+                        <b-button block @click="loadData">Cargar</b-button>
                     </b-form>
                     <div class="mt-4">
                         <div
@@ -123,7 +121,9 @@ export default {
 
             chips: [],
 
-            portas:[],
+            portas: [],
+
+            exportadas:[],
         };
     },
     computed: {
@@ -151,9 +151,10 @@ export default {
         },
     },
     methods: {
-        loadData(){
+        loadData() {
             this.getPortas();
             this.getActivatedChips();
+            this.getExportadas();
         },
         showLineas($producto) {
             this.tableItems = [];
@@ -164,6 +165,9 @@ export default {
                     break;
                 case "Portas":
                     this.tableItems = this.portas;
+                    break;
+                case "Exportados":
+                    this.tableItems = this.exportadas;
                     break;
             }
         },
@@ -215,6 +219,29 @@ export default {
                         this.portas = response.data.data;
 
                         this.portasBar.value = response.data.data.length;
+
+                        this.showLineas();
+                    }.bind(this)
+                )
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        getExportadas() {
+            axios
+                .post(`/get/exportada`, {
+                    inventario_id: this.inventario.id,
+                    initial_date: this.initialDate,
+                    final_date: this.finalDate,
+                })
+                .then(
+                    function (response) {
+                        // this.chips.value = response.data;
+                        console.log(response.data.data);
+
+                        this.exportadas = response.data.data;
+
+                        this.exportadosBar.value = response.data.data.length;
 
                         this.showLineas();
                     }.bind(this)

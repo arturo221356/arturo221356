@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 
 use App\Linea;
 
+use Illuminate\Support\Carbon;
+
 use Illuminate\Support\Facades\Http;
 
 class DailyExportados extends Command
@@ -22,7 +24,7 @@ class DailyExportados extends Command
      *
      * @var string
      */
-    protected $description = 'REvisa todas las lineas tanto como vendidas y preactivas se encuentren en el mismo operador todos los dias';
+    protected $description = 'Revisa todas las lineas tanto como vendidas y preactivas se encuentren en el mismo operador todos los dias';
 
     /**
      * Create a new command instance.
@@ -41,9 +43,22 @@ class DailyExportados extends Command
      */
     public function handle()
     {
-        $lineas = Linea::currentStatus('Exportada')->get();
 
-        foreach ($lineas as $linea) {
+        $preactivas =  Linea::currentStatus(['Preactiva', 'Recargable'])->get();
+
+        $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
+                $query->whereBetween('activated_at', [Carbon::now()->subDays(15), Carbon::now()])
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(30))
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(45));
+            })
+
+
+            ->get();
+
+
+
+
+        foreach ($preactivas as $linea) {
 
             $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
                 'id' => mt_rand(100000, 999999),
@@ -54,18 +69,34 @@ class DailyExportados extends Command
 
             $response = json_decode(substr($consulta, 4));
 
-            if ($response->result[0]->key != $linea->icc->company->code) {
+            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
 
                 $linea->setStatus('Exportada');
 
-                $this->info($linea->status());
-            } else {
-                $this->info('todo bien pariente');
+                $linea->updated_at = Carbon::now();
+
+                $linea->save();
             }
         }
+        foreach ($chipsActivados as $linea) {
 
+            $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+                'id' => mt_rand(1000000, 9999999),
+                'method' => "getOperatorByMsisdn",
+                'params' => [$linea->dn]
 
+            ]);
 
-       
+            $response = json_decode(substr($consulta, 4));
+
+            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
+
+                $linea->setStatus('Exportada');
+
+                $linea->updated_at = Carbon::now();
+
+                $linea->save();
+            }
+        }
     }
 }

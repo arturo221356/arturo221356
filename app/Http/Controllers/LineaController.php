@@ -6,7 +6,9 @@ use App\Linea;
 
 use App\Icc;
 
-use Illuminate\Support\Carbon;Linea
+use Illuminate\Support\Carbon;
+
+use App\Http\Resources\ExportadaResource;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -109,7 +111,7 @@ class LineaController extends Controller
         }
     }
 
-    }
+    
 
 
 

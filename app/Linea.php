@@ -52,7 +52,9 @@ class Linea extends Model
     {
         $lineas = $linea
 
-            ->whereBetween('created_at', [$initialDate, $finalDate])
+            ->whereBetween('updated_at', [$initialDate, $finalDate])
+
+            
 
             ->currentStatus('Exportada')
 
@@ -60,7 +62,7 @@ class Linea extends Model
                 $user = Auth::user();
                 $query->where('distribution_id', $user->distribution->id);
             })
-            ->orderBy('created_at', 'asc')->get();
+            ->orderBy('updated_at', 'asc')->get();
 
         return $lineas;
     }
@@ -70,7 +72,7 @@ class Linea extends Model
     {
         $lineas = $linea
 
-            ->whereBetween('created_at', [$initialDate, $finalDate])
+            ->whereBetween('updated_at', [$initialDate, $finalDate])
 
             ->currentStatus('Exportada')
 
@@ -79,20 +81,20 @@ class Linea extends Model
                 $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
                 $query->whereIn('inventario_id', $inventariosIds);
             })
-            ->orderBy('created_at', 'asc')
+            ->orderBy('updated_at', 'asc')
             ->get();
 
         return $lineas;
     }
 
-    public function scopeInventarioPortas($linea, $initialDate, $finalDate, $inventario_id)
+    public function scopeInventarioExportadas($linea, $initialDate, $finalDate, $inventario_id)
     {
 
 
         $lineas = $linea
 
 
-            ->whereBetween('created_at', [$initialDate, $finalDate])
+            ->whereBetween('updated_at', [$initialDate, $finalDate])
 
             ->currentStatus('Exportada')
 
@@ -100,7 +102,7 @@ class Linea extends Model
             ->whereHas('icc', function ($query) use ($inventario_id) {
                 $query->where('inventario_id', $inventario_id);
             })
-            ->orderBy('created_at', 'asc')
+            ->orderBy('updated_at', 'asc')
 
             ->get();
 
