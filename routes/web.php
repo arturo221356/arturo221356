@@ -122,23 +122,14 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $lineas = Linea::
+    $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+        'id' => mt_rand(100000, 999999),
+        'method' => "getOperatorByMsisdn",
+        'params' => [3310512007]
 
-    
+    ]);
 
-    currentStatus('Exportada') 
-
-
-    
-    ->orderBy('created_at', 'asc')
-    
-    ->first();
-
-    $lineas->updated_at = Carbon::now();
-
-    $lineas->save();
-
-return $lineas;
+return $consulta;
         
     
 
