@@ -277,23 +277,22 @@ Route::get('/pruebas', function (Request $request) {
         3330260807,
         3331310546,
         3317609546,
-        
 
 
-        
 
-        
+
+
+
 
 
     ];
 
 
     foreach ($lineas as $linea) {
-        $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-            'id' => mt_rand(100000, 999999),
-            'method' => "getOperatorByMsisdn",
-            'params' => [$linea]
 
+        $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/revisar-exportadas', [
+            'linea' => $linea,
+            
         ]);
 
         echo "$linea $consulta <br>";
@@ -301,7 +300,17 @@ Route::get('/pruebas', function (Request $request) {
 });
 
 
+Route::post('/revisar-exportadas', function (Request $request) {
 
+    $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+        'id' => mt_rand(100000, 999999),
+        'method' => "getOperatorByMsisdn",
+        'params' => [$request->linea]
+
+    ]);
+
+    return $consulta;
+});
 
 // searchs
 
