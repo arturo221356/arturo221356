@@ -69,6 +69,7 @@ Vue.component('linea-reporte', require('./components/LineaReporte.vue').default)
 Vue.component('show-venta', require('./components/ShowVenta.vue').default);
 Vue.component('venta-reporte', require('./components/VentaReporte.vue').default);
 Vue.component('transaction-reporte', require('./components/TransactionReporte.vue').default);
+Vue.component('porta-express', require('./components/PortaExpress.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

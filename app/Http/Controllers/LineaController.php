@@ -70,6 +70,46 @@ class LineaController extends Controller
 
         return  json_encode($response);
     }
+    public function verificarIccPortaExterna(Request $request)
+    {
+
+        
+
+        $icc = Icc::where('icc',$request->icc)->with('company', 'type')->first();
+        
+        if ($icc === null) {
+            $response = [
+                'success' => false,
+                'message' => 'Icc no existe en la base de datos'
+            ];
+
+            return $response;
+        }
+
+        if ($icc->linea()->first() == null) {
+            if($icc->inventario->inventarioable_type == 'App\User'){
+                $response = [
+                    "success" => true,
+                    "data" => $icc,
+                ];
+            }else{
+                $response = [
+                    "success" => false,
+                    "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
+    
+                ];
+            }
+            
+        } else {
+            $response = [
+                "success" => false,
+                "message" => "Icc ya tiene linea activa: " . $icc->linea->dn,
+
+            ];
+        }
+
+        return  json_encode($response);
+    }
 
    
 

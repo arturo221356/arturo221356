@@ -66,7 +66,17 @@
                         </div>
                     </form>
                 </div>
+
+                
             </div>
+            <div class="alert alert-light mt-5" role="alert">
+                 <a href="/activa-chip" class="alert-link">Activa Chip</a>
+                 <div class="float-right">
+                    <a href="/activa-chip" class="alert-link" >Portabilidad</a>
+                 </div>
+                 
+              </div>
+            
         </div>
     </div>
 </div>
