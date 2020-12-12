@@ -24,7 +24,7 @@ Route::post('/revisar-exportadas', function (Request $request) {
         $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
             'id' => mt_rand(100000, 999999),
             'method' => "getOperatorByMsisdn",
-            'params' => [3310512007]
+            'params' => [$request->linea]
     
         ]);
     
