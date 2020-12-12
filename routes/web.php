@@ -138,7 +138,7 @@ Route::get('/pruebas', function (Request $request) {
 
     foreach ($lineas as $linea) {
 
-        $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/revisar-exportadas', [
+        $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
             'linea' => $linea,
             
         ]);
