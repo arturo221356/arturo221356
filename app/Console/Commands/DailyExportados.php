@@ -60,11 +60,15 @@ class DailyExportados extends Command
 
         foreach ($preactivas as $linea) {
 
-            $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-                'id' => mt_rand(100000, 999999),
-                'method' => "getOperatorByMsisdn",
-                'params' => [$linea->dn]
+            // $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+            //     'id' => mt_rand(100000, 999999),
+            //     'method' => "getOperatorByMsisdn",
+            //     'params' => [$linea->dn]
 
+            // ]);
+            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+                'linea' => $linea,
+                
             ]);
 
             $response = json_decode(substr($consulta, 4));
