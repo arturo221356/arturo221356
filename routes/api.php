@@ -18,5 +18,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
+Route::post('/revisar-exportadas', function (Request $request) {
 
+    if($request->linea){
+        $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
+            'id' => mt_rand(100000, 999999),
+            'method' => "getOperatorByMsisdn",
+            'params' => [3310512007]
+    
+        ]);
+    
+        return $consulta;
+    }else{
+        return 'no hay request';
+    }
+
+
+});
 

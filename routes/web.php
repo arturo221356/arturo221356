@@ -122,8 +122,9 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/pruebas', function (Request $request) {
 
     $lineas = [
-        3320207158,
-        3320207248,
+        
+        3310512007
+        
 
 
 
@@ -142,22 +143,12 @@ Route::get('/pruebas', function (Request $request) {
             
         ]);
 
-        echo "$linea $consulta <br>";
+        echo $consulta;
     }
 });
 
 
-Route::post('/revisar-exportadas', function (Request $request) {
 
-    $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-        'id' => mt_rand(100000, 999999),
-        'method' => "getOperatorByMsisdn",
-        'params' => [$request->linea]
-
-    ]);
-
-    return $consulta;
-});
 
 // searchs
 
