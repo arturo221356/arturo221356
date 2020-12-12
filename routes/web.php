@@ -298,7 +298,7 @@ Route::get('/pruebas', function (Request $request) {
             
         ]);
 
-        echo $consulta;
+        echo "$linea $consulta<br>";
     }
 });
 
