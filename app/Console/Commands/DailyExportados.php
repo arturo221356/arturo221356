@@ -61,7 +61,7 @@ class DailyExportados extends Command
         // foreach ($preactivas as $linea) {
 
         //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-        //         'linea' => $linea,
+        //         'linea' => $linea->dn,
                 
         //     ]);
 
@@ -85,7 +85,7 @@ class DailyExportados extends Command
         foreach ($chipsActivados as $linea) {
 
             $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-                'linea' => $linea,
+                'linea' => $linea->dn,
                 
             ]);
 
