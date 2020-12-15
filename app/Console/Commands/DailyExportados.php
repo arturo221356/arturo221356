@@ -69,11 +69,15 @@ class DailyExportados extends Command
 
             if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
 
-                $linea->setStatus('Exportada');
+                $linea->setStatus('Exportada',"Linea estaba preactiva y fue exportada a".$response->result[0]->value);
 
                 $linea->updated_at = Carbon::now();
 
                 $linea->save();
+
+                $inventarioName = $linea->icc->inventario->inventarioable->name;
+
+                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
             }
         }
 
@@ -87,15 +91,19 @@ class DailyExportados extends Command
             $response = json_decode(substr($consulta, 4));
 
             if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
-
-                $linea->setStatus('Exportada');
+               
+                $linea->setStatus('Exportada',"Exportada a".$response->result[0]->value);
 
                 $linea->updated_at = Carbon::now();
 
                 $linea->save();
+
+                $inventarioName = $linea->icc->inventario->inventarioable->name;
+
+                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
             }
-            // $this->info($linea->icc->company->code);
-             $this->info(json_encode($response));
+            
+            
         }
     }
 }
