@@ -46,14 +46,14 @@ class DailyExportados extends Command
 
         $preactivas =  Linea::currentStatus(['Preactiva', 'Recargable'])->get();
 
-        $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
-                $query->whereBetween('activated_at', [Carbon::now()->subDays(30), Carbon::now()])
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(45))
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(60));
-            })
+        // $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
+        //         $query->whereBetween('activated_at', [Carbon::now()->subDays(30), Carbon::now()])
+        //             ->orWhereDate('activated_at', Carbon::now()->subDays(45))
+        //             ->orWhereDate('activated_at', Carbon::now()->subDays(60));
+        //     })
 
 
-            ->get();
+        //     ->get();
 
 
 
@@ -76,6 +76,12 @@ class DailyExportados extends Command
         //         $linea->save();
         //     }
         // }
+        $linea = Linea::find(861);
+        $chipsActivados =
+        [
+            $linea,
+
+        ];
         foreach ($chipsActivados as $linea) {
 
             $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
@@ -93,6 +99,8 @@ class DailyExportados extends Command
 
                 $linea->save();
             }
+            $this->info($linea->icc->company->code);
+            $this->info($response->result[0]->key);
         }
     }
 }
