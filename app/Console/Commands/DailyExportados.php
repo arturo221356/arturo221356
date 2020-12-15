@@ -77,7 +77,7 @@ class DailyExportados extends Command
 
                 $inventarioName = $linea->icc->inventario->inventarioable->name;
 
-                $this->line($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
+                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
             }
         }
 
@@ -100,7 +100,7 @@ class DailyExportados extends Command
 
                 $inventarioName = $linea->icc->inventario->inventarioable->name;
 
-                $this->line($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
+                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
             }
             
             
