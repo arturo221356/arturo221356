@@ -46,42 +46,37 @@ class DailyExportados extends Command
 
         $preactivas =  Linea::currentStatus(['Preactiva', 'Recargable'])->get();
 
-        // $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
-        //         $query->whereBetween('activated_at', [Carbon::now()->subDays(30), Carbon::now()])
-        //             ->orWhereDate('activated_at', Carbon::now()->subDays(45))
-        //             ->orWhereDate('activated_at', Carbon::now()->subDays(60));
-        //     })
+        $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
+                $query->whereBetween('activated_at', [Carbon::now()->subDays(30), Carbon::now()])
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(45))
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(60));
+            })
 
 
-        //     ->get();
+            ->get();
 
 
 
 
-        // foreach ($preactivas as $linea) {
+        foreach ($preactivas as $linea) {
 
-        //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-        //         'linea' => $linea->dn,
+            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+                'linea' => $linea->dn,
                 
-        //     ]);
+            ]);
 
-        //     $response = json_decode(substr($consulta, 4));
+            $response = json_decode(substr($consulta, 4));
 
-        //     if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
+            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
 
-        //         $linea->setStatus('Exportada');
+                $linea->setStatus('Exportada');
 
-        //         $linea->updated_at = Carbon::now();
+                $linea->updated_at = Carbon::now();
 
-        //         $linea->save();
-        //     }
-        // }
-        $linea = Linea::find(861);
-        $chipsActivados =
-        [
-            $linea,
+                $linea->save();
+            }
+        }
 
-        ];
         foreach ($chipsActivados as $linea) {
 
             $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
