@@ -100,7 +100,7 @@ class DailyExportados extends Command
                 $linea->save();
             }
             $this->info($linea->icc->company->code);
-            $this->info($response->result[0]->key);
+            // $this->info($response);
         }
     }
 }
