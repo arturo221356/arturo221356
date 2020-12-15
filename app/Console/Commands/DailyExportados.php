@@ -58,24 +58,24 @@ class DailyExportados extends Command
 
 
 
-        foreach ($preactivas as $linea) {
+        // foreach ($preactivas as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-                'linea' => $linea,
+        //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+        //         'linea' => $linea,
                 
-            ]);
+        //     ]);
 
-            $response = json_decode(substr($consulta, 4));
+        //     $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
+        //     if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
 
-                $linea->setStatus('Exportada');
+        //         $linea->setStatus('Exportada');
 
-                $linea->updated_at = Carbon::now();
+        //         $linea->updated_at = Carbon::now();
 
-                $linea->save();
-            }
-        }
+        //         $linea->save();
+        //     }
+        // }
         foreach ($chipsActivados as $linea) {
 
             $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
