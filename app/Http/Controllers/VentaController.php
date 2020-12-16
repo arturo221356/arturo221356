@@ -289,8 +289,8 @@ class VentaController extends Controller
 
                                         $chip = Remplazo::create([
 
-                                            'preactivated_at' => now(),
-                                            'activated_at' => now(),
+                                            'created_at' => now(),
+                                            'updated_at' => now(),
                                         ]);
                                         $status = 'Remplazo';
                                         break;
