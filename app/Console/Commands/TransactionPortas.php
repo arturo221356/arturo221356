@@ -41,7 +41,7 @@ class TransactionPortas extends Command
      */
     public function handle()
     {
-        $portas = Porta::whereNull('activated_at')->get();
+        // $portas = Porta::whereNull('activated_at')->get();
 
         foreach ($portas as $porta) {
             $transactions = Transaction::where('dn', $porta->linea->dn)->get();
@@ -52,7 +52,7 @@ class TransactionPortas extends Command
                     if ($porta->linea->icc->company->id == $transaction->company_id) {
 
                         if($porta->preactivated_at == null){
-                            $porta->preactivated_at = $transaction->fvc;
+                            $porta->preactivated_at = $porta->fvc;
                         }
 
                         if ($transaction->taecel_success == true) {
