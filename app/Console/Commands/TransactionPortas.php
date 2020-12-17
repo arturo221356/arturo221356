@@ -44,18 +44,26 @@ class TransactionPortas extends Command
         $portas = Porta::whereNull('activated_at')->get();
 
         foreach ($portas as $porta) {
-            $transaction = Transaction::where('dn', $porta->linea->dn)->first();
+            $transactions = Transaction::where('dn', $porta->linea->dn)->get();
 
-            if (isset($transaction)) {
-                if ($porta->linea->icc->company->id == $transaction->company_id) {
+            if (isset($transactions)) {
 
-                    $porta->activated_at = $transaction->created_at;
-                    $porta->transaction_id = $transaction->id;
-                    $porta->save();
-                    $porta->linea->setStatus('Activado');
+                foreach ($transactions as $transaction) {
+                    if ($porta->linea->icc->company->id == $transaction->company_id) {
+
+                        if ($transaction->success == true) {
+
+                            $porta->activated_at = $transaction->created_at;
+
+                            $porta->linea->setStatus('Activado');
+                        }
+
+                        $porta->transaction_id = $transaction->id;
+
+                        $porta->save();
+                    }
                 }
             }
         }
-
     }
 }
