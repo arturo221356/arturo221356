@@ -51,6 +51,10 @@ class TransactionPortas extends Command
                 foreach ($transactions as $transaction) {
                     if ($porta->linea->icc->company->id == $transaction->company_id) {
 
+                        if($porta->preactivated_at == null){
+                            $porta->preactivated_at = $transaction->fvc;
+                        }
+
                         if ($transaction->success == true) {
 
                             $porta->activated_at = $transaction->created_at;
