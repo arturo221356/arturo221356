@@ -164,7 +164,7 @@ class VentaController extends Controller
                                 $total += $recarga->monto;
                                 WatchesTransaction::dispatch(Transaction::findOrFail($transaction->transaction_id));
                             } else if ($transaction->success == false) {
-                                WatchesTransaction::dispatch(Transaction::findOrFail($transaction->transaction_id));
+                               
                             }
 
                             $currentTransaction = Transaction::findOrFail($transaction->transaction_id);

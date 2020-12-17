@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use Illuminate\Support\Carbon;
+
 class PortaResource extends JsonResource
 {
     /**
@@ -21,8 +23,12 @@ class PortaResource extends JsonResource
             'compañia' => $this->linea->icc->company->name,
             'estatus' => $this->linea->status,
             'inventario' => $this->linea->icc->inventario->inventarioable->name,
-            'created_at' => $this->created_at,
-            'activated_at' => $this->activated_at,
-           ];
+            'Subida' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
+            'Preactiva' => Carbon::parse($this->preactivated_at)->format('d/m/y h:i:s'),
+            'Activada' => Carbon::parse($this->activated_at)->format('d/m/y h:i:s'),
+            'recarga monto' => isset($this->transaction->monto) ? $this->transaction->monto : '',
+            'recarga mensaje' => isset($this->transaction->taecel_message) ?  $this->transaction->taecel_message : '',
+            'recarga folio' =>  isset($this->transaction->taecel_folio) ?  $this->transaction->taecel_folio : '',
+        ]; 
     }
 }
