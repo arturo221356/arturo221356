@@ -47,10 +47,10 @@ class TransactionPortas extends Command
             $transaction = Transaction::where('dn', $porta->linea->dn)->first();
 
             if (isset($transaction)) {
-                if ($porta->linea->icc->company->id == $this->transaction->company_id) {
+                if ($porta->linea->icc->company->id == $transaction->company_id) {
 
-                    $porta->activated_at = $this->transaction->created_at;
-                    $porta->transaction_id = $this->transaction->id;
+                    $porta->activated_at = $transaction->created_at;
+                    $porta->transaction_id = $transaction->id;
                     $porta->save();
                     $porta->linea->setStatus('Activado');
                 }
