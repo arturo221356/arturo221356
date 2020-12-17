@@ -37,7 +37,7 @@ class Porta extends Model
         
         ->whereBetween('created_at',[$initialDate,$finalDate])
         ->whereHas('linea', function ($query) {
-            $query->currentStatus(['Activado','Porta subida']);
+            $query->currentStatus(['Activado','Porta subida','Preactiva']);
         })
         ->whereHas('linea.icc.inventario', function ($query)  {
             $user = Auth::user();
@@ -57,7 +57,7 @@ class Porta extends Model
         
         ->whereBetween('created_at',[$initialDate,$finalDate])
         ->whereHas('linea', function ($query) {
-            $query->currentStatus(['Activado','Porta subida']);
+            $query->currentStatus(['Activado','Porta subida','Preactiva']);
         })
         ->whereHas('linea.icc.inventario', function ($query)  {
             $user = Auth::user();
@@ -81,7 +81,7 @@ class Porta extends Model
         
         ->whereBetween('created_at',[$initialDate,$finalDate])
         ->whereHas('linea', function ($query) {
-            $query->currentStatus(['Activado','Porta subida']);
+            $query->currentStatus(['Activado','Porta subida','Preactiva']);
             
         })
         ->whereHas('linea.icc', function ($query) use ($inventario_id) {

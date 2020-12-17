@@ -28,6 +28,8 @@ class Kernel extends ConsoleKernel
                 
 
         $schedule->command('exportados:daily')->timezone('America/Mexico_City')->dailyAt('05:00')->emailOutputTo('arturo221357@gmail.com');
+
+        $schedule->command('exportados:daily')->timezone('America/Mexico_City')->dailyAt('04:00');
     }
 
     /**

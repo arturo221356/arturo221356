@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
 use App\Telemarketing;
 use App\Mail\VentaComprobante;
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\WatchesTransaction;
 
 
 
@@ -161,7 +162,9 @@ class VentaController extends Controller
                             if ($transaction->success == true) {
                                 $montoRecargaVirtual = $recarga->monto;
                                 $total += $recarga->monto;
+                                WatchesTransaction::dispatch(Transaction::findOrFail($transaction->transaction_id));
                             } else if ($transaction->success == false) {
+                                WatchesTransaction::dispatch(Transaction::findOrFail($transaction->transaction_id));
                             }
 
                             $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
@@ -259,7 +262,7 @@ class VentaController extends Controller
                                         $fvc =
                                             // crea un nuevo chip
                                             $chip = Porta::create([
-                                                'preactivated_at' => now(),
+                                                
                                                 'nip' => isset($producto->porta->nip) ? $producto->porta->nip : null,
                                                 'temporal' => isset($producto->porta->temporal) ? $producto->porta->temporal : null,
                                                 'trafico' => isset($producto->porta->trafico) ? $producto->porta->trafico : null,
