@@ -55,7 +55,7 @@ class TransactionPortas extends Command
                             $porta->preactivated_at = $transaction->fvc;
                         }
 
-                        if ($transaction->success == true) {
+                        if ($transaction->taecel_success == true) {
 
                             $porta->activated_at = $transaction->created_at;
 
