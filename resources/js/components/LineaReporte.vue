@@ -66,18 +66,35 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <b-table
-                        :items="tableItems"
-                        :filter="tableFilter"
-                        hover
-                        responsive
-                        striped
-                        stacked="xl"
-                        head-variant="dark"
-                        :busy="tableBusy"
-                    >
-                    </b-table>
+                <div   v-if="tableItems.length > 0">
+                    <div class="mt-5">
+                        <div class="col-sm mt-auto">
+                            <h5>Resultado: {{ countItems }}</h5>
+                        </div>
+                        <div class="col-sm float-right">
+                            <b-form-group label="Filtrar:" label-size="sm"
+                                ><b-input
+                                    placeholder="Filtrar"
+                                    type="search"
+                                    v-model="tableFilter"
+                                ></b-input>
+                            </b-form-group>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <b-table
+                            :items="tableItems"
+                            :filter="tableFilter"
+                            hover
+                            responsive
+                            striped
+                            stacked="md"
+                            head-variant="dark"
+                            :busy="tableBusy"
+                            @filtered="tableFiltered"
+                        >
+                        </b-table>
+                    </div>
                 </div>
             </div>
         </b-overlay>
@@ -123,8 +140,16 @@ export default {
 
             portas: [],
 
-            exportadas:[],
+            exportadas: [],
+
+            countItems: 0,
         };
+    },
+    watch:{
+       
+    tableItems: function (items) {
+       this.countItems = items.length;
+    },
     },
     computed: {
         maxDate: function () {
@@ -149,8 +174,18 @@ export default {
 
             return bars;
         },
+        fieldKeys: function () {
+            if (this.tableItems.length > 0) {
+                return Object.keys(this.tableItems[0]);
+            }
+        },
+        
     },
     methods: {
+
+        tableFiltered(filteredItems) {
+            this.countItems = filteredItems.length;
+        },
         loadData() {
             this.getPortas();
             this.getActivatedChips();

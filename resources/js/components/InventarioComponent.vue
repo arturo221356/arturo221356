@@ -670,9 +670,7 @@ export default {
                     console.log(error);
                 });
         },
-        tableFiltered(filteredItems) {
-            this.countItems = filteredItems.length;
-        },
+        
         cancelEdit() {
             this.editMode = false;
             this.resetEditableItem();
