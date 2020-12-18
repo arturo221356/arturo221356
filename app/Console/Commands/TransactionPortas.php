@@ -44,36 +44,40 @@ class TransactionPortas extends Command
         $portas = Porta::all();
 
         foreach ($portas as $porta) {
-            $transactions = Transaction::where('dn', $porta->linea->dn)->get();
+            if(isset($porta->linea->dn)){
+                $transactions = Transaction::where('dn', $porta->linea->dn)->get();
 
-            if($porta->preactivated_at == null){
-                $porta->preactivated_at = $porta->fvc;
-            }
-
-            if (isset($transactions)) {
-
-                foreach ($transactions as $transaction) {
-                    if ($porta->linea->icc->company->id == $transaction->company_id) {
-
-                        
-
-                        if ($transaction->taecel_success == true) {
-
-                            $porta->activated_at = $transaction->created_at;
-
-                            $porta->linea->setStatus('Activado');
-                        }
-
-                        $porta->transaction_id = $transaction->id;
-
-                        
-                    }
-
-                   
+                if($porta->preactivated_at == null){
+                    $porta->preactivated_at = $porta->fvc;
                 }
+    
+                if (isset($transactions)) {
+    
+                    foreach ($transactions as $transaction) {
+                        if ($porta->linea->icc->company->id == $transaction->company_id) {
+    
+                            
+    
+                            if ($transaction->taecel_success == true) {
+    
+                                $porta->activated_at = $transaction->created_at;
+    
+                                $porta->linea->setStatus('Activado');
+                            }
+    
+                            $porta->transaction_id = $transaction->id;
+    
+                            
+                        }
+    
+                       
+                    }
+                }
+    
+                $porta->save();
+
             }
 
-            $porta->save();
         }
     }
 }
