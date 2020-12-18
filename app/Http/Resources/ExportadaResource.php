@@ -26,7 +26,8 @@ class ExportadaResource extends JsonResource
             'estatus' => $this->status,
             'Exportada a' => $this->reason,
             'inventario' => $this->icc->inventario->inventarioable->name,
-            'activated_at' => isset($this->productoable->activated_at) ? Carbon::parse($this->productoable->activated_at)->format('d/m/y h:i:s') : '',
+            'Fecha de Activacion' => isset($this->productoable->activated_at) ? Carbon::parse($this->productoable->activated_at)->format('d/m/y h:i:s') : '',
+            'Fecha de Exportacion' => isset($this->updated_at) ? Carbon::parse($this->productoable->activated_at)->format('d/m/y h:i:s') : '',
            ];
     }
 }
