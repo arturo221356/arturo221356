@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use Illuminate\Support\Carbon;
+
 class ExportadaResource extends JsonResource
 {
     /**
@@ -22,9 +24,9 @@ class ExportadaResource extends JsonResource
             'producto' => isset($this->product->name) ? $this->product->name : '',
             'sub producto' =>  isset($this->subProduct->name) ? $this->subProduct->name : '',
             'estatus' => $this->status,
+            'Exportada a' => $this->reason,
             'inventario' => $this->icc->inventario->inventarioable->name,
-            'created_at' => $this->created_at,
-            'activated_at' => $this->activated_at,
+            'activated_at' => isset($this->productoable->activated_at) ? Carbon::parse($this->productoable->activated_at)->format('d/m/y h:i:s') : '',
            ];
     }
 }
