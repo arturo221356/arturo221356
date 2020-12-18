@@ -93,7 +93,7 @@
                                 <b-input
                                     placeholder="Numero"
                                     type="number"
-                                    v-model="porta.dn"
+                                    v-model="dn"
                                     autocomplete="off"
                                     :state="
                                         getValidationState(validationContext)
@@ -223,6 +223,8 @@ export default {
                 max: maxDate,
             },
 
+            dn: null,
+
             porta: {
                 icc: null,
                 dn: null,
@@ -239,7 +241,7 @@ export default {
 
             this.icc = null;
 
-            
+            this.dn = null;
 
             this.porta = {
                 dn: null,
@@ -247,6 +249,7 @@ export default {
                 company: null,
                 vendedor: null,
                 
+
             };
         },
         getValidationState({ dirty, validated, valid = null }) {
@@ -283,7 +286,7 @@ export default {
             axios
                 .post("/new/porta-externo", {
                     icc: this.porta.icc,
-                    dn: this.porta.dn,
+                    dn: this.dn,
                     nip: this.porta.nip,
                     fvc: this.porta.fvc
                 })
