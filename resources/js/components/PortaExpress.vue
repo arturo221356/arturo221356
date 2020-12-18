@@ -81,6 +81,7 @@
                             ></b-input>
                         </b-form-group>
                         <ValidationProvider
+                        
                             name="numero"
                             v-slot="validationContext"
                             rules="required|digits:10"
