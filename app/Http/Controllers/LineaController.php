@@ -95,7 +95,7 @@ class LineaController extends Controller
             }else{
                 $response = [
                     "success" => false,
-                    "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
+                    "message" => "Funcion solo disponible para usuarios externos",
     
                 ];
             }

@@ -80,7 +80,7 @@
                                 readonly
                             ></b-input>
                         </b-form-group>
-                        <!-- <ValidationProvider
+                        <ValidationProvider
                             name="numero"
                             v-slot="validationContext"
                             rules="required|digits:10"
@@ -93,7 +93,7 @@
                                 <b-input
                                     placeholder="Numero"
                                     type="number"
-                                    v-model="dn"
+                                    v-model="porta.dn"
                                     autocomplete="off"
                                     :state="
                                         getValidationState(validationContext)
@@ -103,7 +103,7 @@
                                     validationContext.errors[0]
                                 }}</b-form-invalid-feedback>
                             </b-form-group>
-                        </ValidationProvider> -->
+                        </ValidationProvider>
                         <ValidationProvider
                             name="nip"
                             v-slot="validationContext"
@@ -223,8 +223,6 @@ export default {
                 max: maxDate,
             },
 
-            dn: null,
-
             porta: {
                 icc: null,
                 dn: null,
@@ -241,7 +239,7 @@ export default {
 
             this.icc = null;
 
-            this.dn = null;
+            
 
             this.porta = {
                 dn: null,
@@ -249,7 +247,6 @@ export default {
                 company: null,
                 vendedor: null,
                 
-
             };
         },
         getValidationState({ dirty, validated, valid = null }) {
@@ -286,7 +283,7 @@ export default {
             axios
                 .post("/new/porta-externo", {
                     icc: this.porta.icc,
-                    dn: this.dn,
+                    dn: this.porta.dn,
                     nip: this.porta.nip,
                     fvc: this.porta.fvc
                 })
