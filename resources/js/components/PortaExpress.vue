@@ -80,7 +80,7 @@
                                 readonly
                             ></b-input>
                         </b-form-group>
-                        <ValidationProvider
+                        <!-- <ValidationProvider
                             name="numero"
                             v-slot="validationContext"
                             rules="required|digits:10"
@@ -103,7 +103,7 @@
                                     validationContext.errors[0]
                                 }}</b-form-invalid-feedback>
                             </b-form-group>
-                        </ValidationProvider>
+                        </ValidationProvider> -->
                         <ValidationProvider
                             name="nip"
                             v-slot="validationContext"
