@@ -55,6 +55,10 @@ Route::view('/porta-express', 'linea.porta-express')->name('porta-express');
 
 Route::post('/recarga-chip', 'ChipController@recargaChip');
 
+Route::post('/linea/verificar-icc-externo', 'LineaController@verificarIccPortaExterna');
+
+Route::post('/new/porta-externo', 'PortaController@newExternoPorta');
+
 
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
 
@@ -81,7 +85,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar masivo');
 
-    Route::post('/linea/verificar-icc-externo', 'LineaController@verificarIccPortaExterna');
+
 
     Route::post('/icc/restore', 'IccController@restore')->middleware('can:destroy stock');
 

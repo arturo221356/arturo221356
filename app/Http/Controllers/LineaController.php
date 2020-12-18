@@ -75,7 +75,7 @@ class LineaController extends Controller
 
         
 
-        $icc = Icc::where('icc',$request->icc)->with('company', 'type')->first();
+        $icc = Icc::where('icc',$request->icc)->with('company', 'type','inventario.inventarioable')->first();
         
         if ($icc === null) {
             $response = [

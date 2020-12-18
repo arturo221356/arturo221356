@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PortaResource;
+use App\Icc;
 use App\Porta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,6 +85,78 @@ class PortaController extends Controller
     public function destroy(Porta $porta)
     {
         //
+    }
+    public function newExternoPorta(Request $request){
+        
+        $icc = Icc::where('icc',$request->icc)->first();
+        
+        if ($icc === null) {
+            $response = [
+                'success' => false,
+                'message' => 'Icc no existe en la base de datos'
+            ];
+
+            return $response;
+        }
+
+        if ($icc->linea()->first() == null) {
+            if($icc->inventario->inventarioable_type == 'App\User'){
+
+                if (isset($request->fvc)) {
+
+                    $stringFvc = Carbon::parse($request->fvc)->toIso8601String();
+
+                    $fvc = new Carbon($stringFvc);
+
+                    $fvc->hour = 9;
+                }
+                
+
+                $porta = Porta::create([
+                                                
+                    'nip' => isset($request->nip) ? $request->nip : null,
+                    'temporal' => isset($request->temporal) ? $request->temporal : null,
+                    'trafico' => isset($request->trafico) ? $request->trafico : null,
+                    'fvc' => isset($fvc) ? $fvc : null,
+
+                ]);
+
+               
+                
+                $linea = $porta->linea()->create([
+                    'dn' => $request->dn,
+                    'icc_product_id' => 2,
+                    
+                    'icc_id' => $icc->id,
+
+                ]);
+
+                $linea->setStatus('Porta subida');
+
+                $icc->setStatus('Vendido');
+
+                $response = [
+                    "success" => true,
+                    "message" => "Portabilidad Subida",
+                ];
+            }else{
+                $response = [
+                    "success" => false,
+                    "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
+    
+                ];
+            }
+            
+        } else {
+            $response = [
+                "success" => false,
+                "message" => "Icc ya tiene linea activa: " . $icc->linea->dn,
+
+            ];
+        }
+
+        return  json_encode($response);
+
     }
 
     public function getPortas(Request $request){
