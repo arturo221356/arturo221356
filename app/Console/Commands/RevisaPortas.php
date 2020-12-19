@@ -63,6 +63,8 @@ class RevisaPortas extends Command
                 $linea->productoable->preactivated_at = Carbon::now();
 
                 $linea->save();
+
+                $this->info("$linea->dn ");
             }
         }
         $this->info("oasdoaskdok");
