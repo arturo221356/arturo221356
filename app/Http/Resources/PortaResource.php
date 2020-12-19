@@ -23,6 +23,7 @@ class PortaResource extends JsonResource
             'compañia' => $this->linea->icc->company->name,
             'estatus' => $this->linea->status,
             'inventario' => $this->linea->icc->inventario->inventarioable->name,
+            'trafico' => $this->trafico_real == true ? 'Si':'No',
             'Subida' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             'Preactiva' => isset($this->preactivated_at) ? Carbon::parse($this->preactivated_at)->format('d/m/y h:i:s') : '',
             'Activada' =>isset($this->activated_at) ? Carbon::parse($this->activated_at)->format('d/m/y h:i:s') : '',
