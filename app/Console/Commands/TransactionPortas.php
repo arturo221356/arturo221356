@@ -47,11 +47,11 @@ class TransactionPortas extends Command
         foreach ($portas as $porta) {
             if(isset($porta->linea->dn)){
                
-                $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+                $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-trafico', [
                     'linea' => $porta->linea->dn,
                     
                 ]);
-                info($porta->linea->dn);
+               
                 $response = json_decode(substr($consulta, 4));
                 
                 if(isset($response->result->code)){
@@ -67,12 +67,13 @@ class TransactionPortas extends Command
 
                     info(json_encode($response->result->code));
                 }
-                info(json_encode($response));
+               
                 
     
                 
 
             }
+            
 
         }
     }
