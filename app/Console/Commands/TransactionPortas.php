@@ -55,13 +55,19 @@ class TransactionPortas extends Command
                 $response = json_decode(substr($consulta, 4));
                 
                 if(isset($response->result->code)){
-                    $response->result->code == 1 ? $porta->trafico_real = true : $porta->trafico_real = false;
+
+                    if($response->result->code == 1){
+                        $porta->trafico_real = true;
+                    }else{
+                        $porta->trafico_real = false;
+                    }
+                   
 
                     $porta->save();
 
                     info($response->result->code);
                 }
-                
+                info($response->result->code."apsldpasld");
                 
     
                 
