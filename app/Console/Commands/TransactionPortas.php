@@ -65,9 +65,9 @@ class TransactionPortas extends Command
 
                     $porta->save();
 
-                    info($response->result->code);
+                    info(json_encode($response->result->code));
                 }
-                info($response);
+                info(json_encode($response));
                 
     
                 
