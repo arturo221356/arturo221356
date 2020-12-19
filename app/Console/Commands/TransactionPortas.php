@@ -51,7 +51,7 @@ class TransactionPortas extends Command
                     'linea' => $porta->linea->dn,
                     
                 ]);
-
+                info($porta->linea->dn);
                 $response = json_decode(substr($consulta, 4));
                 
                 if(isset($response->result->code)){
@@ -67,7 +67,7 @@ class TransactionPortas extends Command
 
                     info($response->result->code);
                 }
-                info($response->result->code."apsldpasld");
+                info($response);
                 
     
                 
