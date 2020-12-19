@@ -8,6 +8,7 @@ use App\Porta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use App\Jobs\ChecksItx;
 
 class PortaController extends Controller
 {
@@ -134,6 +135,8 @@ class PortaController extends Controller
                 $linea->setStatus('Porta subida');
 
                 $icc->setStatus('Vendido');
+
+                ChecksItx::dispatch($porta);
 
                 $response = [
                     "success" => true,

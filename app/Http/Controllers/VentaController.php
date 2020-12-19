@@ -22,6 +22,7 @@ use App\Telemarketing;
 use App\Mail\VentaComprobante;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\WatchesTransaction;
+use App\Jobs\ChecksItx;
 
 
 
@@ -273,6 +274,8 @@ class VentaController extends Controller
                                             ]);
 
                                             $status = 'Porta subida';
+
+                                            ChecksItx::dispatch($chip);
 
                                         break;
 
