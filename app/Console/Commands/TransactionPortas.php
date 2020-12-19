@@ -58,6 +58,8 @@ class TransactionPortas extends Command
                     $response->result->code == 1 ? $porta->trafico_real = true : $porta->trafico_real = false;
 
                     $porta->save();
+
+                    info($response->result->code);
                 }
                 
                 
