@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Porta;
-
+use Illuminate\Support\Facades\Http;
 use App\Transaction;
 
 class TransactionPortas extends Command
@@ -15,14 +15,14 @@ class TransactionPortas extends Command
      *
      * @var string
      */
-    protected $signature = 'transaction:portas';
+    protected $signature = 'revisar:itx';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'busca entre todas las recargas y a las portas que no estan activadas les asigna su recarga';
+    protected $description = 'revisa la interconexion';
 
     /**
      * Create a new command instance.
@@ -41,40 +41,28 @@ class TransactionPortas extends Command
      */
     public function handle()
     {
-        $portas = Porta::all();
+
+         $portas = Porta::all();
 
         foreach ($portas as $porta) {
             if(isset($porta->linea->dn)){
-                $transactions = Transaction::where('dn', $porta->linea->dn)->get();
+               
+                $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+                    'linea' => $porta->linea->dn,
+                    
+                ]);
 
-                if($porta->preactivated_at == null){
-                    $porta->preactivated_at = $porta->fvc;
+                $response = json_decode(substr($consulta, 4));
+                
+                if(isset($response->result->code)){
+                    $response->result->code == "1" ? $porta->trafico_real = true : $porta->trafico_real = false;
+
+                    $porta->save();
                 }
+                
+                
     
-                if (isset($transactions)) {
-    
-                    foreach ($transactions as $transaction) {
-                        if ($porta->linea->icc->company->id == $transaction->company_id) {
-    
-                            
-    
-                            if ($transaction->taecel_success == true) {
-    
-                                $porta->activated_at = $transaction->created_at;
-    
-                                $porta->linea->setStatus('Activado');
-                            }
-    
-                            $porta->transaction_id = $transaction->id;
-    
-                            
-                        }
-    
-                       
-                    }
-                }
-    
-                $porta->save();
+                
 
             }
 
