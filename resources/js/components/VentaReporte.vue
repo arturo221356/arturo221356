@@ -31,6 +31,7 @@
                                 url="/inventario"
                                 pholder="Seleccionar Inventario"
                                 v-model="inventario"
+                                query="App\Sucursal"
                                 :empty="true"
                                 :todas="can('get inventarios') ? true : false"
                             >

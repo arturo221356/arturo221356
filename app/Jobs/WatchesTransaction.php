@@ -37,15 +37,22 @@ class WatchesTransaction implements ShouldQueue
         $porta = Porta::whereNull('activated_at')->whereHas('linea', function ($query) {
             $query->where('dn', $this->transaction->dn);
         })->first();
+        
         if(isset($porta)){
             if($porta->linea->icc->company->id == $this->transaction->company_id){
-            $porta->activated_at = now();
+            
             $porta->transaction_id = $this->transaction->id;
-            if($porta->preactivated_at == null){
-                $porta->preactivated_at == $porta->fvc;
+            
+            if($this->transaction->taecel_success == true){
+                $porta->activated_at = now();
+                if($porta->preactivated_at == null){
+                    $porta->preactivated_at == $porta->fvc;
+                }
+                $porta->linea->setStatus('Activado');
             }
+            
             $porta->save();
-            $porta->linea->setStatus('Activado');
+           
             }
             
         }

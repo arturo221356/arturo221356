@@ -23,6 +23,7 @@ use App\Mail\VentaComprobante;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\WatchesTransaction;
 use App\Jobs\ChecksItx;
+use App\Caja;
 
 
 
@@ -265,7 +266,7 @@ class VentaController extends Controller
                                         $fvc =
                                             // crea un nuevo chip
                                             $chip = Porta::create([
-                                                
+
                                                 'nip' => isset($producto->porta->nip) ? $producto->porta->nip : null,
                                                 'temporal' => isset($producto->porta->temporal) ? $producto->porta->temporal : null,
                                                 'trafico' => isset($producto->porta->trafico) ? $producto->porta->trafico : null,
@@ -273,9 +274,9 @@ class VentaController extends Controller
 
                                             ]);
 
-                                            $status = 'Porta subida';
+                                        $status = 'Porta subida';
 
-                                            ChecksItx::dispatch($chip);
+                                        ChecksItx::dispatch($chip);
 
                                         break;
 
@@ -423,6 +424,11 @@ class VentaController extends Controller
 
         $venta->save();
 
+        $caja = Caja::find($venta->inventario->caja->id);
+
+        $caja->total += $total;
+
+        $caja->save();
 
 
         $cliente = json_decode(json_encode($request->cliente));

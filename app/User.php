@@ -68,6 +68,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Inventario');
     }
+    public function caja()
+    {
+        return $this->morphOne(Caja::class, 'cajable');
+    }
     
 
 }

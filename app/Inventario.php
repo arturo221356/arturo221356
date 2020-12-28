@@ -40,6 +40,10 @@ class Inventario extends Model
     {
         return $this->belongsToMany('App\User');
     }
+    public function caja()
+    {
+        return $this->morphOne(Caja::class, 'cajable');
+    }
 
 
 
