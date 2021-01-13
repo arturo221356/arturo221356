@@ -10,6 +10,7 @@ class Caja extends Model
 {
     use HasFactory;
 
+    protected $appends = ['lastcorte'];
 
     public function cajable()
     {
@@ -22,6 +23,11 @@ class Caja extends Model
     public function cortes()
     {
         return $this->hasMany(Corte::class);
+    }
+    public function getLastcorteAttribute()
+    {
+        return $this->cortes()->latest()->first();
+       
     }
 
     public function scopeCajasForUser($query)

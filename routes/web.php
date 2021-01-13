@@ -79,7 +79,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/get/equipos', 'EquiposController@index');
 
-    Route::get('/get/cajas', 'CajaController@getCajas');
+    Route::post('/get/cajas', 'CajaController@getCajas');
 
     Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar masivo');
 
