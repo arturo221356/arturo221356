@@ -12,6 +12,14 @@ extend("positive", (value) => {
     return "El {_field_} debe se un numero positivo ";
 });
 
+extend('caja', {
+  params: ['target'],
+  validate(value, { target }) {
+    return value <= target;
+  },
+  message: `El gasto no puede ser mayor al total en caja`
+});
+
 extend("Imei", (value) => {
   if (value.length == 15) {
       return true;

@@ -29,6 +29,10 @@ class Caja extends Model
         return $this->cortes()->latest()->first();
        
     }
+    public function ventas() {
+        return $this->cajable;
+            
+    }
 
     public function scopeCajasForUser($query)
     {

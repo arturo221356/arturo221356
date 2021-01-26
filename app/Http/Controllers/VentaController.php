@@ -528,4 +528,61 @@ class VentaController extends Controller
     {
         //
     }
+
+
+
+
+
+
+    public function totalPerDay(Request $request)
+    {
+        $response = [];
+
+        $caja = Caja::find($request->caja_id);
+       
+
+
+        if ($request->customDates == true) {
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+        } else {
+            $initialDate = $caja->lastcorte->created_at;
+
+            $finalDate = Carbon::now();
+        }
+
+
+
+
+
+
+        if ($caja->cajable_type == 'App\\Inventario') {
+            $ventas = $caja->cajable->ventas()->whereBetween('created_at', [$initialDate, $finalDate])->orderBy('created_at')->get()->groupBy(function ($item) {
+                    return [
+                        'fecha' => $item->created_at->format('d-m-Y'),
+
+                    ];
+                })
+                ->map(function ($row) {
+                    return
+
+                        $row->sum('total');
+                });
+            foreach ($ventas as $key => $total) {
+
+                $object = [
+                    'fecha' => $key,
+                    'total' => $total,
+
+                ];
+
+                array_push($response, $object);
+            }
+        }
+
+
+        return $response;
+    }
 }

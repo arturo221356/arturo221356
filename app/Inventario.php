@@ -24,6 +24,10 @@ class Inventario extends Model
     {
         return $this->hasMany('App\Imei');
     }
+    public function ventas()
+    {
+        return $this->hasMany('App\Venta');
+    }
     public function iccs()
     {
         return $this->hasMany('App\Icc');

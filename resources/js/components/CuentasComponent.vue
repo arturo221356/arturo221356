@@ -17,6 +17,11 @@
                                     id="btn-radios-1"
                                     v-model="periodoTiempoPersonalizado"
                                     buttons
+                                    @input="
+                                        periodoTiempoPersonalizado == false
+                                            ? loadCajaData(selectedListItem)
+                                            : ''
+                                    "
                                 >
                                     <b-form-radio :value="false"
                                         >Ultimo Corte</b-form-radio
@@ -47,7 +52,10 @@
                                     ></b-form-datepicker>
                                 </b-form-group>
                                 <b-form-group>
-                                    <b-button block variant="primary"
+                                    <b-button
+                                        block
+                                        variant="primary"
+                                        @click="loadCajaData(selectedListItem)"
                                         >Cargar</b-button
                                     >
                                 </b-form-group>
@@ -83,44 +91,256 @@
                     </div>
 
                     <div class="col-md-8">
-                        <div>
-                            <b-tabs
-                                content-class="mt-3"
-                                v-if="selectedListItem.id"
-                            >
-                                <b-tab title="Resumen" active>
-                                    <div class="col-12">
-                                        <b-button size="sm" variant="primary"
-                                            >Ajustar</b-button
-                                        >
-                                    </div>
-                                    <div class="col-12">
-                                        <h5><B>Ventas:</B> $1500</h5>
-                                        <br />
-                                        <h5><B>Gastos:</B> $500</h5>
-                                        <br />
-                                        <h5>
-                                            <B>Total en caja:</B> ${{
-                                                selectedListItem.total
-                                            }}
-                                        </h5>
-                                    </div>
-                                </b-tab>
-                                <b-tab title="Ventas"><p>Ventas</p></b-tab>
-                                <b-tab title="Gastos">
-                                    <div class="col-12">
-                                        <b-button size="sm" variant="primary"
-                                            >Agregar Gasto</b-button
-                                        >
-                                    </div>
-                                </b-tab>
-                                <b-tab title="Cortes"><p>Cortes</p></b-tab>
-                            </b-tabs>
-                        </div>
+                        <b-overlay :show="cardsLoading" rounded="sm">
+                            <b-card no-body>
+                                <b-tabs v-if="selectedListItem.id" card>
+                                    <b-tab title="Resumen" active>
+                                        <b-button-toolbar>
+                                            <b-button
+                                                size="sm"
+                                                variant="primary"
+                                                v-b-modal.ajustar-caja
+                                                >Ajustar</b-button
+                                            >
+                                        </b-button-toolbar>
+
+                                        <div class="col-12 mt-4">
+                                            <h5>
+                                                <B>Ingresos:</B> ${{
+                                                    computedIngresosTotal
+                                                }}
+                                            </h5>
+                                            <br />
+                                            <h5>
+                                                <B>Gastos:</B> ${{
+                                                    computedGastosTotal
+                                                }}
+                                            </h5>
+                                            <br />
+                                            <h5>
+                                                <B>Total en caja:</B> ${{
+                                                    selectedListItem.total
+                                                }}
+                                            </h5>
+                                        </div>
+                                    </b-tab>
+                                    <b-tab title="Ingresos">
+                                        <h5><B>Otros:</B></h5>
+
+                                        <div class="mt-2">
+                                            <h5><B>Ventas:</B></h5>
+                                        </div>
+
+                                        <b-table
+                                            striped
+                                            hover
+                                            :items="totalsPerDay"
+                                        ></b-table
+                                    ></b-tab>
+                                    <b-tab title="Gastos">
+                                        <b-button-toolbar>
+                                            <b-button
+                                                size="sm"
+                                                variant="primary"
+                                                v-b-modal.agregar-gasto
+                                                >Agregar Gasto</b-button
+                                            >
+                                        </b-button-toolbar>
+                                        <div class="float-right">
+                                            Total: ${{ computedGastosTotal }}
+                                        </div>
+                                        <div class="mt-3">
+                                            <b-table
+                                                striped
+                                                hover
+                                                :items="gastos"
+                                            ></b-table>
+                                        </div>
+                                    </b-tab>
+                                    <b-tab title="Cortes">
+                                        <b-button-toolbar>
+                                            <b-button
+                                                size="sm"
+                                                variant="primary"
+                                                v-b-toggle.corte-collapse
+                                                >Hacer Corte</b-button
+                                            >
+                                        </b-button-toolbar>
+                                        <b-collapse id="corte-collapse" @hide="hideCorteCollapse" v-model="corteCollapse">
+                                            <validation-observer
+                                                ref="corte"
+                                                v-slot="{ handleSubmit }"
+                                            >
+                                                <b-form
+                                                    @submit.prevent="
+                                                        handleSubmit(newCorte)
+                                                    "
+                                                >
+                                                    <div class="mt-3">
+                                                        <div class="col-4">
+                                                            <ValidationProvider
+                                                                name="monto"
+                                                                v-slot="
+                                                                    validationContext
+                                                                "
+                                                                :rules="`required|numeric|caja:${selectedListItem.total}`"
+                                                            >
+                                                                <b-form-group
+                                                                    description="Ingresa la cantidad de dinero a recoger"
+                                                                    label-for="input-corte"
+                                                                    :invalid-feedback="
+                                                                        validationContext
+                                                                            .errors[0]
+                                                                    "
+                                                                    label="Cantidad:"
+                                                                    :state="
+                                                                        getValidationState(
+                                                                            validationContext
+                                                                        )
+                                                                    "
+                                                                >
+                                                                    <b-input
+                                                                        id="input-corte"
+                                                                        v-model.number="
+                                                                            corteMonto
+                                                                        "
+                                                                        placeholder="$"
+                                                                        :state="
+                                                                            getValidationState(
+                                                                                validationContext
+                                                                            )
+                                                                        "
+                                                                        autocomplete="off"
+                                                                        type="number"
+                                                                    ></b-input>
+                                                                </b-form-group>
+                                                            </ValidationProvider>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <b-button-group
+                                                                size="sm"
+                                                            >
+                                                                <b-button
+                                                                    variant="success"
+                                                                    type="submit"
+                                                                    >Aceptar</b-button
+                                                                >
+                                                                <b-button
+                                                                @click="hideCorteCollapse()"
+                                                                    >Cancelar</b-button
+                                                                >
+                                                            </b-button-group>
+                                                        </div>
+                                                    </div>
+                                                </b-form>
+                                            </validation-observer>
+                                        </b-collapse>
+                                        <div class="mt-3">
+                                            <b-table
+                                                striped
+                                                hover
+                                                :items="cortes"
+                                            ></b-table>
+                                        </div>
+                                    </b-tab>
+                                </b-tabs>
+                            </b-card>
+                        </b-overlay>
                     </div>
                 </div>
             </div>
         </b-overlay>
+
+        <!-- modal de ajustar caja  -->
+
+        <b-modal
+            id="ajustar-caja"
+            :title="`Ajustar caja ${selectedListItem.name}`"
+        >
+            <p class="my-4">Hello from modal!</p>
+        </b-modal>
+        <!-- agregar gasto  -->
+
+        <b-modal
+            id="agregar-gasto"
+            title="Agregar Gasto"
+            hide-footer
+            @hide="hideGastoModal"
+        >
+            <b-overlay :show="gastoModalLoading" rounded="sm">
+                <validation-observer ref="gasto" v-slot="{ handleSubmit }">
+                    <b-form @submit.prevent="handleSubmit(addGasto)">
+                        <ValidationProvider
+                            name="nombre"
+                            v-slot="validationContext"
+                            rules="required"
+                        >
+                            <b-form-group label="Nombre" label-size="lg">
+                                <b-input
+                                    placeholder="Nombre"
+                                    v-model="gasto.name"
+                                    autocomplete="off"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                ></b-input>
+                                <b-form-invalid-feedback>{{
+                                    validationContext.errors[0]
+                                }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
+                        <ValidationProvider
+                            name="Descripcion"
+                            v-slot="validationContext"
+                            rules="required"
+                        >
+                            <b-form-group label="Descripcion" label-size="lg">
+                                <b-input
+                                    placeholder="Descripcion"
+                                    v-model="gasto.description"
+                                    autocomplete="off"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                ></b-input>
+                                <b-form-invalid-feedback>{{
+                                    validationContext.errors[0]
+                                }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
+                        <ValidationProvider
+                            name="monto"
+                            v-slot="validationContext"
+                            :rules="`required|numeric|caja:${selectedListItem.total}`"
+                        >
+                            <b-form-group label="Monto" label-size="lg">
+                                <b-input
+                                    placeholder="Monto"
+                                    type="number"
+                                    v-model.number="gasto.monto"
+                                    autocomplete="off"
+                                    :state="
+                                        getValidationState(validationContext)
+                                    "
+                                ></b-input>
+                                <b-form-invalid-feedback>{{
+                                    validationContext.errors[0]
+                                }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
+
+                        <b-form-group>
+                            <b-button variant="success" type="submit"
+                                >Agregar</b-button
+                            >
+                            <b-button @click="hideGastoModal"
+                                >Cancelar</b-button
+                            >
+                        </b-form-group>
+                    </b-form>
+                </validation-observer>
+            </b-overlay>
+        </b-modal>
     </div>
 </template>
 
@@ -128,9 +348,29 @@
 export default {
     data() {
         return {
+
+            corteCollapse: false,
+
+            gastoModalLoading: false,
+
             isLoading: false,
 
+            cardsLoading: false,
+
+            corteMonto: null,
+
+            gasto: {
+                name: null,
+                description: null,
+                monto: null,
+            },
+            gastos: [],
+
+            totalsPerDay: [],
+
             cajas: [],
+
+            cortes: [],
 
             periodoTiempoPersonalizado: false,
 
@@ -144,20 +384,180 @@ export default {
         };
     },
     methods: {
+        getValidationState({ dirty, validated, valid = null }) {
+            return dirty || validated ? valid : null;
+        },
+        hideCorteCollapse(){
+
+            this.corteCollapse = false;
+
+            this.corteMonto = null;
+
+
+        },
+        newCorte() {
+            this.cardsLoading = true;
+
+            const params = {
+                monto_corte: this.corteMonto,
+                caja_id: this.selectedListItem.id,
+            };
+
+            axios
+                .post("/corte", params)
+
+                .then((response) => {
+                    this.$bvToast.toast(`${response.data.message}`, {
+                        title: `${response.data.title}`,
+                        variant:
+                            response.data.success == true
+                                ? "success"
+                                : "danger",
+                        solid: true,
+                    });
+                    console.log(response);
+
+                    if (response.data.success == true) {
+                        this.selectedListItem.total -= this.corteMonto;
+
+                        this.selectedListItem.lastcorteDate =
+                            response.data.last_corte;
+
+                        this.loadCajaData(this.selectedListItem);
+
+                        this.hideCorteCollapse();
+                    } else {
+                        this.cardsLoading = false;
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                    this.cardsLoading = false;
+                    this.gastoModalLoading = false;
+                });
+        },
+
+        hideGastoModal() {
+            this.$root.$emit("bv::hide::modal", "agregar-gasto");
+
+            this.gasto = {
+                name: null,
+                description: null,
+                price: null,
+            };
+
+            this.gastoModalLoading = false;
+        },
+
         loadCajas() {
+            this.isLoading = true;
             axios
                 .post("/get/cajas")
 
                 .then((response) => {
                     this.cajas = response.data.data;
+
                     console.log(response.data.data);
+
+                    if (this.cajas.length > 0) {
+                        this.selectCaja(this.cajas[0]);
+                    }
+                    this.isLoading = false;
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    alert(error);
+                    this.isLoading = false;
                 });
         },
         selectCaja(caja) {
             this.selectedListItem = caja;
+
+            this.loadCajaData(caja);
+        },
+        loadCajaData(caja) {
+            this.cardsLoading = true;
+            //carga gastos
+            const params = {
+                caja_id: caja.id,
+                customDates: this.periodoTiempoPersonalizado,
+                initial_date: this.initialDate,
+                final_date: this.finalDate,
+            };
+            axios
+                .post("/get/gastos", params)
+
+                .then((response) => {
+                    this.gastos = response.data.data;
+                    console.log(response.data.data);
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+            axios
+                .post("/ventas/perday", params)
+
+                .then((response) => {
+                    this.totalsPerDay = response.data;
+                    console.log(response.data.data);
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+
+            axios
+                .post("/get/cortes", params)
+
+                .then((response) => {
+                    this.cortes = response.data.data;
+                    console.log(response.data.data);
+
+                    this.cardsLoading = false;
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+        },
+        ajustarTotalCaja() {},
+        addGasto() {
+            this.gastoModalLoading = true;
+            this.cardsLoading = true;
+            const params = {
+                gasto_name: this.gasto.name,
+                gasto_description: this.gasto.description,
+                gasto_monto: this.gasto.monto,
+                caja_id: this.selectedListItem.id,
+            };
+            axios
+                .post("/gasto", params)
+
+                .then((response) => {
+                    this.$bvToast.toast(`${response.data.message}`, {
+                        title: `${response.data.title}`,
+                        variant:
+                            response.data.success == true
+                                ? "success"
+                                : "danger",
+                        solid: true,
+                    });
+                    console.log(response);
+
+                    if (response.data.success == true) {
+                        this.selectedListItem.total -= this.gasto.monto;
+
+                        this.loadCajaData(this.selectedListItem);
+
+                        this.hideGastoModal();
+                    }else {
+                        this.cardsLoading = false;
+                    }
+
+                    
+                })
+                .catch(function (error) {
+                    alert(error);
+                    this.cardsLoading = false;
+                    this.gastoModalLoading = false;
+                });
         },
     },
     computed: {
@@ -171,7 +571,22 @@ export default {
 
             return today;
         },
+        computedGastosTotal: function () {
+            var sum;
+
+            sum = this.gastos.reduce((a, b) => +a + +b.monto, 0);
+
+            return sum;
+        },
+        computedIngresosTotal: function () {
+            var sum;
+
+            sum = this.totalsPerDay.reduce((a, b) => +a + +b.total, 0);
+
+            return sum;
+        },
     },
+
     created() {
         this.loadCajas();
     },

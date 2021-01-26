@@ -79,7 +79,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/get/equipos', 'EquiposController@index');
 
+    Route::post('/ventas/perday', 'VentaController@totalPerDay');
+
     Route::post('/get/cajas', 'CajaController@getCajas');
+
+    Route::post('/get/cortes', 'CorteController@getAll');
 
     Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar masivo');
 
@@ -112,6 +116,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/chip', 'ChipController');
 
+    Route::resource('/gasto', 'GastoController');
+
+    Route::resource('/corte', 'CorteController');
+
+    Route::post('/get/gastos', 'GastoController@getAll');
+
     Route::resource('/ventas', 'VentaController');
 
     Route::resource('/users', 'UsersController')->middleware('can:create user');
@@ -127,63 +137,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $lineas = [
-        3322899476,
-        3320207158,
-        3320207248,
-        3329636063,
-        3321561043,
-        3329259759,
-        3329674433,
-        3318417004,
-        3329620117,
-        3316950533,
-        3317388645,
-        3329480403,
-        3334756512,
-        3326313842,
-        3311511126,
-        3320207168,
-        3320207287,
-        3320207290,
-        3312552303,
-        3320207201,
-        3320207418,
-        3329279030,
-        3328303288,
-        3315113753,
-        3317459070,
-        3314073428,
-        3311401308,
-        3317510880,
-        3329636643,
-        3329275667,
-        3314342498,
-        3320207375,
-        3311541043,
-        3329260058,
-        3331953157,
-        3329667315,
-        3339532601,
-        3310915153,
-        3315133365,
-        3319015813,
-        3310639005,
-        
-        
 
-    ];
-
-
-    foreach ($lineas as $linea) {
-
-        $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-            'linea' => $linea,
-            
-        ]);
-
-        echo "$linea $consulta<br>  ";
-    }
 });
 
 

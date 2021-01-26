@@ -91,4 +91,5 @@ class CajaController extends Controller
 
         return CajasResource::collection($cajas);
     }
+
 }

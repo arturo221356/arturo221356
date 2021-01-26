@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Gasto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Caja;
+use App\Http\Resources\GastoResource;
+use Illuminate\Support\Carbon;
 
 class GastoController extends Controller
 {
@@ -16,7 +20,27 @@ class GastoController extends Controller
     {
         //
     }
+    public function getAll(Request $request){
+        
+        $caja = Caja::find($request->caja_id);
 
+        if ($request->customDates == true) {
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+        } else {
+            $initialDate = $caja->lastcorte->created_at;
+
+            $finalDate = Carbon::now();
+        }
+        
+
+        return GastoResource::collection($caja->gastos()->whereBetween('created_at', [$initialDate, $finalDate])->get());
+
+        
+
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -35,7 +59,48 @@ class GastoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       
+        $user = Auth::user();
+
+        $caja = Caja::find($request->caja_id);
+
+        if($request->gasto_monto > $caja->total){
+            $response = [
+                'success' => false,
+                'message' => "El monto no puede ser mayor al total en caja",
+                'title' => 'Error'
+    
+            ];
+    
+            return json_encode($response);
+        }
+
+        $gasto = new Gasto(
+            [
+                'name' => $request->gasto_name,
+                'description' => $request->gasto_description,
+                'monto' => $request->gasto_monto,
+                'user_id' => $user->id,
+            ]
+        );
+        
+
+        $caja->gastos()->save($gasto);
+
+        $caja->total -= $gasto->monto;
+
+        $caja->save();
+
+        $response = [
+            'success' => true,
+            'message' => $request->gasto_name." $".$request->gasto_monto,
+            'title' => 'Gasto Agregado'
+
+        ];
+
+        return json_encode($response);
+
+
     }
 
     /**

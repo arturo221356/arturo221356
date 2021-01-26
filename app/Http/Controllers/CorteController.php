@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Corte;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Caja;
+use App\Http\Resources\CorteResource;
+use Illuminate\Support\Facades\Auth;
 
 class CorteController extends Controller
 {
@@ -35,7 +39,46 @@ class CorteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = Auth::user();
+
+        $caja = Caja::find($request->caja_id);
+
+        if($request->monto_corte > $caja->total){
+            $response = [
+                'success' => false,
+                'message' => "El monto no puede ser mayor al total en caja",
+                'title' => 'Error'
+    
+            ];
+    
+            return json_encode($response);
+        }
+
+        $corte = new Corte(
+            [
+               
+                'monto' => $request->monto_corte,
+                'user_id' => $user->id,
+            ]
+        );
+        
+
+        $caja->cortes()->save($corte);
+
+        $caja->total -= $corte->monto;
+
+        $caja->save();
+
+        $response = [
+            'success' => true,
+            'message' => 'Monto recolectado $'.$request->monto_corte,
+            'title' => 'Corte Agregado',
+            'last_corte' => isset($corte->created_at) ? Carbon::parse($corte->created_at)->format('d/m/y h:i:s') : '',
+
+        ];
+
+        return json_encode($response);
+
     }
 
     /**
@@ -81,5 +124,26 @@ class CorteController extends Controller
     public function destroy(Corte $corte)
     {
         //
+    }
+
+    public function getAll(Request $request)
+    {
+
+
+        $caja = Caja::find($request->caja_id);
+
+        if ($request->customDates == true) {
+
+            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
+
+            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+        } else {
+            $initialDate = $caja->lastcorte->created_at;
+
+            $finalDate = Carbon::now();
+        }
+
+
+        return CorteResource::collection($caja->cortes()->whereBetween('created_at', [$initialDate, $finalDate])->get());
     }
 }
