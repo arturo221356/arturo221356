@@ -2,15 +2,21 @@
 
 namespace App;
 
+use Hamcrest\Type\IsString;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Caja extends Model
 {
     use HasFactory;
 
+    use SoftDeletes;
+
     protected $appends = ['lastcorte'];
+
+    protected $fillable = ["total"];
 
     public function cajable()
     {
@@ -20,13 +26,25 @@ class Caja extends Model
     {
         return $this->hasMany(Gasto::class);
     }
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
     public function cortes()
     {
         return $this->hasMany(Corte::class);
     }
     public function getLastcorteAttribute()
     {
-        return $this->cortes()->latest()->first();
+        if($this->cortes()->latest()->first() !== null){
+        
+            return $this->cortes()->latest()->first();
+
+        }else{
+            
+            return $this->created_at;
+        }
+        
        
     }
     public function ventas() {
