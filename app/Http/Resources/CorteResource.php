@@ -22,6 +22,7 @@ class CorteResource extends JsonResource
             'id' => $this->id,
             'user' => $this->user->name,
             'monto' => $this->monto,
+            'restante' => $this->restante,
             'fecha' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             
             

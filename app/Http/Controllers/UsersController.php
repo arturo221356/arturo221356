@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserResource as UserResource;
 use App\Sucursal;
+use App\Caja;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 
@@ -130,15 +131,27 @@ class UsersController extends Controller
             $user->syncPermissions($request->permisos);
         }
 
+        switch($request->role){
 
-        if ($request->role == 'externo') {
-            $user->inventario_propio = true;
-            $user->inventario()->create(['distribution_id' => $user->distribution->id])->usuariosAsignados()->sync([$user->id, $loggedUser->id]);
-            $user->save();
-        } else {
+            case 'externo':
 
-            $user->inventariosAsignados()->sync($request->inventarios);
+                $user->inventario_propio = true;
+
+                $user->inventario()->create(['distribution_id' => $user->distribution->id])->usuariosAsignados()->sync([$user->id, $loggedUser->id]);
+
+                $user->save();
+            break;
+
+            case 'supervisor':
+
+                $user->inventariosAsignados()->sync($request->inventarios);
+
+                $user->caja()->create(['total' => 0]);
+               
+
+            break;
         }
+
     }
 
     /**

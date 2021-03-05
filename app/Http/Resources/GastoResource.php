@@ -17,6 +17,7 @@ class GastoResource extends JsonResource
     public function toArray($request)
     {
         return [
+            
             'id' => $this->id,
             'nombre' => $this->name,
             'descripcion' => $this->description,

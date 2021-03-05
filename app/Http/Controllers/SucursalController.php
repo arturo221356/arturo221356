@@ -96,6 +96,8 @@ class SucursalController extends Controller
 
 
         $sucursal->inventario()->create(['distribution_id' => $user->distribution->id])->usuariosAsignados()->attach($user);
+
+        $sucursal->inventario->caja()->create(['total' => 0]);
     }
 
     /**

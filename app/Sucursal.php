@@ -30,5 +30,10 @@ class Sucursal extends Model
     {
         return $this->morphOne('App\Inventario', 'inventarioable');
     }
+    public function caja()
+    {
+        return $this->morphOne(Caja::class, 'cajable');
+    }
+    
 
 }

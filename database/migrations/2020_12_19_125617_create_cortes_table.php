@@ -18,6 +18,7 @@ class CreateCortesTable extends Migration
             $table->integer('caja_id');
             $table->integer('user_id');
             $table->integer('monto');
+            $table->integer('restante');
             $table->timestamps();
         });
     }

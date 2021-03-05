@@ -91,5 +91,14 @@ class CajaController extends Controller
 
         return CajasResource::collection($cajas);
     }
+    public function getOwnCaja(Request $request){
+
+        $caja = Auth::User()->caja;
+
+        
+
+        return new CajasResource($caja);
+       
+    }
 
 }

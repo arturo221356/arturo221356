@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use App\Caja;
 use App\Http\Resources\CorteResource;
 use Illuminate\Support\Facades\Auth;
+use App\Income;
 
 class CorteController extends Controller
 {
@@ -59,6 +60,7 @@ class CorteController extends Controller
                
                 'monto' => $request->monto_corte,
                 'user_id' => $user->id,
+                'restante' => $caja->total - $request->monto_corte,
             ]
         );
         
@@ -68,6 +70,40 @@ class CorteController extends Controller
         $caja->total -= $corte->monto;
 
         $caja->save();
+
+       
+        $userCaja = $user->caja;
+
+        $corteDiscription = "";
+
+        switch($caja->cajable_type){
+            case "App\\Inventario":
+    
+                $corteDiscription = "Corte ".$caja->cajable->inventarioable->name;
+                
+            break;
+            case "App\\User":
+
+                $corteDiscription = "Corte ".$caja->cajable->name;
+            
+            break;
+        }
+
+        $income = new Income(
+            [
+                'name' => 'Corte',
+                'description' => $corteDiscription,
+                'monto' => $corte->monto,
+                'user_id' => $user->id,
+            ]
+        );
+
+        $userCaja->incomes()->save($income);
+
+        $userCaja->total += $corte->monto;
+
+        $userCaja->save();
+
 
         $response = [
             'success' => true,
@@ -138,7 +174,16 @@ class CorteController extends Controller
 
             $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
         } else {
-            $initialDate = $caja->lastcorte->created_at;
+
+            if(isset($caja->lastcorte->created_at)){
+
+                $initialDate = $caja->lastcorte->created_at;
+
+            }else{
+
+                $initialDate = $caja->lastcorte;
+            }  
+            
 
             $finalDate = Carbon::now();
         }

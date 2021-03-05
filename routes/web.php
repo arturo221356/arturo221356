@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
 use App\User;
 use Spatie\Permission\Models\Permission;
 use App\Icc;
+use App\Caja;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -83,6 +84,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/get/cajas', 'CajaController@getCajas');
 
+    Route::get('/own/caja', 'CajaController@getOwnCaja');
+
     Route::post('/get/cortes', 'CorteController@getAll');
 
     Route::view('/linea/preactivar', 'linea.preactivar')->middleware('can:preactivar masivo');
@@ -118,9 +121,13 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/gasto', 'GastoController');
 
+    Route::resource('/income', 'IncomeController');
+
     Route::resource('/corte', 'CorteController');
 
     Route::post('/get/gastos', 'GastoController@getAll');
+
+    Route::post('/get/incomes', 'IncomeController@getAll');
 
     Route::resource('/ventas', 'VentaController');
 
@@ -136,6 +143,22 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/pruebas', function (Request $request) {
+
+    $caja = Caja::find(1);
+
+    $response = "";
+
+    switch($caja->cajable_type){
+        case "App\\Inventario":
+
+            $response = "hola";
+        break;
+        case "App\\User":
+        
+        break;
+    }
+
+    return  $response;
 
 
 });

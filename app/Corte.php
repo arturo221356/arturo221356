@@ -9,7 +9,7 @@ class Corte extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ "user_id", "monto", "caja_id"];
+    protected $fillable = [ "user_id", "monto", "caja_id","restante"];
 
     public function caja()
     {

@@ -19,6 +19,7 @@ class CreateCajasTable extends Migration
             $table->string('cajable_type');
             $table->integer('total')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

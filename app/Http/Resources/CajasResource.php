@@ -20,8 +20,8 @@ class CajasResource extends JsonResource
 
             'id' => $this->id,
             'total' => $this->total,
-            'lastcorte' => $this->lastcorte,
-            'lastcorteDate' => isset($this->lastcorte->created_at) ? Carbon::parse($this->lastcorte->created_at)->format('d/m/y h:i:s') : '',
+            'restante' => isset($this->lastcorte->restante) ? $this->lastcorte->restante : 0,
+            'lastcorteDate' => isset($this->lastcorte->created_at) ? Carbon::parse($this->lastcorte->created_at)->format('d/m/y H:i:s') : Carbon::parse($this->lastcorte)->format('d/m/y H:i:s'),
             'name' => isset($this->cajable->inventarioable->name) ? $this->cajable->inventarioable->name :  $this->cajable->name,
 
 
