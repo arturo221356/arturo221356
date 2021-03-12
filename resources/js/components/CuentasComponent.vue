@@ -614,7 +614,7 @@ export default {
                 .then((response) => {
                     this.cajas = response.data.data;
 
-                    this.loadOwnCaja();
+                    // this.loadOwnCaja();
 
                     if (
                         this.cajas.length > 0 &&
