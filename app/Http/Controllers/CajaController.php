@@ -87,7 +87,7 @@ class CajaController extends Controller
     }
     public function getCajas(Request $request){
 
-        $cajas = Caja::cajasForUser()->with('cajable')->get();
+        $cajas = Caja::cajasForUser()->with('cajable')->orderBy('total','desc')->get();
 
         return CajasResource::collection($cajas);
     }
