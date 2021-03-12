@@ -553,7 +553,7 @@ class VentaController extends Controller
                 $initialDate = $caja->lastcorte->created_at;
             }else{
 
-                $initialDate = Carbon::now()->startOfDay();
+                $initialDate = $caja->created_at;
             }   
 
             $finalDate = Carbon::now();
