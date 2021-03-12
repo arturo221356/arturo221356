@@ -530,6 +530,12 @@ export default {
 
                             { text: "Cancelar Traspaso", value: "cancelar traspaso" },
 
+                            { text: "Ver area de cuentas", value: "ver cuentas" },
+
+                            { text: "Agregar gastos", value: "agregar gastos" },
+
+                            { text: "Hacer cortes de caja", value: "hacer cortes" },
+
                            
                             
 
@@ -542,6 +548,10 @@ export default {
                             { text: "Vender recargas", value: "create transaction" },
 
                             { text: "Preactivar lineas masivas", value: "preactivar masivo" },
+
+                            { text: "Ver area de cuentas", value: "ver cuentas" },
+
+                            { text: "Agregar gastos", value: "agregar gastos" },
 
                             
 

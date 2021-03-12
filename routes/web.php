@@ -70,7 +70,7 @@ Route::group(['middleware' => ['role:super-admin|administrador']], function () {
 Route::group(['middleware' => ['auth']], function () {
 
 
-    Route::view('/cuentas', 'cuentas.index');
+    Route::view('/cuentas', 'cuentas.index')->middleware('can:ver cuentas');
 
     Route::post('/preactivar-prepago', 'ChipController@preactivarPrepago');
 
@@ -84,7 +84,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/get/cajas', 'CajaController@getCajas');
 
-    Route::get('/own/caja', 'CajaController@getOwnCaja');
+    Route::post('/own/caja', 'CajaController@getOwnCaja');
 
     Route::post('/get/cortes', 'CorteController@getAll');
 

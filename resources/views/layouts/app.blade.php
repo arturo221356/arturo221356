@@ -79,9 +79,11 @@
 
             </div>
           </li>
+          @can('ver cuentas')
           <li class="nav-item">
             <a class="nav-link" href="/cuentas">Cuentas</a>
           </li>
+          @endcan
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">

@@ -63,7 +63,7 @@ class Caja extends Model
                 function ($query) {
                     $user = Auth::user();
                    
-                    $query->where('distribution_id', $user->distribution_id);
+                    $query->where('distribution_id', $user->distribution_id)->whereNotIn('id', [$user->caja->id]);
                 });
         } else {
             return 

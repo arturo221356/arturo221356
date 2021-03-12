@@ -94,7 +94,13 @@
                         <b-overlay :show="cardsLoading" rounded="sm">
                             <b-card no-body>
                                 <b-tabs v-if="selectedListItem.id" card>
-                                    <b-tab title="Resumen" active v-if="periodoTiempoPersonalizado == false">
+                                    <b-tab
+                                        title="Resumen"
+                                        active
+                                        v-if="
+                                            periodoTiempoPersonalizado == false
+                                        "
+                                    >
                                         <b-button-toolbar>
                                             <!-- <b-button
                                                 size="sm"
@@ -117,11 +123,13 @@
                                                 }}
                                             </h5>
                                             <br />
-                                            
+
                                             <h5>
-                                                <B>Restante en Caja ultimo Corte:</B> ${{
-                                                    selectedListItem.restante
-                                                }}
+                                                <B
+                                                    >Restante en Caja ultimo
+                                                    Corte:</B
+                                                >
+                                                ${{ selectedListItem.restante }}
                                             </h5>
                                             <br />
                                             <h5>
@@ -144,7 +152,10 @@
                                         <div class="float-right">
                                             Total: ${{ computedIngresosTotal }}
                                         </div>
-                                        <div class="mt-4" v-if="ingresos.length >0">
+                                        <div
+                                            class="mt-4"
+                                            v-if="ingresos.length > 0"
+                                        >
                                             <h5><B>Otros:</B></h5>
                                         </div>
 
@@ -156,7 +167,10 @@
                                             ></b-table>
                                         </div>
 
-                                        <div class="mt-2" v-if="totalsPerDay.length >0">
+                                        <div
+                                            class="mt-2"
+                                            v-if="totalsPerDay.length > 0"
+                                        >
                                             <h5><B>Ventas:</B></h5>
                                         </div>
 
@@ -167,7 +181,7 @@
                                         ></b-table
                                     ></b-tab>
                                     <b-tab title="Gastos">
-                                        <b-button-toolbar>
+                                        <b-button-toolbar v-if="can('agregar gastos')">
                                             <b-button
                                                 size="sm"
                                                 variant="primary"
@@ -187,7 +201,7 @@
                                         </div>
                                     </b-tab>
                                     <b-tab title="Cortes">
-                                        <b-button-toolbar>
+                                        <b-button-toolbar  v-if="can('hacer cortes')">
                                             <b-button
                                                 size="sm"
                                                 variant="primary"
@@ -199,6 +213,7 @@
                                             id="corte-collapse"
                                             @hide="hideCorteCollapse"
                                             v-model="corteCollapse"
+                                             v-if="can('hacer cortes')"
                                         >
                                             <validation-observer
                                                 ref="corte"
@@ -380,6 +395,7 @@
         <!-- agregar gasto  -->
 
         <b-modal
+            v-if="can('agregar gastos')"
             id="agregar-gasto"
             title="Agregar Gasto"
             hide-footer
@@ -490,7 +506,7 @@ export default {
             },
             gastos: [],
 
-            ingresos:[],
+            ingresos: [],
 
             totalsPerDay: [],
 
@@ -538,7 +554,6 @@ export default {
                                 : "danger",
                         solid: true,
                     });
-                    console.log(response);
 
                     if (response.data.success == true) {
                         this.selectedListItem.total -= this.corteMonto;
@@ -593,7 +608,7 @@ export default {
                 .then((response) => {
                     this.cajas = response.data.data;
 
-                    console.log(response.data.data);
+                    this.loadOwnCaja();
 
                     if (
                         this.cajas.length > 0 &&
@@ -606,6 +621,21 @@ export default {
                 .catch(function (error) {
                     alert(error);
                     this.isLoading = false;
+                });
+        },
+        loadOwnCaja() {
+            axios
+                .post("/own/caja")
+
+                .then((response) => {
+                    if (response.data.data) {
+                        this.cajas.unshift(response.data.data);
+                    }
+
+                 
+                })
+                .catch(function (error) {
+                    alert(error);
                 });
         },
         selectCaja(caja) {
@@ -627,7 +657,6 @@ export default {
 
                 .then((response) => {
                     this.gastos = response.data.data;
-                    console.log(response.data.data);
                 })
                 .catch(function (error) {
                     alert(error);
@@ -637,7 +666,6 @@ export default {
 
                 .then((response) => {
                     this.ingresos = response.data.data;
-                    console.log(response.data.data);
                 })
                 .catch(function (error) {
                     alert(error);
@@ -647,7 +675,6 @@ export default {
 
                 .then((response) => {
                     this.totalsPerDay = response.data;
-                    console.log(response.data.data);
                 })
                 .catch(function (error) {
                     alert(error);
@@ -658,7 +685,6 @@ export default {
 
                 .then((response) => {
                     this.cortes = response.data.data;
-                    console.log(response.data.data);
 
                     this.cardsLoading = false;
                 })
@@ -688,7 +714,6 @@ export default {
                                 : "danger",
                         solid: true,
                     });
-                    console.log(response);
 
                     if (response.data.success == true) {
                         this.selectedListItem.total += this.ingreso.monto;
@@ -698,7 +723,6 @@ export default {
                         this.hideIngresoModal();
 
                         this.loadCajas();
-
                     } else {
                         this.cardsLoading = false;
                     }
@@ -730,7 +754,6 @@ export default {
                                 : "danger",
                         solid: true,
                     });
-                    console.log(response);
 
                     if (response.data.success == true) {
                         this.selectedListItem.total -= this.gasto.monto;
@@ -740,8 +763,6 @@ export default {
                         this.loadCajas();
 
                         this.hideGastoModal();
-
-                        
                     } else {
                         this.cardsLoading = false;
                     }
@@ -781,7 +802,7 @@ export default {
             ventas = this.totalsPerDay.reduce((a, b) => +a + +b.total, 0);
 
             ingresos = this.ingresos.reduce((a, b) => +a + +b.monto, 0);
-            
+
             sum = ventas + ingresos;
 
             return sum;

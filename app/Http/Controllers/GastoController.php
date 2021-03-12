@@ -11,6 +11,13 @@ use Illuminate\Support\Carbon;
 
 class GastoController extends Controller
 {
+
+    public function __construct()
+    {
+       
+        $this->middleware('can:agregar gastos', ['only' => ['store']]);
+
+    }
     /**
      * Display a listing of the resource.
      *

@@ -93,11 +93,14 @@ class CajaController extends Controller
     }
     public function getOwnCaja(Request $request){
 
-        $caja = Auth::User()->caja;
+        if(isset(Auth::User()->caja)){
+            $caja = Auth::User()->caja;
 
-        
-
-        return new CajasResource($caja);
+            return new CajasResource($caja);
+        }else{
+            return [];
+        }
+       
        
     }
 
