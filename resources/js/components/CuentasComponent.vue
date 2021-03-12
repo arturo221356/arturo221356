@@ -2,11 +2,15 @@
     <div>
         <b-overlay :show="isLoading" rounded="sm">
             <div class="jumbotron jumbotron-fluid">
+                 <div class="mt-4 container">
                 <div class="col-lg-12">
                     <h1>Cuentas</h1>
                 </div>
 
-                <div class="row mt-4">
+               
+                    <div class="row">
+
+                    
                     <div class="col-md-4">
                         <div class="container">
                             <b-form-group
@@ -298,8 +302,9 @@
                         </b-overlay>
                     </div>
                 </div>
+                </div>
             </div>
-        </b-overlay>
+        
 
         <!-- modal de ajustar caja  -->
 
@@ -475,6 +480,7 @@
                 </validation-observer>
             </b-overlay>
         </b-modal>
+        </b-overlay>
     </div>
 </template>
 
@@ -629,7 +635,10 @@ export default {
 
                 .then((response) => {
                     if (response.data.data) {
-                        this.cajas.unshift(response.data.data);
+                        if(!this.cajas.includes(response.data.data)){
+                             this.cajas.unshift(response.data.data);
+                        }
+                       
                     }
 
                  
