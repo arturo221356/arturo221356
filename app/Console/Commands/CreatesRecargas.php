@@ -74,7 +74,7 @@ class CreatesRecargas extends Command
 
           
 
-          $recarga =  Recarga::create([
+            Recarga::create([
                 'name' => 'Recarga Att '.$monto,
                 'monto' => $monto,
                 'codigo' => 'att'.$codigo,
@@ -82,7 +82,7 @@ class CreatesRecargas extends Command
                 'company_id' => 3,
               ]);
 
-            $this->info($recarga);
+          
         }
 
         return 0;
