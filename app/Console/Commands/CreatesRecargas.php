@@ -40,7 +40,7 @@ class CreatesRecargas extends Command
     public function handle()
     {
 
-        $montos = [15,20,30,50,70,100,120,150,200];
+        $montos = [20,30,50,100,150,200];
 
     
 
@@ -55,15 +55,15 @@ class CreatesRecargas extends Command
 
             $recarga = new Recarga;
 
-            $recarga->name = 'Recarga Unefon '.$monto;
+            $recarga->name = 'Internet Telcel '.$monto;
 
             $recarga->monto = $monto;
 
-            $recarga->codigo =  'une'.$codigo;
+            $recarga->codigo =  'tia'.$codigo;
 
-            $recarga->taecel_code = 'une'.$codigo;
+            $recarga->taecel_code = 'tia'.$codigo;
 
-            $recarga->company_id = 4;
+            $recarga->company_id = 1;
 
             $recarga->save();
 
