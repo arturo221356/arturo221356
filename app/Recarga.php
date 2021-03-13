@@ -11,7 +11,7 @@ use Spatie\Searchable\SearchResult;
 class Recarga extends Model implements Searchable
 {
     protected $fillable = [
-        'name', 'monto','codigo','company_id',
+        'name', 'monto','codigo','company_id','taecel_code'
     ];
 
     public function getSearchResult(): SearchResult
