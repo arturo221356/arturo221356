@@ -55,7 +55,7 @@ class CreatesRecargas extends Command
 
           $recarga =  Recarga::create([
                 'name' => 'Recarga Unefon '.$monto,
-                'monto' => 200,
+                'monto' => $monto,
                 'codigo' => 'une'.$codigo,
                 'taecel_code' => 'une'.$codigo,
                 'company_id' => 4,
@@ -76,7 +76,7 @@ class CreatesRecargas extends Command
 
           $recarga =  Recarga::create([
                 'name' => 'Recarga Att '.$monto,
-                'monto' => 200,
+                'monto' => $monto,
                 'codigo' => 'att'.$codigo,
                 'taecel_code' => 'att'.$codigo,
                 'company_id' => 3,
