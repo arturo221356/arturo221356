@@ -204,12 +204,7 @@ export default {
             },
 
             fields: [
-                {
-                    key: "id",
-                    label: "#",
-                    sortable: true,
-                    sortDirection: "desc",
-                },
+
                 {
                     key: "marca",
                     label: "Marca",

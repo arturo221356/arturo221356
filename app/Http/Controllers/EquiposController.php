@@ -23,7 +23,7 @@ class EquiposController extends Controller
 
             $distribution = Distribution::find($userDistribution);
         
-            $equipos = $distribution->equipos()->get();
+            $equipos = $distribution->equipos()->orderBy('marca','asc')->get();
         
             return response()->json($equipos);
 

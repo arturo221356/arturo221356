@@ -44,7 +44,7 @@ class UsersController extends Controller
 
                 $users =  $userDistribution->users()->whereHas('roles', function ($query) {
                     $query->whereNotIn('name', ['super-admin', 'administrador']);
-                })->get();
+                })->orderBy('name','asc')->get();
             } else {
 
                 $users = User::whereHas('roles', function ($query) {
@@ -58,7 +58,7 @@ class UsersController extends Controller
 
                     $query->whereIn('id', $inventariosIds);
                 })
-                    ->get();
+                ->orderBy('name','asc')->get();
             }
 
 
