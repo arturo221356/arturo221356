@@ -38,7 +38,7 @@ class SucursalController extends Controller
 
 
 
-                $sucursales =  $userDistribution->sucursales()->get();
+                $sucursales =  $userDistribution->sucursales()->orderBy('name','asc')->get();
             } else {
 
                 $sucursales = Sucursal::whereHas('inventario', function ($query) {
@@ -50,7 +50,7 @@ class SucursalController extends Controller
 
                     $query->whereIn('id', $inventariosIds);
 
-                })->get();
+                })->orderBy('name','asc')->get();
             }
 
 

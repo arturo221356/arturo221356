@@ -38,11 +38,15 @@ class InventarioController extends Controller
 
 
 
-                $inventarios =  $userDistribution->inventarios()->get();
+                $inventarios =  $userDistribution->inventarios()->get()->sortBy(function ($batch) { 
+                    return $batch->inventarioable->name; 
+               });
 
             } else {
 
-                $inventarios =    $user->inventariosAsignados()->get();
+                $inventarios =    $user->inventariosAsignados()->get()->sortBy(function ($batch) { 
+                    return $batch->inventarioable->name; 
+               });
                 
             }
 

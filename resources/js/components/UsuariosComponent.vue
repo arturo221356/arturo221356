@@ -303,12 +303,12 @@ export default {
                 permisos: null,
             },
             fields: [
-                {
-                    key: "id",
-                    label: "#",
-                    sortable: true,
-                    sortDirection: "desc",
-                },
+                // {
+                //     key: "id",
+                //     label: "#",
+                //     sortable: true,
+                //     sortDirection: "desc",
+                // },
                 {
                     key: "name",
                     label: "Nombre",
