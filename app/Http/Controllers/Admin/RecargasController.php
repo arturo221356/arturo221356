@@ -24,7 +24,7 @@ class RecargasController extends Controller
 
             if($request->param){
 
-                $recargas = Recarga::where('company_id',$request->param)->get();
+                $recargas = Recarga::where('company_id',$request->param)->orderBy('id','asc')->get();
             }else{
 
                 $recargas = Recarga::all();

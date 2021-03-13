@@ -43,26 +43,7 @@ class CreatesRecargas extends Command
         $montos = [15,20,30,50,70,100,120,150,200];
 
     
-        // foreach($montos as $monto){
 
-        //     if($monto >= 100){
-        //         $codigo = $monto;
-        //     }else{
-        //         $codigo = '0'.$monto;
-        //     }
-
-          
-
-        //   $recarga =  Recarga::create([
-        //         'name' => 'Recarga Unefon '.$monto,
-        //         'monto' => $monto,
-        //         'codigo' => 'une'.$codigo,
-        //         'taecel_code' => 'une'.$codigo,
-        //         'company_id' => 4,
-        //       ]);
-
-        //     $this->info($recarga);
-        // }
 
         foreach($montos as $monto){
 
@@ -74,15 +55,15 @@ class CreatesRecargas extends Command
 
             $recarga = new Recarga;
 
-            $recarga->name = 'Recarga Att '.$monto;
+            $recarga->name = 'Recarga Unefon '.$monto;
 
             $recarga->monto = $monto;
 
-            $recarga->codigo =  'att'.$codigo;
+            $recarga->codigo =  'une'.$codigo;
 
-            $recarga->taecel_code = 'att'.$codigo;
+            $recarga->taecel_code = 'une'.$codigo;
 
-            $recarga->company_id = 3;
+            $recarga->company_id = 4;
 
             $recarga->save();
 
