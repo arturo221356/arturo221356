@@ -68,6 +68,9 @@ class Transaction extends Model
 
     public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId)
     {
+        
+
+        
         $user = Auth::user();
 
         $inventario = $user->inventariosAsignados()->first();
@@ -76,13 +79,24 @@ class Transaction extends Model
 
         $recarga = Recarga::findOrFail($recargaId);
 
-        $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+        if($recarga->company_id == 2){
+            $aplicarRecarga = false ;
+        }else{
+            $aplicarRecarga = true ;
+        }
 
-        $taecelRequest = json_decode($requestTXN);
+        if($aplicarRecarga == true){
+            
+            $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+
+            $taecelRequest = json_decode($requestTXN);
+        }
+
+        
 
         $transaction = Transaction::create([
 
-            'taecel' => true,
+            'taecel' => $aplicarRecarga == false ? false : true,
 
             'monto' => $recarga->monto,
 
@@ -94,24 +108,29 @@ class Transaction extends Model
 
             'inventario_id' => $inventario->id,
 
-            'taecel_success' => $taecelRequest->success,
+            'taecel_success' => isset($taecelRequest->success) ? $taecelRequest->success : true,
 
-            'taecel_message' => $taecelRequest->message,
+            'taecel_message' => isset($taecelRequest->message) ? $taecelRequest->message: 'Recarga no aplicada, solo registrada',
+
+            
 
         ]);
-        if ($taecelRequest->data) {
+        if (isset($taecelRequest->data) && $taecelRequest->data) {
+
             $transaction->taecel_transID = $taecelRequest->data->transID;
 
             $transaction->save();
         }
-        if ($taecelRequest->success == false) {
+        
+        if (isset($taecelRequest->success) && $taecelRequest->success == false) {
 
             $response =  [
                 
                 'success' =>  false,
                 'message' => $taecelRequest->message,
             ];
-        } else if ($taecelRequest->success == true) {
+
+        } else if (isset($taecelRequest->success) && $taecelRequest->success == true) {
 
             $transID = $taecelRequest->data->transID;
 
@@ -149,7 +168,14 @@ class Transaction extends Model
                     'message' => $taecelStatusTXN->message,
                 ];
             }
+
+        }else{
+            $response =  [
+                'success' =>  true,
+                'message' => 'Recarga no aplicada, solo registrada',
+            ];
         }
+        
 
 
 
