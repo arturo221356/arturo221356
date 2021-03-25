@@ -21,9 +21,9 @@ class ChipResource extends JsonResource
          'compañia' => $this->linea->icc->company->name,
          'estatus' => $this->linea->status,
          'inventario' => $this->linea->icc->inventario->inventarioable->name,
-         'recarga monto' => $this->transaction->monto,
-         'recarga mensaje' => $this->transaction->taecel_message,
-         'recarga folio' => $this->transaction->taecel_folio,
+         'recarga monto' => isset($this->transaction->monto) ? $this->transaction->monto : 0,
+         'recarga mensaje' => isset($this->transaction->taecel_message) ? $this->transaction->taecel_message : ' ',
+         'recarga folio' => isset($this->transaction->taecel_folio) ? $this->transaction->taecel_folio : ' ',
          'preactivated_at' => $this->preactivated_at,
          'activated_at' => $this->activated_at,
         ];
