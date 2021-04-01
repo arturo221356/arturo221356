@@ -155,7 +155,9 @@ class VentaController extends Controller
 
                             $recarga = Recarga::findOrFail($producto->recargaId);
 
-                            $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id);
+                            
+
+                            $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
 
                             $transaction = json_decode($newTrasnsaction);
 
@@ -355,7 +357,7 @@ class VentaController extends Controller
                                             $recarga =  Recarga::find($producto->recarga->id);
                                         }
 
-                                        $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id);
+                                        $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
 
                                         $transaction = json_decode($newTrasnsaction);
 
@@ -380,20 +382,27 @@ class VentaController extends Controller
 
                                             $venta->transactions()->attach($currentTransaction, ['price' => $recarga->monto]);
 
-                                            $chip->activated_at = now();
 
-                                            $chip->save();
 
-                                            $venta->iccs()->attach($icc, ['price' => $linea->subProduct->precio]);
+                                            
                                         }
                                     }
                                     // si el subproducto no requiere recarga 
                                     else {
 
+                                        $linea->setStatus('Sin Saldo');
+
                                         $total += $linea->subProduct->precio;
 
                                         $icc->setStatus('Vendido');
                                     }
+
+
+                                    $chip->activated_at = now();
+
+                                    $chip->save();
+
+                                    $venta->iccs()->attach($icc, ['price' => $linea->subProduct->precio]);
 
 
 
@@ -539,7 +548,7 @@ class VentaController extends Controller
         $response = [];
 
         $caja = Caja::find($request->caja_id);
-       
+
 
 
         if ($request->customDates == true) {
@@ -548,13 +557,13 @@ class VentaController extends Controller
 
             $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
         } else {
-            
-            if(isset($caja->lastcorte->created_at)){
+
+            if (isset($caja->lastcorte->created_at)) {
                 $initialDate = $caja->lastcorte->created_at;
-            }else{
+            } else {
 
                 $initialDate = $caja->created_at;
-            }   
+            }
 
             $finalDate = Carbon::now();
         }
@@ -566,11 +575,11 @@ class VentaController extends Controller
 
         if ($caja->cajable_type == 'App\\Inventario') {
             $ventas = $caja->cajable->ventas()->whereBetween('created_at', [$initialDate, $finalDate])->orderBy('created_at')->get()->groupBy(function ($item) {
-                    return [
-                        'fecha' => $item->created_at->format('d-m-Y'),
+                return [
+                    'fecha' => $item->created_at->format('d-m-Y'),
 
-                    ];
-                })
+                ];
+            })
                 ->map(function ($row) {
                     return
 

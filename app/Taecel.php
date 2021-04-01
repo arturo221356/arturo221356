@@ -190,6 +190,53 @@ class Taecel extends Model
         return $response;
     }
 
+    public function getBalance($key, $nip)
+    {
+        try {
+
+            $request =  Http::asForm()->timeout(70)->post("https://taecel.com/app/api/getBalance", [
+                'key' => $key,
+                'nip' => $nip,
+               
+
+            ]);
+        } catch (RequestException $e) {
+            $response = json_encode([
+                'success' =>  false,
+                'message' => "Error de conexion ",
+            ]);
+        }
+
+
+        if ($request->serverError()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error servidor' . $request->status(),
+            ]);
+        }
+        if ($request->clientError()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error del cliente ' . $request->status(),
+            ]);
+        }
+        if ($request->failed()) {
+
+            $response =  json_encode([
+                'success' =>  false,
+                'message' => 'Error ' . $request->status(),
+            ]);
+        }
+
+        if ($request->successful()) {
+            $response =  $request;
+        }
+
+        return $response;
+    }
+
 
 
 }

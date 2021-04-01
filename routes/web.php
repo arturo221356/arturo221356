@@ -28,8 +28,7 @@ use App\User;
 use Spatie\Permission\Models\Permission;
 use App\Icc;
 use App\Caja;
-
-
+use App\Taecel;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -144,21 +143,25 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $caja = Caja::find(1);
+    $user = Auth::user();
 
-    $response = "";
+    $inventario = $user->inventariosAsignados()->first();
 
-    switch($caja->cajable_type){
-        case "App\\Inventario":
+    $taecelKey = $inventario->distribution->taecel_key;
 
-            $response = "hola";
-        break;
-        case "App\\User":
-        
-        break;
+    $taecelNip = $inventario->distribution->taecel_nip;
+
+    $balance = (new Taecel())->getBalance($taecelKey, $taecelNip);
+
+     $response = json_decode($balance);
+
+    $saldo = (float) str_replace(',', '', $response->data[0]->Saldo);
+
+    if($saldo < 10){
+        echo $saldo;
+    }else{
+        echo $saldo;
     }
-
-    return  $response;
 
 
 });

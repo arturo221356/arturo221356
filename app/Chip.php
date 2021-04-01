@@ -31,10 +31,10 @@ class Chip extends Model
         
         ->whereBetween('activated_at',[$initialDate,$finalDate])
         ->whereHas('linea', function ($query) {
-            $query->currentStatus('Activado');
+            $query->currentStatus(['Activado','Sin Saldo']);
         })
         ->whereHas('linea.icc.inventario', function ($query)  {
-            $user = Auth::user();
+            $user = Auth::user(); 
             $query->where('distribution_id', $user->distribution->id);
            
             
@@ -51,7 +51,7 @@ class Chip extends Model
         
         ->whereBetween('activated_at',[$initialDate,$finalDate])
         ->whereHas('linea', function ($query) {
-            $query->currentStatus('Activado');
+            $query->currentStatus(['Activado','Sin Saldo']);
         })
         ->whereHas('linea.icc.inventario', function ($query)  {
             $user = Auth::user();
@@ -75,7 +75,7 @@ class Chip extends Model
         
         ->whereBetween('activated_at',[$initialDate,$finalDate])
         ->whereHas('linea', function ($query) {
-            $query->currentStatus('Activado');
+            $query->currentStatus(['Activado','Sin Saldo']);
             
         })
         ->whereHas('linea.icc', function ($query) use ($inventario_id) {

@@ -245,75 +245,35 @@ class ChipController extends Controller
         //cambia el status de la linea a proceso para evitar errores que se duplique la recarga 
         $linea->setStatus('Proceso', 'si ves esto es porque hubo un error al procesar la recarga, verifica la transaccion');
 
-        $requestTXN = (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+        $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id ,true);
 
-        $taecelRequest = json_decode($requestTXN);
-
-
-        $trasnsaction = Transaction::create([
-            'taecel' => true,
-
-            'monto' => $recarga->monto,
-
-            'dn' => $dn,
-
-            'company_id' => $recarga->company_id,
-
-            'recarga_id' => $recarga->id,
-
-            'inventario_id' => $linea->icc->inventario_id,
-
-            'taecel_success' => $taecelRequest->success,
-
-            'taecel_message' => $taecelRequest->message,
-
-        ]);
-        if ($taecelRequest->data) {
-            $trasnsaction->taecel_transID = $taecelRequest->data->transID;
-
-            $trasnsaction->save();
-        }
+        $transaction = json_decode($newTrasnsaction);
 
 
 
-        if ($taecelRequest->success == false) {
+
+        if ($transaction->success == false) {
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => $taecelRequest->message,
+                'message' => $transaction->message,
             ]);
 
             $linea->deleteStatus('Proceso');
-        } else if ($taecelRequest->success == true) {
 
-            $transID = $taecelRequest->data->transID;
+        } else if ($transaction->success == true) {
 
-            $statusTXN = (new Taecel)->TaecelStatusTXN($taecelKey, $taecelNip, $transID);
-
-            $taecelStatusTXN = json_decode($statusTXN);
-
-            if ($taecelStatusTXN->data) {
-
-                $trasnsaction->taecel_status = $taecelStatusTXN->data->Status;
-
-                $trasnsaction->taecel_message = $taecelStatusTXN->message;
-
-                $trasnsaction->taecel_timeout = $taecelStatusTXN->data->Timeout;
-
-                $trasnsaction->taecel_folio = $taecelStatusTXN->data->Folio;
-
-                $trasnsaction->taecel_nota = $taecelStatusTXN->data->Nota;
-            }
-
-            if ($taecelStatusTXN->success  == true) {
+            
 
                 $linea->setStatus('Activado');
 
                 $linea->icc->setStatus('Vendido');
 
+                $classTransaction = Transaction::find($transaction->transaction_id);
+
                 $chip = $linea->productoable;
 
-                $chip->transaction_id = $trasnsaction->id;
+                $chip->transaction_id = $classTransaction->id;
 
                 $chip->activated_at = now();
 
@@ -321,20 +281,14 @@ class ChipController extends Controller
 
                 $response =  json_encode([
                     'success' =>  true,
-                    'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
+                    'message' => $classTransaction->taecel_message . ",  Folio: " . $classTransaction->taecel_folio . " Monto: " . $classTransaction->monto,
                 ]);
-            } else if ($taecelStatusTXN->success  == false) {
-                //cambia el estatus de la linea y el icc a activado y vendido
+
                 $linea->deleteStatus('Proceso');
-
-                $response =  json_encode([
-                    'success' =>  false,
-                    'message' => $taecelStatusTXN->message,
-                ]);
             }
-        }
+        
 
-        $trasnsaction->save();
+        
 
         return  $response;
     }

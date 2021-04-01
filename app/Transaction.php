@@ -66,20 +66,18 @@ class Transaction extends Model
     }
 
 
-    public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId)
+    public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId, $inventarioID,  $activachip = false)
     {
         
 
-        
-        $user = Auth::user();
-
-        $inventario = $user->inventariosAsignados()->first();
+    
 
         $dn = $dn;
 
         $recarga = Recarga::findOrFail($recargaId);
 
-        if($recarga->company_id == 2){
+        // si la recarga es movistar y  activachip es fa
+        if($recarga->company_id == 2 && $activachip == false){
             $aplicarRecarga = false ;
         }else{
             $aplicarRecarga = true ;
@@ -106,7 +104,7 @@ class Transaction extends Model
 
             'recarga_id' => $recarga->id,
 
-            'inventario_id' => $inventario->id,
+            'inventario_id' => $inventarioID,
 
             'taecel_success' => isset($taecelRequest->success) ? $taecelRequest->success : true,
 
