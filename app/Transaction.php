@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Taecel;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\WatchesTransaction;
 
 class Transaction extends Model
 {
@@ -156,7 +157,8 @@ class Transaction extends Model
                     'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
                 ];
 
-                
+                WatchesTransaction::dispatch(Transaction::findOrFail($transaction->id));
+
             } else if ($taecelStatusTXN->success  == false) {
 
 

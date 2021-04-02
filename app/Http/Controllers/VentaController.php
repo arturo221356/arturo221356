@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
 use App\Telemarketing;
 use App\Mail\VentaComprobante;
 use Illuminate\Support\Facades\Mail;
-use App\Jobs\WatchesTransaction;
+
 use App\Jobs\ChecksItx;
 use App\Caja;
 
@@ -166,7 +166,7 @@ class VentaController extends Controller
                             if ($transaction->success == true) {
                                 $montoRecargaVirtual = $recarga->monto;
                                 $total += $recarga->monto;
-                                WatchesTransaction::dispatch(Transaction::findOrFail($transaction->transaction_id));
+                               
                             } else if ($transaction->success == false) {
                                 $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
                                 $currentTransaction->taecel_success = false;
@@ -452,7 +452,7 @@ class VentaController extends Controller
 
         if (isset($cliente->email)) {
 
-            // Mail::to($cliente->email)->send(new VentaComprobante($venta));
+           Mail::to($cliente->email)->queue(new VentaComprobante($venta));
         }
 
 
