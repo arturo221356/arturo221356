@@ -41,34 +41,34 @@ class RevisaPortas extends Command
      */
     public function handle()
     {
-        $lineas = Linea::currentStatus('Porta subida')
+        // $lineas = Linea::currentStatus('Porta subida')
 
 
-        ->get();
+        // ->get();
 
         
-        foreach ($lineas as $linea) {
+        // foreach ($lineas as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-                'linea' => $linea->dn,
+        //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+        //         'linea' => $linea->dn,
                 
-            ]);
+        //     ]);
 
-            $response = json_decode(substr($consulta, 4));
+        //     $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key == $linea->icc->company->code) {
+        //     if (isset($response->result[0]->key) && $response->result[0]->key == $linea->icc->company->code) {
 
-                $linea->setStatus('Preactiva');
+        //         $linea->setStatus('Preactiva');
 
-                $linea->productoable->preactivated_at = Carbon::now();
+        //         $linea->productoable->preactivated_at = Carbon::now();
 
-                $linea->push();
+        //         $linea->push();
 
                
 
-                $this->info("$linea->dn ");
-            }
-        }
-        $this->info("oasdoaskdok");
+        //         $this->info("$linea->dn ");
+        //     }
+        // }
+        // $this->info("oasdoaskdok");
     }
 }

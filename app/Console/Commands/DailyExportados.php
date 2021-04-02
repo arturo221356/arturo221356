@@ -44,66 +44,66 @@ class DailyExportados extends Command
     public function handle()
     {
 
-        $preactivas =  Linea::currentStatus(['Preactiva', 'Recargable'])->get();
+        // $preactivas =  Linea::currentStatus(['Preactiva', 'Recargable'])->get();
 
-        $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
-                $query->whereBetween('activated_at', [Carbon::now()->subDays(45), Carbon::now()])
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(60))
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(75));
-            })
-
-
-            ->get();
+        // $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
+        //         $query->whereBetween('activated_at', [Carbon::now()->subDays(45), Carbon::now()])
+        //             ->orWhereDate('activated_at', Carbon::now()->subDays(60))
+        //             ->orWhereDate('activated_at', Carbon::now()->subDays(75));
+        //     })
 
 
+        //     ->get();
 
 
-        foreach ($preactivas as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-                'linea' => $linea->dn,
+
+        // foreach ($preactivas as $linea) {
+
+        //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+        //         'linea' => $linea->dn,
                 
-            ]);
+        //     ]);
 
-            $response = json_decode(substr($consulta, 4));
+        //     $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
+        //     if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
 
-                $linea->setStatus('Exportada',"Linea estaba preactiva y fue exportada a".$response->result[0]->value);
+        //         $linea->setStatus('Exportada',"Linea estaba preactiva y fue exportada a".$response->result[0]->value);
 
-                $linea->updated_at = Carbon::now();
+        //         $linea->updated_at = Carbon::now();
 
-                $linea->save();
+        //         $linea->save();
 
-                $inventarioName = $linea->icc->inventario->inventarioable->name;
+        //         $inventarioName = $linea->icc->inventario->inventarioable->name;
 
-                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
-            }
-        }
+        //         $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
+        //     }
+        // }
 
-        foreach ($chipsActivados as $linea) {
+        // foreach ($chipsActivados as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
-                'linea' => $linea->dn,
+        //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+        //         'linea' => $linea->dn,
                 
-            ]);
+        //     ]);
 
-            $response = json_decode(substr($consulta, 4));
+        //     $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
+        //     if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
                
-                $linea->setStatus('Exportada',"Exportada a".$response->result[0]->value);
+        //         $linea->setStatus('Exportada',"Exportada a".$response->result[0]->value);
 
-                $linea->updated_at = Carbon::now();
+        //         $linea->updated_at = Carbon::now();
 
-                $linea->save();
+        //         $linea->save();
 
-                $inventarioName = $linea->icc->inventario->inventarioable->name;
+        //         $inventarioName = $linea->icc->inventario->inventarioable->name;
 
-                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
-            }
+        //         $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
+        //     }
             
             
-        }
+        // }
     }
 }

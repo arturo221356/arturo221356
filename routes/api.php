@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\ApiLoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,44 +16,9 @@ use Illuminate\Support\Facades\Http;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
+    return Auth::user();
 });
 
 
-Route::post('/revisar-exportadas', function (Request $request) {
-
-    if($request->linea){
-        $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-            'id' => mt_rand(100000, 999999),
-            'method' => "getOperatorByMsisdn",
-            'params' => [$request->linea]
-    
-        ]);
-    
-        return $consulta;
-    }else{
-        return 'no hay request';
-    }
-
-
-});
-
-Route::post('/revisar-trafico', function (Request $request) {
-
-    if($request->linea){
-        $consulta = Http::contentType("application/json-rpc")->bodyFormat('json')->post('http://pcportabilidad.movistar.com.mx:4080/PCMOBILE/catalogMobile', [
-            'id' => mt_rand(100000, 999999),
-            'method' => "checkITX",
-            'params' => [$request->linea]
-    
-        ]);
-    
-        return $consulta;
-    }else{
-        return 'no hay request';
-    }
-
-
-});
-
+Route::post('/sanctum/login', 'ApiLoginController@login'); 

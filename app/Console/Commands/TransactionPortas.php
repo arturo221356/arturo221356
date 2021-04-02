@@ -42,39 +42,39 @@ class TransactionPortas extends Command
     public function handle()
     {
 
-         $portas = Porta::all();
+        //  $portas = Porta::all();
 
-        foreach ($portas as $porta) {
-            if(isset($porta->linea->dn)){
+        // foreach ($portas as $porta) {
+        //     if(isset($porta->linea->dn)){
                
-                $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-trafico', [
-                    'linea' => $porta->linea->dn,
+        //         $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-trafico', [
+        //             'linea' => $porta->linea->dn,
                     
-                ]);
+        //         ]);
                
-                $response = json_decode(substr($consulta, 4));
+        //         $response = json_decode(substr($consulta, 4));
                 
-                if(isset($response->result->code)){
+        //         if(isset($response->result->code)){
 
-                    if($response->result->code == 1){
-                        $porta->trafico_real = true;
-                    }else{
-                        $porta->trafico_real = false;
-                    }
+        //             if($response->result->code == 1){
+        //                 $porta->trafico_real = true;
+        //             }else{
+        //                 $porta->trafico_real = false;
+        //             }
                    
 
-                    $porta->save();
+        //             $porta->save();
 
-                    info(json_encode($response->result->code));
-                }
+        //             info(json_encode($response->result->code));
+        //         }
                
                 
     
                 
 
-            }
+        //     }
             
 
-        }
+        // }
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 use LaravelAndVueJS\Traits\LaravelPermissionToVueJS;
-
+use Laravel\Sanctum\HasApiTokens;
 
 
 
@@ -22,6 +22,8 @@ class User extends Authenticatable
     use HasRoles;
 
     use LaravelPermissionToVueJS;
+
+    use HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
