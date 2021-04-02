@@ -5,13 +5,17 @@ namespace App\Jobs;
 use App\Transaction;
 use App\Porta;
 use Illuminate\Support\Carbon;
+use App\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Notifications\PocoSaldoRecargas;
+use Illuminate\Support\Facades\Notification;
 
-class WatchesTransaction implements ShouldQueue
+use App\Taecel;
+
+class WatchesTransaction  
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -56,6 +60,32 @@ class WatchesTransaction implements ShouldQueue
             }
             
         }
+
+       $distribution = $this->transaction->inventario->distribution;
+
+       $users = User::where('distribution_id',$distribution->id)->role('Administrador')->get();
+   
+        $taecelKey = $distribution->taecel_key;
+    
+        $taecelNip = $distribution->taecel_nip;
+    
+        $balance = (new Taecel())->getBalance($taecelKey, $taecelNip);
+    
+         $response = json_decode($balance);
+    
+        $saldo = (float) str_replace(',', '', $response->data[0]->Saldo);
+    
+        if($saldo < 500){
+        
+            Notification::send($users, new PocoSaldoRecargas($response->data[0]->Saldo));
+            
+        }
+
+
+       
+       
+
+      
     }
 
     

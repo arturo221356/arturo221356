@@ -28,7 +28,10 @@ use App\User;
 use Spatie\Permission\Models\Permission;
 use App\Icc;
 use App\Caja;
+use App\Notifications\PocoSaldoRecargas;
 use App\Taecel;
+use App\Transaction;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -143,26 +146,34 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $user = Auth::user();
+    $transaction = Transaction::find(4855);
 
-    $inventario = $user->inventariosAsignados()->first();
+    $distribution = $transaction->inventario->distribution;
 
-    $taecelKey = $inventario->distribution->taecel_key;
+    $users = User::where('distribution_id',$distribution->id)->role('Administrador')->get();
 
-    $taecelNip = $inventario->distribution->taecel_nip;
+    $taecelKey = $distribution->taecel_key;
+
+    $taecelNip = $distribution->taecel_nip;
 
     $balance = (new Taecel())->getBalance($taecelKey, $taecelNip);
 
      $response = json_decode($balance);
 
-    $saldo = (float) str_replace(',', '', $response->data[0]->Saldo);
+    $saldo = (float) str_replace(',', null, $response->data[0]->Saldo);
 
-    if($saldo < 10){
-        echo $saldo;
-    }else{
-        echo $saldo;
+    if($saldo < 2000){
+        
+        Notification::send($users, new PocoSaldoRecargas($response->data[0]->Saldo));
+        
     }
 
+   
+
+     return $users;
+  
+
+    
 
 });
 
