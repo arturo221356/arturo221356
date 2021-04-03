@@ -115,7 +115,7 @@ class VentaComprobante extends Mailable
         
         subject('Comprobante de compra')->
 
-        attachFromStorage(public_path('invoices/Comprobante_'.$this->venta->id.'.pdf'))->
+        attachFromStorage('invoices/Comprobante_'.$this->venta->id.'.pdf')->
         
         markdown('emails.comprobantes.venta',  [
 
