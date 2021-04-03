@@ -102,7 +102,7 @@ class VentaComprobante extends Mailable
             ->buyer($customer)
             ->seller($seller)
             ->date($this->venta->created_at)
-            ->filename('public/invoices/Comprobante_'.$this->venta->id)
+            ->filename('invoices/Comprobante_'.$this->venta->id)
             ->sequence($this->venta->id)
             ->addItems($items);
 

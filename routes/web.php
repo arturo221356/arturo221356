@@ -211,7 +211,7 @@ Route::get('/pruebas', function (Request $request) {
 
     //  Mail::to('arturo@aosd.com')->send(new VentaComprobante($venta));
 
-    return Storage::download('invoices/Comprobante_3422.pdf');
+    return Storage::download('invoices/Comprobante_2.pdf');
 
 
 
