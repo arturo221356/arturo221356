@@ -5,9 +5,9 @@ Te compartimos tu comprobante de compra.
 
 
 
-@component('mail::button', ['url' => $url])
+{{-- @component('mail::button', ['url' => $url])
 Descargar Comprobante
-@endcomponent
+@endcomponent --}}
 
 Gracias por su preferencia,<br>
 {{$distribution_name}}

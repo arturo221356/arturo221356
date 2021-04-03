@@ -137,81 +137,81 @@ Route::get('/pruebas', function (Request $request) {
 
    $venta = Venta::find(2);
 
-    // $seller = new Party([
-    //     'name'          => $venta->inventario->distribution->name,
-    //     'address'       => $venta->inventario->inventarioable->address,
+    $seller = new Party([
+        'name'          => $venta->inventario->distribution->name,
+        'address'       => $venta->inventario->inventarioable->address,
 
-    //     'custom_fields' => [
-    //         'sucursal' =>  $venta->inventario->inventarioable->name,
-    //         'vendedor'          => $venta->user->name,
+        'custom_fields' => [
+            'sucursal' =>  $venta->inventario->inventarioable->name,
+            'vendedor'          => $venta->user->name,
 
-    //     ],
-    // ]);
+        ],
+    ]);
 
 
 
-    // $customer = new Buyer([
-    //     'name'          => $venta->cliente->name,
-    //     'custom_fields' => [
-    //         'Correo' => $venta->cliente->email,
-    //         'RFC'  => $venta->cliente->rfc,
-    //         'CURP' =>  $venta->cliente->curp,
-    //     ],
-    // ]);
+    $customer = new Buyer([
+        'name'          => $venta->cliente->name,
+        'custom_fields' => [
+            'Correo' => $venta->cliente->email,
+            'RFC'  => $venta->cliente->rfc,
+            'CURP' =>  $venta->cliente->curp,
+        ],
+    ]);
 
-    // $items = [];
+    $items = [];
 
-    // $imeis = $venta->imeis()->with('equipo')->get();
+    $imeis = $venta->imeis()->with('equipo')->get();
 
-    // foreach($imeis as $imei){
+    foreach($imeis as $imei){
         
-    //     array_push($items, (new InvoiceItem())->title($imei->equipo->marca.'  '.$imei->equipo->modelo.'  '.$imei->imei)->pricePerUnit($imei->pivot->price));
+        array_push($items, (new InvoiceItem())->title($imei->equipo->marca.'  '.$imei->equipo->modelo.'  '.$imei->imei)->pricePerUnit($imei->pivot->price));
         
-    // }
+    }
 
-    // $iccs = $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get();
+    $iccs = $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get();
 
-    // foreach($iccs as $icc){
+    foreach($iccs as $icc){
         
-    //     array_push($items, (new InvoiceItem())->title($icc->linea->dn.' '.$icc->linea->subProduct->name.'  '.$icc->linea->product->name.'  '.$icc->company->name.'  '.$icc->icc)->pricePerUnit($icc->pivot->price));
+        array_push($items, (new InvoiceItem())->title($icc->linea->dn.' '.$icc->linea->subProduct->name.'  '.$icc->linea->product->name.'  '.$icc->company->name.'  '.$icc->icc)->pricePerUnit($icc->pivot->price));
         
-    // }
+    }
 
-    // $transactions = $venta->transactions()->with('recarga')->get();
+    $transactions = $venta->transactions()->with('recarga')->get();
 
-    // foreach($transactions as $transaction){
+    foreach($transactions as $transaction){
         
-    //     array_push($items, (new InvoiceItem())->title($transaction->company->name.'  '. $transaction->recarga->name.'  '.$transaction->dn)->pricePerUnit($transaction->pivot->price));
+        array_push($items, (new InvoiceItem())->title($transaction->company->name.'  '. $transaction->recarga->name.'  '.$transaction->dn)->pricePerUnit($transaction->pivot->price));
         
-    // }
+    }
 
-    // $generales = $venta->generalProducts;
+    $generales = $venta->generalProducts;
 
-    // foreach($generales as $vtageneral){
+    foreach($generales as $vtageneral){
         
-    //     array_push($items, (new InvoiceItem())->title($vtageneral->name.'  '. $vtageneral->description)->pricePerUnit($vtageneral->pivot->price));
+        array_push($items, (new InvoiceItem())->title($vtageneral->name.'  '. $vtageneral->description)->pricePerUnit($vtageneral->pivot->price));
         
-    // }
+    }
 
 
 
 
 
-    // // $item = (new InvoiceItem())->title('Service 1')->pricePerUnit(2);
+    // $item = (new InvoiceItem())->title('Service 1')->pricePerUnit(2);
 
-    // $invoice = Invoice::make('Comprobante')
-    //     ->buyer($customer)
-    //     ->seller($seller)
-    //     ->date($venta->created_at)
-    //     ->sequence($venta->id)
-    //     ->filename('invoices/Comprobante_'.$venta->id)
-    //     ->addItems($items);
+    $invoice = Invoice::make('Comprobante')
+        ->buyer($customer)
+        ->seller($seller)
+        ->date($venta->created_at)
+        ->sequence($venta->id)
+        ->filename('invoices/Comprobante_'.$venta->id)
+        ->addItems($items);
 
     // return $invoice->save('local')->url();
 
-    //  Mail::to('arturo@aosd.com')->send(new VentaComprobante($venta));
+     Mail::to('arturo@aosd.com')->queue(new VentaComprobante($venta));
 
-    return Storage::download('invoices/Comprobante_2.pdf');
+    //  return Storage::download('invoices/Comprobante_2.pdf');
 
 
 
