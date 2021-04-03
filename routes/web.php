@@ -12,29 +12,18 @@
 */
 //para pruebas
 
-use Illuminate\Support\Facades\Http;
-
-use Illuminate\Support\Facades\Mail;
-
-use App\Sucursal;
-
-use App\Inventario;
-use App\Linea;
-use App\Mail\VentaComprobante;
-
-use Illuminate\Support\Carbon;
-
-use App\User;
-use Spatie\Permission\Models\Permission;
-use App\Icc;
-use App\Caja;
-use App\Notifications\PocoSaldoRecargas;
-use App\Taecel;
-use App\Transaction;
-use Illuminate\Support\Facades\Notification;
+use App\Venta;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+
+use LaravelDaily\Invoices\Invoice;
+use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\InvoiceItem;
+use LaravelDaily\Invoices\Classes\Party;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VentaComprobante;
 
 
 
@@ -146,35 +135,87 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
-    $transaction = Transaction::find(4855);
+   $venta = Venta::find(2);
 
-    $distribution = $transaction->inventario->distribution;
+    // $seller = new Party([
+    //     'name'          => $venta->inventario->distribution->name,
+    //     'address'       => $venta->inventario->inventarioable->address,
 
-    $users = User::where('distribution_id',$distribution->id)->role('Administrador')->get();
+    //     'custom_fields' => [
+    //         'sucursal' =>  $venta->inventario->inventarioable->name,
+    //         'vendedor'          => $venta->user->name,
 
-    $taecelKey = $distribution->taecel_key;
+    //     ],
+    // ]);
 
-    $taecelNip = $distribution->taecel_nip;
 
-    $balance = (new Taecel())->getBalance($taecelKey, $taecelNip);
 
-     $response = json_decode($balance);
+    // $customer = new Buyer([
+    //     'name'          => $venta->cliente->name,
+    //     'custom_fields' => [
+    //         'Correo' => $venta->cliente->email,
+    //         'RFC'  => $venta->cliente->rfc,
+    //         'CURP' =>  $venta->cliente->curp,
+    //     ],
+    // ]);
 
-    $saldo = (float) str_replace(',', null, $response->data[0]->Saldo);
+    // $items = [];
 
-    if($saldo < 2000){
+    // $imeis = $venta->imeis()->with('equipo')->get();
+
+    // foreach($imeis as $imei){
         
-        Notification::send($users, new PocoSaldoRecargas($response->data[0]->Saldo));
+    //     array_push($items, (new InvoiceItem())->title($imei->equipo->marca.'  '.$imei->equipo->modelo.'  '.$imei->imei)->pricePerUnit($imei->pivot->price));
         
-    }
+    // }
+
+    // $iccs = $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get();
+
+    // foreach($iccs as $icc){
+        
+    //     array_push($items, (new InvoiceItem())->title($icc->linea->dn.' '.$icc->linea->subProduct->name.'  '.$icc->linea->product->name.'  '.$icc->company->name.'  '.$icc->icc)->pricePerUnit($icc->pivot->price));
+        
+    // }
+
+    // $transactions = $venta->transactions()->with('recarga')->get();
+
+    // foreach($transactions as $transaction){
+        
+    //     array_push($items, (new InvoiceItem())->title($transaction->company->name.'  '. $transaction->recarga->name.'  '.$transaction->dn)->pricePerUnit($transaction->pivot->price));
+        
+    // }
+
+    // $generales = $venta->generalProducts;
+
+    // foreach($generales as $vtageneral){
+        
+    //     array_push($items, (new InvoiceItem())->title($vtageneral->name.'  '. $vtageneral->description)->pricePerUnit($vtageneral->pivot->price));
+        
+    // }
+
+
+
+
+
+    // // $item = (new InvoiceItem())->title('Service 1')->pricePerUnit(2);
+
+    // $invoice = Invoice::make('Comprobante')
+    //     ->buyer($customer)
+    //     ->seller($seller)
+    //     ->date($venta->created_at)
+    //     ->sequence($venta->id)
+    //     ->filename('invoices/Comprobante_'.$venta->id)
+    //     ->addItems($items);
+
+    // return $invoice->save('local')->url();
+
+     Mail::to('arturo@aosd.com')->send(new VentaComprobante($venta));
+
+    // return Storage::download('invoices/Comprobante_3422.pdf');
+
+
 
    
-
-     return $users;
-  
-
-    
-
 });
 
 

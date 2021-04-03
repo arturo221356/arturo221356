@@ -2,12 +2,16 @@
 
 namespace App\Mail;
 
+use App\Venta;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Venta;
-use Illuminate\Support\Carbon;
+use LaravelDaily\Invoices\Invoice;
+use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\InvoiceItem;
+use LaravelDaily\Invoices\Classes\Party;
+
 
 class VentaComprobante extends Mailable
 {
@@ -32,32 +36,94 @@ class VentaComprobante extends Mailable
      */
     public function build()
     {
+
        
 
-        $ventaData = [
-
-            'inventario'=>$this->venta->inventario->inventarioable,
-
-            'distribution'=>$this->venta->inventario->distribution->name,
-
-            'venta'=>$this->venta,
+        $seller = new Party([
+            'name'          => $this->venta->inventario->distribution->name,
+            'address'       => $this->venta->inventario->inventarioable->address,
+    
+            'custom_fields' => [
+                'sucursal' =>  $this->venta->inventario->inventarioable->name,
+                'vendedor'          => $this->venta->user->name,
+    
+            ],
+        ]);
+    
+    
+    
+        $customer = new Buyer([
+            'name'          => $this->venta->cliente->name,
+            'custom_fields' => [
+                'Correo' => $this->venta->cliente->email,
+                'RFC'  => $this->venta->cliente->rfc,
+                'CURP' =>  $this->venta->cliente->curp,
+            ],
+        ]);
+    
+        $items = [];
+    
+        $imeis = $this->venta->imeis()->with('equipo')->get();
+    
+        foreach($imeis as $imei){
             
-            'fecha' => Carbon::parse($this->venta->created_at)->format('d/m/y h:i:s' ),
-
-            'vendedor' => $this->venta->user->name,
-
-            'cliente' => $this->venta->cliente,
-
-            'productosGenerales' =>$this->venta->generalProducts,
-
-            'imeis' => $this->venta->imeis()->with('equipo')->get(),
-
-            'iccs' => $this->venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get(),
-
-            'transactions' => $this->venta->transactions()->with('recarga')->get(),
+            array_push($items, (new InvoiceItem())->title($imei->equipo->marca.'  '.$imei->equipo->modelo.'  '.$imei->imei)->pricePerUnit($imei->pivot->price));
             
-        ];
+        }
+    
+        $iccs = $this->venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get();
+    
+        foreach($iccs as $icc){
+            
+            array_push($items, (new InvoiceItem())->title($icc->linea->dn.' '.$icc->linea->subProduct->name.'  '.$icc->linea->product->name.'  '.$icc->company->name.'  '.$icc->icc)->pricePerUnit($icc->pivot->price));
+            
+        }
+    
+        $transactions = $this->venta->transactions()->with('recarga')->get();
+    
+        foreach($transactions as $transaction){
+            
+            array_push($items, (new InvoiceItem())->title($transaction->company->name.'  '. $transaction->recarga->name.'  '.$transaction->dn)->pricePerUnit($transaction->pivot->price));
+            
+        }
+    
+        $generales = $this->venta->generalProducts;
+    
+        foreach($generales as $vtageneral){
+            
+            array_push($items, (new InvoiceItem())->title($vtageneral->name.'  '. $vtageneral->description)->pricePerUnit($vtageneral->pivot->price));
+            
+        }
+    
+    
+    
+    
+        $invoice = Invoice::make('Comprobante')
+            ->buyer($customer)
+            ->seller($seller)
+            ->date($this->venta->created_at)
+            ->filename('public/invoices/Comprobante_'.$this->venta->id)
+            ->sequence($this->venta->id)
+            ->addItems($items);
 
-        return $this->view('venta.show',$ventaData);
+        $invoiceUrl = $invoice->save('local')->url();
+
+
+
+
+        return $this->
+        
+        subject('Comprobante de compra')->
+
+        attachFromStorage('invoices/Comprobante_'.$this->venta->id.'.pdf')->
+        
+        markdown('emails.comprobantes.venta',  [
+
+             'cliente_name' => $this->venta->cliente->name,
+
+            'distribution_name' => $this->venta->inventario->distribution->name,
+
+            'url' => 'http://promoviles.test'.$invoiceUrl,
+        ]);
     }
 }

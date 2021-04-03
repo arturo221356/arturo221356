@@ -20,6 +20,7 @@ use App\Http\Resources\VentaResource;
 use Illuminate\Support\Carbon;
 use App\Telemarketing;
 use App\Mail\VentaComprobante;
+use App\Mail\OrderShipped;
 use Illuminate\Support\Facades\Mail;
 
 use App\Jobs\ChecksItx;
@@ -452,7 +453,9 @@ class VentaController extends Controller
 
         if (isset($cliente->email)) {
 
-           Mail::to($cliente->email)->queue(new VentaComprobante($venta));
+        Mail::to($cliente->email)->queue(new VentaComprobante($venta));
+
+        
         }
 
 
