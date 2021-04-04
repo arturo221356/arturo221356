@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
 
         //$schedule->command('revisa:portas')->timezone('America/Mexico_City')->dailyAt('04:00');
 
-        $schedule->command('delete:invoices')->monthly(4,'00:00')->emailOutputTo('arturo221357@gmail.com');
+        $schedule->command('delete:invoices')->timezone('America/Mexico_City')->monthly(4,'13:00')->emailOutputTo('arturo221357@gmail.com');
 
        
     }
