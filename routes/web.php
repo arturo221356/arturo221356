@@ -57,6 +57,8 @@ Route::group(['middleware' => ['role:super-admin|administrador']], function () {
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
 });
 
+Route::get('/venta/comprobante', 'VentaController@getInvoice');
+
 
 Route::group(['middleware' => ['auth']], function () {
 
@@ -72,6 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get/equipos', 'EquiposController@index');
 
     Route::post('/ventas/perday', 'VentaController@totalPerDay');
+
 
     Route::post('/get/cajas', 'CajaController@getCajas');
 

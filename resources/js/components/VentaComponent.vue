@@ -823,7 +823,12 @@
 </template>
 
 <script>
+import ShowVenta from "./ShowVenta.vue";
+
 export default {
+    components: {
+        ShowVenta,
+    },
     data: function () {
         const now = new Date();
 
@@ -1195,14 +1200,14 @@ export default {
     },
     watch: {},
     computed: {
-        nombreClienteRequired(){
+        nombreClienteRequired() {
             // const products = ['iccs','imeis'];
             // if(this.productos.find(element => products.includes(element.type))){
             //     return 'required';
             // }else{
             //     return '';
             // }
-            return '';
+            return "";
         },
         showSubProductoSelect: function () {
             if (this.iccData.iccProduct) {
@@ -1254,10 +1259,9 @@ export default {
         },
 
         totalVenta: function () {
-            let total =  0;
+            let total = 0;
 
             this.productos.forEach((element) => {
-
                 total += Number(element.precio);
             });
 

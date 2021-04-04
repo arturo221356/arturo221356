@@ -52,9 +52,6 @@ Vue.component('inventario-component', require('./components/InventarioComponent.
 Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
 Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
-// Vue.component('export-excel', require('./components/ExportExcelComponent.vue').default);
-// Vue.component('table-component', require('./components/TableComponent.vue').default);
-// Vue.component('edit-modal', require('./components/EditModalComponent.vue').default);
 Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
  Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
@@ -66,7 +63,6 @@ Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalCompone
 Vue.component('preactivar-linea', require('./components/PreactivarComponent.vue').default);
 Vue.component('activa-chip', require('./components/ActivaChip.vue').default);
 Vue.component('linea-reporte', require('./components/LineaReporte.vue').default);
-Vue.component('show-venta', require('./components/ShowVenta.vue').default);
 Vue.component('venta-reporte', require('./components/VentaReporte.vue').default);
 Vue.component('transaction-reporte', require('./components/TransactionReporte.vue').default);
 Vue.component('porta-express', require('./components/PortaExpress.vue').default);

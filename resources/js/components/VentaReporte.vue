@@ -79,6 +79,19 @@
                                         <strong>Loading...</strong>
                                     </div>
                                 </template>
+                                <template v-slot:cell(print)="row">
+                                    <div
+                                        class="h4 mb-0"
+                                        :style="{ cursor: 'pointer' }"
+                                    >
+                                        <b-icon
+                                            icon="file-earmark"
+                                            @click="
+                                                downloadInvoice(row.item.folio)
+                                            "
+                                        ></b-icon>
+                                    </div>
+                                </template>
                                 <template #cell(Productos)="venta">
                                     <div
                                         v-if="
@@ -197,43 +210,6 @@
 export default {
     data: function () {
         return {
-            // aok: {
-            //     item: {
-            //         distribution: "promoviles 1",
-            //         folio: 1,
-            //         inventario_name: "Bodega",
-            //         sucursal_domicilio: "madero 110",
-            //         vendedor: "Vendedor User",
-            //         cliente: "público en general",
-            //         productosGenerales: [
-            //             {
-            //                 id: 1,
-            //                 name: "qweqw",
-            //                 description: "qweqwe",
-            //                 price: 123,
-            //                 created_at: "2020-11-21T23:10:45.000000Z",
-            //                 updated_at: "2020-11-21T23:10:45.000000Z",
-            //                 pivot: {
-            //                     venta_id: 1,
-            //                     ventaable_id: 1,
-            //                     ventaable_type: "App\\ProductoGeneral",
-            //                     price: 123,
-            //                 },
-            //             },
-            //         ],
-            //         total: 123,
-            //         imeis: [],
-            //         iccs: [],
-            //         transactions: [],
-            //         fecha: "21/11/20 05:10:45",
-            //     },
-            //     index: 0,
-            //     field: { key: "Productos", label: "Productos" },
-            //     unformatted: "",
-            //     value: "",
-            //     detailsShowing: false,
-            //     rowSelected: false,
-            // },
             inventario: null,
 
             tableBusy: false,
@@ -279,6 +255,11 @@ export default {
                     key: "total",
                     label: "Total",
                     sortable: true,
+                },
+                {
+                    key: "print",
+                    label: "",
+                    sortable: false,
                 },
             ],
 
@@ -340,19 +321,41 @@ export default {
                 this.totalVentas = 0;
             }
         },
-
+        downloadInvoice(folio) {
+            this.isLoading = true;
+            axios({
+                url: `/venta/comprobante/?folio=` + folio,
+                method: "GET",
+                responseType: "blob", // important
+            })
+                .then((response) => {
+                    const url = window.URL.createObjectURL(
+                        new Blob([response.data])
+                    );
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", `comprobante_${folio}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                    this.isLoading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    this.isLoading = false;
+                });
+        },
 
         getVentas() {
             this.tableBusy = true;
             axios
                 .get(`/ventas`, {
-                    params:{
+                    params: {
                         initial_date: this.initialDate,
-                       
+
                         final_date: this.finalDate,
-                        
+
                         inventario_id: this.inventario.id,
-                    }
+                    },
                 })
                 .then(
                     function (response) {
@@ -375,10 +378,10 @@ export default {
                 )
                 .catch(function (error) {
                     console.log(error);
+                    this.isLoading = false;
                 });
         },
     },
-
 };
 </script>
 

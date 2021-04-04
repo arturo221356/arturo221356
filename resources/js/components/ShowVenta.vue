@@ -137,23 +137,7 @@
                                 <h4 align="right">Total: ${{ventaData.total}}</h4>
                             </b-list-group-item>
 
-                            <!-- @foreach ($transactions as $transaction)
-                    <a class="list-group-item list-group-item-action flex-column align-items-start {{ $transaction->taecel_success == false ? 'list-group-item-danger' : '' }}">
-                        <div class="col-auto">
-                            <h5>{{$transaction->recarga->name}}</h5>
-                            Compañia: {{$transaction->company->name}}<br>
-                            Numero: {{$transaction->dn}}<br>
-                            @if($transaction->taecel == true)
-                            Mensaje: {{$transaction->taecel_message}}<br> 
-                            Folio: {{$transaction->taecel_folio}}<br> 
-                            @endif
 
-
-                            </p>
-                            <p align="right"><B>Precio:</B> ${{$transaction->pivot->price}}</p>
-                        </div>
-                    </a>
-                    @endforeach -->
                         </b-list-group>
                     </b-col>
                 </b-row>

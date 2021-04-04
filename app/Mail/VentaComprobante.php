@@ -123,7 +123,7 @@ class VentaComprobante extends Mailable
 
             'distribution_name' => $this->venta->inventario->distribution->name,
 
-            'url' => 'http://promoviles.test'.$invoiceUrl,
+            'url' => 'http://ventachip.com/venta/comprobante/?folio='.$this->venta->id,
         ]);
     }
 }

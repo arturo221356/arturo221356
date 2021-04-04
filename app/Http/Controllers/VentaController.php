@@ -22,6 +22,10 @@ use App\Telemarketing;
 use App\Mail\VentaComprobante;
 use App\Mail\OrderShipped;
 use Illuminate\Support\Facades\Mail;
+use LaravelDaily\Invoices\Invoice;
+use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\InvoiceItem;
+use LaravelDaily\Invoices\Classes\Party;
 
 use App\Jobs\ChecksItx;
 use App\Caja;
@@ -602,5 +606,81 @@ class VentaController extends Controller
 
 
         return $response;
+    }
+
+    public function getInvoice(Request $request){
+        
+        $venta = Venta::find($request->folio);
+
+        $seller = new Party([
+            'name'          => $venta->inventario->distribution->name,
+            'address'       => $venta->inventario->inventarioable->address,
+    
+            'custom_fields' => [
+                'sucursal' =>  $venta->inventario->inventarioable->name,
+                'vendedor'          => $venta->user->name,
+    
+            ],
+        ]);
+    
+    
+    
+        $customer = new Buyer([
+            'name'          => $venta->cliente->name,
+            'custom_fields' => [
+                'Correo' => $venta->cliente->email,
+                'RFC'  => $venta->cliente->rfc,
+                'CURP' =>  $venta->cliente->curp,
+            ],
+        ]);
+    
+        $items = [];
+    
+        $imeis = $venta->imeis()->with('equipo')->get();
+    
+        foreach($imeis as $imei){
+            
+            array_push($items, (new InvoiceItem())->title($imei->equipo->marca.'  '.$imei->equipo->modelo.'  '.$imei->imei)->pricePerUnit($imei->pivot->price));
+            
+        }
+    
+        $iccs = $venta->iccs()->with('linea','company','linea.product','linea.subProduct')->get();
+    
+        foreach($iccs as $icc){
+            
+            array_push($items, (new InvoiceItem())->title($icc->linea->dn.' '.$icc->linea->subProduct->name.'  '.$icc->linea->product->name.'  '.$icc->company->name.'  '.$icc->icc)->pricePerUnit($icc->pivot->price));
+            
+        }
+    
+        $transactions = $venta->transactions()->with('recarga')->get();
+    
+        foreach($transactions as $transaction){
+            
+            array_push($items, (new InvoiceItem())->title($transaction->company->name.'  '. $transaction->recarga->name.'  '.$transaction->dn)->pricePerUnit($transaction->pivot->price));
+            
+        }
+    
+        $generales = $venta->generalProducts;
+    
+        foreach($generales as $vtageneral){
+            
+            array_push($items, (new InvoiceItem())->title($vtageneral->name.'  '. $vtageneral->description)->pricePerUnit($vtageneral->pivot->price));
+            
+        }
+    
+    
+    
+    
+        $invoice = Invoice::make('Comprobante')
+            ->buyer($customer)
+            ->seller($seller)
+            ->date($venta->created_at)
+            ->filename('invoices/Comprobante_'.$venta->id)
+            ->sequence($venta->id)
+            ->addItems($items);
+
+        return $invoice->download();
+
+
     }
 }
