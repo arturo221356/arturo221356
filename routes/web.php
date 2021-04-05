@@ -12,20 +12,11 @@
 */
 //para pruebas
 
-use App\Venta;
+
+
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
-
-use LaravelDaily\Invoices\Invoice;
-use LaravelDaily\Invoices\Classes\Buyer;
-use LaravelDaily\Invoices\Classes\InvoiceItem;
-use LaravelDaily\Invoices\Classes\Party;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\VentaComprobante;
-
-
 
 
 Auth::routes([
@@ -88,6 +79,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/linea/verificar-icc', 'LineaController@verificarIcc')->middleware('can:preactivar masivo');
 
+    Route::post('/linea/exportar/excel', 'LineaController@exportExcelLineas');
+
 
 
     Route::post('/icc/restore', 'IccController@restore')->middleware('can:destroy stock');
@@ -139,9 +132,10 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/pruebas', function (Request $request) {
 
 
-    $files = Storage::deleteDirectory('invoices/');
+   
 
-    return $files;
+    
+
    
 });
 

@@ -37,6 +37,10 @@
                             </select-general>
                         </b-form-group>
                         <b-button block @click="loadData">Cargar</b-button>
+
+                        <b-button block @click="downloadExcel" variant="success"
+                            >Descargar Excel</b-button
+                        >
                     </b-form>
                     <div class="mt-4">
                         <div
@@ -66,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                <div   v-if="tableItems.length > 0">
+                <div v-if="tableItems.length > 0">
                     <div class="mt-5">
                         <div class="col-sm mt-auto">
                             <h5>Resultado: {{ countItems }}</h5>
@@ -145,11 +149,10 @@ export default {
             countItems: 0,
         };
     },
-    watch:{
-       
-    tableItems: function (items) {
-       this.countItems = items.length;
-    },
+    watch: {
+        tableItems: function (items) {
+            this.countItems = items.length;
+        },
     },
     computed: {
         maxDate: function () {
@@ -179,10 +182,8 @@ export default {
                 return Object.keys(this.tableItems[0]);
             }
         },
-        
     },
     methods: {
-
         tableFiltered(filteredItems) {
             this.countItems = filteredItems.length;
         },
@@ -283,6 +284,37 @@ export default {
                 )
                 .catch(function (error) {
                     console.log(error);
+                });
+        },
+
+        downloadExcel() {
+            this.isLoading = true;
+            axios({
+                url: `/linea/exportar/excel`,
+                method: "POST",
+                data: {
+                    inventario_id: this.inventario.id,
+                    initial_date: this.initialDate,
+                    final_date: this.finalDate,
+                },
+                responseType: "blob", // important
+            })
+                .then((response) => {
+                    const url = window.URL.createObjectURL(
+                        new Blob([response.data])
+                    );
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", `Lineas.xlsx`);
+                    document.body.appendChild(link);
+                    link.click();
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                   
+                    alert(error);
+
+                    this.isLoading = false;
                 });
         },
     },

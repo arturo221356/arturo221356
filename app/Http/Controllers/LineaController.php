@@ -6,6 +6,10 @@ use App\Linea;
 
 use App\Icc;
 
+use App\Chip;
+
+use App\Porta;
+
 use Illuminate\Support\Carbon;
 
 use App\Http\Resources\ExportadaResource;
@@ -15,9 +19,9 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
+use Maatwebsite\Excel\Facades\Excel;
 
-
-use Illuminate\Support\Facades\Request as FacadesRequest;
+use App\Exports\LineaExport;
 
 
 class LineaController extends Controller
@@ -70,6 +74,11 @@ class LineaController extends Controller
 
         return  json_encode($response);
     }
+
+
+
+
+
     public function verificarIccPortaExterna(Request $request)
     {
 
@@ -151,7 +160,51 @@ class LineaController extends Controller
         }
     }
 
+    public function exportExcelLineas (Request $request){
+
+        $user = Auth::user();
+
+        $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
     
+        $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
+
+        
+
+        if($request->inventario_id == 'all'){
+            if($user->can('distribution inventarios')){
+                $inventarios = $user->distribution->inventarios()->pluck('id');
+            }else{
+                $inventarios = $user->inventariosAsignados()->pluck('id');   
+            }
+        }else{
+            $inventarios = [$request->inventario_id];
+        }
+    
+    
+        $linea = Linea::currentStatus(['Porta subida', 'Activado','Sin Saldo','Pospago','Telemarketing','Exportada'])
+        
+        ->whereHas('icc.inventario', function ($query) use ($inventarios) {
+            $query->whereIn('id', $inventarios);
+        })
+        
+        ->whereHasMorph(
+            'productoable',
+            [Porta::class,Chip::class],
+            function ($query,$type)  use ($initialDate, $finalDate){
+    
+                $column = $type === Porta::class ? 'created_at' : 'activated_at';
+    
+                $query->whereBetween($column, [$initialDate, $finalDate]);
+            }
+        )->get();
+    
+          return Excel::download(new LineaExport($linea), 'invoices.xlsx');
+
+        
+
+        
+
+    }
 
 
 
