@@ -7,13 +7,25 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAutoSize
+use Maatwebsite\Excel\Concerns\WithStyles;
+
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+
+
+
+use Illuminate\Support\Carbon;
+
+class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAutoSize, WithStyles, WithColumnFormatting 
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -36,14 +48,14 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             $linea->icc->inventario->inventarioable->name,
             isset($linea->product->name) ? $linea->product->name : null,
             $linea->status,
-            $linea->productoable->preactivated_at,
-            $linea->productoable->activated_at,
+            isset($linea->productoable->preactivated_at) ? Date::stringToExcel($linea->productoable->preactivated_at) : null,
+            isset($linea->productoable->activated_at) ? Date::stringToExcel($linea->productoable->activated_at) : null,
             isset($linea->productoable->transaction->monto) ? $linea->productoable->transaction->monto : null,
             isset($linea->productoable->transaction->taecel_message) ? $linea->productoable->transaction->taecel_message : null,
-            isset($linea->productoable->transaction->created_at) ? $linea->productoable->transaction->created_at : null,
+            isset($linea->productoable->transaction->created_at) ?  Date::stringToExcel($linea->productoable->transaction->created_at) : null,
 
 
-
+           
         ];
     }
     public function headings(): array
@@ -59,6 +71,25 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             'Monto Recarga',
             'Mensaje Recarga',
             'Fecha Recarga'
+        ];
+    }
+    public function columnFormats(): array
+    {
+        return [
+
+            'F' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+        ];
+    }
+    public function styles(Worksheet $sheet)
+    {
+
+        return [
+            // Style the first row as bold text.
+            1    => ['font' => ['bold' => true,'size' => 14,'color' => array('rgb' => '000000')]],
+
+
         ];
     }
 
