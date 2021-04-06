@@ -45,6 +45,8 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
 
             $linea->icc->icc . "F",
             $linea->dn,
+            $linea->icc->company->name,
+            $linea->icc->type->name,
             $linea->icc->inventario->inventarioable->name,
             isset($linea->product->name) ? $linea->product->name : null,
             $linea->status,
@@ -63,6 +65,8 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
         return [
             'Icc',
             'Numero',
+            'Compañia',
+            'Tipo',
             'Inventario',
             'Producto',
             'Estatus',
