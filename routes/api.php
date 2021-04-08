@@ -38,6 +38,7 @@ Route::post('/revisar-exportadas', function (Request $request) {
         return $consulta;
     }else{
         return 'no hay request';
+        
     }
 
 
