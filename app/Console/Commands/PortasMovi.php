@@ -2,27 +2,27 @@
 
 namespace App\Console\Commands;
 
-use App\Porta;
-use App\Linea;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
-class RevisaPortas extends Command
+use App\Linea;
+
+use Illuminate\Support\Facades\Http;
+
+class PortasMovi extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'revisa:portas';
+    protected $signature = 'portas:movistar';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Revisa en el api de numero nacional las portas que se hayan hecho correctamente';
+    protected $description = 'Revisa el estatus de las portas de movistar';
 
     /**
      * Create a new command instance.
@@ -41,7 +41,9 @@ class RevisaPortas extends Command
      */
     public function handle()
     {
-        $lineas = Linea::currentStatus('Porta subida')
+        $lineas = Linea::currentStatus('Porta subida')->whereHas('icc', function ($query) {
+            $query->where('company_id', 2);
+        })
 
 
         ->get();
@@ -49,26 +51,21 @@ class RevisaPortas extends Command
         
         foreach ($lineas as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
+            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/portaStatus', [
                 'linea' => $linea->dn,
                 
             ]);
 
             $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key == $linea->icc->company->code) {
+            if (isset($response->result[0]->stateDescription)) {
 
-                $linea->setStatus('Preactiva');
+                $linea->setStatus('Porta subida', $response->result[0]->stateDescription);           
 
-                $linea->productoable->preactivated_at = Carbon::now();
+                $this->info("$linea->dn ".$response->result[0]->stateDescription);
+            }else{
 
-                $linea->push();
-
-               
-
-                $this->info("$linea->dn ");
             }
         }
-        
     }
 }

@@ -37,7 +37,7 @@ class ChecksItx implements ShouldQueue
     {
         if (isset($this->porta->linea->dn)) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-trafico', [
+            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getITX', [
                 'linea' => $this->porta->linea->dn,
 
             ]);

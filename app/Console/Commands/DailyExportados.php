@@ -60,7 +60,7 @@ class DailyExportados extends Command
 
         foreach ($preactivas as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
                 'linea' => $linea->dn,
                 
             ]);
@@ -83,7 +83,7 @@ class DailyExportados extends Command
 
         foreach ($chipsActivados as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/revisar-exportadas', [
+            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
                 'linea' => $linea->dn,
                 
             ]);
