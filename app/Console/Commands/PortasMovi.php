@@ -64,7 +64,7 @@ class PortasMovi extends Command
 
                 $this->info("$linea->dn ".$response->result[0]->stateDescription);
             }else{
-
+                $linea->setStatus('Porta subida', 'Sin Tramite');     
             }
         }
     }
