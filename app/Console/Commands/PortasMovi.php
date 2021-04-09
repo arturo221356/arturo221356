@@ -59,11 +59,14 @@ class PortasMovi extends Command
             $response = json_decode(substr($consulta, 4));
 
             if (isset($response->result[0]->stateDescription)) {
+                
+                $linea->deleteStatus('Porta subida');
 
                 $linea->setStatus('Porta subida', $response->result[0]->stateDescription);           
 
                 $this->info("$linea->dn ".$response->result[0]->stateDescription);
             }else{
+                $linea->deleteStatus('Porta subida');
                 $linea->setStatus('Porta subida', 'Sin Tramite');     
             }
         }
