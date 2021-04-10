@@ -181,7 +181,7 @@ class LineaController extends Controller
         }
     
     
-        $linea = Linea::currentStatus(['Porta subida', 'Activado','Sin Saldo','Pospago','Telemarketing','Exportada'])
+        $linea = Linea::currentStatus(['Porta subida','Porta Exitosa', 'Activado','Sin Saldo','Pospago','Telemarketing','Exportada'])
         
         ->whereHas('icc.inventario', function ($query) use ($inventarios) {
             $query->whereIn('id', $inventarios);

@@ -41,34 +41,41 @@ class RevisaPortas extends Command
      */
     public function handle()
     {
-        $lineas = Linea::currentStatus('Porta subida')
+        // $lineas = Linea::currentStatus('Porta subida')
 
 
-        ->get();
+        // ->get();
 
         
-        foreach ($lineas as $linea) {
+        // foreach ($lineas as $linea) {
 
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
-                'linea' => $linea->dn,
+        //     $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
+        //         'linea' => $linea->dn,
                 
-            ]);
+        //     ]);
 
-            $response = json_decode(substr($consulta, 4));
+        //     $response = json_decode(substr($consulta, 4));
 
-            if (isset($response->result[0]->key) && $response->result[0]->key == $linea->icc->company->code) {
+        //     if (isset($response->result[0]->key) && $response->result[0]->key == $linea->icc->company->code) {
 
-                $linea->setStatus('Preactiva');
+        //         $linea->setStatus('Porta Exitosa');
 
-                $linea->productoable->preactivated_at = Carbon::now();
+        //         $linea->productoable->preactivated_at = Carbon::now();
 
-                $linea->push();
+        //         $linea->push();
 
                
 
-                $this->info("$linea->dn ");
-            }
-        }
+        //         $this->info("$linea->dn ");
+        //     }
+        // }
+        $lineas = Linea::currentStatus('Preactiva')  
         
+        ->where('productoale_type','App\\Porta')->get();
+    
+         foreach($lineas as $linea){
+            $linea->setStatus('Porta Exitosa');
+
+         }
     }
 }
