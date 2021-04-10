@@ -71,7 +71,7 @@ class RevisaPortas extends Command
         // }
         $lineas = Linea::currentStatus('Preactiva')  
         
-        ->where('productoale_type','App\\Porta')->get();
+        ->where('productoable_type','App\\Porta')->get();
     
          foreach($lineas as $linea){
             $linea->setStatus('Porta Exitosa');
