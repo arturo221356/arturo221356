@@ -48,6 +48,8 @@ class PortasMovi extends Command
 
         ->get();
 
+        $rechazadas = [];
+
         
         foreach ($lineas as $linea) {
 
@@ -59,15 +61,35 @@ class PortasMovi extends Command
             $response = json_decode(substr($consulta, 4));
 
             if (isset($response->result[0]->stateDescription)) {
-                
-                $linea->deleteStatus('Porta subida');
 
-                $linea->setStatus('Porta subida', $response->result[0]->stateDescription);           
+                if($response->result[0]->stateDescription == 'Alta de Importacion
+                Rechazada'){
+                    $linea->setStatus('Porta rechazada', $response->result[0]->stateDescription); 
+
+                    array_push($rechazadas, $linea);
+                }else{
+
+                    $linea->deleteStatus('Porta subida');
+
+                    $linea->setStatus('Porta subida', $response->result[0]->stateDescription); 
+                }
+                
+               
+
+                         
 
                 $this->info("$linea->dn ".$response->result[0]->stateDescription);
             }else{
                 $linea->deleteStatus('Porta subida');
                 $linea->setStatus('Porta subida', 'Sin Tramite');     
+            }
+
+
+            if (sizeof($rechazadas) > 0 ){
+
+                
+
+
             }
         }
     }
