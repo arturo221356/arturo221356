@@ -24,11 +24,20 @@ class ApiLoginController extends Controller
     
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Los datos de inicio de sesion son incorrectos'],
             ]);
         }
     
-        return $user->createToken($request->device_name)->plainTextToken;
+       $token =  $user->createToken($request->device_name)->plainTextToken;
+
+       $response = [
+           'user' => $user,
+           'token' => $token
+       ];
+
+       return response($response, 201);
+
+
 
 
     }

@@ -23,6 +23,20 @@ Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
 
 Route::post('/sanctum/login', 'ApiLoginController@login'); 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //movistar Api
 Route::post('/movistar/getCarrier', 'MovistarApiController@getCarrier');
 
