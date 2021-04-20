@@ -20,6 +20,11 @@ Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
     return Auth::user();
 });
 
+Route::middleware('auth:sanctum')->post('/sanctum/logout', function (Request $request) {
+    $user = Auth::user();
+    $user->tokens()->delete();
+    return response('Loggedout',200);
+});
 
 Route::post('/sanctum/login', 'ApiLoginController@login'); 
 
