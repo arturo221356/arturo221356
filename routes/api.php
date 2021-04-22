@@ -30,7 +30,7 @@ Route::post('/sanctum/login', 'ApiLoginController@login');
 ///////////////////
 
 
-Route::get('/activa-chip', 'ChipController@recargaChip')->middleware('auth:sanctum');
+Route::post('/activa-chip', 'ChipController@recargaChip')->middleware('auth:sanctum');
 
 
 
