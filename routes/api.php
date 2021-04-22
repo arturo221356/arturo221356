@@ -4,7 +4,7 @@ use App\Http\Controllers\ApiLoginController;
 use Illuminate\Http\Request;
 
 
-use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,13 +20,17 @@ Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
     return Auth::user();
 });
 
-Route::middleware('auth:sanctum')->post('/sanctum/logout', function (Request $request) {
-    $user = Auth::user();
-    $user->tokens()->delete();
-    return response('Loggedout',200);
-});
+
+///login routes 
+
+Route::post('/sanctum/logout', 'ApiLoginController@logout'); 
 
 Route::post('/sanctum/login', 'ApiLoginController@login'); 
+
+///////////////////
+
+
+Route::get('/activa-chip', 'ChipController@recargaChip')->middleware('auth:sanctum');
 
 
 

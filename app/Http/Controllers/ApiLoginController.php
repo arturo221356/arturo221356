@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Validation\ValidationException;
 
+use Illuminate\Support\Facades\Auth;
+
 class ApiLoginController extends Controller
 {
     public function login(Request $request){
@@ -39,6 +41,13 @@ class ApiLoginController extends Controller
 
 
 
+
+    }
+    public function logout(){
+
+        $user = Auth::user();
+        $user->tokens()->delete();
+        return response('Loggedout',200);
 
     }
 
