@@ -23,9 +23,9 @@ Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
 
 ///login routes 
 
-Route::post('/sanctum/logout', 'ApiLoginController@logout'); 
+Route::post('/sanctum/logout', 'ApiLoginController@logout')->middleware('auth:sanctum'); 
 
-Route::post('/sanctum/login', 'ApiLoginController@login'); 
+Route::post('/sanctum/externo/login', 'ApiLoginController@loginExterno'); 
 
 ///////////////////
 

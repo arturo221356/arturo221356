@@ -149,9 +149,11 @@ class ChipController extends Controller
 
         $dn = $request->dn;
 
+        $appRequest = $request->appRequest;
 
         //selecciona la linea que tiene el valor DN que corresponda con la request
         $linea = Linea::where('dn', $dn)->first();
+        
 
 
         // si no encuenta la linea retorna numero no existe en la DB
@@ -165,6 +167,7 @@ class ChipController extends Controller
 
             return json_encode($message);
         }
+
 
         // revisa que el status de la liena sea recargble 
         if ($linea->status() != 'Recargable') {
@@ -195,6 +198,27 @@ class ChipController extends Controller
 
 
         $inventario = $linea->icc->inventario;
+
+        if($appRequest == true){
+
+            $user = Auth::user();
+
+            if($user->inventario->id != $inventario->id){
+
+                $message = [
+                    'success' => false,
+                    'message' => 'Linea no pertenece a tu inventario',
+    
+                ];
+    
+                return json_encode($message);
+
+            }
+
+
+        }
+
+
 
         if ($inventario->inventarioable_type != 'App\User') {
 
