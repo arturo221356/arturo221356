@@ -119,19 +119,29 @@ class ChipController extends Controller
 
             $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
 
-
-            if ($inventario_id === 'all') {
-
-                if ($user->can('distribution inventarios')) {
-
-                    $chips = Chip::DistributionActivatedChips($initialDate, $finalDate);
-                } else {
-                    $chips = Chip::InUserInventarioActivatedChips($initialDate, $finalDate);
-                }
+            if ($inventario_id == 'all') {
+                $inventariosIds = $user->getInventariosForUserIds();
             } else {
-
-                $chips = Chip::InventarioActivatedChips($initialDate, $finalDate, $inventario_id);
+                if (in_array($inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                    $inventariosIds = [$inventario_id];
+                } else {
+                    $inventariosIds = [];
+                }
             }
+
+            $chips = Chip::whereBetween('activated_at',[$initialDate,$finalDate])
+            ->whereHas('linea', function ($query) {
+                $query->currentStatus(['Activado','Sin Saldo']);
+            })
+            ->whereHas('linea.icc.inventario', function ($query) use ($inventariosIds) {
+
+                $query->whereIn('inventario_id',$inventariosIds);
+               
+                
+            })
+                ->orderBy('activated_at','asc')
+                ->get();
+
 
 
             $response = ChipResource::collection($chips);

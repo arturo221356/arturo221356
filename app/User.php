@@ -85,6 +85,7 @@ class User extends Authenticatable
 
             $inventarios =  Inventario::all();
 
+            
         } elseif ($this->can('distribution inventarios')) {
 
             $userDistribution = $this->distribution;

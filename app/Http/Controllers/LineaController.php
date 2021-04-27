@@ -33,7 +33,6 @@ class LineaController extends Controller
      */
     public function index()
     {
-        
     }
     public function verificarIcc(Request $request)
     {
@@ -82,10 +81,10 @@ class LineaController extends Controller
     public function verificarIccPortaExterna(Request $request)
     {
 
-        
 
-        $icc = Icc::where('icc',$request->icc)->with('company', 'type','inventario.inventarioable')->first();
-        
+
+        $icc = Icc::where('icc', $request->icc)->with('company', 'type', 'inventario.inventarioable')->first();
+
         if ($icc === null) {
             $response = [
                 'success' => false,
@@ -96,19 +95,18 @@ class LineaController extends Controller
         }
 
         if ($icc->linea()->first() == null) {
-            if($icc->inventario->inventarioable_type == 'App\User'){
+            if ($icc->inventario->inventarioable_type == 'App\User') {
                 $response = [
                     "success" => true,
                     "data" => $icc,
                 ];
-            }else{
+            } else {
                 $response = [
                     "success" => false,
                     "message" => "Funcion solo disponible para usuarios externos",
-    
+
                 ];
             }
-            
         } else {
             $response = [
                 "success" => false,
@@ -120,13 +118,14 @@ class LineaController extends Controller
         return  json_encode($response);
     }
 
-   
 
 
 
 
-    
-    public function getExportadas(Request $request){
+
+
+    public function getExportadas(Request $request)
+    {
 
         $user = Auth::user();
 
@@ -139,37 +138,46 @@ class LineaController extends Controller
             $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
 
 
-            if ($inventario_id === 'all') {
 
-                if ($user->can('distribution inventarios')) {
-
-                    $chips = Linea::DistributionExportadas($initialDate, $finalDate);
-                } else {
-                    $chips = Linea::InUserInventarioExportadas($initialDate, $finalDate);
-                }
+            if ($inventario_id == 'all') {
+                $inventariosIds = $user->getInventariosForUserIds();
             } else {
-
-                $chips = Linea::InventarioExportadas($initialDate, $finalDate, $inventario_id);
+                if (in_array($inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                    $inventariosIds = [$inventario_id];
+                } else {
+                    $inventariosIds = [];
+                }
             }
 
+            $exportadas = Linea::whereBetween('updated_at', [$initialDate, $finalDate])
 
-            $response = ExportadaResource::collection($chips);
+            ->currentStatus('Exportada')
+
+            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                $query->whereIn('inventario_id', $inventariosIds);
+            })
+            ->orderBy('updated_at', 'asc')
+            ->get();
+
+
+            $response = ExportadaResource::collection($exportadas);
 
 
             return $response;
         }
     }
 
-    public function exportExcelLineas (Request $request){
+    public function exportExcelLineas(Request $request)
+    {
 
         $user = Auth::user();
 
         $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
-    
+
         $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
 
 
-        
+
         if ($request->inventario_id == 'all') {
             $inventariosIds = $user->getInventariosForUserIds();
         } else {
@@ -179,31 +187,26 @@ class LineaController extends Controller
                 $inventariosIds = [];
             }
         }
-    
-    
-        $linea = Linea::currentStatus(['Porta subida','Porta Exitosa', 'Activado','Sin Saldo','Pospago','Telemarketing','Exportada'])
-        
-        ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
-            $query->whereIn('id', $inventariosIds);
-        })
-        
-        ->whereHasMorph(
-            'productoable',
-            [Porta::class,Chip::class],
-            function ($query,$type)  use ($initialDate, $finalDate){
-    
-                $column = $type === Porta::class ? 'created_at' : 'activated_at';
-    
-                $query->whereBetween($column, [$initialDate, $finalDate]);
-            }
-        )->get();
-    
-          return Excel::download(new LineaExport($linea), 'invoices.xlsx');
 
-        
 
-        
+        $linea = Linea::currentStatus(['Porta subida', 'Porta Exitosa', 'Activado', 'Sin Saldo', 'Pospago', 'Telemarketing', 'Exportada'])
 
+            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                $query->whereIn('id', $inventariosIds);
+            })
+
+            ->whereHasMorph(
+                'productoable',
+                [Porta::class, Chip::class],
+                function ($query, $type)  use ($initialDate, $finalDate) {
+
+                    $column = $type === Porta::class ? 'created_at' : 'activated_at';
+
+                    $query->whereBetween($column, [$initialDate, $finalDate]);
+                }
+            )->get();
+
+        return Excel::download(new LineaExport($linea), 'invoices.xlsx');
     }
 
 
@@ -258,8 +261,8 @@ class LineaController extends Controller
     {
         $user = Auth::user();
 
-        if($user->can('destroy stock')){
-            
+        if ($user->can('destroy stock')) {
+
             $linea = $linea;
 
             $chip = $linea->productoable();
@@ -267,9 +270,8 @@ class LineaController extends Controller
             $chip->delete();
 
             $linea->deleteStatus($linea->statuses);
-    
+
             $linea->forceDelete();
         }
-
     }
 }

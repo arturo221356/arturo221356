@@ -87,10 +87,11 @@ class PortaController extends Controller
     {
         //
     }
-    public function newExternoPorta(Request $request){
-        
-        $icc = Icc::where('icc',$request->icc)->first();
-        
+    public function newExternoPorta(Request $request)
+    {
+
+        $icc = Icc::where('icc', $request->icc)->first();
+
         if ($icc === null) {
             $response = [
                 'success' => false,
@@ -101,7 +102,7 @@ class PortaController extends Controller
         }
 
         if ($icc->linea()->first() == null) {
-            if($icc->inventario->inventarioable_type == 'App\User'){
+            if ($icc->inventario->inventarioable_type == 'App\User') {
 
                 if (isset($request->fvc)) {
 
@@ -111,10 +112,10 @@ class PortaController extends Controller
 
                     $fvc->hour = 9;
                 }
-                
+
 
                 $porta = Porta::create([
-                                                
+
                     'nip' => isset($request->nip) ? $request->nip : null,
                     'temporal' => isset($request->temporal) ? $request->temporal : null,
                     'trafico' => isset($request->trafico) ? $request->trafico : null,
@@ -122,12 +123,12 @@ class PortaController extends Controller
 
                 ]);
 
-               
-                
+
+
                 $linea = $porta->linea()->create([
                     'dn' => $request->dn,
                     'icc_product_id' => 2,
-                    
+
                     'icc_id' => $icc->id,
 
                 ]);
@@ -142,14 +143,13 @@ class PortaController extends Controller
                     "success" => true,
                     "message" => "Portabilidad Subida",
                 ];
-            }else{
+            } else {
                 $response = [
                     "success" => false,
                     "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
-    
+
                 ];
             }
-            
         } else {
             $response = [
                 "success" => false,
@@ -159,11 +159,11 @@ class PortaController extends Controller
         }
 
         return  json_encode($response);
-
     }
 
-    public function getPortas(Request $request){
-        
+    public function getPortas(Request $request)
+    {
+
         $user = Auth::user();
 
         if ($request->ajax()) {
@@ -174,26 +174,33 @@ class PortaController extends Controller
 
             $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
 
-
-            if ($inventario_id === 'all') {
-
-                if ($user->can('distribution inventarios')) {
-
-                    $chips = Porta::DistributionPortas($initialDate, $finalDate);
-                } else {
-                    $chips = Porta::InUserInventarioPortas($initialDate, $finalDate);
-                }
+            if ($inventario_id == 'all') {
+                $inventariosIds = $user->getInventariosForUserIds();
             } else {
-
-                $chips = Porta::InventarioPortas($initialDate, $finalDate, $inventario_id);
+                if (in_array($inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                    $inventariosIds = [$inventario_id];
+                } else {
+                    $inventariosIds = [];
+                }
             }
 
+            $portas = Porta::whereBetween('created_at', [$initialDate, $finalDate])
+                ->whereHas('linea', function ($query) {
+                    $query->currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa']);
+                })
+                ->whereHas('linea.icc', function ($query) use ($inventariosIds) {
+                    $query->whereIn('inventario_id', $inventariosIds);
+                })
+                ->orderBy('created_at', 'asc')
 
-            $response = PortaResource::collection($chips);
+                ->get();
+
+
+
+            $response = PortaResource::collection($portas);
 
 
             return $response;
         }
     }
-
 }
