@@ -424,13 +424,15 @@ class ChipController extends Controller
                     array_push($errores, $err);
                 } else {
 
-                    if ($user->hasPermissionTo('distribution inventarios')) {
+                    // if ($user->hasPermissionTo('distribution inventarios')) {
 
-                        $icc = Icc::iccInUserDistribution($requestIcc)->first();
-                    } else {
-                        $icc = Icc::iccInUserInventario($requestIcc)->first();
-                    }
+                    //     $icc = Icc::iccInUserDistribution($requestIcc)->first();
+                    // } else {
+                    //     $icc = Icc::iccInUserInventario($requestIcc)->first();
+                    // }
+                    $inventariosIds = $user->getInventariosForUserIds();
 
+                    $icc = Icc::where('icc',$requestIcc)->whereIn('inventario_id',$inventariosIds)->otherCurrentStatus(['Vendido', 'Traslado'])->first();
 
 
                     if ($icc != null) {

@@ -168,23 +168,23 @@ class LineaController extends Controller
     
         $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
 
-        
 
-        if($request->inventario_id == 'all'){
-            if($user->can('distribution inventarios')){
-                $inventarios = $user->distribution->inventarios()->pluck('id');
-            }else{
-                $inventarios = $user->inventariosAsignados()->pluck('id');   
+        
+        if ($request->inventario_id == 'all') {
+            $inventariosIds = $user->getInventariosForUserIds();
+        } else {
+            if (in_array($request->inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                $inventariosIds = [$request->inventario_id];
+            } else {
+                $inventariosIds = [];
             }
-        }else{
-            $inventarios = [$request->inventario_id];
         }
     
     
         $linea = Linea::currentStatus(['Porta subida','Porta Exitosa', 'Activado','Sin Saldo','Pospago','Telemarketing','Exportada'])
         
-        ->whereHas('icc.inventario', function ($query) use ($inventarios) {
-            $query->whereIn('id', $inventarios);
+        ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+            $query->whereIn('id', $inventariosIds);
         })
         
         ->whereHasMorph(

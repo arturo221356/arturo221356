@@ -74,6 +74,37 @@ class User extends Authenticatable
     {
         return $this->morphOne(Caja::class, 'cajable');
     }
+    public function getInventariosForUserIds (){
+
+        return $this->getInventariosForUser()->pluck('id');
+
+    }
+    public function getInventariosForUser (){
+
+        if ($this->can('all inventarios')) {
+
+            $inventarios =  Inventario::all();
+
+        } elseif ($this->can('distribution inventarios')) {
+
+            $userDistribution = $this->distribution;
+
+            $inventarios =  $userDistribution->inventarios()->get()->sortBy(function ($batch) { 
+                return $batch->inventarioable->name; 
+           });
+
+        } else {
+
+            $inventarios =    $this->inventariosAsignados()->get()->sortBy(function ($batch) { 
+                return $batch->inventarioable->name; 
+           });
+            
+        }
+
+        return $inventarios;
+
+    }
+
     
 
 }

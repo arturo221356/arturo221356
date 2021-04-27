@@ -132,7 +132,7 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/pruebas', function (Request $request) {
 
 
-   
+    return Auth::user()->getInventariosForUserIds();
 
     
 

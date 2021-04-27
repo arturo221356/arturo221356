@@ -90,12 +90,17 @@ class LineaImport implements ToCollection
             } else {
 
 
-                if ($user->can('distribution inventarios')) {
+                // if ($user->can('distribution inventarios')) {
 
-                    $icc = Icc::iccInUserDistribution($requestIcc)->first();
-                } else {
-                    $icc = Icc::iccInUserInventario($requestIcc)->first();
-                }
+                //     $icc = Icc::iccInUserDistribution($requestIcc)->first();
+                // } else {
+                //     $icc = Icc::iccInUserInventario($requestIcc)->first();
+                // }
+
+                $inventariosIds = $user->getInventariosForUserIds();
+                
+                $icc = Icc::where('icc',$requestIcc)->whereIn('inventario_id',$inventariosIds)->otherCurrentStatus(['Vendido', 'Traslado'])->first();
+
                 //si el icc ya tiene linea acitva, aqui falta meter al array de errores 
                 if ($icc != null) {
                     if ($icc->linea()->first() != null) {
