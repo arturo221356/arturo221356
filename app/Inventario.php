@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 use Spatie\Permission\Traits\HasRoles;
 
+
+
 class Inventario extends Model
 {
     use HasRoles;
+
+    
 
     protected $fillable = ["distribution_id"];
 
