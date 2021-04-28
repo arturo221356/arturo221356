@@ -230,11 +230,11 @@ class ChipController extends Controller
 
 
 
-        if ($inventario->inventarioable_type != 'App\User') {
+        if (!in_array($inventario->inventarioable_type, array('App\Grupo','App\User'), true )) {
 
             $message = [
                 'success' => false,
-                'message' => 'No tienes permiso de activar chips',
+                'message' => 'Solo para usuarios externos o grupos externos',
 
             ];
 

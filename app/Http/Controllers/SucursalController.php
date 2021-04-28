@@ -29,30 +29,14 @@ class SucursalController extends Controller
 
             $user = Auth::user();
 
-            $userDistribution = $user->distribution;
 
-            if ($user->can('all inventarios')) {
+            $inventariosIds = $user->getInventariosForUserIds();
 
-                $sucursales =  Sucursal::all();
-            } elseif ($user->can('distribution inventarios')) {
+            $sucursales = Sucursal::whereHas('inventario', function ($query) use ($inventariosIds) {
 
 
-
-                $sucursales =  $userDistribution->sucursales()->orderBy('name','asc')->get();
-            } else {
-
-                $sucursales = Sucursal::whereHas('inventario', function ($query) {
-
-
-                    $user = Auth::user();
-
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-
-                    $query->whereIn('id', $inventariosIds);
-
-                })->orderBy('name','asc')->get();
-            }
-
+                $query->whereIn('id', $inventariosIds);
+            })->orderBy('name', 'asc')->get();
 
 
 
@@ -69,7 +53,7 @@ class SucursalController extends Controller
      */
     public function create()
     {
-        return view("../admin/sucursales/create");
+        // return view("../admin/sucursales/create");
     }
 
     /**

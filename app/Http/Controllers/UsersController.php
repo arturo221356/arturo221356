@@ -134,10 +134,16 @@ class UsersController extends Controller
         switch($request->role){
 
             case 'externo':
+                if($request->inventario_propio == true){
+                    $user->inventario_propio = true;
+                    $user->inventario()->create(['distribution_id' => $user->distribution->id])->usuariosAsignados()->sync([$user->id, $loggedUser->id]);
+                }else{
+                    $user->inventario_propio = false;
+                    $user->inventariosAsignados()->sync($request->inventarios);
+                }
+                
 
-                $user->inventario_propio = true;
-
-                $user->inventario()->create(['distribution_id' => $user->distribution->id])->usuariosAsignados()->sync([$user->id, $loggedUser->id]);
+                
 
                 $user->save();
             break;
@@ -149,6 +155,9 @@ class UsersController extends Controller
                 $user->caja()->create(['total' => 0]);
                
 
+            break;
+            case 'vendedor';
+                $user->inventariosAsignados()->sync($request->inventarios);
             break;
         }
 
@@ -220,7 +229,7 @@ class UsersController extends Controller
             $user->syncPermissions($request->permisos);
         }
 
-        if ($user->getRoleNames()->first() != 'externo') {
+        if ($user->inventario_propio == false) {
 
 
             $user->inventariosAsignados()->sync($request->inventarios);
@@ -235,23 +244,17 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-            $message = '';
 
-            $variant = '';
 
-            $title = '';
+            // if ($user->role_id == 1) {
 
-            if ($user->role_id == 1) {
-                $message = "No es posible eliminar administradores";
-                $variant = "danger";
-                $title = 'Error';
-            } else {
-                $user->delete();
-                $message = "$user->name Eliminado con exito";
-                $variant = "warning";
-                $title = 'Exito';
+            //     return ['message' => "No es posible eliminar administradores", "variant" => "danger", 'title' => 'Error'];
+            // }
+            if($user->inventario_propio){
+                return ['message' => "No es posible eliminar usuarios con inventario", "variant" => "danger", 'title' => 'Error'];
             }
+            $user->delete();
 
-            return ['message' => $message, 'variant' => $variant, 'title' => $title];
+            return ['message' => "$user->name Eliminado con exito", 'variant' => "warning", 'title' => 'Exito'];
     }
 }

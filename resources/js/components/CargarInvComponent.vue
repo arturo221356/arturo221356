@@ -97,6 +97,7 @@
                                         url="/get/equipos"
                                         pholder="Seleccionar Equipo"
                                         v-model="item.equipo"
+                                        
                                         :state="
                                             getValidationState(
                                                 validationContext
@@ -151,6 +152,7 @@
                                     <select-general
                                         url="/inventario"
                                         pholder="Seleccionar Inventario"
+                                        :query="producto == 'Imei' ? 'App\\Sucursal' : ''"
                                         v-model="item.inventario"
                                         :state="
                                             getValidationState(

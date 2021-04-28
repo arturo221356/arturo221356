@@ -5,14 +5,23 @@
             type="light"
             style="background-color: #dedede;"
         >
-            <b-navbar-brand href="#">Sucursales</b-navbar-brand>
+            <b-navbar-brand href="#">{{ inventarioText }}</b-navbar-brand>
+
+            <b-form-radio-group
+                v-model="inventario"
+                :options="inventarioOptions"
+                buttons
+                @input="loadData()"
+            ></b-form-radio-group>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
             <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav>
-                    <b-link @click="newSucursal">Agregar Sucursal</b-link>
-                </b-navbar-nav>
+                <div class="ml-3">
+                    <b-navbar-nav>
+                        <b-link @click="newSucursal">Agregar {{inventarioTextSingular}}</b-link>
+                    </b-navbar-nav>
+                </div>
 
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
@@ -25,40 +34,47 @@
             </b-collapse>
         </b-navbar>
         <div>
-            <b-table
-                striped
-                hover
-                :items="items"
-                :fields="fields"
-                :busy="isBusy"
-                :filter="filter"
-                stacked="sm"
-            >
-                <!--busy template-->
-                <template v-slot:table-busy>
-                    <div class="text-center text-primary my-2">
-                        <b-spinner class="align-middle"></b-spinner>
-                        <strong>Cargando...</strong>
-                    </div>
-                </template>
-
-                <!-- resultado template -->
-                <template v-slot:table-caption
-                    >Resultado: - {{ countItems }}
-                </template>
-
-                <!--boton de editar -->
-                <template v-slot:cell(editar)="row">
-                    <b-button @click="editSucursal(row.item, row.index)">
-                        Editar</b-button
+          
+                
+                    <b-table
+                        striped
+                        hover
+                        :items="items"
+                        :fields="fields"
+                        :busy="isBusy"
+                        :filter="filter"
+                        stacked="sm"
                     >
-                </template>
-                <!--boton de editar -->
-            </b-table>
-            <!-- info modal -->
+                        <!--busy template-->
+                        <template v-slot:table-busy>
+                            <div class="text-center text-primary my-2">
+                                <b-spinner class="align-middle"></b-spinner>
+                                <strong>Cargando...</strong>
+                            </div>
+                        </template>
+
+                        <!-- resultado template -->
+                        <template v-slot:table-caption
+                            >Resultado: - {{ countItems }}
+                        </template>
+
+                        <!--boton de editar -->
+                        <template v-slot:cell(editar)="row">
+                            <b-button
+                                @click="editSucursal(row.item, row.index)"
+                            >
+                                Editar</b-button
+                            >
+                        </template>
+                        <!--boton de editar -->
+                    </b-table>
+                    <!-- info modal -->
+                
+                
+            
             <b-modal
                 :id="infoModal.id"
-                :title="infoModal.title"
+                :title="`Agregar ${inventarioTextSingular}`"
                 ok-only
                 @hide="resetInfoModal"
                 ref="modal"
@@ -85,7 +101,7 @@
                                     <b-form-input
                                         type="text"
                                         v-model="sucursal.name"
-                                        placeholder="Nombre"
+                                        :placeholder="inventario === 'grupos' ? 'Grupo Cambaceo': 'Nombre'"
                                         :state="
                                             getValidationState(
                                                 validationContext
@@ -159,6 +175,13 @@ export default {
         return {
             items: [],
 
+            inventario: "sucursales",
+
+            inventarioOptions: [
+                { text: "Sucursales", value: "sucursales" },
+                { text: "Grupos", value: "grupos" },
+            ],
+
             countItems: 0,
 
             modalLoading: false,
@@ -180,7 +203,7 @@ export default {
                     sortable: true,
                     sortDirection: "desc",
                 },
-                                {
+                {
                     key: "name",
                     label: "Nombre",
                     sortable: true,
@@ -200,8 +223,20 @@ export default {
                 content: {},
                 string: "",
             },
-            
         };
+    },
+    computed: {
+        inventarioText: function () {
+            if (typeof this.inventario !== "string") return "";
+            return (
+                this.inventario.charAt(0).toUpperCase() +
+                this.inventario.slice(1)
+            );
+        },
+        inventarioTextSingular: function () {
+            if (typeof this.inventario !== "string") return "";
+            return this.inventario === "sucursales" ? "Sucursal" : "Grupo";
+        },
     },
     methods: {
         getValidationState({ dirty, validated, valid = null }) {
@@ -210,7 +245,7 @@ export default {
         loadData() {
             this.isBusy = true;
             axios
-                .get("/sucursales")
+                .get(`/${this.inventario}`)
                 .then((response) => {
                     console.log(response.data);
                     this.items = response.data;
@@ -272,7 +307,7 @@ export default {
                 name: this.sucursal.name,
                 address: this.sucursal.address,
             };
-            axios.put(`/sucursales/${id}`, params).then((res) => {
+            axios.put(`/${this.inventario}/${id}`, params).then((res) => {
                 alert("Editado");
 
                 this.$refs["modal"].hide();
@@ -285,12 +320,12 @@ export default {
                 name: this.sucursal.name,
                 address: this.sucursal.address,
             };
-            axios.post(`/sucursales`, params).then((res) => {
+            axios.post(`/${this.inventario}`, params).then((res) => {
                 this.$refs["modal"].hide();
 
                 this.loadData();
 
-                this.$bvToast.toast(`Sucursal Agregada con exito`, {
+                this.$bvToast.toast(`${this.inventarioTextSingular} Agregada con exito`, {
                     title: "Exito",
                     autoHideDelay: 5000,
                     appendToast: true,
@@ -312,5 +347,3 @@ export default {
     },
 };
 </script>
-
-

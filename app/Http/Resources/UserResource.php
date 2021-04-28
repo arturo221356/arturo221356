@@ -40,6 +40,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'telefono' => $this->telefono,
+            'inventario_propio' => $this->inventario_propio,
             'permisos' => $this->getDirectPermissions()->pluck('name'),
             'roles' => $roles,
             'inventarios' => implode(',  ',$inventariosNames),

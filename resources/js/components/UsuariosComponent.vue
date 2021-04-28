@@ -11,7 +11,9 @@
 
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
-                    <b-link @click="newUser" v-if="can('create user')">Agregar usuario</b-link>
+                    <b-link @click="newUser" v-if="can('create user')"
+                        >Agregar usuario</b-link
+                    >
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
@@ -199,13 +201,35 @@
                                     }}</b-form-invalid-feedback>
                                 </b-form-group>
                             </ValidationProvider>
-
+                            <ValidationProvider
+                                name="inventariopropio"
+                                v-slot="validationContext"
+                                rules="required"
+                                autocomplete="off"
+                                v-if="isExternoComputed"
+                            >
+                                <b-form-group label="Inventario Propio">
+                                    <b-form-checkbox
+                                        v-model="user.inventario_propio"
+                                        switch
+                                        size="lg"
+                                        :disabled="editMode"
+                                    ></b-form-checkbox>
+                                    <b-form-invalid-feedback>{{
+                                        validationContext.errors[0]
+                                    }}</b-form-invalid-feedback>
+                                </b-form-group>
+                            </ValidationProvider>
                             <ValidationProvider
                                 name="sucursal"
                                 v-slot="validationContext"
                                 rules="required"
                                 autocomplete="off"
-                                v-if="sucursalExternoComputed"
+                                v-if="
+                                    !isExternoComputed ||
+                                    (isExternoComputed &&
+                                        user.inventario_propio == false)
+                                "
                             >
                                 <b-form-group label="Sucursal">
                                     <select-general
@@ -234,7 +258,10 @@
                                 autocomplete="off"
                                 v-if="can('update permissions')"
                             >
-                                <b-form-group label="Permisos:" v-if="user.role">
+                                <b-form-group
+                                    label="Permisos:"
+                                    v-if="user.role"
+                                >
                                     <b-form-checkbox-group
                                         v-model="user.permisos"
                                         :options="permisosOptionsComputed"
@@ -301,7 +328,9 @@ export default {
                 password: null,
                 telefono: null,
                 permisos: null,
+                inventario_propio: false,
             },
+
             fields: [
                 // {
                 //     key: "id",
@@ -386,7 +415,7 @@ export default {
             this.user.email = item.email;
             this.user.telefono = item.telefono;
             this.user.permisos = item.permisos;
-
+            this.user.inventario_propio = item.inventario_propio == 1 ? true: false;
             this.user.role = { name: item.roles[0] };
             this.user.sucursal = item.inventarios_ids;
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
@@ -402,6 +431,7 @@ export default {
             this.user.password = null;
             this.user.sucursal = null;
             this.user.permisos = null;
+            this.user.inventario_propio = false;
             this.modalLoading = false;
         },
         deleteUser(id) {
@@ -413,9 +443,8 @@ export default {
                     title: res.data.title,
                     autoHideDelay: 5000,
                     appendToast: true,
-                    solid: true,
                     variant: res.data.variant,
-                    toaster: "b-toaster-bottom-full",
+                   
                 });
             });
         },
@@ -469,6 +498,7 @@ export default {
                 role: this.user.role.name,
                 telefono: this.user.telefono,
                 permisos: this.user.permisos,
+                inventario_propio: this.user.inventario_propio,
             };
             axios.post(`/users`, params).then((res) => {
                 this.$refs["modal"].hide();
@@ -499,64 +529,97 @@ export default {
             var options = [];
             if (this.user.role) {
                 switch (this.user.role.name) {
-                    case 'externo':
+                    case "externo":
                         options = [
-                            { text: "Activar chips por sistema activa chip", value: "activar chip" },
-
+                            {
+                                text: "Activar chips por sistema activa chip",
+                                value: "activar chip",
+                            },
                         ];
 
                         break;
-                    case 'supervisor':
+                    case "supervisor":
                         options = [
-                            
+                            {
+                                text: "Preactivar lineas masivas",
+                                value: "preactivar masivo",
+                            },
 
-                            { text: "Preactivar lineas masivas", value: "preactivar masivo" },
+                            {
+                                text: "Asignar recarga sistema activa chip",
+                                value: "asignar recarga",
+                            },
 
-                            { text: "Asignar recarga sistema activa chip", value: "asignar recarga" },
-
-                            { text: "Crear sucursales", value: "create sucursal" },
+                            {
+                                text: "Crear sucursales",
+                                value: "create sucursal",
+                            },
 
                             { text: "Editar usuarios", value: "update user" },
 
-                            { text: "Crear usuarios vendedores", value: "create vendedor" },
+                            {
+                                text: "Crear usuarios vendedores",
+                                value: "create vendedor",
+                            },
 
-                            { text: "Crear usuarios externos", value: "create externo" },
+                            {
+                                text: "Crear usuarios externos",
+                                value: "create externo",
+                            },
 
-                            { text: "Modificar permisos de usuarios", value: "update permissions" },
+                            {
+                                text: "Modificar permisos de usuarios",
+                                value: "update permissions",
+                            },
 
-                             { text: "Cargar nuevo inventario", value: "store stock" },
+                            {
+                                text: "Cargar nuevo inventario",
+                                value: "store stock",
+                            },
 
-                            { text: "Traspasar Inventario", value: "traspasar stock" },
+                            {
+                                text: "Traspasar Inventario",
+                                value: "traspasar stock",
+                            },
 
-                            { text: "Cancelar Traspaso", value: "cancelar traspaso" },
+                            {
+                                text: "Cancelar Traspaso",
+                                value: "cancelar traspaso",
+                            },
 
-                            { text: "Ver area de cuentas", value: "ver cuentas" },
+                            {
+                                text: "Ver area de cuentas",
+                                value: "ver cuentas",
+                            },
 
                             { text: "Agregar gastos", value: "agregar gastos" },
 
-                            { text: "Hacer cortes de caja", value: "hacer cortes" },
-
-                           
-                            
-
+                            {
+                                text: "Hacer cortes de caja",
+                                value: "hacer cortes",
+                            },
                         ];
                         break;
-                    case 'vendedor':
-
+                    case "vendedor":
                         options = [
+                            {
+                                text: "Vender recargas",
+                                value: "create transaction",
+                            },
 
-                            { text: "Vender recargas", value: "create transaction" },
+                            {
+                                text: "Preactivar lineas masivas",
+                                value: "preactivar masivo",
+                            },
 
-                            { text: "Preactivar lineas masivas", value: "preactivar masivo" },
-
-                            { text: "Ver area de cuentas", value: "ver cuentas" },
+                            {
+                                text: "Ver area de cuentas",
+                                value: "ver cuentas",
+                            },
 
                             { text: "Agregar gastos", value: "agregar gastos" },
-
-                            
-
                         ];
-                    break;
+                        break;
                 }
             }
 
@@ -569,33 +632,22 @@ export default {
                 return false;
             }
         },
-        sucursalExternoComputed: function () {
-            if(this.user.role){
-                if(this.user.role.name == 'externo'){
-                    return false;
-                }
-                else{
-                    return true;
-                }
-            }else{
-                return false;
-            }
+        isExternoComputed: function () {
+            if (this.user.role?.name == "externo") return true;
 
+            return false;
         },
         querySucursalSelectComputed: function () {
-            if (this.user.role) {
-                switch (this.user.role.name) {
-                    case "vendedor":
-                        return "App\\Sucursal";
+            if (!this.user.role) return null;
 
-                        break;
+            switch (this.user.role.name) {
+                case "vendedor":
+                    return "App\\Sucursal";
 
-                    default:
-                        return null;
-                        break;
-                }
-            } else {
-                return null;
+                case "externo":
+                    return "App\\Grupo";
+                default:
+                    return null;
             }
         },
     },

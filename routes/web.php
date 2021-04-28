@@ -122,6 +122,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/sucursales', 'SucursalController')->middleware('can:create sucursal');
 
+    Route::resource('/grupos', 'GrupoController')->middleware('can:create sucursal');
+
     Route::resource('/recargas', 'Admin\RecargasController');
 
     Route::resource('/equipos', 'EquiposController');
