@@ -129,17 +129,15 @@ class ChipController extends Controller
                 }
             }
 
-            $chips = Chip::whereBetween('activated_at',[$initialDate,$finalDate])
-            ->whereHas('linea', function ($query) {
-                $query->currentStatus(['Activado','Sin Saldo']);
-            })
-            ->whereHas('linea.icc.inventario', function ($query) use ($inventariosIds) {
+            $chips = Chip::whereBetween('activated_at', [$initialDate, $finalDate])
+                ->whereHas('linea', function ($query) {
+                    $query->currentStatus(['Activado', 'Sin Saldo']);
+                })
+                ->whereHas('linea.icc.inventario', function ($query) use ($inventariosIds) {
 
-                $query->whereIn('inventario_id',$inventariosIds);
-               
-                
-            })
-                ->orderBy('activated_at','asc')
+                    $query->whereIn('inventario_id', $inventariosIds);
+                })
+                ->orderBy('activated_at', 'asc')
                 ->get();
 
 
@@ -160,10 +158,11 @@ class ChipController extends Controller
         $dn = $request->dn;
 
         $appRequest = $request->appRequest;
+      
 
         //selecciona la linea que tiene el valor DN que corresponda con la request
         $linea = Linea::where('dn', $dn)->first();
-        
+
 
 
         // si no encuenta la linea retorna numero no existe en la DB
@@ -209,45 +208,59 @@ class ChipController extends Controller
 
         $inventario = $linea->icc->inventario;
 
-        if($appRequest == true){
+        if ($appRequest == true) {
 
-                            $message = [
+
+            $user = Auth::user();
+
+            if (!$user) {
+                return response([
                     'success' => false,
-                    'message' => 'no es para app',
-    
+                    'message' => 'Usuario no autentificado',
+
+                ], 401);
+            }
+            if ($user->inventario_propio == true) {
+                if ($user->inventario->id != $inventario->id) {
+
+                    $message = [
+                        'success' => false,
+                        'message' => 'Linea no pertenece a tu inventario',
+
+                    ];
+
+                    return json_encode($message);
+                }
+            } else  {
+                if (!in_array($inventario->id, $user->getInventariosForUserIds()->toArray())) {
+                    $message = [
+                        'success' => false,
+                        'message' => 'Linea no pertenece a tu inventario',
+
+                    ];
+
+                    return json_encode($message);
+                }
+            }
+
+
+
+
+            if (!$user->hasPermissionTo('activar chip')) {
+
+                $message = [
+                    'success' => false,
+                    'message' => 'Usuario no tiene permiso de activar chips',
+
                 ];
+
                 return json_encode($message);
-
-            // $user = Auth::user();
-
-            // if($user->inventario->id != $inventario->id){
-
-            //     $message = [
-            //         'success' => false,
-            //         'message' => 'Linea no pertenece a tu inventario',
-    
-            //     ];
-    
-            //     return json_encode($message);
-
-            // }
-            // if (!$user->hasPermissionTo('activar chip')) {
-
-            //     $message = [
-            //         'success' => false,
-            //         'message' => 'No tienes permiso de activar chips',
-    
-            //     ];
-    
-            //     return json_encode($message);
-            // }
-
-
+            }
         }
 
 
 
-        if (!in_array($inventario->inventarioable_type, array('App\Grupo','App\User'), true )) {
+        if (!in_array($inventario->inventarioable_type, array('App\Grupo', 'App\User'), true)) {
 
             $message = [
                 'success' => false,
@@ -266,7 +279,7 @@ class ChipController extends Controller
 
             $message = [
                 'success' => false,
-                'message' => 'No tienes permiso de activar chips',
+                'message' => 'Inventario no tiene permiso de activar chips',
 
             ];
 
@@ -297,7 +310,7 @@ class ChipController extends Controller
         //cambia el status de la linea a proceso para evitar errores que se duplique la recarga 
         $linea->setStatus('Proceso', 'si ves esto es porque hubo un error al procesar la recarga, verifica la transaccion');
 
-        $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id ,true);
+        $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id, true);
 
         $transaction = json_decode($newTrasnsaction);
 
@@ -312,35 +325,34 @@ class ChipController extends Controller
             ]);
 
             $linea->deleteStatus('Proceso');
-
         } else if ($transaction->success == true) {
 
-            
 
-                $linea->setStatus('Activado');
 
-                $linea->icc->setStatus('Vendido');
+            $linea->setStatus('Activado');
 
-                $classTransaction = Transaction::find($transaction->transaction_id);
+            $linea->icc->setStatus('Vendido');
 
-                $chip = $linea->productoable;
+            $classTransaction = Transaction::find($transaction->transaction_id);
 
-                $chip->transaction_id = $classTransaction->id;
+            $chip = $linea->productoable;
 
-                $chip->activated_at = now();
+            $chip->transaction_id = $classTransaction->id;
 
-                $chip->save();
+            $chip->activated_at = now();
 
-                $response =  json_encode([
-                    'success' =>  true,
-                    'message' => $classTransaction->taecel_message . ",  Folio: " . $classTransaction->taecel_folio . " Monto: " . $classTransaction->monto,
-                ]);
+            $chip->save();
 
-                $linea->deleteStatus('Proceso');
-            }
-        
+            $response =  json_encode([
+                'success' =>  true,
+                'message' => $classTransaction->taecel_message . ",  Folio: " . $classTransaction->taecel_folio . " Monto: " . $classTransaction->monto,
+            ]);
 
-        
+            $linea->deleteStatus('Proceso');
+        }
+
+
+
 
         return  $response;
     }
@@ -367,7 +379,7 @@ class ChipController extends Controller
             $recargable = 'false';
         }
 
-        if (!$user->hasPermissionTo('preactivar masivo')){
+        if (!$user->hasPermissionTo('preactivar masivo')) {
             return 'no tienes permiso';
         }
 
@@ -460,7 +472,7 @@ class ChipController extends Controller
                     // }
                     $inventariosIds = $user->getInventariosForUserIds();
 
-                    $icc = Icc::where('icc',$requestIcc)->whereIn('inventario_id',$inventariosIds)->otherCurrentStatus(['Vendido', 'Traslado'])->first();
+                    $icc = Icc::where('icc', $requestIcc)->whereIn('inventario_id', $inventariosIds)->otherCurrentStatus(['Vendido', 'Traslado'])->first();
 
 
                     if ($icc != null) {
