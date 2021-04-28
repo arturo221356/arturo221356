@@ -211,29 +211,36 @@ class ChipController extends Controller
 
         if($appRequest == true){
 
-            $user = Auth::user();
-
-            if($user->inventario->id != $inventario->id){
-
-                $message = [
+                            $message = [
                     'success' => false,
-                    'message' => 'Linea no pertenece a tu inventario',
+                    'message' => 'no es para app',
     
                 ];
-    
                 return json_encode($message);
 
-            }
-            if (!$user->hasPermissionTo('activar chip')) {
+            // $user = Auth::user();
 
-                $message = [
-                    'success' => false,
-                    'message' => 'No tienes permiso de activar chips',
+            // if($user->inventario->id != $inventario->id){
+
+            //     $message = [
+            //         'success' => false,
+            //         'message' => 'Linea no pertenece a tu inventario',
     
-                ];
+            //     ];
     
-                return json_encode($message);
-            }
+            //     return json_encode($message);
+
+            // }
+            // if (!$user->hasPermissionTo('activar chip')) {
+
+            //     $message = [
+            //         'success' => false,
+            //         'message' => 'No tienes permiso de activar chips',
+    
+            //     ];
+    
+            //     return json_encode($message);
+            // }
 
 
         }
