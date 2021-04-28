@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Spatie\Permission\Traits\HasRoles;
+
 class Sucursal extends Model
 {
     use SoftDeletes;
 
     use HasFactory;
+
+    use HasRoles;
     //
     protected $table = "sucursales";
 

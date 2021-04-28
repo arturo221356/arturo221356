@@ -19,7 +19,9 @@
             <b-collapse id="nav-collapse" is-nav>
                 <div class="ml-3">
                     <b-navbar-nav>
-                        <b-link @click="newSucursal">Agregar {{inventarioTextSingular}}</b-link>
+                        <b-link @click="newSucursal"
+                            >Agregar {{ inventarioTextSingular }}</b-link
+                        >
                     </b-navbar-nav>
                 </div>
 
@@ -34,44 +36,38 @@
             </b-collapse>
         </b-navbar>
         <div>
-          
-                
-                    <b-table
-                        striped
-                        hover
-                        :items="items"
-                        :fields="fields"
-                        :busy="isBusy"
-                        :filter="filter"
-                        stacked="sm"
+            <b-table
+                striped
+                hover
+                :items="items"
+                :fields="fields"
+                :busy="isBusy"
+                :filter="filter"
+                stacked="sm"
+            >
+                <!--busy template-->
+                <template v-slot:table-busy>
+                    <div class="text-center text-primary my-2">
+                        <b-spinner class="align-middle"></b-spinner>
+                        <strong>Cargando...</strong>
+                    </div>
+                </template>
+
+                <!-- resultado template -->
+                <template v-slot:table-caption
+                    >Resultado: - {{ countItems }}
+                </template>
+
+                <!--boton de editar -->
+                <template v-slot:cell(editar)="row">
+                    <b-button @click="editSucursal(row.item, row.index)">
+                        Editar</b-button
                     >
-                        <!--busy template-->
-                        <template v-slot:table-busy>
-                            <div class="text-center text-primary my-2">
-                                <b-spinner class="align-middle"></b-spinner>
-                                <strong>Cargando...</strong>
-                            </div>
-                        </template>
+                </template>
+                <!--boton de editar -->
+            </b-table>
+            <!-- info modal -->
 
-                        <!-- resultado template -->
-                        <template v-slot:table-caption
-                            >Resultado: - {{ countItems }}
-                        </template>
-
-                        <!--boton de editar -->
-                        <template v-slot:cell(editar)="row">
-                            <b-button
-                                @click="editSucursal(row.item, row.index)"
-                            >
-                                Editar</b-button
-                            >
-                        </template>
-                        <!--boton de editar -->
-                    </b-table>
-                    <!-- info modal -->
-                
-                
-            
             <b-modal
                 :id="infoModal.id"
                 :title="`Agregar ${inventarioTextSingular}`"
@@ -101,7 +97,11 @@
                                     <b-form-input
                                         type="text"
                                         v-model="sucursal.name"
-                                        :placeholder="inventario === 'grupos' ? 'Grupo Cambaceo': 'Nombre'"
+                                        :placeholder="
+                                            inventario === 'grupos'
+                                                ? 'Grupo Cambaceo'
+                                                : 'Nombre'
+                                        "
                                         :state="
                                             getValidationState(
                                                 validationContext
@@ -138,6 +138,27 @@
                                         validationContext.errors[0]
                                     }}</b-form-invalid-feedback>
                                 </b-form-group>
+                            </ValidationProvider>
+                            <ValidationProvider
+                                name="permisos"
+                                v-slot="validationContext"
+                                autocomplete="off"
+                                v-if="can('update permissions')"
+                            >
+                                <b-form-group
+                                    label="Permisos:"
+                                    v-if="inventario == 'grupos'"
+                                >
+                                    <b-form-checkbox-group
+                                        v-model="sucursal.permissions"
+                                        :options="permisosOptionsComputed"
+                                        switches
+                                        stacked
+                                    ></b-form-checkbox-group>
+                                </b-form-group>
+                                <b-form-invalid-feedback>{{
+                                    validationContext.errors[0]
+                                }}</b-form-invalid-feedback>
                             </ValidationProvider>
 
                             <b-button size="sm" variant="primary" type="submit">
@@ -195,6 +216,7 @@ export default {
             sucursal: {
                 name: "",
                 address: "",
+                permissions: [],
             },
             fields: [
                 {
@@ -237,6 +259,26 @@ export default {
             if (typeof this.inventario !== "string") return "";
             return this.inventario === "sucursales" ? "Sucursal" : "Grupo";
         },
+
+        permisosOptionsComputed: function () {
+            let options = [];
+            
+                switch (this.inventario) {
+                    case "grupos":
+                        options = [
+                            {
+                                text: "Activar chips por sistema activa chip",
+                                value: "activar chip",
+                            },
+                        ];
+
+                        break;
+                    default:
+                        options = [];
+                }
+            return options;
+            
+        },
     },
     methods: {
         getValidationState({ dirty, validated, valid = null }) {
@@ -247,8 +289,8 @@ export default {
             axios
                 .get(`/${this.inventario}`)
                 .then((response) => {
-                    console.log(response.data);
-                    this.items = response.data;
+                    console.log(response.data.data);
+                    this.items = response.data.data;
                     this.countItems = this.items.length;
 
                     this.isBusy = false;
@@ -274,6 +316,7 @@ export default {
             this.infoModal.title = `Row index: ${this.infoModal.content.id}`;
             this.sucursal.name = item.name;
             this.sucursal.address = item.address;
+            this.sucursal.permissions = item.permissions;
             this.$root.$emit("bv::show::modal", this.infoModal.id, button);
             console.log(this.infoModal.content);
         },
@@ -306,6 +349,7 @@ export default {
             const params = {
                 name: this.sucursal.name,
                 address: this.sucursal.address,
+                permisos: this.sucursal.permissions,
             };
             axios.put(`/${this.inventario}/${id}`, params).then((res) => {
                 alert("Editado");
@@ -319,20 +363,24 @@ export default {
             const params = {
                 name: this.sucursal.name,
                 address: this.sucursal.address,
+                permisos: this.sucursal.permissions,
             };
             axios.post(`/${this.inventario}`, params).then((res) => {
                 this.$refs["modal"].hide();
 
                 this.loadData();
 
-                this.$bvToast.toast(`${this.inventarioTextSingular} Agregada con exito`, {
-                    title: "Exito",
-                    autoHideDelay: 5000,
-                    appendToast: true,
-                    solid: true,
-                    variant: "success",
-                    toaster: "b-toaster-bottom-full",
-                });
+                this.$bvToast.toast(
+                    `${this.inventarioTextSingular} Agregada con exito`,
+                    {
+                        title: "Exito",
+                        autoHideDelay: 5000,
+                        appendToast: true,
+                        solid: true,
+                        variant: "success",
+                        toaster: "b-toaster-bottom-full",
+                    }
+                );
             });
         },
 

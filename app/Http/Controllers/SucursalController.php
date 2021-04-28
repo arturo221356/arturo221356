@@ -9,6 +9,7 @@ use App\Inventario;
 use App\Distribution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\GrupoResource;
 
 class SucursalController extends Controller
 {
@@ -40,8 +41,8 @@ class SucursalController extends Controller
 
 
 
-
-            return $sucursales;
+            //usa el grupo resource porque basicamente son iguales si se necesita cambiar, crear un nuevo resource
+            return GrupoResource::collection($sucursales);
         }
         return view("../admin/sucursales/index");
     }

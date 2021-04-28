@@ -224,6 +224,16 @@ class ChipController extends Controller
                 return json_encode($message);
 
             }
+            if (!$user->hasPermissionTo('activar chip')) {
+
+                $message = [
+                    'success' => false,
+                    'message' => 'No tienes permiso de activar chips',
+    
+                ];
+    
+                return json_encode($message);
+            }
 
 
         }
@@ -241,11 +251,11 @@ class ChipController extends Controller
             return json_encode($message);
         }
 
-        $user = $inventario->inventarioable;
+        $inventarioable = $inventario->inventarioable;
 
         //revisa que el inventario tenga permisos para activar chips desde activa chip
         //cambie de inventario a user
-        if (!$user->hasPermissionTo('activar chip')) {
+        if (!$inventarioable->hasPermissionTo('activar chip')) {
 
             $message = [
                 'success' => false,
@@ -255,6 +265,7 @@ class ChipController extends Controller
 
             return json_encode($message);
         }
+
 
 
 

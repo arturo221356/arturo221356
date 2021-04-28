@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Grupo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\GrupoResource;
 
 class GrupoController extends Controller
 {
@@ -31,7 +32,7 @@ class GrupoController extends Controller
 
 
 
-            return $sucursales;
+            return GrupoResource::collection($sucursales);
         }
     }
 
@@ -66,6 +67,8 @@ class GrupoController extends Controller
         $grupo->distribution_id = $user->distribution->id;
 
         $grupo->save();
+
+        $grupo->syncPermissions($request->permisos);
 
 
         $grupo->inventario()->create(['distribution_id' => $user->distribution->id])->usuariosAsignados()->attach($user);
@@ -102,9 +105,12 @@ class GrupoController extends Controller
      * @param  \App\Grupo  $grupo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Grupo $grupo)
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, ['name' => 'required', 'address' => 'required',]);
+        $grupo = Grupo::findOrFail($id);
+        $grupo->update($request->all());
+        $grupo->syncPermissions($request->permisos);
     }
 
     /**
