@@ -31,6 +31,8 @@ Route::view('/home', 'home')->name('home')->middleware('auth');
 
 Route::view('/', 'home')->name('root')->middleware('auth');
 
+Route::view('/privacidad', 'privacidad')->name('privacidad');
+
 
 Route::view('/activa-chip', 'linea.activa-chip')->name('activa-chip');
 
@@ -135,10 +137,6 @@ Route::get('/pruebas', function (Request $request) {
 
 
     return Auth::user()->getInventariosForUserIds();
-
-    
-
-   
 });
 
 
