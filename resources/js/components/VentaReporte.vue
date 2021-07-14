@@ -311,9 +311,9 @@ export default {
 
             if (filteredItems.length > 0) {
                 let sum = filteredItems
-                    .map((o) => o.total)
+                    .map((o) => Number(o.total))
                     .reduce((a, c) => {
-                        return a + c;
+                        return Number(a) + Number(c);
                     });
 
                 this.totalVentas = sum;

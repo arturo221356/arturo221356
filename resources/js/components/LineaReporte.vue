@@ -119,7 +119,7 @@ export default {
 
             isLoading: false,
 
-            initialDate: null,
+            initialDate: new Date().toISOString().substr(0, 10),
 
             finalDate: new Date().toISOString().substr(0, 10),
 
@@ -207,15 +207,7 @@ export default {
                     break;
             }
         },
-        getMonthFirst() {
-            var today = new Date();
 
-            this.initialDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                1
-            );
-        },
 
         getActivatedChips() {
             axios
@@ -318,9 +310,7 @@ export default {
                 });
         },
     },
-    created() {
-        this.getMonthFirst();
-    },
+
 };
 </script>
 

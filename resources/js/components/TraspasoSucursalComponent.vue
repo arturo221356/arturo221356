@@ -89,6 +89,7 @@
                                                     validationContext
                                                 )
                                             "
+                                            
                                         >
                                         </select-general>
                                         <b-form-invalid-feedback>{{
@@ -148,7 +149,9 @@
                                 </b-input-group>
                             </b-form>
                         </validation-observer>
-
+                        <div class="mt-3">
+                        <h5 v-show="items.length > 0">{{`Cantidad: ${items.length}`}}</h5>
+                        </div>
                         <!-- cards -->
                         <b-list-group v-if="showList == true" class="mt-5">
                             <b-list-group-item
@@ -407,6 +410,7 @@
                                 </h5>
                             </div>
                         </div>
+                        <div v-if="detailTraspaso.series"><h5>Cantidad: {{detailTraspaso.series.length}}</h5></div>
                         <div
                             class="row mt-2"
                             v-if="detailTraspaso.accepted == false"
@@ -532,9 +536,7 @@ export default {
 
             finalDate: new Date().toISOString().substr(0, 10),
 
-            initialDate: new Date(Date.now() - 5184000000)
-                .toISOString()
-                .substring(0, 10),
+            initialDate: new Date().toISOString().substr(0, 10),
 
             inventario: null,
 
