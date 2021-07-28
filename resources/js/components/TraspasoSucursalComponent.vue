@@ -17,7 +17,7 @@
                                 v-model.lazy="traspasoType"
                                 :options="traspasoOptions"
                                 buttons
-                                v-if="can('traspasar stock')"
+                                v-if="is('super-admin') || can('traspasar stock')"
                             >
                             </b-form-radio-group>
                         </b-nav-form>
@@ -60,7 +60,7 @@
                     <!-- nuevo traspaso -->
                     <div
                         v-show="traspasoType == 'nuevo'"
-                        v-if="can('traspasar stock')"
+                        v-if="is('super-admin') || can('traspasar stock')"
                     >
                         <h1>Agregar Producto a traspasar:</h1>
                         <validation-observer
@@ -204,7 +204,7 @@
 
                     <div
                         v-show="traspasoType == 'historial'"
-                        v-if="can('ver traspasos')"
+                        v-if="is('super-admin') || can('ver traspasos')"
                     >
                         <h1>Historial de traspasos</h1>
                         <validation-observer
@@ -422,7 +422,7 @@
                                         @click="
                                             cancelarTraspaso(detailTraspaso.id)
                                         "
-                                        v-if="can('cancelar traspaso')"
+                                        v-if="is('super-admin') || can('cancelar traspaso')"
                                         block
                                     >
                                         Cancelar Traspaso
@@ -434,7 +434,7 @@
                                         @click="
                                             aceptarTraspaso(detailTraspaso.id)
                                         "
-                                        v-if="can('aceptar traspaso')"
+                                        v-if="is('super-admin') || can('aceptar traspaso')"
                                         block
                                     >
                                        Aceptar Traspaso
