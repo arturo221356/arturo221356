@@ -21,6 +21,7 @@ class PortaResource extends JsonResource
             'dn' => $this->linea->dn,
             'icc' => $this->linea->icc->icc,
             'compañia' => $this->linea->icc->company->name,
+            'tipo' => $this->linea->icc->type->name,
             'estatus' => $this->linea->status,
             '' => isset($this->linea->status->reason) ? $this->linea->status->reason: null,
             'inventario' => $this->linea->icc->inventario->inventarioable->name,

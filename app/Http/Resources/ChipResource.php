@@ -19,6 +19,7 @@ class ChipResource extends JsonResource
          'dn' => $this->linea->dn,
          'icc' => $this->linea->icc->icc,
          'compañia' => $this->linea->icc->company->name,
+         'tipo' => $this->linea->icc->type->name,
          'estatus' => $this->linea->status,
          'inventario' => $this->linea->icc->inventario->inventarioable->name,
          'recarga monto' => isset($this->transaction->monto) ? $this->transaction->monto : 0,

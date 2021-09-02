@@ -92,7 +92,7 @@
                             hover
                             responsive
                             striped
-                            stacked="md"
+                            
                             head-variant="dark"
                             :busy="tableBusy"
                             @filtered="tableFiltered"

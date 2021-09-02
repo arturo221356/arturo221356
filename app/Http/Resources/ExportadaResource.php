@@ -21,6 +21,7 @@ class ExportadaResource extends JsonResource
             'dn' => $this->dn,
             'icc' => $this->icc->icc,
             'compañia' => $this->icc->company->name,
+            'tipo' => $this->linea->icc->type->name,
             'producto' => isset($this->product->name) ? $this->product->name : '',
             'sub producto' =>  isset($this->subProduct->name) ? $this->subProduct->name : '',
             'estatus' => $this->status,
