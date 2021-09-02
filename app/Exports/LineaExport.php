@@ -48,6 +48,7 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             $linea->icc->company->name,
             $linea->icc->type->name,
             $linea->icc->inventario->inventarioable->name,
+            isset($linea->user) ? $linea->user->name: null,
             isset($linea->product->name) ? $linea->product->name : null,
             isset($linea->productoable->trafico_real) ? $linea->productoable->trafico_real : null,
             $linea->status,
@@ -70,6 +71,7 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             'Compañia',
             'Tipo',
             'Inventario',
+            'Usuario',
             'Producto',
             'Trafico',
             'Estatus',
@@ -85,9 +87,9 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
     {
         return [
 
-            'J' => NumberFormat::FORMAT_DATE_DDMMYYYY,
             'K' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'N' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'L' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'M' => NumberFormat::FORMAT_DATE_DDMMYYYY,
         ];
     }
     public function styles(Worksheet $sheet)

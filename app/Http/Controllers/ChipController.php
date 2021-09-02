@@ -158,7 +158,7 @@ class ChipController extends Controller
         $dn = $request->dn;
 
         $appRequest = $request->appRequest;
-      
+
 
         //selecciona la linea que tiene el valor DN que corresponda con la request
         $linea = Linea::where('dn', $dn)->first();
@@ -231,7 +231,7 @@ class ChipController extends Controller
 
                     return json_encode($message);
                 }
-            } else  {
+            } else {
                 if (!in_array($inventario->id, $user->getInventariosForUserIds()->toArray())) {
                     $message = [
                         'success' => false,
@@ -349,6 +349,14 @@ class ChipController extends Controller
             ]);
 
             $linea->deleteStatus('Proceso');
+
+
+            if (Auth::check()) {
+
+                $linea->user()->associate(Auth::user());
+
+                $linea->save();
+            }
         }
 
 
