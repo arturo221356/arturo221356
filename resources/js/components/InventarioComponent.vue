@@ -470,6 +470,8 @@ export default {
                 { value: 50, text: "Recarga de $50" },
 
                 { value: 100, text: "Recarga de $100" },
+
+                { value: 150, text: "Recarga de $150" },
             ],
 
             editableItem: {
