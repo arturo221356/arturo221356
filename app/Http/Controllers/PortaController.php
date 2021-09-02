@@ -100,9 +100,29 @@ class PortaController extends Controller
 
             return $response;
         }
+        if(!$icc->linea()->first() == null){
 
-        if ($icc->linea()->first() == null) {
-            if ($icc->inventario->inventarioable_type == 'App\User') {
+            $response = [
+                "success" => false,
+                "message" => "Icc ya tiene linea activa: " . $icc->linea->dn,
+
+            ];
+
+            return $response;
+        }
+
+        if (!$icc->inventario->inventarioable_type == 'App\User'){
+            $response = [
+                "success" => false,
+                "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
+
+            ];
+
+            return $response;
+        }
+
+        
+           
 
                 if (isset($request->fvc)) {
 
@@ -135,6 +155,13 @@ class PortaController extends Controller
 
                 $linea->setStatus('Porta subida');
 
+                if (Auth::check()) {
+
+                    $linea->user()->associate(Auth::user());
+    
+                    $linea->save();
+                }
+
                 $icc->setStatus('Vendido');
 
                 ChecksItx::dispatch($porta);
@@ -143,20 +170,8 @@ class PortaController extends Controller
                     "success" => true,
                     "message" => "Portabilidad Subida",
                 ];
-            } else {
-                $response = [
-                    "success" => false,
-                    "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
-
-                ];
-            }
-        } else {
-            $response = [
-                "success" => false,
-                "message" => "Icc ya tiene linea activa: " . $icc->linea->dn,
-
-            ];
-        }
+            
+        
 
         return  json_encode($response);
     }
