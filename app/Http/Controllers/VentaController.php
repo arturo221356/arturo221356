@@ -246,7 +246,7 @@ class VentaController extends Controller
                                 // sino tiene linea asignada le  crea una 
                                 $linea = (new Linea)->newLineaWithProduct($producto, $icc->id);
                             }
-                            
+
                             // le asigna el usuario a la linea
                             $linea->user()->associate(Auth::user());
 
@@ -265,7 +265,7 @@ class VentaController extends Controller
 
                                     $subproduct = IccSubProduct::find($linea->subProduct->id);
 
-
+                                    $chip = $linea->productoable;
 
                                     $dn = $linea->dn;
 
@@ -275,11 +275,9 @@ class VentaController extends Controller
                                         if ($subproduct->recarga_id) {
 
                                             $recarga =  Recarga::find($subproduct->recarga_id);
-
                                         } else {
 
                                             $recarga =  Recarga::find($producto->recarga->id);
-
                                         }
 
                                         $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
@@ -291,8 +289,6 @@ class VentaController extends Controller
                                         if ($transaction->success == false) {
 
                                             $venta->transactions()->attach($currentTransaction, ['price' => 0]);
-
-
                                         } else if ($transaction->success == true) {
 
                                             $total += $linea->subProduct->precio;
@@ -303,7 +299,7 @@ class VentaController extends Controller
 
                                             $linea->setStatus('Activado');
 
-                                            $chip = $linea->productoable;
+
 
                                             $chip->transaction_id = $currentTransaction->id;
 
@@ -343,10 +339,10 @@ class VentaController extends Controller
                                     break;
                             }
                         } //termina el if icc tiene estatus diferente a vendido
-                        
 
 
-                    break; //termina el switch de tipo de producto Icc, imei, general 
+
+                        break; //termina el switch de tipo de producto Icc, imei, general 
                 }
             } // final del foreach
         } //final del if productos
