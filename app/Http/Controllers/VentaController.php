@@ -49,9 +49,7 @@ class VentaController extends Controller
     {
         if ($request->ajax()) {
 
-            // $ventas = Venta::all();
 
-            // return VentaResource::collection($ventas);
 
             $user = Auth::user();
 
@@ -83,11 +81,7 @@ class VentaController extends Controller
                 }
             }
 
-            // if($request->inventario_id == "all"){
-            //    
-            // }else{
-            //     $response = VentaResource::collection($ventas->where('inventario_id',$request->inventario_id));
-            // }   
+
 
 
             $response = VentaResource::collection($ventas);
