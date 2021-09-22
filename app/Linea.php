@@ -54,6 +54,11 @@ class Linea extends Model
         return $this->latestStatus()->reason;
     }
 
+
+
+
+    
+
     public function newLineaWithProduct($producto, $iccId)
     {
         switch ($producto->iccProduct->id) {

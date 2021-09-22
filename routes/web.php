@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
+use App\Porta;
+
+use App\Linea;
+
 
 Auth::routes([
     'register' => false,
@@ -135,8 +139,15 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/pruebas', function (Request $request) {
 
+            $linea = Linea::where('dn', 3312793177)
+            ->whereHasMorph('productoable',[Porta::class], function ($query) {
+                    $query->whereNull('activated_at');
+                })
+            ->first();
 
-    return request()->ip();
+
+        return $linea->productoable ;
+
 });
 
 

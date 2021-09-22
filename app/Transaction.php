@@ -77,7 +77,7 @@ class Transaction extends Model
 
         $recarga = Recarga::findOrFail($recargaId);
 
-        // si la recarga es movistar y  activachip es fa
+        // si la recarga es movistar y  activachip es falso
         if($recarga->company_id == 2 && $activachip == false){
             $aplicarRecarga = false ;
         }else{
