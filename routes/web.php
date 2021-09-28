@@ -12,8 +12,7 @@
 */
 //para pruebas
 
-
-
+use App\Exports\IccsClieanExport;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -22,6 +21,9 @@ use App\Porta;
 
 use App\Linea;
 
+use App\Taecel;
+
+use App\Transaction;
 
 Auth::routes([
     'register' => false,
@@ -137,16 +139,23 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/transaction', 'TransactionController');
 });
 
+
+
+use Maatwebsite\Excel\Facades\Excel;
+
 Route::get('/pruebas', function (Request $request) {
 
-            $linea = Linea::where('dn', 3312793177)
-            ->whereHasMorph('productoable',[Porta::class], function ($query) {
-                    $query->whereNull('activated_at');
-                })
-            ->first();
+    //$newTrasnsaction =  (new Transaction)->newTaecelTransaction('c490127ff864a719bd89877f32a574de','0c4ae19986107edd5ebcec3c6e08a0d0' , '5555555510',13, 12 ); 
+    
+   // $newTrasnsaction =  (new Taecel)->TaecelRequestTXN('c490127ff864a719bd89877f32a574de','0c4ae19986107edd5ebcec3c6e08a0d0' , '3310512009',13, 12 );
+
+   // $newTrasnsaction =  (new Taecel)->TaecelStatusTXN('c490127ff864a719bd89877f32a574de','0c4ae19986107edd5ebcec3c6e08a0d0' , '210901459746' );
 
 
-        return $linea->productoable ;
+
+    //return $newTrasnsaction;
+    
+    // return Excel::download(new IccsClieanExport, 'users.xlsx');
 
 });
 

@@ -27,40 +27,35 @@ class Transaction extends Model
         return $this->belongsTo('App\Inventario');
     }
 
-    
+
     public function scopeDistributionTransactions($transaction, $initialDate, $finalDate)
     {
         $transactions = $transaction
-        
-        ->whereBetween('created_at',[$initialDate,$finalDate])
-        ->whereHas('inventario', function ($query)  {
-            $user = Auth::user();
-            $query->where('distribution_id', $user->distribution->id);
-           
-            
-        })
-            ->orderBy('created_at','asc')->get();
+
+            ->whereBetween('created_at', [$initialDate, $finalDate])
+            ->whereHas('inventario', function ($query) {
+                $user = Auth::user();
+                $query->where('distribution_id', $user->distribution->id);
+            })
+            ->orderBy('created_at', 'asc')->get();
 
         return $transactions;
     }
 
-    public function scopeTransactionInInventario($transaction, $initialDate, $finalDate,$inventario_id)
+    public function scopeTransactionInInventario($transaction, $initialDate, $finalDate, $inventario_id)
     {
         $transactions = $transaction
-        
-        ->whereBetween('created_at',[$initialDate,$finalDate])
 
-        ->whereHas('inventario', function ($query) use ($inventario_id)  {
-            $user = Auth::user();
-            $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-            $query->whereIn('inventario_id',$inventariosIds)
-            ->where('inventario_id',$inventario_id)
-            ;
-           
-            
-        })
+            ->whereBetween('created_at', [$initialDate, $finalDate])
 
-            ->orderBy('created_at','asc')
+            ->whereHas('inventario', function ($query) use ($inventario_id) {
+                $user = Auth::user();
+                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                $query->whereIn('inventario_id', $inventariosIds)
+                    ->where('inventario_id', $inventario_id);
+            })
+
+            ->orderBy('created_at', 'asc')
             ->get();
 
         return $transactions;
@@ -69,29 +64,26 @@ class Transaction extends Model
 
     public function newTaecelTransaction($taecelKey, $taecelNip, $dn, $recargaId, $inventarioID,  $activachip = false)
     {
-        
-
-    
 
         $dn = $dn;
 
         $recarga = Recarga::findOrFail($recargaId);
 
         // si la recarga es movistar y  activachip es falso
-        if($recarga->company_id == 2 && $activachip == false){
-            $aplicarRecarga = false ;
-        }else{
-            $aplicarRecarga = true ;
+        if ($recarga->company_id == 2 && $activachip == false) {
+            $aplicarRecarga = false;
+        } else {
+            $aplicarRecarga = true;
         }
 
-        if($aplicarRecarga == true){
-            
+        if ($aplicarRecarga == true) {
+
             $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
 
             $taecelRequest = json_decode($requestTXN);
         }
 
-        
+
 
         $transaction = Transaction::create([
 
@@ -107,83 +99,76 @@ class Transaction extends Model
 
             'inventario_id' => $inventarioID,
 
-            'taecel_success' => isset($taecelRequest->success) ? $taecelRequest->success : true,
+            'taecel_success' => $aplicarRecarga == false ? true : $taecelRequest->success,
 
-            'taecel_message' => isset($taecelRequest->message) ? $taecelRequest->message: 'Recarga no aplicada, solo registrada',
+            'taecel_message' => isset($taecelRequest->message) ? $taecelRequest->message : 'Recarga no aplicada, solo registrada',
 
-            
+
 
         ]);
+
+        // si la recarga no se aplica por taecel retorna la transaccion
+        if ($aplicarRecarga == false) {
+
+            return $transaction;
+        }
+
+
         if (isset($taecelRequest->data) && $taecelRequest->data) {
 
             $transaction->taecel_transID = $taecelRequest->data->transID;
 
             $transaction->save();
         }
-        
+
+
+        /// si falla la primera consula a taecel, retorna la transaccion
         if (isset($taecelRequest->success) && $taecelRequest->success == false) {
 
-            $response =  [
-                
-                'success' =>  false,
-                'message' => $taecelRequest->message,
-            ];
+            return $transaction;
+        }
 
-        } else if (isset($taecelRequest->success) && $taecelRequest->success == true) {
+
+
+        if (isset($taecelRequest->success) && $taecelRequest->success == true) {
 
             $transID = $taecelRequest->data->transID;
+
+            //hace una segunda consulta de estatus a taecel 
 
             $statusTXN =  (new Taecel)->TaecelStatusTXN($taecelKey, $taecelNip, $transID);
 
             $taecelStatusTXN = json_decode($statusTXN);
 
-            if ($taecelStatusTXN->data) {
+
+
+
+            $transaction->taecel_message = $taecelStatusTXN->message;
+            
+
+            if (isset($taecelStatusTXN->data)) {
+
+                $transaction->taecel_success = $taecelStatusTXN->success;
 
                 $transaction->taecel_status = $taecelStatusTXN->data->Status;
-
-                $transaction->taecel_message = $taecelStatusTXN->message;
 
                 $transaction->taecel_timeout = $taecelStatusTXN->data->Timeout;
 
                 $transaction->taecel_folio = $taecelStatusTXN->data->Folio;
 
                 $transaction->taecel_nota = $taecelStatusTXN->data->Nota;
+
+                
             }
+            
+            $transaction->save();
 
             if ($taecelStatusTXN->success  == true) {
 
-                $response =  [
-                    'success' =>  true,
-                    'message' => $taecelRequest->message . ",  Folio: " . $taecelStatusTXN->data->Folio . " Monto: " . $taecelStatusTXN->data->Monto,
-                ];
-
                 WatchesTransaction::dispatch(Transaction::findOrFail($transaction->id));
-
-            } else if ($taecelStatusTXN->success  == false) {
-
-
-
-                $response =  [
-                    'success' =>  false,
-                    'message' => $taecelStatusTXN->message,
-                ];
             }
 
-        }else{
-            $response =  [
-                'success' =>  true,
-                'message' => 'Recarga no aplicada, solo registrada',
-            ];
+            return $transaction;;
         }
-        
-
-
-
-        $transaction->save();
-
-        $response['transaction_id'] = $transaction->id;
-
-
-        return json_encode($response);
     }
 }

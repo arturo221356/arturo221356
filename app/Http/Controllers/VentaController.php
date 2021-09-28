@@ -157,22 +157,17 @@ class VentaController extends Controller
 
                             $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
 
-                            $transaction = json_decode($newTrasnsaction);
+                           
 
                             $montoRecargaVirtual = 0;
 
-                            if ($transaction->success == true) {
+                            if ($newTrasnsaction->taecel_success == true) {
                                 $montoRecargaVirtual = $recarga->monto;
                                 $total += $recarga->monto;
-                            } else if ($transaction->success == false) {
-                                $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
-                                $currentTransaction->taecel_success = false;
-                                $currentTransaction->save();
                             }
+                            
 
-                            $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
-
-                            $venta->transactions()->attach($currentTransaction, ['price' => $montoRecargaVirtual]);
+                            $venta->transactions()->attach($newTrasnsaction, ['price' => $montoRecargaVirtual]);
                         }
 
 
@@ -276,14 +271,12 @@ class VentaController extends Controller
 
                                         $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
 
-                                        $transaction = json_decode($newTrasnsaction);
+                                        
 
-                                        $currentTransaction = Transaction::findOrFail($transaction->transaction_id);
+                                        if ($newTrasnsaction->taecel_success == false) {
 
-                                        if ($transaction->success == false) {
-
-                                            $venta->transactions()->attach($currentTransaction, ['price' => 0]);
-                                        } else if ($transaction->success == true) {
+                                            $venta->transactions()->attach($newTrasnsaction, ['price' => 0]);
+                                        } else if ($newTrasnsaction->taecel_success == true) {
 
                                             $total += $linea->subProduct->precio;
 
@@ -295,9 +288,9 @@ class VentaController extends Controller
 
 
 
-                                            $chip->transaction_id = $currentTransaction->id;
+                                            $chip->transaction_id = $newTrasnsaction->id;
 
-                                            $venta->transactions()->attach($currentTransaction, ['price' => $recarga->monto]);
+                                            $venta->transactions()->attach($newTrasnsaction, ['price' => $recarga->monto]);
                                         }
                                     }
                                     // si el subproducto no requiere recarga 

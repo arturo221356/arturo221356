@@ -312,20 +312,16 @@ class ChipController extends Controller
 
         $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id, true);
 
-        $transaction = json_decode($newTrasnsaction);
 
-
-
-
-        if ($transaction->success == false) {
+        if ($newTrasnsaction->taecel_success == false) {
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => $transaction->message,
+                'message' => $newTrasnsaction->taecel_message,
             ]);
 
             $linea->deleteStatus('Proceso');
-        } else if ($transaction->success == true) {
+        } else if ($newTrasnsaction->taecel_success == true) {
 
 
 
@@ -333,11 +329,9 @@ class ChipController extends Controller
 
             $linea->icc->setStatus('Vendido');
 
-            $classTransaction = Transaction::find($transaction->transaction_id);
-
             $chip = $linea->productoable;
 
-            $chip->transaction_id = $classTransaction->id;
+            $chip->transaction_id = $newTrasnsaction->id;
 
             $chip->activated_at = now();
 
@@ -345,7 +339,7 @@ class ChipController extends Controller
 
             $response =  json_encode([
                 'success' =>  true,
-                'message' => $classTransaction->taecel_message . ",  Folio: " . $classTransaction->taecel_folio . " Monto: " . $classTransaction->monto,
+                'message' =>$newTrasnsaction->taecel_message . ",  Folio: " . $newTrasnsaction->taecel_folio . " Monto: " . $newTrasnsaction->monto,
             ]);
 
             $linea->deleteStatus('Proceso');

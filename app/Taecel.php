@@ -16,14 +16,14 @@ class Taecel extends Model
     {
         Http::fake([
 
-            'https://taecel.com/app/api/ReddquestTXN' => Http::response([
+            'https://taecel.com/app/api/RequestTXNxxx' => Http::response([
                 'success' => true,
                 'message' => 'Consulta Exitosa',
-                'data' => ['transID' => '201000043313'],
+                'data' => ['transID' => '210901470051'],
 
 
 
-            ], 200, ['Headers']),
+            ], 500, ['Headers']),
 
 
 
@@ -51,7 +51,7 @@ class Taecel extends Model
         return $taecelRequest;
     }
 
-    private  function requestTXN($key, $nip, $producto, $referencia)
+    public  function requestTXN($key, $nip, $producto, $referencia)
     {
         try {
 
@@ -88,7 +88,7 @@ class Taecel extends Model
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => 'Error ' . $request->status(),
+                'message' => 'Error ' . $request->status() .' NO REPETIR LA RECARGA, COMUNICATE CON EL DISTRIBUIDOR',
             ]);
         }
 
@@ -108,11 +108,37 @@ class Taecel extends Model
         Http::fake([
 
 
-            'https://taecel.com/app/api/SttusTXN' => Http::response(
+            'https://taecel.com/app/api/StatusTXNXXX' => Http::response(
 
-                ':(
-                 Error intencional en formato de respuesta, se debe de ejecutar nuevamente el Método StatusTXN para Revisar el Status de la Transacción
-                  :/',
+                // ':(
+                //  Error intencional en formato de respuesta, se debe de ejecutar nuevamente el Método StatusTXN para Revisar el Status de la Transacción
+                //   :/',
+                    [
+                  'success' => true,
+                  'message' => 'Recarga Exitosa',
+                  'data' => [
+                      'TransID' => '210901470051',
+                      "Fecha"=> "2021-09-22 12:27:47",
+                      "Carrier"=> "Paquete Amigo Sin Limite",
+                      "Telefono"=> "5555555510",
+                      "Folio"=> "34234",
+                      "Status"=> "Fracasada ",
+                      "Monto"=> "$30.00",
+                      "Cargo"=> "$0.00",
+                      "Abono"=> "$0.00",
+                      "Via"=> "WS",
+                      "Región"=> "9",
+                      "Timeout"=> "10.05",
+                      "IP"=> "189.203.100.231",
+                      "Bolsa"=> "Tiempo Aire",
+                      "Comision"=> "$0.00",
+                      "Nota"=> "",
+                      "pin"=> "",
+                      "Saldo Final"=> "$8,565.05"
+                    
+                    
+                    ],
+                    ],
                 500,
                 ['Headers']
             ),
@@ -179,7 +205,7 @@ class Taecel extends Model
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => 'Error ' . $request->status(),
+                'message' => 'Error ' . $request->status() .' NO REPETIR LA RECARGA!!!, COMUNICATE CON EL DISTRIBUIDOR',
             ]);
         }
 
@@ -226,7 +252,7 @@ class Taecel extends Model
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => 'Error ' . $request->status(),
+                'message' => 'Error ' . $request->status() .' NO REPETIR LA RECARGA, COMUNICATE CON EL DISTRIBUIDOR',
             ]);
         }
 
