@@ -53,8 +53,12 @@ Route::post('/new/porta-externo', 'PortaController@newExternoPorta');
 
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
 
+    Route::resource('/comisiones',  'ComisionController');
+
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
 });
+
+
 
 Route::get('/venta/comprobante', 'VentaController@getInvoice');
 
@@ -140,22 +144,26 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
+use App\Icc;
 
-use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/pruebas', function (Request $request) {
 
-    //$newTrasnsaction =  (new Transaction)->newTaecelTransaction('c490127ff864a719bd89877f32a574de','0c4ae19986107edd5ebcec3c6e08a0d0' , '5555555510',13, 12 ); 
+
+
+     $icc = Linea::currentStatus(['Activado'])->where('id',10738)->first();
     
-   // $newTrasnsaction =  (new Taecel)->TaecelRequestTXN('c490127ff864a719bd89877f32a574de','0c4ae19986107edd5ebcec3c6e08a0d0' , '3310512009',13, 12 );
+    // if($icc->linea->latestStatus(['Preactiva', 'Recargable'])){
 
-   // $newTrasnsaction =  (new Taecel)->TaecelStatusTXN('c490127ff864a719bd89877f32a574de','0c4ae19986107edd5ebcec3c6e08a0d0' , '210901459746' );
+    //     return 'no esta activa';
+       
+    // }else{
+    //     return 'si esta activa';
+    // }
+
+  return $icc;
 
 
-
-    //return $newTrasnsaction;
-    
-    // return Excel::download(new IccsClieanExport, 'users.xlsx');
 
 });
 

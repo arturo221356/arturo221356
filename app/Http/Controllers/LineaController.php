@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Exports\LineaExport;
-
+use App\Pospago;
 
 class LineaController extends Controller
 {
@@ -197,7 +197,7 @@ class LineaController extends Controller
 
             ->whereHasMorph(
                 'productoable',
-                [Porta::class, Chip::class],
+                [Porta::class, Chip::class, Pospago::class],
                 function ($query, $type)  use ($initialDate, $finalDate) {
 
                     $column = $type === Porta::class ? 'created_at' : 'activated_at';

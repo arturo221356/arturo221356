@@ -39,6 +39,11 @@ class Linea extends Model
     {
         return $this->morphTo();
     }
+    public function comisiones()
+    {
+        return $this->morphOne(Comision::class, 'comisionable');
+    }
+
 
     public function product()
     {
@@ -87,7 +92,7 @@ class Linea extends Model
                     // crea un nuevo chip
                     $chip = Porta::create([
 
-                        'nip' => isset($producto->porta->nip) ? $producto->porta->nip : null,
+                        'nip' => isset($producto->porta->nip) ? $producto->porta->nip : 1234,
                         'temporal' => isset($producto->porta->temporal) ? $producto->porta->temporal : null,
                         'trafico' => isset($producto->porta->trafico) ? $producto->porta->trafico : null,
                         'fvc' => isset($fvc) ? $fvc : null,

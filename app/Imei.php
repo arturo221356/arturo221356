@@ -63,4 +63,8 @@ class Imei extends Model implements  Searchable
     {
         return $this->morphToMany('App\Traspaso', 'traspasoable');
     }
+    public function comisiones()
+    {
+        return $this->morphOne(Comision::class, 'comisionable');
+    }
 }
