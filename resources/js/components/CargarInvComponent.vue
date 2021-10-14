@@ -301,7 +301,9 @@
 </template>
 
 <script>
+
 export default {
+        
     data() {
         return {
             producto: "Imei",

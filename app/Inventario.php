@@ -52,6 +52,10 @@ class Inventario extends Model
     {
         return $this->morphOne(Caja::class, 'cajable');
     }
+    public function otros()
+    {
+        return $this->belongsToMany(Otro::class)->withPivot('stock');
+    }
 
 
 

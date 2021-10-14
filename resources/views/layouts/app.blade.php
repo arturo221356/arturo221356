@@ -117,6 +117,21 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
+              Accesorios
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              @can('create equipo')
+              <a class="dropdown-item" href="/otros">Lista</a>
+
+              <div class="dropdown-divider"></div>
+             @endcan
+              <a class="dropdown-item disabled" href="/otros/show">Reporte</a>
+
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Recargas
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">

@@ -10,6 +10,12 @@ use App\Distribution;
 
 class EquiposController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('role:super-admin|administrador', ['only' => ['update', 'store','destroy']]);
+    }
+    
     /**
      * Display a listing of the resource.
      *

@@ -67,6 +67,8 @@ Vue.component('venta-reporte', require('./components/VentaReporte.vue').default)
 Vue.component('transaction-reporte', require('./components/TransactionReporte.vue').default);
 Vue.component('porta-express', require('./components/PortaExpress.vue').default);
 Vue.component('cuentas-component', require('./components/CuentasComponent.vue').default);
+Vue.component('otros-component', require('./components/NewOtrosComponent.vue').default);
+Vue.component('cargar-inv-page', require('./components/CargarInvPage.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

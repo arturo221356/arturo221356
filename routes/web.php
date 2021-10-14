@@ -112,6 +112,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/imei', 'ImeisController');
 
+    Route::resource('/otros', 'OtroController');
+
     Route::resource('/icc', 'IccController');
 
     Route::resource('/linea', 'LineaController');
@@ -141,119 +143,62 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/equipos', 'EquiposController');
 
     Route::resource('/transaction', 'TransactionController');
+
+
+    // searchs
+
+
+    Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction');
+
+    Route::get('/search/traspaso-exact', 'SearchController@traspasoExact');
+
+
+    Route::get('/search/venta-prediction', 'SearchController@ventaPrediction');
+
+    Route::get('/search/venta-exact', 'SearchController@ventaExact');
+
+
+    // apis 
+
+    Route::get('/get/icc-products', 'Admin\IccProductController@index');
+
+    Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index');
+
+    Route::get('/get/recargas', 'Admin\RecargasController@index');
+
+    Route::get('/get/roles', 'RoleController@getRoles');
+
+    Route::get('/get/otros', 'OtroController@getOtros');
+
+    Route::get('/get/status', 'Admin\StatusController@getStatus');
+
+    Route::get('/get/icctypes', 'IccTypeController@index');
+
+    Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index');
+    
 });
 
 
-use App\Icc;
+use App\Otro;
+
 
 
 Route::get('/pruebas', function (Request $request) {
 
+    $otro = Otro::find(2);
 
-
-     $icc = Linea::currentStatus(['Activado'])->where('id',10738)->first();
+    //  $inventario = Inventario::find(13);
     
-    // if($icc->linea->latestStatus(['Preactiva', 'Recargable'])){
+    //  $inventario->otros()->syncWithoutDetaching([$otro->id => ['stock' => 0]]);
 
-    //     return 'no esta activa';
-       
-    // }else{
-    //     return 'si esta activa';
-    // }
+    //  return $inventario->otros;
 
-  return $icc;
+    $response = $otro->sellOtro();
 
+    return $response;
 
 
 });
 
 
 
-
-// searchs
-
-
-Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction')->middleware('auth');
-
-Route::get('/search/traspaso-exact', 'SearchController@traspasoExact')->middleware('auth');
-
-
-Route::get('/search/venta-prediction', 'SearchController@ventaPrediction')->middleware('auth');
-
-Route::get('/search/venta-exact', 'SearchController@ventaExact')->middleware('auth');
-
-
-// apis 
-
-Route::get('/get/icc-products', 'Admin\IccProductController@index')->middleware('auth');
-
-Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
-
-Route::get('/get/recargas', 'Admin\RecargasController@index')->middleware('auth');
-
-Route::get('/get/roles', 'RoleController@getRoles')->middleware('auth');
-
-// Route::namespace('Admin')->middleware('auth', 'role:admin',)->prefix('admin')->name('admin.')->group(function () {
-
-
-
-//     
-
-
-
-//     Route::resource('/productos/sims', 'IccProductController');
-
-
-
-//    
-
-//     Route::view('/productos', 'admin.productos');
-
-//     
-
-//     Route::resource('/inventarios', 'inventarioController');
-
-//     Route::view('/productos', 'admin.productos.index');
-
-//     
-
-
-//     Route::view('/', 'admin.index');
-// });
-
-
-// Route::resource('/inventario', 'Admin\InventarioController')->middleware('auth');
-
-
-
-
-
-
-
-// });
-
-
-
-
-//apissssss
-
-Route::get('/get/status', 'Admin\StatusController@getStatus')->middleware('auth');
-
-
-
-Route::get('/get/icctypes', 'IccTypeController@index')->middleware('auth');
-
-// Route::get('/get/companies', 'Admin\CompaniesController@index')->middleware('auth');
-
-// Route::post('/post/imeis/', 'InventarioController@getimeis')->middleware('auth');
-
-// Route::get('/export/imeis/', 'InventarioController@exportImei')->middleware('auth');
-
-// Route::get('/export/iccs/', 'InventarioController@exportIcc')->middleware('auth');
-
-// Route::post('/post/iccs/', 'InventarioController@geticcs')->middleware('auth');
-
-
-
-Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index')->middleware('auth');
-//apis
