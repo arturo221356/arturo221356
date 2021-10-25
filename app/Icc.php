@@ -71,7 +71,7 @@ class Icc extends Model implements Searchable
     }
     public function linea()
     {
-        return $this->hasOne('App\Linea');
+        return $this->hasOne('App\Linea')->withTrashed();
     }
 
     public function scopeIccInUserDistribution($query,$requestIcc)

@@ -37,18 +37,19 @@
                     <b-form @submit.prevent="handleSubmit(onSubmit)">
                         <!-- marca  -->
                         <ValidationProvider
-                            name="nombre"
+                            name="name"
                             v-slot="validationContext"
                             rules="required"
                         >
                             <b-form-group label="Nombre">
                                 <b-form-input
                                     type="text"
-                                    v-model="accesorio.nombre"
+                                    v-model="accesorio.name"
                                     placeholder="Nombre"
                                     :state="
                                         getValidationState(validationContext)
                                     "
+                                    autocomplete="off"
                                 >
                                 </b-form-input>
                                 <b-form-invalid-feedback
@@ -59,18 +60,19 @@
 
                         <!-- modelo -->
                         <ValidationProvider
-                            name="descripcion"
+                            name="description"
                             v-slot="validationContext"
                             rules="required"
                         >
                             <b-form-group label="Descripcion">
                                 <b-form-input
                                     type="text"
-                                    v-model="accesorio.descripcion"
+                                    v-model="accesorio.description"
                                     placeholder="Descripcion"
                                     :state="
                                         getValidationState(validationContext)
                                     "
+                                     autocomplete="off"
                                 >
                                 </b-form-input>
                                 <b-form-invalid-feedback
@@ -93,6 +95,7 @@
                                     :state="
                                         getValidationState(validationContext)
                                     "
+                                     autocomplete="off"
                                 >
                                 </b-form-input>
                                 <b-form-invalid-feedback>{{
@@ -115,6 +118,7 @@
                                     :state="
                                         getValidationState(validationContext)
                                     "
+                                     autocomplete="off"
                                 >
                                 </b-form-input>
                                 <b-form-invalid-feedback
@@ -197,8 +201,8 @@ export default {
             editMode: false,
 
             accesorio: {
-                nombre: "",
-                descripcion: null,
+                name: "",
+                description: null,
                 precio: null,
                 costo: null,
             },
@@ -212,13 +216,13 @@ export default {
                     sortDirection: "desc",
                 },
                 {
-                    key: "nombre",
+                    key: "name",
                     label: "Nombre",
                     sortable: true,
                     sortDirection: "desc",
                 },
                 {
-                    key: "descripcion",
+                    key: "description",
                     label: "Descripcion",
                     sortable: true,
                     sortDirection: "desc",
@@ -300,8 +304,8 @@ export default {
         updateAccesorio() {
             const id = this.infoModal.content.id;
             const params = {
-                nombre: this.accesorio.nombre,
-                descripcion: this.accesorio.descripcion,
+                name: this.accesorio.name,
+                description: this.accesorio.description,
                 precio: this.accesorio.precio,
                 costo: this.accesorio.costo,
             };
@@ -320,8 +324,8 @@ export default {
         },
         storeAccesorio() {
             const params = {
-                nombre: this.accesorio.nombre,
-                descripcion: this.accesorio.descripcion,
+                name: this.accesorio.name,
+                description: this.accesorio.description,
                 precio: this.accesorio.precio,
                 costo: this.accesorio.costo,
             };
@@ -348,8 +352,8 @@ export default {
             this.infoModal.title = "";
             this.infoModal.content = {};
             this.infoModal.string = "";
-            this.accesorio.nombre = "";
-            this.accesorio.descripcion = "";
+            this.accesorio.name = "";
+            this.accesorio.description = "";
             this.accesorio.precio = "";
             this.accesorio.costo = "";
             this.modalLoading = false;

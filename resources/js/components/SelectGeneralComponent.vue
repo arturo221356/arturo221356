@@ -94,9 +94,9 @@ export default {
         emitToParent() {
             this.$emit("input", this.selected);
         },
-        customLabel({ name, marca, modelo }) {
+        customLabel({ name, marca, modelo, precio }) {
             if (this.equipo === true) {
-                return `${marca}--${modelo}`;
+                return `${marca}--${modelo}--$${precio}`;
             } else {
                 return name;
             }

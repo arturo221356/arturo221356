@@ -28,11 +28,10 @@
                 <ValidationProvider v-slot="validationContext" rules="required">
                     <b-form-group label="Accesorio" label-size="lg">
                         <select-general
-                            url="/get/equipos"
-                            pholder="Seleccionar Equipo"
-                            v-model="item.equipo"
+                            url="/get/otros"
+                            pholder="Seleccionar Accesorio"
+                            v-model="item.accesorio"
                             :state="getValidationState(validationContext)"
-                            :equipo="true"
                         ></select-general>
 
                         <b-form-invalid-feedback
@@ -63,36 +62,18 @@
                         >
                     </b-form-group>
                 </ValidationProvider>
+
+                <b-form-group>
+                    <b-button
+                        block
+                        variant="primary"
+                        type="submit"
+                        :disabled="agregarButtonDisabled"
+                        >Agregar a Inventario</b-button
+                    >
+                </b-form-group>
             </b-form>
         </validation-observer>
-
-        <b-form-group :description="`Cantidad: ${items.length}`">
-            <b-button
-                block
-                variant="primary"
-                @click="sendData()"
-                type="submit"
-                :disabled="agregarButtonDisabled"
-                >Agregar a Inventario</b-button
-            >
-        </b-form-group>
-
-        <b-list-group class="d-flex justify-content-between">
-            <b-list-group-item v-for="(articulo, index) in items" :key="index">
-                {{ index + 1 }} :
-                <strong>dfgdfgdf</strong>
-                <small>fgdfgdf</small>
-                <small>sdfsdfsdfsdf</small>
-
-                <b-button
-                    size="sm"
-                    class="float-right"
-                    variant="danger"
-                    @click="eliminarSerie(articulo, index)"
-                    >Eliminar</b-button
-                >
-            </b-list-group-item>
-        </b-list-group>
     </div>
 </template>
 
@@ -105,50 +86,44 @@ export default {
                 inventario: null,
                 cantidad: 0,
             },
-            items: [],
         };
     },
     methods: {
         getValidationState({ dirty, validated, valid = null }) {
             return dirty || validated ? valid : null;
         },
-        addItem() {
-            this.items.unshift({ ...this.item });
 
-            this.item.cantidad = 0;
-        },
-        //elimina la serie del array items
-        eliminarSerie(item, index) {
-            this.items.splice(index, 1);
-        },
-        sendData() {
+        addItem() {
             this.$emit("is-loading", true);
 
             const data = new FormData();
 
-            data.append("data", JSON.stringify(this.items));
-
-            data.set("equipo_id", this.item.id);
+            data.set("accesorio_id", this.item.accesorio.id);
 
             data.set("cantidad", this.item.cantidad);
 
             data.set("inventario_id", this.item.inventario.id);
 
             axios
-                .post("/otro", data, settings)
+                .post("/add/otros", data)
                 .then((response) => {
-                    this.$emit("errores", response.data.errors);
-
-                    this.$emit("exitosos", response.data.success);
+                     this.$bvToast.toast(response.data, {
+                        title: "Exito",
+                        autoHideDelay: 5000,
+                        variant: "success",
+                    });
 
                     this.$emit("is-loading", false);
                 })
                 .catch((error) => {
-                    alert(error);
+                    
+                    this.$bvToast.toast(error.response.data, {
+                        title: "Error",
+                        autoHideDelay: 5000,
+                        variant: "danger",
+                    });
                     this.$emit("is-loading", false);
                 });
-
-            this.items = [];
 
             this.file = null;
         },

@@ -18,61 +18,22 @@ class IccResource extends JsonResource
     {
         Carbon::setLocale('es');
 
-        $lineaStatus = "";
-
-        $lineaDn = "";
-
-        $lineaId = "";
-
-        $chipActivatedAt = null;
-
-        $chipPreactivatedAt = null;
-
-        if($this->status() == 'Eliminado'){
-            $linea = $this->linea()->withTrashed()->first();
-        }else{
-            $linea = $this->linea()->first();
-        }
-
-        
-
-        if($linea){
-             $lineaStatus = $linea->status();
-
-            $lineaDn = $linea->dn;
-
-            $lineaId = $linea->id;
-
-
-            if($linea->productoable){
-
-
-                $chipActivatedAt = $linea->activated_at;
-
-                $chipPreactivatedAt = $linea->productoable->preactivated_at;
-            }
-        
-            
-        }
 
 
         return [
 
-            'id'       => $this->id,
+            'id'  => $this->id,
             'serie'      => $this->icc,
             'inventario_id' => $this->inventario_id,
             'inventario_name' => $this->inventario->inventarioable->name,
             'company' => $this->company,
             'type' => $this->type,
-            'comment'  => $this->comment,
+            'comment'  => isset($this->comment->comment) ? $this->comment->comment : null,
             'status'    => $this->status,
-            'linea_status'    => $lineaStatus,
-            'linea_id' => $lineaId,
-            'linea_dn' => $lineaDn,
+            'linea' => isset($this->linea) ? $this->linea : null,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d/m/y h:i:s'),
-            'preactivated_at' =>  $chipPreactivatedAt ? Carbon::parse($chipPreactivatedAt)->diffForHumans() : null,
-            'activated_at' => $chipActivatedAt ? Carbon::parse($chipActivatedAt)->diffForHumans() : null,
+            'preactivated_at' =>  isset($this->linea->productoable->preactivated_at) ? Carbon::parse($this->linea->productoable->preactivated_at)->diffForHumans() : null,
             
 
         ];

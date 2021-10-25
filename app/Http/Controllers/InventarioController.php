@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Inventario;
 use App\Imei;
 use App\Icc;
+use App\Otro;
 use App\Distribution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ use App\Http\Resources\InventarioCollection;
 use App\Http\Resources\InventarioResource;
 use App\Http\Resources\ImeiResource;
 use App\Http\Resources\IccResource;
+use App\Http\Resources\OtroResource;
 
 class InventarioController extends Controller
 {
@@ -101,17 +103,30 @@ class InventarioController extends Controller
             case 'Icc':
 
                 if ($onlyTrash == true) {
-                    $iccs = Icc::whereIn('inventario_id',$inventariosIds)->onlyTrashed()->otherCurrentStatus('Vendido')->get();
-                }else{
-                    $iccs = Icc::whereIn('inventario_id',$inventariosIds)->otherCurrentStatus('Vendido')->get();
+                    $iccs = Icc::whereIn('inventario_id', $inventariosIds)->onlyTrashed()->otherCurrentStatus('Vendido')->get();
+                } else {
+                    $iccs = Icc::whereIn('inventario_id', $inventariosIds)->otherCurrentStatus('Vendido')->get();
                 }
 
                 $response = IccResource::collection($iccs);
                 break;
+            case 'Accesorios':
+
+                if ($id == 'all') {
+                    $accesorios = Otro::whereHas('inventarios', function ($query)  use ($user)  {
+                        return $query->whereIn('inventarios.id', $user->getInventariosForUserIds());
+                    })->withTrashed()->get()->load('inventarios.inventarioable');
+    
+                    $response = OtroResource::collection($accesorios);
+                }else{
+                    $inventario = Inventario::whereIn('id', $inventariosIds)->first();
+
+                    return collect($inventario->otros()->withTrashed()->get());
+
+                }
+                break;
         }
         return $response;
-
-
     }
 
     /**

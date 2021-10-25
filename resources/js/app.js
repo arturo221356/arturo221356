@@ -48,11 +48,12 @@ Vue.use(LaravelPermissionToVueJS);
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('inventario-component', require('./components/InventarioComponent.vue').default);
+// Vue.component('inventario-component', require('./components/InventarioComponent.vue').default);
+
+// Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
 Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
 Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
-Vue.component('cargar-inventario', require('./components/CargarInvComponent.vue').default);
  Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
 Vue.component('sucursales-component', require('./components/SucursalesComponent.vue').default);
@@ -69,6 +70,7 @@ Vue.component('porta-express', require('./components/PortaExpress.vue').default)
 Vue.component('cuentas-component', require('./components/CuentasComponent.vue').default);
 Vue.component('otros-component', require('./components/NewOtrosComponent.vue').default);
 Vue.component('cargar-inv-page', require('./components/CargarInvPage.vue').default);
+Vue.component('reporte-inv-page', require('./components/ReporteInvPage.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

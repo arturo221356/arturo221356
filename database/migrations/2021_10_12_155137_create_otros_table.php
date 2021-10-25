@@ -17,8 +17,8 @@ class CreateOtrosTable extends Migration
             $table->id();
             $table->unsignedInteger('distribution_id');
             $table->string('codigo')->nullable();
-            $table->string('nombre');
-            $table->string('descripcion');
+            $table->string('name');
+            $table->string('description');
             $table->integer('precio');
             $table->integer('costo')->nullable();
             $table->timestamps();

@@ -26,7 +26,7 @@ class ImeiResource extends JsonResource
             'precio'     => $this->equipo->precio,
             'costo'     => $this->equipo->costo,
             'status'    => $this->status,
-            'comment'  => $this->comment,
+            'comment'  => isset($this->comment->comment) ? $this->comment->comment : null,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s' ),
             'updated_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
             

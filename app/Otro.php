@@ -11,7 +11,7 @@ class Otro extends Model
 {
     use SoftDeletes, HasFactory;
 
-    protected $fillable = ["codigo","precio","costo", "distribution_id", "nombre", "descripcion"];
+    protected $fillable = ["codigo", "precio", "costo", "distribution_id", "name", "description"];
 
     protected $dates = ['deleted_at'];
 
@@ -21,29 +21,43 @@ class Otro extends Model
         return $this->belongsToMany('App\Inventario')->withPivot('stock');
     }
 
-    public function sellOtro($inventarioId = 13){
-        
-        $inventario = $this->inventarios()->wherePivot('inventario_id',$inventarioId)->first();
+    public function sellOtro($inventarioId = 13)
+    {
 
-        if(!isset($inventario->pivot->stock)){
+        $inventario = $this->inventarios()->wherePivot('inventario_id', $inventarioId)->first();
+
+        if (!isset($inventario->pivot->stock)) {
             return 'no hay ni vergas';
         }
 
-        if($inventario->pivot->stock < 1){
-           $this->inventarios()->detach($inventarioId);
+        if ($inventario->pivot->stock < 1) {
+            $this->inventarios()->detach($inventarioId);
 
-           return 'se detacho';
+            return 'se detacho';
         }
 
         $this->inventarios()->updateExistingPivot(
             $inventarioId,
-             ['stock' => $inventario->pivot->stock - 1]);
+            ['stock' => $inventario->pivot->stock - 1]
+        );
 
         return $this->load('inventarios');
-        
+    }
 
+    public function addToInventario($inventarioId, $cantidad)
+    {
 
+        $inventario = $this->inventarios()->wherePivot('inventario_id', $inventarioId)->first();
 
+        if (!isset($inventario->pivot->stock)) {
+            $this->inventarios()->attach($inventarioId, ['stock' => $cantidad]);
+        } 
+        else {
+            $this->inventarios()->updateExistingPivot(
+                $inventarioId,
+                ['stock' => $inventario->pivot->stock + $cantidad]
+            );
+        }
     }
 
 
@@ -54,13 +68,9 @@ class Otro extends Model
 
             $padded = Str::padLeft($otro->id, 4, '0');
 
-            $otro->codigo = 'ACX'.$padded;
+            $otro->codigo = 'ACX' . $padded;
 
             $otro->save();
         });
-
     }
-
-
-
 }

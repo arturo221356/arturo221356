@@ -217,11 +217,11 @@ class IccController extends Controller
 
                 $icc->icc_type_id = $request->icc_type_id;
 
-                if($request->lineaDn){
+                if($request->linea_dn){
                     
                     $linea = $icc->linea;
 
-                    $linea->dn = $request->lineaDn;
+                    $linea->dn = $request->linea_dn;
 
                     $montoRecarga= null;
 

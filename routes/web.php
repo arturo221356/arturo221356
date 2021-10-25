@@ -170,6 +170,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/get/otros', 'OtroController@getOtros');
 
+    Route::post('/delete/otros', 'OtroController@deleteInventario');
+
+    Route::post('/update/otros', 'OtroController@updateInventario');
+
+    Route::post('/add/otros', 'OtroController@addOtros');
+
     Route::get('/get/status', 'Admin\StatusController@getStatus');
 
     Route::get('/get/icctypes', 'IccTypeController@index');
@@ -180,22 +186,14 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 use App\Otro;
+use App\Http\Resources\OtroResource;
 
 
 
 Route::get('/pruebas', function (Request $request) {
-
-    $otro = Otro::find(2);
-
-    //  $inventario = Inventario::find(13);
     
-    //  $inventario->otros()->syncWithoutDetaching([$otro->id => ['stock' => 0]]);
 
-    //  return $inventario->otros;
-
-    $response = $otro->sellOtro();
-
-    return $response;
+    $inventarrio->otros()->withTrashed()->get();
 
 
 });
