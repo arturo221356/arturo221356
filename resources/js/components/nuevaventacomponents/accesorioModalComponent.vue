@@ -12,6 +12,7 @@
                     pholder="Seleccionar Accesorio"
                     v-model="accesorio"
                     query="filtrado"
+                    :accesorio="true"
                 >
                 </select-general>
             </b-form-group>

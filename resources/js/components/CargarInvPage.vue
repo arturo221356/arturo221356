@@ -92,7 +92,7 @@
                             v-on:errores="errores = $event"
                         ></icc-product>
                     </div>
-                    <div v-if="producto == 'Otros'">
+                    <div v-if="producto == 'Accesorios'">
                         <otros-product
                             v-on:is-loading="isLoading = $event"
                             v-on:exitosos="exitosos = $event"
@@ -130,7 +130,7 @@ export default {
             productOptions: [
                 { text: "Imeis", value: "Imei" },
                 { text: "Icc", value: "Icc" },
-                { text: "Otros", value: "Otros" },
+                { text: "Accesorios", value: "Accesorios" },
             ],
             alert: {
                 show: false,

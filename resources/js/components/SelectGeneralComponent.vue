@@ -57,6 +57,11 @@ export default {
             required: false,
             default: false,
         },
+        accesorio: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
 
         pholder: {
             type: String,
@@ -94,10 +99,12 @@ export default {
         emitToParent() {
             this.$emit("input", this.selected);
         },
-        customLabel({ name, marca, modelo, precio }) {
+        customLabel({ name, marca, modelo, precio, description, codigo }) {
             if (this.equipo === true) {
                 return `${marca}--${modelo}--$${precio}`;
-            } else {
+            } else if(this.accesorio === true){
+                 return `${codigo} ${name}-$${precio}-${description}`;
+            }else{
                 return name;
             }
         },

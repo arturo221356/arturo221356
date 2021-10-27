@@ -13,6 +13,7 @@
                             url="/inventario"
                             pholder="Seleccionar Inventario"
                             query="App\Sucursal"
+                            
                             v-model="item.inventario"
                             :state="getValidationState(validationContext)"
                         >
@@ -30,6 +31,7 @@
                         <select-general
                             url="/get/otros"
                             pholder="Seleccionar Accesorio"
+                            :accesorio="true"
                             v-model="item.accesorio"
                             :state="getValidationState(validationContext)"
                         ></select-general>
@@ -112,8 +114,9 @@ export default {
                         autoHideDelay: 5000,
                         variant: "success",
                     });
-
+                    this.item.cantidad = 0;
                     this.$emit("is-loading", false);
+                    
                 })
                 .catch((error) => {
                     
