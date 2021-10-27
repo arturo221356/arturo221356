@@ -170,6 +170,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/get/otros', 'OtroController@getOtros');
 
+    Route::post('/otros/check-stock', 'OtroController@checkStock');
+
     Route::post('/delete/otros', 'OtroController@deleteInventario');
 
     Route::post('/update/otros', 'OtroController@updateInventario');
@@ -185,17 +187,17 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-use App\Otro;
-use App\Http\Resources\OtroResource;
+use App\SoldOtro;
+
 
 
 
 Route::get('/pruebas', function (Request $request) {
     
 
-    $inventarrio->otros()->withTrashed()->get();
+    $otro = SoldOtro::find(1)->load('otro');
 
-
+    return $otro;
 });
 
 

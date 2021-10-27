@@ -21,25 +21,35 @@ class Otro extends Model
         return $this->belongsToMany('App\Inventario')->withPivot('stock');
     }
 
-    public function sellOtro($inventarioId = 13)
-    {
-
+    public function checkStock($inventarioId, $counter = 1){
         $inventario = $this->inventarios()->wherePivot('inventario_id', $inventarioId)->first();
 
         if (!isset($inventario->pivot->stock)) {
-            return 'no hay ni vergas';
+            return false;
         }
 
-        if ($inventario->pivot->stock < 1) {
-            $this->inventarios()->detach($inventarioId);
-
-            return 'se detacho';
+        if ($inventario->pivot->stock < $counter) {
+            return false;
         }
+        return true;
+    }
+
+    public function sellOtro($inventarioId)
+    {
+
+
+        $inventario = $this->inventarios()->wherePivot('inventario_id', $inventarioId)->first();
+
 
         $this->inventarios()->updateExistingPivot(
             $inventarioId,
             ['stock' => $inventario->pivot->stock - 1]
         );
+
+        if ($inventario->pivot->stock < 2) {
+            $this->inventarios()->detach($inventarioId);
+            return false;
+        }
 
         return $this->load('inventarios');
     }

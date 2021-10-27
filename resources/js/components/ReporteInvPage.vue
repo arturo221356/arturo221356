@@ -33,6 +33,7 @@
                                         pholder="Seleccionar Inventario"
                                         v-model="inventario"
                                         :empty="true"
+                                        :query="producto == 'iccReporte' ? null : 'App\\Sucursal'"
                                         :todas="
                                             can('get inventarios')
                                                 ? true

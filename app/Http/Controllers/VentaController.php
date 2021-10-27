@@ -11,25 +11,19 @@ use App\Imei;
 use App\Icc;
 use App\IccSubProduct;
 use App\Recarga;
-use App\Chip;
-use App\Porta;
-use App\Pospago;
-use App\Remplazo;
-use App\Cliente;
+use App\Otro;
 use App\Http\Resources\VentaResource;
 use Illuminate\Support\Carbon;
-use App\Telemarketing;
 use App\Mail\VentaComprobante;
-use App\Mail\OrderShipped;
 use Illuminate\Support\Facades\Mail;
 use LaravelDaily\Invoices\Invoice;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
 use LaravelDaily\Invoices\Classes\Party;
 
-use App\Jobs\ChecksItx;
 use App\Caja;
 use App\Linea;
+use App\SoldOtro;
 
 class VentaController extends Controller
 {
@@ -191,6 +185,31 @@ class VentaController extends Controller
                         }
 
                         break;
+
+                        case 'accesorios':
+
+
+                            
+    
+                            $accesorio = Otro::findOrFail($producto->id);
+    
+                            $accesorio->sellOtro($inventario->id);
+                            
+                            $soldOtro = new SoldOtro;
+                                
+                            $soldOtro->otro_id = $accesorio->id;
+
+                            $soldOtro->precio_vendido = $accesorio->precio;
+
+                            $soldOtro->costo = $accesorio->costo;
+
+                            $soldOtro->save();
+
+                            $venta->soldOtros()->attach($soldOtro, ['price' => $accesorio->precio]);
+
+                            $total += $producto->precio;
+    
+                            break;
 
                     case 'generales':
 

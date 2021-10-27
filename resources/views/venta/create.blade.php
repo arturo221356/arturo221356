@@ -2,8 +2,8 @@
 
 @section('content')
 
-<venta-component>
-</venta-component> 
+<venta-page>
+</venta-page> 
 
 
 @endsection

@@ -30,6 +30,10 @@ class Venta extends Model
     {
         return $this->morphedByMany('App\Imei', 'ventaable')->withPivot(['price']);
     }
+    public function soldOtros()
+    {
+        return $this->morphedByMany('App\SoldOtro', 'ventaable')->withPivot(['price']);
+    }
     
     public function iccs()
     {

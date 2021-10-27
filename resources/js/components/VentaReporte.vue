@@ -95,6 +95,30 @@
                                 <template #cell(Productos)="venta">
                                     <div
                                         v-if="
+                                            venta.item.accesorios
+                                                .length > 0
+                                        "
+                                    >
+                                        <p
+                                            v-for="producto in venta.item
+                                                .accesorios"
+                                            :key="producto.id"
+                                        >
+                                        <b>Codigo:</b> {{ producto.otro.codigo
+                                            }}<br />
+                                            <b>Nombre:</b> {{ producto.otro.name
+                                            }}<br />
+
+                                            <b>Descripcion:</b>
+                                            {{ producto.otro.description }}<br />
+
+                                            <b>Precio:</b> ${{
+                                                producto.pivot.price
+                                            }}<br />
+                                        </p>
+                                    </div>
+                                    <div
+                                        v-if="
                                             venta.item.productosGenerales
                                                 .length > 0
                                         "

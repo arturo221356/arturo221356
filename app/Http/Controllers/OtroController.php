@@ -24,10 +24,35 @@ class OtroController extends Controller
         return view('otros.index');
     }
 
-    public function getOtros()
-    {
-        $otros = Otro::all();
+    public function checkStock(Request $request)
+    {   
+        $user = Auth::user();
 
+        $inventario =  $user->inventariosAsignados()->first();
+
+        $otro = Otro::where('id',$request['id'])->first();
+
+        $response = $otro->checkStock($inventario->id,$request['counter']);
+
+        return $response;
+        
+    }
+
+    public function getOtros(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($request['param'] &&  $request['param'] == 'filtrado') {
+            $otros = Otro::whereHas('inventarios', function ($query) use ($user) {
+                return $query->whereIn('inventario_id', $user->getInventariosForUserIds());
+            })->orderBy('name', 'asc')->get();
+        } else {
+
+            $otros = Otro::where('distribution_id', $user->distribution_id)->get();
+        }
+        if ($user->role == 'super-admin') {
+            $otros = Otro::all();
+        }
         return $otros;
     }
 
@@ -45,15 +70,13 @@ class OtroController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->can('store stock'))
-        {
+        if (!$user->can('store stock')) {
             return response('No tienes permisos', 401);
         }
 
         $inventario = Inventario::where('id', $request['inventario_id'])->whereIn('id', $user->getInventariosForUserIds())->first();
 
-        if (!$inventario) 
-        {
+        if (!$inventario) {
             return response('No se encontro el inventario', 401);
         }
 
@@ -88,31 +111,29 @@ class OtroController extends Controller
         ]);
     }
 
-    public function updateInventario(Request $request){
+    public function updateInventario(Request $request)
+    {
         $user = Auth::user();
-        
-        if($user->can('update stock')){
-            $accesorio = Otro::where('id',$request['id'])->withTrashed()->first();
 
-            if($request['cantidad'] < 1){
+        if ($user->can('update stock')) {
+            $accesorio = Otro::where('id', $request['id'])->withTrashed()->first();
+
+            if ($request['cantidad'] < 1) {
                 $accesorio->inventarios()->detach($request['inventario_id']);
-            }else{
+            } else {
                 $accesorio->inventarios()->updateExistingPivot(
                     $request['inventario_id'],
                     ['stock' => $request['cantidad']]
                 );
             }
-            
-
-
-           
         }
     }
-    public function deleteInventario(Request $request){
+    public function deleteInventario(Request $request)
+    {
         $user = Auth::user();
-        
-        if($user->can('destroy stock')){
-            $accesorio = Otro::where('id',$request['id'])->withTrashed()->first();
+
+        if ($user->can('destroy stock')) {
+            $accesorio = Otro::where('id', $request['id'])->withTrashed()->first();
 
             $accesorio->inventarios()->detach($request['inventario_id']);
         }

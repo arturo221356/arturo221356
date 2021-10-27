@@ -15,6 +15,9 @@ class CreateSoldOtrosTable extends Migration
     {
         Schema::create('sold_otros', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('otro_id');
+            $table->unsignedInteger('precio_vendido');
+            $table->unsignedInteger('costo');
             $table->timestamps();
         });
     }

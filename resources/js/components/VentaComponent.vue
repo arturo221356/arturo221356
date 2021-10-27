@@ -823,7 +823,7 @@
 </template>
 
 <script>
-import ShowVenta from "./ShowVenta.vue";
+import ShowVenta from "./nuevaventacomponents/ShowVenta.vue";
 
 export default {
     components: {
