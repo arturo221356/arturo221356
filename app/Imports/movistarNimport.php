@@ -57,7 +57,7 @@ class movistarNimport implements ToCollection, WithStartRow
 
 
                         $producto  = json_decode(json_encode(array(
-                            'dn' => $row[1],
+                            'dn' => (string)$row[1],
 
                             "iccProduct" => array(
                                 "id" => $iccProductID,

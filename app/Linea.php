@@ -144,7 +144,7 @@ class Linea extends Model
 
         // y le asigna una linea con el dn de la request 
         $linea = $chip->linea()->create([
-            'dn' => $producto->dn,
+            'dn' => (string)$producto->dn,
             'icc_product_id' => $producto->iccProduct->id,
             'icc_sub_product_id' => isset($producto->iccSubProduct->id) ? $producto->iccSubProduct->id : null,
             'icc_id' => $iccId,
