@@ -52,6 +52,8 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
                         switch ($row['concepto']) {
 
+
+
                             case 'Bono portabilidad prepago SEMANAL':
 
                                 $campoComision = 'porta';
@@ -106,22 +108,22 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
                             case 'BONO ESPECIAL PORTABILIDAD  CONTRATACION PSL 200':
 
-                                    $campoComision = 'n4';
-    
-                                    $iccProductID = 2;
-    
-                                    // $campoFechaActivado = $row['fecha_activacion'];
-    
+                                $campoComision = 'n4';
+
+                                $iccProductID = 2;
+
+                                // $campoFechaActivado = $row['fecha_activacion'];
+
                                 break;
                             case 'AMIGO CHIP EXPRESS BONO ESPECIAL SIN LIMITE 2 Y 3':
 
-                                    $campoComision = 'n5';
+                                $campoComision = 'n5';
 
-                                    $iccProductID = 1;
+                                $iccProductID = 1;
 
-                                    // $campoFechaActivado = $row['fecha_acti'];
+                                // $campoFechaActivado = $row['fecha_acti'];
 
-                            break;
+                                break;
 
                             case 'Sim Card Express activación   CIRC GCO 93_19':
 
@@ -163,7 +165,7 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
                                 // $campoFechaActivado = $row['fecha_act'];
 
-                            break;
+                                break;
                             case 'LINEAS LIBRES':
 
                                 $campoComision = 'n';
@@ -172,11 +174,11 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
                                 // $campoFechaActivado = $row['fecha_act'];
 
-                            break;
+                                break;
 
-                            default: 
+                            default:
                                 $campoComision = 'default';
-                            break;
+                                break;
                         }
 
 
@@ -185,7 +187,7 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
 
                             $producto  = json_decode(json_encode(array(
-                                'dn' => isset($row['celular']) ? $row['celular'] : $row['tel_inicial'],
+                                'dn' => isset($row['celular']) ? (string)$row['celular'] : (string)$row['tel_inicial'],
 
                                 "iccProduct" => array(
                                     "id" => $iccProductID,
@@ -204,7 +206,7 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
                             $chip = $linea->productoable;
 
                             $chip->activated_at = now();
-                            
+
                             // Date::excelToDateTimeObject($campoFechaActivado);
 
                             $chip->save();
@@ -213,14 +215,14 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
                         } else {
                             $linea = $icc->linea;
 
-                            $arrayStatuses = ['Recargable','Preactiva','Proceso'];
+                            $arrayStatuses = ['Recargable', 'Preactiva', 'Proceso'];
 
-                            if ( in_array($linea->status, $arrayStatuses)) {
+                            if (in_array($linea->status, $arrayStatuses)) {
 
-                                if(!$linea->icc_sub_product_id){
-                                
+                                if (!$linea->icc_sub_product_id) {
+
                                     $linea->icc_sub_product_id = 30;
-    
+
                                     $linea->save();
                                 }
 
@@ -240,12 +242,12 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
 
                         $comisionExtra = 0;
-                        
+
                         if (isset($linea->comisiones->porta) && $row['concepto'] == 'Bono portabilidad prepago SEMANAL') {
                             $comisionExtra = $linea->comisiones->porta;
                         }
- 
-                                      
+
+
                         $linea->comisiones()->updateOrCreate([], [
 
                             $campoComision => isset($row['importe']) ? $row['importe'] + $comisionExtra : 0,
@@ -254,6 +256,41 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
                     }
                 }
             } else {
+                if (isset($row['concepto'])) {
+
+                    switch ($row['concepto']) {
+
+                        case 'REPORTES INFORMATIVO VOLUMEN':
+
+                            switch ($row['periodo_evaluacion']) {
+                                case '6 MESES':
+                                    $campoComision = 'n7';
+                                    break;
+                                case '9 MESES':
+                                    $campoComision = 'n8';
+                                    break;
+                                case '12 MESES':
+                                    $campoComision = 'n9';
+                                    break;
+                            }
+
+                            $linea = Linea::where('dn',isset($row['telefono']) ? $row['telefono'] : 0)->first();
+
+                            if(isset($linea)){
+                                $linea->comisiones()->updateOrCreate([], [
+
+                                    $campoComision => isset($row['importe']) ? $row['importe']  : 0,
+        
+                                ]);
+                            }
+
+                            
+
+                        break;
+                    }
+                }
+
+
                 if (isset($row['imei'])) {
                     $imei = Imei::where('imei', $row['imei'])->withTrashed()->first();
 
