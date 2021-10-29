@@ -70,6 +70,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/preactivar-prepago', 'ChipController@preactivarPrepago');
 
+    Route::get('/equipo/reporte', 'EquiposController@reporte');
+
     Route::get('/get/icctypes', 'IccTypeController@index');
 
     Route::get('/get/companies', 'CompaniesController@index');
@@ -112,7 +114,13 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/imei', 'ImeisController');
 
+    Route::post('/get/imeis-vendidos', 'ImeisController@getImeiVendidos');
+
     Route::resource('/otros', 'OtroController');
+
+    Route::get('/reporte/otros', 'OtroController@reporte');
+
+    Route::post('/get/accesorios-vendidos', 'OtroController@getOtrosVendidos');
 
     Route::resource('/icc', 'IccController');
 
@@ -187,17 +195,13 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-use App\SoldOtro;
-
-
 
 
 Route::get('/pruebas', function (Request $request) {
-    
 
-    $otro = SoldOtro::find(1)->load('otro');
 
-    return $otro;
+
+
 });
 
 

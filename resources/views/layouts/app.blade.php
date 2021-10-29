@@ -110,7 +110,7 @@
 
               <div class="dropdown-divider"></div>
              @endcan
-              <a class="dropdown-item disabled" href="/linea/reporte">Reporte</a>
+              <a class="dropdown-item " href="/equipo/reporte">Reporte</a>
 
             </div>
           </li>
@@ -125,7 +125,7 @@
 
               <div class="dropdown-divider"></div>
              @endcan
-              <a class="dropdown-item disabled" href="/otros/show">Reporte</a>
+              <a class="dropdown-item " href="/reporte/otros">Reporte</a>
 
             </div>
           </li>

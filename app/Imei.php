@@ -67,4 +67,9 @@ class Imei extends Model implements  Searchable
     {
         return $this->morphOne(Comision::class, 'comisionable');
     }
+    public function venta()
+    {
+        return $this->morphToMany(Venta::class, 'ventaable')->withPivot(['price','cost'])->latest();
+    }
+
 }

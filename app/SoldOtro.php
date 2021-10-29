@@ -14,4 +14,8 @@ class SoldOtro extends Model
     public function otro(){
         return $this->belongsTo(Otro::class)->withTrashed();
     }
+    public function venta()
+    {
+        return $this->morphToMany(Venta::class, 'ventaable')->withPivot(['price','cost'])->latest();
+    }
 }

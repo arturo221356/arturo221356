@@ -72,6 +72,8 @@ Vue.component('otros-component', require('./components/NewOtrosComponent.vue').d
 Vue.component('cargar-inv-page', require('./components/CargarInvPage.vue').default);
 Vue.component('reporte-inv-page', require('./components/ReporteInvPage.vue').default);
 Vue.component('venta-page', require('./components/VentaPage.vue').default);
+Vue.component('equipos-reporte-page', require('./components/EquiposReportePage.vue').default);
+Vue.component('accesorio-reporte-page', require('./components/AccesorioReportePage.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

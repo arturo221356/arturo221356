@@ -179,7 +179,7 @@ class VentaController extends Controller
 
                             $imei->setStatus('Vendido');
 
-                            $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio]);
+                            $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio,'cost' => $imei->equipo->costo]);
 
                             $total += $imei->equipo->precio;
                         }
@@ -205,7 +205,7 @@ class VentaController extends Controller
 
                             $soldOtro->save();
 
-                            $venta->soldOtros()->attach($soldOtro, ['price' => $accesorio->precio]);
+                            $venta->soldOtros()->attach($soldOtro, ['price' => $accesorio->precio, 'cost' => $accesorio->costo]);
 
                             $total += $producto->precio;
     

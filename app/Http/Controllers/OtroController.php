@@ -6,7 +6,9 @@ use App\Otro;
 use App\Inventario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Carbon;
+use App\Venta;
+use App\SoldOtro;
 class OtroController extends Controller
 {
 
@@ -23,6 +25,11 @@ class OtroController extends Controller
     {
         return view('otros.index');
     }
+    public function reporte()
+    {
+        return view('otros.reporte');
+    }
+    
 
     public function checkStock(Request $request)
     {   
@@ -154,6 +161,43 @@ class OtroController extends Controller
             ]
         );
         $otro->update($request->all());
+    }
+
+    public function getOtrosVendidos(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($request->inventario_id == 'all') {
+            $inventariosIds = $user->getInventariosForUserIds();
+        } else {
+            if (in_array($request->inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                $inventariosIds = [$request->inventario_id];
+            } else {
+                $inventariosIds = [];
+            }
+        }
+
+        $initialDate = Carbon::parse($request['initialDate'])->startOfDay()->toDateTimeString();
+
+        $finalDate = Carbon::parse($request['finalDate'])->endOfDay()->toDateTimeString();
+    
+        $ventas = Venta::whereIn('inventario_id', $inventariosIds)->whereBetween('created_at', [$initialDate, $finalDate])->with('soldOtros')->orderBy('created_at', 'asc')->get();
+    
+         $array = [];
+        
+        foreach($ventas as $venta){
+            $imeisIds = $venta->soldOtros()->pluck('id');
+            foreach($imeisIds as $id){
+                array_push($array, $id);
+            }
+            
+        }
+    
+        $soldOtro = SoldOtro::whereIn('id',$array)->with(['otro'])->get()->load('venta.inventario.inventarioable');
+    
+    
+    
+        return $soldOtro;
     }
 
     /**

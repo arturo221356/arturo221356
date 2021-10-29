@@ -13,9 +13,9 @@ class EquiposController extends Controller
 
     public function __construct()
     {
-        $this->middleware('role:super-admin|administrador', ['only' => ['update', 'store','destroy']]);
+        $this->middleware('role:super-admin|administrador', ['only' => ['update', 'store', 'destroy']]);
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -28,17 +28,24 @@ class EquiposController extends Controller
             $userDistribution = Auth::User()->distribution->id;
 
             $distribution = Distribution::find($userDistribution);
-        
-            $equipos = $distribution->equipos()->orderBy('marca','asc')->get();
-        
-            return response()->json($equipos);
 
+            $equipos = $distribution->equipos()->orderBy('marca', 'asc')->get();
+
+            return response()->json($equipos);
         } else {
             return view('admin.productos.equipos.index');
         }
-
-        
     }
+
+
+
+    
+    public function reporte(Request $request)
+    {
+
+        return view('equipos.reporte');
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -58,21 +65,23 @@ class EquiposController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,
-        ['marca'=>'required',
-        'modelo'=>'required',
-        'precio'=>'required|numeric',
-        'costo'=>'required|numeric',
+        $this->validate(
+            $request,
+            [
+                'marca' => 'required',
+                'modelo' => 'required',
+                'precio' => 'required|numeric',
+                'costo' => 'required|numeric',
 
-        ]);
-        $equipo =new Equipo;
-        $equipo->marca=$request->marca;
-        $equipo->modelo=$request->modelo;
-        $equipo->precio=$request->precio;
-        $equipo->costo=$request->costo;
+            ]
+        );
+        $equipo = new Equipo;
+        $equipo->marca = $request->marca;
+        $equipo->modelo = $request->modelo;
+        $equipo->precio = $request->precio;
+        $equipo->costo = $request->costo;
         $equipo->distribution_id = Auth::user()->distribution->id;
         $equipo->save();
-        
     }
 
     /**
@@ -94,7 +103,7 @@ class EquiposController extends Controller
      */
     public function edit(Equipo $equipo)
     {
-        return view('admin.productos.equipos.edit',compact('equipo'));
+        return view('admin.productos.equipos.edit', compact('equipo'));
     }
 
     /**
@@ -106,16 +115,18 @@ class EquiposController extends Controller
      */
     public function update(Request $request, Equipo $equipo)
     {
-        
-        $this->validate($request,
-        ['marca'=>'required',
-        'modelo'=>'required',
-        'precio'=>'required|numeric',
-        'costo'=>'required|numeric',
 
-        ]);
+        $this->validate(
+            $request,
+            [
+                'marca' => 'required',
+                'modelo' => 'required',
+                'precio' => 'required|numeric',
+                'costo' => 'required|numeric',
+
+            ]
+        );
         $equipo->update($request->all());
-       
     }
 
     /**
@@ -135,31 +146,26 @@ class EquiposController extends Controller
 
         //verifica que no existan series con este equipo anted de eliminarlos 
         $seriesHijas = $equipo->imeis()->count();
-        if($seriesHijas){
+        if ($seriesHijas) {
 
             $message = "$equipo->marca $equipo->modelo tiene $seriesHijas series, eliminalas antes !!";
-            
+
             $variant = "danger";
-            
+
             $title = 'Error';
+        } else {
 
-        }else{
-            
             $equipo->delete();
-            
-            $message = "$equipo->name Eliminado con exito";
-            
-            $variant = "warning";
-            
-            $title = 'Exito';
 
+            $message = "$equipo->name Eliminado con exito";
+
+            $variant = "warning";
+
+            $title = 'Exito';
         }
 
-        
-        
-       return ['message'=>$message,'variant' => $variant,'title'=>$title];
+
+
+        return ['message' => $message, 'variant' => $variant, 'title' => $title];
     }
-
-
-
 }

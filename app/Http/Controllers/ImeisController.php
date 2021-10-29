@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Imei;
-use Dotenv\Regex\Success;
-use Illuminate\Validation\Rule;
+use App\Venta;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ImeiResource as ImeiResource;
 use App\Imports\ImeisImport;
@@ -24,8 +24,41 @@ class ImeisController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getImeiVendidos(Request $request)
     {
+        $user = Auth::user();
+
+        if ($request->inventario_id == 'all') {
+            $inventariosIds = $user->getInventariosForUserIds();
+        } else {
+            if (in_array($request->inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                $inventariosIds = [$request->inventario_id];
+            } else {
+                $inventariosIds = [];
+            }
+        }
+
+        $initialDate = Carbon::parse($request['initialDate'])->startOfDay()->toDateTimeString();
+
+        $finalDate = Carbon::parse($request['finalDate'])->endOfDay()->toDateTimeString();
+    
+        $ventas = Venta::whereIn('inventario_id', $inventariosIds)->whereBetween('created_at', [$initialDate, $finalDate])->with('imeis')->orderBy('created_at', 'asc')->get();
+    
+         $array = [];
+        
+        foreach($ventas as $venta){
+            $imeisIds = $venta->imeis()->pluck('imeis.id');
+            foreach($imeisIds as $id){
+                array_push($array, $id);
+            }
+            
+        }
+    
+        $imeis = Imei::whereIn('id',$array)->with(['equipo'])->get()->load('venta.inventario.inventarioable');
+    
+    
+    
+        return $imeis;
     }
 
     /**

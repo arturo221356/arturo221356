@@ -3,7 +3,7 @@
         <b-overlay :show="isLoading" rounded="sm">
             <div>
                 <div class="col-lg-8 mx-auto">
-                    <div class="row"><h1>Reporte de Ventas</h1></div>
+                    <div><h1>Reporte de Ventas</h1></div>
 
                     <b-form>
                         <div class="row mt-4">
