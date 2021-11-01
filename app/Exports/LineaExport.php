@@ -2,7 +2,8 @@
 
 namespace App\Exports;
 
-use App\Linea;
+use Illuminate\Support\Facades\Auth;
+
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -24,8 +25,9 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
-class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAutoSize, WithStyles, WithColumnFormatting 
+class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAutoSize, WithStyles, WithColumnFormatting
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -40,7 +42,8 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
     }
     public function map($linea): array
     {
-        return [
+
+        $response =  [
 
 
             $linea->icc->icc . "F",
@@ -48,7 +51,7 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             $linea->icc->company->name,
             $linea->icc->type->name,
             $linea->icc->inventario->inventarioable->name,
-            isset($linea->user) ? $linea->user->name: null,
+            isset($linea->user) ? $linea->user->name : null,
             isset($linea->product->name) ? $linea->product->name : null,
             isset($linea->subProduct->name) ? $linea->subProduct->name : null,
             isset($linea->productoable->trafico_real) ? $linea->productoable->trafico_real : null,
@@ -58,27 +61,34 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             isset($linea->productoable->transaction->monto) ? $linea->productoable->transaction->monto : null,
             isset($linea->productoable->transaction->taecel_message) ? $linea->productoable->transaction->taecel_message : null,
             isset($linea->productoable->transaction->created_at) ?  Date::stringToExcel($linea->productoable->transaction->created_at) : null,
-            isset($linea->comisiones->porta) ? $linea->comisiones->porta : 0,
-            isset($linea->comisiones->n) ? $linea->comisiones->n : 0,
-            isset($linea->comisiones->n1) ? $linea->comisiones->n1 : 0,
-            isset($linea->comisiones->n2) ? $linea->comisiones->n2 : 0,
-            isset($linea->comisiones->n3) ? $linea->comisiones->n3 : 0,
-            isset($linea->comisiones->n4) ? $linea->comisiones->n4 : 0,
-            isset($linea->comisiones->n5) ? $linea->comisiones->n5 : 0,
-            isset($linea->comisiones->n6) ? $linea->comisiones->n6 : 0,
-            isset($linea->comisiones->n7) ? $linea->comisiones->n7 : 0,
-            isset($linea->comisiones->n8) ? $linea->comisiones->n8 : 0,
-            isset($linea->comisiones->n9) ? $linea->comisiones->n9 : 0,
-            isset($linea->comisiones->n10) ? $linea->comisiones->n10 : 0,
-            isset($linea->comisiones->n11) ? $linea->comisiones->n11 : 0,
 
 
-           
+
+
         ];
+        if (Auth::user()->hasRole(['administrador', 'super-admin'])) {
+            array_push($response, 
+                isset($linea->comisiones->porta) ? $linea->comisiones->porta : 0,
+                isset($linea->comisiones->n) ? $linea->comisiones->n : 0,
+                isset($linea->comisiones->n1) ? $linea->comisiones->n1 : 0,
+                isset($linea->comisiones->n2) ? $linea->comisiones->n2 : 0,
+                isset($linea->comisiones->n3) ? $linea->comisiones->n3 : 0,
+                isset($linea->comisiones->n4) ? $linea->comisiones->n4 : 0,
+                isset($linea->comisiones->n5) ? $linea->comisiones->n5 : 0,
+                isset($linea->comisiones->n6) ? $linea->comisiones->n6 : 0,
+                isset($linea->comisiones->n7) ? $linea->comisiones->n7 : 0,
+                isset($linea->comisiones->n8) ? $linea->comisiones->n8 : 0,
+                isset($linea->comisiones->n9) ? $linea->comisiones->n9 : 0,
+                isset($linea->comisiones->n10) ? $linea->comisiones->n10 : 0,
+                isset($linea->comisiones->n11) ? $linea->comisiones->n11 : 0,
+            );
+        }
+
+        return $response;
     }
     public function headings(): array
     {
-        return [
+        $response = [
             'Icc',
             'Numero',
             'Compañia',
@@ -94,20 +104,28 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
             'Monto Recarga',
             'Mensaje Recarga',
             'Fecha Recarga',
-            'Comision Porta',
-            'N 30',
-            'N1 60',
-            'N2 90',
-            'N3 120',
-            'N4/B P200',
-            'N5/B ESP',
-            'N6/ CHIP',
-            'VOL 6',
-            'VOL9',
-            'VOL12',
-            'CER',
+
 
         ];
+
+        if (Auth::user()->hasRole(['administrador', 'super-admin'])) {
+            array_push($response, 
+
+                'Comision Porta',
+                'N 30',
+                'N1 60',
+                'N2 90',
+                'N3 120',
+                'N4/B P200',
+                'N5/B ESP',
+                'N6/ CHIP',
+                'VOL 6',
+                'VOL9',
+                'VOL12',
+                'CER',
+            );
+        }
+        return $response;
     }
     public function columnFormats(): array
     {
@@ -123,7 +141,7 @@ class LineaExport implements FromCollection, WithMapping, WithHeadings, ShouldAu
 
         return [
             // Style the first row as bold text.
-            1    => ['font' => ['bold' => true,'size' => 14,'color' => array('rgb' => '000000')]],
+            1    => ['font' => ['bold' => true, 'size' => 14, 'color' => array('rgb' => '000000')]],
 
 
         ];
