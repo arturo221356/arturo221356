@@ -23,6 +23,8 @@ class ChipResource extends JsonResource
          'estatus' => $this->linea->status,
          'inventario' => $this->linea->icc->inventario->inventarioable->name,
          'Usuario' => isset($this->linea->user) ? $this->linea->user->name: null,
+         'Producto' => isset($this->linea->product->name) ? $this->linea->product->name : null,
+         'Sub Producto' => isset($this->linea->subProduct->name) ? $this->linea->subProduct->name : null,
          'recarga monto' => isset($this->transaction->monto) ? $this->transaction->monto : 0,
          'recarga mensaje' => isset($this->transaction->taecel_message) ? $this->transaction->taecel_message : ' ',
          'recarga folio' => isset($this->transaction->taecel_folio) ? $this->transaction->taecel_folio : ' ',
