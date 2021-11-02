@@ -186,7 +186,7 @@ class OtroController extends Controller
          $array = [];
         
         foreach($ventas as $venta){
-            $imeisIds = $venta->soldOtros()->pluck('id');
+            $imeisIds = $venta->soldOtros()->pluck('sold_otros.id');
             foreach($imeisIds as $id){
                 array_push($array, $id);
             }
