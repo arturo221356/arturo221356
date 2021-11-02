@@ -121,7 +121,7 @@ class movistarNimport implements ToCollection, WithStartRow
                     $linea->comisiones()->updateOrCreate([],[
                         /// comision del mes N esta en la letra N de excel
                         'n' => $row[13],
-                        'porta' => $comisionPorta,
+                        // 'porta' => $comisionPorta,
                     ]);
                 }
             }

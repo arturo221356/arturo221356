@@ -22,8 +22,8 @@ class movistarN3import implements ToCollection, WithStartRow
 
     use Importable, SkipsFailures, SkipsErrors;
     /**
-    * @param Collection $collection
-    */
+     * @param Collection $collection
+     */
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
@@ -52,11 +52,11 @@ class movistarN3import implements ToCollection, WithStartRow
                     if (!$icc->linea) {
 
 
-                       if($row[6] == 'PREPAGO' ||$row[6] == 'SIM' ){
-                           $iccProductID = 1;
-                       }else{
-                        $iccProductID = 2;
-                       }
+                        if ($row[6] == 'PREPAGO' || $row[6] == 'SIM') {
+                            $iccProductID = 1;
+                        } else {
+                            $iccProductID = 2;
+                        }
 
 
                         $producto  = json_decode(json_encode(array(
@@ -85,32 +85,29 @@ class movistarN3import implements ToCollection, WithStartRow
                         $chip->save();
 
                         $icc->setStatus('Vendido');
-
-
                     } else {
                         $linea = $icc->linea;
 
-                        $arrayStatuses = ['Recargable','Preactiva','Proceso'];
+                        $arrayStatuses = ['Recargable', 'Preactiva', 'Proceso'];
 
-                        if ( in_array($linea->status, $arrayStatuses)) {
+                        if (in_array($linea->status, $arrayStatuses)) {
 
                             $linea->setStatus('Activado');
 
-                            if(!$linea->icc_sub_product_id){
-                                
+                            if (!$linea->icc_sub_product_id) {
+
                                 $linea->icc_sub_product_id = 30;
 
                                 $linea->save();
                             }
 
                             $chip = $linea->productoable;
-    
+
                             $chip->activated_at = Date::excelToDateTimeObject($row[4]);
-    
+
                             $chip->save();
-    
+
                             $icc->setStatus('Vendido');
-                           
                         }
                     }
 
@@ -118,7 +115,15 @@ class movistarN3import implements ToCollection, WithStartRow
 
 
 
-                    $linea->comisiones()->updateOrCreate([],[
+                    $linea->comisiones()->updateOrCreate([], [
+
+                        /// comision del mes N esta en la letra K y Q de excel
+                        'n' => $row[10] + $row[16],
+                        /// comision del mes N1 esta en la letra M , S, W   de excel
+                        'n1' => $row[12] + $row[18] + $row[22],
+                        //Comision del n2 estan en las filas O , U, Y ,  AC
+                        'n2' => $row[14] + $row[20] + $row[24] + $row[28],
+
                         //Comision del n3 estan en las filas  AA , AE, AI
                         'n3' => $row[26] + $row[30] + $row[34],
                     ]);

@@ -21,8 +21,8 @@ class movistarN2import implements ToCollection, WithStartRow
 
     use Importable, SkipsFailures, SkipsErrors;
     /**
-    * @param Collection $collection
-    */
+     * @param Collection $collection
+     */
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
@@ -51,11 +51,11 @@ class movistarN2import implements ToCollection, WithStartRow
                     if (!$icc->linea) {
 
 
-                       if($row[6] == 'PREPAGO' ||$row[6] == 'SIM' ){
-                           $iccProductID = 1;
-                       }else{
-                        $iccProductID = 2;
-                       }
+                        if ($row[6] == 'PREPAGO' || $row[6] == 'SIM') {
+                            $iccProductID = 1;
+                        } else {
+                            $iccProductID = 2;
+                        }
 
 
                         $producto  = json_decode(json_encode(array(
@@ -84,49 +84,52 @@ class movistarN2import implements ToCollection, WithStartRow
                         $chip->save();
 
                         $icc->setStatus('Vendido');
-
-
                     } else {
                         $linea = $icc->linea;
-                        
-                        $arrayStatuses = ['Recargable','Preactiva','Proceso'];
 
-                        if ( in_array($linea->status, $arrayStatuses)) {
+                        $arrayStatuses = ['Recargable', 'Preactiva', 'Proceso'];
+
+                        if (in_array($linea->status, $arrayStatuses)) {
 
                             $linea->setStatus('Activado');
 
-                            if(!$linea->icc_sub_product_id){
-                                
+                            if (!$linea->icc_sub_product_id) {
+
                                 $linea->icc_sub_product_id = 30;
 
                                 $linea->save();
                             }
 
                             $chip = $linea->productoable;
-    
+
                             $chip->activated_at = Date::excelToDateTimeObject($row[4]);
-    
+
                             $chip->save();
-    
+
                             $icc->setStatus('Vendido');
-                           
                         }
                     }
 
 
-                    if(isset($linea->comisiones->porta)){
+                    if (isset($linea->comisiones->porta)) {
                         $comisionPorta = $linea->comisiones->porta + $row[5];
-                    }else{
+                    } else {
                         $comisionPorta = $row[5];
                     }
 
 
 
 
-                    $linea->comisiones()->updateOrCreate([],[
+                    $linea->comisiones()->updateOrCreate([], [
+                        /// comision del mes N esta en la letra N y T de excel
+                        'n' => $row[13] + $row[19],
+                        /// comision del mes N1 esta en la letra P , V, Z   de excel
+                        'n1' => $row[15] + $row[21] + $row[25],
+
+
                         //Comision del n2 estan en las filas  R , X, AB ,  AF
                         'n2' => $row[17] + $row[23] + $row[27] + $row[31],
-                        'porta' => $comisionPorta,
+                        // 'porta' => $comisionPorta,
                     ]);
                 }
             }
