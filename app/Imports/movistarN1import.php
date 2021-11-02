@@ -126,7 +126,7 @@ class movistarN1import implements ToCollection, WithStartRow
 
                         'n1' => $row[15] + $row[21] + $row[25],
 
-                        // 'porta' => $comisionPorta,
+                        'porta' => $comisionPorta,
                     ]);
                 }
             }

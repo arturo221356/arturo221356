@@ -129,7 +129,7 @@ class movistarN2import implements ToCollection, WithStartRow
 
                         //Comision del n2 estan en las filas  R , X, AB ,  AF
                         'n2' => $row[17] + $row[23] + $row[27] + $row[31],
-                        // 'porta' => $comisionPorta,
+                        'porta' => $comisionPorta,
                     ]);
                 }
             }
