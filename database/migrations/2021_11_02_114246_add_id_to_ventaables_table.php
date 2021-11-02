@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCostToVentaablesTable extends Migration
+class AddIdToVentaablesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,10 +14,7 @@ class AddCostToVentaablesTable extends Migration
     public function up()
     {
         Schema::table('ventaables', function (Blueprint $table) {
-            
-            $table->decimal('cost', $precision = 8, $scale = 2)->default(0);
-
-
+            $table->id();
         });
     }
 
@@ -29,7 +26,7 @@ class AddCostToVentaablesTable extends Migration
     public function down()
     {
         Schema::table('ventaables', function (Blueprint $table) {
-            $table->dropColumn('cost');
+            $table->dropColumn('id');
         });
     }
 }

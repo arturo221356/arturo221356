@@ -36,16 +36,6 @@ Route::post('/activa-chip', 'ChipController@recargaChip')->middleware('auth:sanc
 
 
 
-
-
-
-
-
-
-
-
-
-
 //movistar Api
 Route::post('/movistar/getCarrier', 'MovistarApiController@getCarrier');
 
