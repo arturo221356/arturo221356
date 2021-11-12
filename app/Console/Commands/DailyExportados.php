@@ -49,7 +49,10 @@ class DailyExportados extends Command
         $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
                 $query->whereBetween('activated_at', [Carbon::now()->subDays(45), Carbon::now()])
                     ->orWhereDate('activated_at', Carbon::now()->subDays(60))
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(75));
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(90))
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(120))
+                    ->orWhereDate('activated_at', Carbon::now()->subDays(150))
+                    ;
             })
 
 
