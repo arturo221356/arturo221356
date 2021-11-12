@@ -42,7 +42,7 @@ Route::view('/privacidad', 'privacidad')->name('privacidad');
 
 Route::view('/activa-chip', 'linea.activa-chip')->name('activa-chip');
 
-Route::view('/porta-express', 'linea.porta-express')->name('porta-express');
+Route::view('/porta-express', 'linea.porta-express')->middleware('auth')->name('porta-express');
 
 Route::post('/recarga-chip', 'ChipController@recargaChip');
 
@@ -191,18 +191,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get/icctypes', 'IccTypeController@index');
 
     Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index');
-    
 });
 
 
-
+use Faker\Calculator\Luhn;
 
 Route::get('/pruebas', function (Request $request) {
 
+    $i = 0;
 
+    while ($i <= 180) {
+        $response = Luhn::isValid('358191091642111');
 
+        dd($response);
+    }
 
 });
-
-
-
