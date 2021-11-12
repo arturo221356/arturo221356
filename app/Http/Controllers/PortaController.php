@@ -111,7 +111,7 @@ class PortaController extends Controller
             return $response;
         }
 
-        if (!in_array($icc->inventario->inventarioable_type, array('App\Grupo', 'App\User'), true)){
+        if ($icc->inventario->inventarioable_type == 'App\Sucursal'){
             $response = [
                 "success" => false,
                 "message" => "Funcion solo disponible para usuarios externos" . $icc->linea->dn,
