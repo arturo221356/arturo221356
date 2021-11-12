@@ -95,16 +95,19 @@ class LineaController extends Controller
         }
 
         if ($icc->linea()->first() == null) {
-            if ($icc->inventario->inventarioable_type == 'App\User') {
+
+            if (!in_array($icc->inventario->inventarioable_type, array('App\Grupo', 'App\User'), true)) {
+                $response = [
+                    "success" => false,
+                    "message" => "Funcion solo disponible para usuarios externos" ,
+
+                ];
+
+                return $response;
+            } else {
                 $response = [
                     "success" => true,
                     "data" => $icc,
-                ];
-            } else {
-                $response = [
-                    "success" => false,
-                    "message" => "Funcion solo disponible para usuarios externos",
-
                 ];
             }
         } else {
@@ -151,13 +154,13 @@ class LineaController extends Controller
 
             $exportadas = Linea::whereBetween('updated_at', [$initialDate, $finalDate])
 
-            ->currentStatus('Exportada')
+                ->currentStatus('Exportada')
 
-            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
-                $query->whereIn('inventario_id', $inventariosIds);
-            })
-            ->orderBy('updated_at', 'asc')
-            ->get();
+                ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                    $query->whereIn('inventario_id', $inventariosIds);
+                })
+                ->orderBy('updated_at', 'asc')
+                ->get();
 
 
             $response = ExportadaResource::collection($exportadas);

@@ -72,7 +72,7 @@
             <div class="alert alert-light mt-5" role="alert">
                  <a href="/activa-chip" class="alert-link">Activa Chip</a>
                  <div class="float-right">
-                    <a href="/porta-express" class="alert-link" >Portabilidad</a>
+                    {{-- <a href="/porta-express" class="alert-link" >Portabilidad</a> --}}
                  </div>
                  
               </div>
