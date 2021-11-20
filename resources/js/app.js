@@ -51,7 +51,7 @@ Vue.use(LaravelPermissionToVueJS);
 
 
 
-// Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
+ Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
 // Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
 // Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
  Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
