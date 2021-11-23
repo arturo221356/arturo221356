@@ -4,7 +4,7 @@
         <validation-observer ref="venta" v-slot="{ handleSubmit }">
             <b-form @submit.prevent="handleSubmit(consulta)">
                 <ValidationProvider
-                    rules="digits:18|required"
+                    rules="Icc|Luhn|required"
                     v-slot="validationContext"
                     name="Icc 1"
                 >
@@ -22,7 +22,7 @@
                     </b-form-group>
                 </ValidationProvider>
                 <ValidationProvider
-                    rules="digits:18|required"
+                    :rules="`Icc|Luhn|required|Icc2:${icc1}`"
                     v-slot="validationContext"
                     name="Icc 2"
                 >
@@ -81,6 +81,8 @@ export default {
                     link.setAttribute("download", `Iccs_calculados.xlsx`);
                     document.body.appendChild(link);
                     link.click();
+                    this.icc1 = null;
+                    this.icc2 = null;
                     this.isLoading = false;
                 })
                 .catch((error) => {

@@ -41,9 +41,9 @@ class IccController extends Controller
     {
         $iccs = [];
 
-        $icc1 = $request->icc_1;
+        $icc1 = substr($request->icc_1,0,18);
 
-        $icc2 = $request->icc_2;
+        $icc2 = substr($request->icc_2,0,18);
 
         while ($icc1 <= $icc2) {
 

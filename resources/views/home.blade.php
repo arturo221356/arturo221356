@@ -44,7 +44,7 @@
                         <div class="card-header">Calculadora de Icc por caja</div>
 
                         <div class="card-body">
-                            <b-alert show variant="warning">Inserta los Icc sin el ultimo numero.</b-alert>
+                            {{-- <b-alert show variant="warning">Inserta los Icc sin el ultimo numero.</b-alert> --}}
                             
                             <icc-calculator-component></icc-calculator-component>
                         </div>
