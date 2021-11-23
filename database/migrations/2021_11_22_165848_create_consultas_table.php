@@ -22,7 +22,7 @@ class CreateConsultasTable extends Migration
             $table->string('message')->nullable();
             $table->string('device')->nullable();
             $table->string('browser')->nullable();
-            $table->json('location')->nullable();
+            $table->text('location')->nullable();
             $table->timestamps();
         });
     }
