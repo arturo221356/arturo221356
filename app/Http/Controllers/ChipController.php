@@ -183,7 +183,7 @@ class ChipController extends Controller
                 'message' => $message['message'],
                 'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get('187.190.205.247'))  
+                'location' => json_encode(Location::get($request->ip()))  
                 ]);
 
             return json_encode($message);
@@ -221,7 +221,7 @@ class ChipController extends Controller
                 'message' => $message['message'],
                 'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get('187.190.205.247'))  
+                'location' => json_encode(Location::get($request->ip()))  
                 ]);
 
             return json_encode($message);
@@ -257,7 +257,7 @@ class ChipController extends Controller
                         'message' => $message['message'],
                         'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                         'browser' => Browser::browserName(),
-                        'location' => json_encode(Location::get('187.190.205.247'))  
+                        'location' => json_encode(Location::get($request->ip()))  
                         ]);
 
                     return json_encode($message);
@@ -276,7 +276,7 @@ class ChipController extends Controller
                         'message' => $message['message'],
                         'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                         'browser' => Browser::browserName(),
-                        'location' => json_encode(Location::get('187.190.205.247'))  
+                        'location' => json_encode(Location::get($request->ip()))  
                         ]);
 
                     return json_encode($message);
@@ -300,7 +300,7 @@ class ChipController extends Controller
                     'message' => $message['message'],
                     'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                     'browser' => Browser::browserName(),
-                    'location' => json_encode(Location::get('187.190.205.247'))  
+                    'location' => json_encode(Location::get($request->ip()))  
                     ]);
 
                 return json_encode($message);
@@ -323,7 +323,7 @@ class ChipController extends Controller
                 'message' => $message['message'],
                 'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get('187.190.205.247'))  
+                'location' => json_encode(Location::get($request->ip()))  
                 ]);
 
             return json_encode($message);
@@ -347,7 +347,7 @@ class ChipController extends Controller
                 'message' => $message['message'],
                 'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get('187.190.205.247'))  
+                'location' => json_encode(Location::get($request->ip()))  
                 ]);
 
             return json_encode($message);

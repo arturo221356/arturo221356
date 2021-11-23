@@ -100,7 +100,7 @@ class LineaController extends Controller
         'message' => $response->result->msg,
         'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
         'browser' => Browser::browserName(),
-        'location' => Location::get($request->ip())  
+        'location' => json_encode(Location::get($request->ip()))  
         ]);
 
         return json_encode($response);
@@ -117,16 +117,21 @@ class LineaController extends Controller
         }else{
             $userId = null;
         }
+        if(isset($response->result[0]->value)){
+            $message = $response->result[0]->value;
+        }else{
+            $message = "Numero no encontrado";
+        }
         
         Consulta::create([
         'user_id' => $userId,
         'ip' => $request->ip(),
         'numero' => $request->numero,
         'type' => 'company',
-        'message' => $response->result[0]->value,
+        'message' => $message,
         'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
         'browser' => Browser::browserName(),
-        'location' => json_encode(Location::get('187.190.205.247'))  
+        'location' => json_encode(Location::get($request->ip()))  
         ]);
 
         return json_encode($response);
