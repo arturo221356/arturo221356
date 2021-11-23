@@ -1,237 +1,164 @@
 <template>
     <div>
         <b-overlay :show="isLoading" rounded="sm">
-            <div>
-                <div class="col-lg-8 mx-auto">
-                    <div><h1>Reporte de Ventas</h1></div>
-
-                    <b-form>
-                        <div class="row mt-4">
-                            <div class="col-lg-6">
-                                <b-form-group label="Fecha Inicial">
-                                    <b-form-datepicker
-                                        v-model="initialDate"
-                                        locale="es"
-                                        :max="maxDate"
-                                    ></b-form-datepicker>
-                                </b-form-group>
-                            </div>
-                            <div class="col-lg-6">
-                                <b-form-group label="Fecha Final">
-                                    <b-form-datepicker
-                                        v-model="finalDate"
-                                        :max="maxDate"
-                                        locale="es"
-                                    ></b-form-datepicker>
-                                </b-form-group>
-                            </div>
-                        </div>
-                        <b-form-group label="Inventario:" label-size="lg">
-                            <select-general
-                                url="/inventario"
-                                pholder="Seleccionar Inventario"
-                                v-model="inventario"
-                                query="App\Sucursal"
-                                :empty="true"
-                                :todas="can('get inventarios') ? true : false"
-                            >
-                            </select-general>
+            <div class="container">
+            <date-sucursal-picker-component
+                titeName="Reporte de Ventas"
+                postUrl="/get/ventas"
+                v-on:is-loading="isLoading = $event"
+                v-on:data-loaded="dataLoaded($event)"
+            ></date-sucursal-picker-component>
+            </div>
+            <div class="mx-auto mt-4 col-md-12">
+                <div class="row">
+                    <div class="col-md-8 mt-auto">
+                        <h5>
+                            Resultado: {{ countItems }}, Total: ${{
+                                totalVentas
+                            }}
+                        </h5>
+                    </div>
+                    <div class="col-md-4 float-right">
+                        <b-form-group label="Filtrar:" label-size="sm"
+                            ><b-input
+                                placeholder="Filtrar"
+                                type="search"
+                                v-model="tableFilter"
+                            ></b-input>
                         </b-form-group>
-                        <b-button block @click="getVentas">Cargar</b-button>
-                    </b-form>
-                    <div class="col-lg-12">
-                        <div class="row">
-                            <div class="col-sm mt-auto">
-                                <h5>
-                                    Resultado: {{ countItems }}, Total: ${{
-                                        totalVentas
-                                    }}
-                                </h5>
-                            </div>
-                            <div class="col-sm float-right">
-                                <b-form-group label="Filtrar:" label-size="sm"
-                                    ><b-input
-                                        placeholder="Filtrar"
-                                        type="search"
-                                        v-model="tableFilter"
-                                    ></b-input>
-                                </b-form-group>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <b-table
-                                :items="tableItems"
-                                :fields="tableFields"
-                                :filter="tableFilter"
-                                hover
-                                responsive
-                                striped
-                                stacked="sm"
-                                head-variant="dark"
-                                :busy="tableBusy"
-                                @filtered="tableFiltered"
-                            >
-                                <template #table-busy>
-                                    <div class="text-center text-primary my-2">
-                                        <b-spinner
-                                            class="align-middle"
-                                        ></b-spinner>
-                                        <strong>Loading...</strong>
-                                    </div>
-                                </template>
-                                <template v-slot:cell(print)="row">
-                                    <div
-                                        class="h4 mb-0"
-                                        :style="{ cursor: 'pointer' }"
-                                    >
-                                        <b-icon
-                                            icon="file-earmark"
-                                            @click="
-                                                downloadInvoice(row.item.folio)
-                                            "
-                                        ></b-icon>
-                                    </div>
-                                </template>
-                                <template #cell(Productos)="venta">
-                                    <div
-                                        v-if="
-                                            venta.item.accesorios
-                                                .length > 0
-                                        "
-                                    >
-                                        <p
-                                            v-for="producto in venta.item
-                                                .accesorios"
-                                            :key="producto.id"
-                                        >
-                                        <b>Codigo:</b> {{ producto.otro.codigo
-                                            }}<br />
-                                            <b>Nombre:</b> {{ producto.otro.name
-                                            }}<br />
-
-                                            <b>Descripcion:</b>
-                                            {{ producto.otro.description }}<br />
-
-                                            <b>Precio:</b> ${{
-                                                producto.pivot.price
-                                            }}<br />
-                                        </p>
-                                    </div>
-                                    <div
-                                        v-if="
-                                            venta.item.productosGenerales
-                                                .length > 0
-                                        "
-                                    >
-                                        <p
-                                            v-for="producto in venta.item
-                                                .productosGenerales"
-                                            :key="producto.id"
-                                        >
-                                            <b>Nombre:</b> {{ producto.name
-                                            }}<br />
-
-                                            <b>Descripcion:</b>
-                                            {{ producto.description }}<br />
-
-                                            <b>Precio:</b> ${{
-                                                producto.pivot.price
-                                            }}<br />
-                                        </p>
-                                    </div>
-                                    <div v-if="venta.item.imeis.length > 0">
-                                        <p
-                                            v-for="producto in venta.item.imeis"
-                                            :key="producto.id"
-                                        >
-                                            <b>Imei:</b> {{ producto.imei
-                                            }}<br />
-
-                                            <b>Equipo:</b>
-                                            {{ producto.equipo.marca }}
-                                            {{ producto.equipo.modelo }}<br />
-
-                                            <b>Precio:</b> ${{
-                                                producto.pivot.price
-                                            }}<br />
-                                        </p>
-                                    </div>
-                                    <div v-if="venta.item.iccs.length > 0">
-                                        <p
-                                            v-for="producto in venta.item.iccs"
-                                            :key="producto.id"
-                                        >
-                                            <b>Icc:</b> {{ producto.icc }}<br />
-
-                                            <b>Compañia:</b>
-                                            {{ producto.company.name }}<br />
-
-                                            <b>Numero:</b> {{ producto.linea.dn
-                                            }}<br />
-
-                                            {{ producto.linea.product.name
-                                            }}<br />
-
-                                            {{ producto.linea.sub_product.name
-                                            }}<br />
-
-                                            <b>Precio:</b> ${{
-                                                producto.pivot.price
-                                            }}<br />
-                                        </p>
-                                    </div>
-
-                                    <div
-                                        v-if="
-                                            venta.item.transactions.length > 0
-                                        "
-                                    >
-                                        <p
-                                            v-for="producto in venta.item
-                                                .transactions"
-                                            :key="producto.id"
-                                        >
-                                            <b> {{ producto.recarga.name }}</b
-                                            ><br />
-
-                                            <b>Compañia:</b>
-                                            {{ producto.company.name }}<br />
-
-                                            <b>Numero:</b> {{ producto.dn
-                                            }}<br />
-
-                                            <b>Monto:</b> ${{ producto.monto
-                                            }}<br />
-
-                                            <b>Folio:</b>
-                                            {{ producto.taecel_folio }}<br />
-
-                                            <b-alert
-                                                show
-                                                :variant="
-                                                    producto.taecel_success ==
-                                                    true
-                                                        ? 'success'
-                                                        : 'danger'
-                                                "
-                                                >{{
-                                                    producto.taecel_message
-                                                }}</b-alert
-                                            >
-                                        </p>
-                                    </div>
-                                </template>
-                            </b-table>
-                        </div>
                     </div>
                 </div>
+            
+                <b-table
+                    :items="tableItems"
+                    :fields="tableFields"
+                    :filter="tableFilter"
+                    hover
+                    responsive
+                    striped
+                    head-variant="dark"
+                    :busy="tableBusy"
+                    @filtered="tableFiltered"
+                >
+                    <template #table-busy>
+                        <div class="text-center text-primary my-2">
+                            <b-spinner class="align-middle"></b-spinner>
+                            <strong>Loading...</strong>
+                        </div>
+                    </template>
+                    <template v-slot:cell(print)="row">
+                        <div class="h4 mb-0" :style="{ cursor: 'pointer' }">
+                            <b-icon
+                                icon="file-earmark"
+                                @click="downloadInvoice(row.item.folio)"
+                            ></b-icon>
+                        </div>
+                    </template>
+                    <template #cell(Productos)="venta">
+                        <div v-if="venta.item.accesorios.length > 0">
+                            <p
+                                v-for="producto in venta.item.accesorios"
+                                :key="producto.id"
+                            >
+                                <b>Codigo:</b> {{ producto.otro.codigo }}<br />
+                                <b>Nombre:</b> {{ producto.otro.name }}<br />
+
+                                <b>Descripcion:</b>
+                                {{ producto.otro.description }}<br />
+
+                                <b>Precio:</b> ${{ producto.pivot.price }}<br />
+                            </p>
+                        </div>
+                        <div v-if="venta.item.productosGenerales.length > 0">
+                            <p
+                                v-for="producto in venta.item
+                                    .productosGenerales"
+                                :key="producto.id"
+                            >
+                                <b>Nombre:</b> {{ producto.name }}<br />
+
+                                <b>Descripcion:</b>
+                                {{ producto.description }}<br />
+
+                                <b>Precio:</b> ${{ producto.pivot.price }}<br />
+                            </p>
+                        </div>
+                        <div v-if="venta.item.imeis.length > 0">
+                            <p
+                                v-for="producto in venta.item.imeis"
+                                :key="producto.id"
+                            >
+                                <b>Imei:</b> {{ producto.imei }}<br />
+
+                                <b>Equipo:</b>
+                                {{ producto.equipo.marca }}
+                                {{ producto.equipo.modelo }}<br />
+
+                                <b>Precio:</b> ${{ producto.pivot.price }}<br />
+                            </p>
+                        </div>
+                        <div v-if="venta.item.iccs.length > 0">
+                            <p
+                                v-for="producto in venta.item.iccs"
+                                :key="producto.id"
+                            >
+                                <b>Icc:</b> {{ producto.icc }}<br />
+
+                                <b>Compañia:</b>
+                                {{ producto.company.name }}<br />
+
+                                <b>Numero:</b> {{ producto.linea.dn }}<br />
+
+                                {{ producto.linea.product.name }}<br />
+
+                                {{ producto.linea.sub_product.name }}<br />
+
+                                <b>Precio:</b> ${{ producto.pivot.price }}<br />
+                            </p>
+                        </div>
+
+                        <div v-if="venta.item.transactions.length > 0">
+                            <p
+                                v-for="producto in venta.item.transactions"
+                                :key="producto.id"
+                            >
+                                <b> {{ producto.recarga.name }}</b
+                                ><br />
+
+                                <b>Compañia:</b>
+                                {{ producto.company.name }}<br />
+
+                                <b>Numero:</b> {{ producto.dn }}<br />
+
+                                <b>Monto:</b> ${{ producto.monto }}<br />
+
+                                <b>Folio:</b>
+                                {{ producto.taecel_folio }}<br />
+
+                                <b-alert
+                                    show
+                                    :variant="
+                                        producto.taecel_success == true
+                                            ? 'success'
+                                            : 'danger'
+                                    "
+                                    >{{ producto.taecel_message }}</b-alert
+                                >
+                            </p>
+                        </div>
+                    </template>
+                </b-table>
             </div>
         </b-overlay>
     </div>
 </template>
 
 <script>
+import DateSucursalPickerComponent from "./dateSucursalPickerComponent.vue";
 export default {
+    components: {
+        DateSucursalPickerComponent,
+    },
     data: function () {
         return {
             inventario: null,
@@ -369,41 +296,20 @@ export default {
                 });
         },
 
-        getVentas() {
-            this.tableBusy = true;
-            axios
-                .get(`/ventas`, {
-                    params: {
-                        initial_date: this.initialDate,
+        dataLoaded(data) {
+            this.tableItems = data.data;
+            this.countItems = data.data.length;
+            if (data.data.length > 0) {
+                let sum = data.data
+                    .map((o) => Number(o.total))
+                    .reduce((a, c) => {
+                        return Number(a) + Number(c);
+                    });
 
-                        final_date: this.finalDate,
-
-                        inventario_id: this.inventario.id,
-                    },
-                })
-                .then(
-                    function (response) {
-                        this.tableItems = response.data.data;
-                        this.countItems = this.tableItems.length;
-
-                        this.tableBusy = false;
-                        if (response.data.data.length > 0) {
-                            let sum = response.data.data
-                                .map((o) => Number(o.total))
-                                .reduce((a, c) => {
-                                    return Number(a) + Number(c);
-                                });
-
-                            this.totalVentas = sum;
-                        } else {
-                            this.totalVentas = 0;
-                        }
-                    }.bind(this)
-                )
-                .catch(function (error) {
-                    console.log(error);
-                    this.isLoading = false;
-                });
+                this.totalVentas = sum;
+            } else {
+                this.totalVentas = 0;
+            }
         },
     },
 };

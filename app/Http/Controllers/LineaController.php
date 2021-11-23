@@ -14,7 +14,6 @@ use Illuminate\Support\Carbon;
 
 use App\Http\Resources\ExportadaResource;
 
-
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -23,6 +22,12 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use App\Exports\LineaExport;
 use App\Pospago;
+
+use App\Consulta;
+
+use hisorange\BrowserDetect\Parser as Browser;
+
+use Stevebauman\Location\Facades\Location;
 
 class LineaController extends Controller
 {
@@ -72,6 +77,59 @@ class LineaController extends Controller
         }
 
         return  json_encode($response);
+    }
+
+    
+    public function checkItx(Request $request)
+    {
+        $model = new Linea();
+
+        $response = $model->checkItx($request->numero);
+        
+        if(Auth::check()){
+            $userId =  Auth::user()->id; 
+        }else{
+            $userId = null;
+        }
+        
+        Consulta::create([
+        'user_id' => $userId,
+        'ip' => $request->ip(),
+        'numero' => $request->numero,
+        'type' => 'itx',
+        'message' => $response->result->msg,
+        'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+        'browser' => Browser::browserName(),
+        'location' => Location::get($request->ip())  
+        ]);
+
+        return json_encode($response);
+    }
+
+    public function checkCompany(Request $request)
+    {
+        $model = new Linea();
+
+        $response = $model->checkCompany($request->numero);
+        
+        if(Auth::check()){
+            $userId =  Auth::user()->id; 
+        }else{
+            $userId = null;
+        }
+        
+        Consulta::create([
+        'user_id' => $userId,
+        'ip' => $request->ip(),
+        'numero' => $request->numero,
+        'type' => 'company',
+        'message' => $response->result[0]->value,
+        'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+        'browser' => Browser::browserName(),
+        'location' => json_encode(Location::get('187.190.205.247'))  
+        ]);
+
+        return json_encode($response);
     }
 
 

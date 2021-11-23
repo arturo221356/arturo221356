@@ -12,7 +12,9 @@ use Illuminate\Support\Carbon;
 
 use App\Jobs\ChecksItx;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
+
 
 class Linea extends Model
 {
@@ -58,11 +60,34 @@ class Linea extends Model
     {
         return $this->latestStatus()->reason;
     }
+    public function checkItx($numero)
+    {
+        $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getITX', [
+            'linea' => $numero,
+
+        ]);
+
+
+        $response = json_decode(substr($consulta, 4));
+
+        return $response;
+    }
+    public function checkCompany($numero)
+    {
+
+        $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
+            'linea' => $numero,
+
+        ]);
+
+        $response = json_decode(substr($consulta, 4));
+
+        return $response;
+    }
 
 
 
 
-    
 
     public function newLineaWithProduct($producto, $iccId)
     {

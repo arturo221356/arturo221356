@@ -1,7 +1,9 @@
 <template>
-    <div>
+    <div >
         <div class="col-lg-8 mx-auto">
-            <h1>Reporte {{nameReporte}}</h1>
+
+             <div class="row"><h1>{{ titeName }}</h1></div>
+           
 
             <b-form>
                 <div class="row mt-4">
@@ -35,7 +37,7 @@
                     >
                     </select-general>
                 </b-form-group>
-                <b-button block @click="loadData">Cargar</b-button>
+                <b-button block @click="loadData" :disabled="inventario == null ? true : false">Cargar</b-button>
             </b-form>
         </div>
     </div>
@@ -43,7 +45,12 @@
 
 <script>
 export default {
-    props: ["postUrl","nameReporte"],
+    props: {
+        postUrl: { type: String, required: true },
+
+        titeName: { type: String, required: true },
+    },
+
     data() {
         return {
             inventario: null,

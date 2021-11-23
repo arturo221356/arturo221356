@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Imports\IccsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use MarvinLabs\Luhn\Facades\Luhn;
+
+
+//excel export
+use App\Exports\IccCalculator;
 
 class IccController extends Controller
 {
@@ -31,6 +36,27 @@ class IccController extends Controller
     public function create()
     {
         //
+    }
+    public function calculator(Request $request)
+    {
+        $iccs = [];
+
+        $icc1 = $request->icc_1;
+
+        $icc2 = $request->icc_2;
+
+        while ($icc1 <= $icc2) {
+
+            $lastDigit = Luhn::computeCheckDigit($icc1);
+            
+            array_push($iccs, [$icc1.$lastDigit."F"]);
+
+            $icc1++;
+        }
+
+        $export = new IccCalculator($iccs);
+
+        return Excel::download($export, 'iccs_calculados.xlsx');
     }
 
     /**
@@ -208,7 +234,7 @@ class IccController extends Controller
                 $icc->comment()->delete();
             }
             $icc->setStatus($request->status);
-        
+
             if ($user->can('full update stock')) {
 
                 $icc->inventario_id = $request->inventario_id;
@@ -217,46 +243,41 @@ class IccController extends Controller
 
                 $icc->icc_type_id = $request->icc_type_id;
 
-                if($request->linea_dn){
-                    
+                if ($request->linea_dn) {
+
                     $linea = $icc->linea;
 
                     $linea->dn = $request->linea_dn;
 
-                    $montoRecarga= null;
+                    $montoRecarga = null;
 
                     $lineaStatus = null;
 
-                    if($request->lineaStatus == 'Recargable'){
-                        if($user->hasPermissionTo('asignar recarga')){
+                    if ($request->lineaStatus == 'Recargable') {
+                        if ($user->hasPermissionTo('asignar recarga')) {
                             $montoRecarga = $request->montoRecarga;
 
                             $lineaStatus = $request->lineaStatus;
 
-                            $linea->setStatus($lineaStatus,$montoRecarga);
+                            $linea->setStatus($lineaStatus, $montoRecarga);
                         }
-
-                    }else{
+                    } else {
                         $lineaStatus = $request->lineaStatus;
 
                         $montoRecarga = null;
 
-                        $linea->setStatus($lineaStatus,$montoRecarga);
+                        $linea->setStatus($lineaStatus, $montoRecarga);
                     }
 
-                    
 
-                    
+
+
 
                     $linea->save();
                 }
-
-                
-
             }
 
             $icc->save();
-            
         }
         return $request;
     }
@@ -287,21 +308,19 @@ class IccController extends Controller
     {
         $user = Auth::user();
         if ($user->can('destroy stock')) {
-        $id = $request;
-        
-        $icc = Icc::onlyTrashed()->findOrfail($id)->first();
+            $id = $request;
 
-        $icc->restore();
+            $icc = Icc::onlyTrashed()->findOrfail($id)->first();
 
-        $icc->deleteStatus('Eliminado');
+            $icc->restore();
 
-        $linea = $icc->linea()->withTrashed();
+            $icc->deleteStatus('Eliminado');
 
-        $linea->restore();
+            $linea = $icc->linea()->withTrashed();
 
-        return $icc;
+            $linea->restore();
+
+            return $icc;
         }
-
-        
     }
 }

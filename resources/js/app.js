@@ -75,6 +75,11 @@ Vue.component('venta-page', require('./components/VentaPage.vue').default);
 Vue.component('equipos-reporte-page', require('./components/EquiposReportePage.vue').default);
 Vue.component('accesorio-reporte-page', require('./components/AccesorioReportePage.vue').default);
 
+
+Vue.component('check-itx-component', require('./components/homeComponents/checkItxComponent.vue').default);
+Vue.component('check-company-component', require('./components/homeComponents/checkCompanyComponent.vue').default);
+Vue.component('icc-calculator-component', require('./components/homeComponents/iccCalculatorComponent.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

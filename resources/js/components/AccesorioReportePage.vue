@@ -1,7 +1,7 @@
 <template>
     <div>
         <date-sucursal-picker-component
-            nameReporte="Accesorios"
+            titeName="Reporte de accesorios"
             postUrl="/get/accesorios-vendidos"
             v-on:is-loading="isLoading = $event"
             v-on:data-loaded="dataLoaded($event)"

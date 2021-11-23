@@ -12,18 +12,11 @@
 */
 //para pruebas
 
-use App\Exports\IccsClieanExport;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
-use App\Porta;
-
 use App\Linea;
-
-use App\Taecel;
-
-use App\Transaction;
 
 Auth::routes([
     'register' => false,
@@ -124,6 +117,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('/icc', 'IccController');
 
+    Route::post('/calculator/icc', 'IccController@calculator');
+
     Route::resource('/linea', 'LineaController');
 
     Route::resource('/chip', 'ChipController');
@@ -137,6 +132,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/get/gastos', 'GastoController@getAll');
 
     Route::post('/get/incomes', 'IncomeController@getAll');
+
+    Route::post('/get/ventas', 'VentaController@getVentas');
 
     Route::resource('/ventas', 'VentaController');
 
@@ -167,6 +164,11 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     // apis 
+    Route::post('/check/Itx', 'LineaController@checkItx');
+
+
+
+    Route::post('/check/company', 'LineaController@checkCompany');
 
     Route::get('/get/icc-products', 'Admin\IccProductController@index');
 
@@ -194,16 +196,33 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-use Faker\Calculator\Luhn;
+use App\Exports\IccCalculator;
+
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/pruebas', function (Request $request) {
 
-    $i = 0;
 
-    while ($i <= 180) {
-        $response = Luhn::isValid('358191091642111');
+    
+        $iccs = [];
 
-        dd($response);
-    }
+        $icc1 = 895203300038328457;
+
+        $icc2 = 895203300038328556;
+
+        while ($icc1 <= $icc2) {
+
+            $lastDigit = Luhn::computeCheckDigit($icc1);
+            
+            array_push($iccs, [$icc1.$lastDigit."F"]);
+
+            $icc1++;
+        }
+
+        $export = new IccCalculator($iccs);
+        
+        return Excel::download($export, 'iccs_calculados.xlsx');
+
+        return $iccs;
 
 });

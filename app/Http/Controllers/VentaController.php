@@ -41,50 +41,39 @@ class VentaController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        return view('venta.index');
+    }
+    public function getVentas(Request $request)
+    {
+
+
+        $user = Auth::user();
+
+        $inventario_id = $request->inventario_id;
+
+        $initialDate = Carbon::parse($request->initialDate)->startOfDay()->toDateTimeString();
+
+        $finalDate = Carbon::parse($request->finalDate)->endOfDay()->toDateTimeString();
 
 
 
-            $user = Auth::user();
-
-            $userDistribution = $user->distribution;
-
-            $initialDate = Carbon::parse($request->initial_date)->startOfDay()->toDateTimeString();
-
-            $finalDate = Carbon::parse($request->final_date)->endOfDay()->toDateTimeString();
-
-
-            if ($user->can('distribution inventarios')) {
-
-                if ($request->inventario_id == "all") {
-
-                    $ventas = Venta::DistributionVentas($initialDate, $finalDate);
-                } else {
-
-                    $ventas =  Venta::VentaInInventario($initialDate, $finalDate, $request->inventario_id);
-                }
-            } else {
-
-
-                $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-
-                if ($request->inventario_id == "all") {
-                    $ventas = Venta::whereIn('inventario_id', $inventariosIds)->whereBetween('created_at', [$initialDate, $finalDate])->orderBy('created_at', 'asc')->get();
-                } else {
-                    $ventas = Venta::whereBetween('created_at', [$initialDate, $finalDate])->whereIn('inventario_id', $inventariosIds)->where('inventario_id', $request->inventario_id)->orderBy('created_at', 'asc')->get();
-                }
-            }
-
-
-
-
-            $response = VentaResource::collection($ventas);
-
-            return $response;
+        if ($inventario_id == 'all') {
+            $inventariosIds = $user->getInventariosForUserIds();
         } else {
-
-            return view('venta.index');
+            if (in_array($inventario_id, $user->getInventariosForUserIds()->toArray())) {
+                $inventariosIds = [$inventario_id];
+            } else {
+                $inventariosIds = [];
+            }
         }
+
+
+        $ventas = Venta::whereBetween('created_at', [$initialDate, $finalDate])->whereIn('inventario_id', $inventariosIds)->orderBy('created_at', 'asc')->get();
+
+
+        $response = VentaResource::collection($ventas);
+
+        return $response;
     }
 
     /**
@@ -151,7 +140,7 @@ class VentaController extends Controller
 
                             $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
 
-                           
+
 
                             $montoRecargaVirtual = 0;
 
@@ -159,7 +148,7 @@ class VentaController extends Controller
                                 $montoRecargaVirtual = $recarga->monto;
                                 $total += $recarga->monto;
                             }
-                            
+
 
                             $venta->transactions()->attach($newTrasnsaction, ['price' => $montoRecargaVirtual]);
                         }
@@ -179,37 +168,37 @@ class VentaController extends Controller
 
                             $imei->setStatus('Vendido');
 
-                            $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio,'cost' => $imei->equipo->costo]);
+                            $venta->imeis()->attach($imei, ['price' => $imei->equipo->precio, 'cost' => $imei->equipo->costo]);
 
                             $total += $imei->equipo->precio;
                         }
 
                         break;
 
-                        case 'accesorios':
+                    case 'accesorios':
 
 
-                            
-    
-                            $accesorio = Otro::findOrFail($producto->id);
-    
-                            $accesorio->sellOtro($inventario->id);
-                            
-                            $soldOtro = new SoldOtro;
-                                
-                            $soldOtro->otro_id = $accesorio->id;
 
-                            $soldOtro->precio_vendido = $accesorio->precio;
 
-                            $soldOtro->costo = $accesorio->costo;
+                        $accesorio = Otro::findOrFail($producto->id);
 
-                            $soldOtro->save();
+                        $accesorio->sellOtro($inventario->id);
 
-                            $venta->soldOtros()->attach($soldOtro, ['price' => $accesorio->precio, 'cost' => $accesorio->costo]);
+                        $soldOtro = new SoldOtro;
 
-                            $total += $producto->precio;
-    
-                            break;
+                        $soldOtro->otro_id = $accesorio->id;
+
+                        $soldOtro->precio_vendido = $accesorio->precio;
+
+                        $soldOtro->costo = $accesorio->costo;
+
+                        $soldOtro->save();
+
+                        $venta->soldOtros()->attach($soldOtro, ['price' => $accesorio->precio, 'cost' => $accesorio->costo]);
+
+                        $total += $producto->precio;
+
+                        break;
 
                     case 'generales':
 
@@ -290,7 +279,7 @@ class VentaController extends Controller
 
                                         $newTrasnsaction =  (new Transaction)->newTaecelTransaction($taecelKey, $taecelNip, $dn, $recarga->id, $inventario->id);
 
-                                        
+
 
                                         if ($newTrasnsaction->taecel_success == false) {
 
