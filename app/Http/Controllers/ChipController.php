@@ -10,8 +10,11 @@ use App\Transaction;
 
 use App\Linea;
 
-use App\Taecel;
+use hisorange\BrowserDetect\Parser as Browser;
 
+use Stevebauman\Location\Facades\Location;
+
+use App\Consulta;
 
 use App\Recarga;
 
@@ -173,8 +176,19 @@ class ChipController extends Controller
                 'message' => 'Numero no existe en la base de datos',
 
             ];
+            Consulta::create([
+                'ip' => $request->ip(),
+                'numero' => $dn,
+                'type' => 'activa chip',
+                'message' => $message['message'],
+                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'browser' => Browser::browserName(),
+                'location' => json_encode(Location::get('187.190.205.247'))  
+                ]);
 
             return json_encode($message);
+
+
         }
 
 
@@ -200,7 +214,15 @@ class ChipController extends Controller
                     $message['message'] = 'Numero activado anteriormente';
                     break;
             }
-
+            Consulta::create([
+                'ip' => $request->ip(),
+                'numero' => $dn,
+                'type' => 'activa chip',
+                'message' => $message['message'],
+                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'browser' => Browser::browserName(),
+                'location' => json_encode(Location::get('187.190.205.247'))  
+                ]);
 
             return json_encode($message);
         }
@@ -228,6 +250,15 @@ class ChipController extends Controller
                         'message' => 'Linea no pertenece a tu inventario',
 
                     ];
+                    Consulta::create([
+                        'ip' => $request->ip(),
+                        'numero' => $dn,
+                        'type' => 'activa chip',
+                        'message' => $message['message'],
+                        'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                        'browser' => Browser::browserName(),
+                        'location' => json_encode(Location::get('187.190.205.247'))  
+                        ]);
 
                     return json_encode($message);
                 }
@@ -238,6 +269,15 @@ class ChipController extends Controller
                         'message' => 'Linea no pertenece a tu inventario',
 
                     ];
+                    Consulta::create([
+                        'ip' => $request->ip(),
+                        'numero' => $dn,
+                        'type' => 'activa chip',
+                        'message' => $message['message'],
+                        'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                        'browser' => Browser::browserName(),
+                        'location' => json_encode(Location::get('187.190.205.247'))  
+                        ]);
 
                     return json_encode($message);
                 }
@@ -253,6 +293,15 @@ class ChipController extends Controller
                     'message' => 'Usuario no tiene permiso de activar chips',
 
                 ];
+                Consulta::create([
+                    'ip' => $request->ip(),
+                    'numero' => $dn,
+                    'type' => 'activa chip',
+                    'message' => $message['message'],
+                    'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                    'browser' => Browser::browserName(),
+                    'location' => json_encode(Location::get('187.190.205.247'))  
+                    ]);
 
                 return json_encode($message);
             }
@@ -267,6 +316,15 @@ class ChipController extends Controller
                 'message' => 'Solo para usuarios externos o grupos externos',
 
             ];
+            Consulta::create([
+                'ip' => $request->ip(),
+                'numero' => $dn,
+                'type' => 'activa chip',
+                'message' => $message['message'],
+                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'browser' => Browser::browserName(),
+                'location' => json_encode(Location::get('187.190.205.247'))  
+                ]);
 
             return json_encode($message);
         }
@@ -282,6 +340,15 @@ class ChipController extends Controller
                 'message' => 'Inventario no tiene permiso de activar chips',
 
             ];
+            Consulta::create([
+                'ip' => $request->ip(),
+                'numero' => $dn,
+                'type' => 'activa chip',
+                'message' => $message['message'],
+                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'browser' => Browser::browserName(),
+                'location' => json_encode(Location::get('187.190.205.247'))  
+                ]);
 
             return json_encode($message);
         }
