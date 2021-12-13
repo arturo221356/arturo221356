@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use App\Jobs\ChecksItx;
+use App\Linea;
 
 class PortaController extends Controller
 {
@@ -199,17 +200,31 @@ class PortaController extends Controller
                 }
             }
 
-            $portas = Porta::whereBetween('created_at', [$initialDate, $finalDate])
-                ->whereHas('linea', function ($query) {
-                    $query->currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa']);
-                })
-                ->whereHas('linea.icc', function ($query) use ($inventariosIds) {
-                    $query->whereIn('inventario_id', $inventariosIds);
-                })
-                ->orderBy('created_at', 'asc')
+            // $portas = Porta::whereBetween('created_at', [$initialDate, $finalDate])
+            //     ->whereHas('linea', function ($query) {
+            //         $query->currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa']);
+            //     })
+            //     ->whereHas('linea.icc', function ($query) use ($inventariosIds) {
+            //         $query->whereIn('inventario_id', $inventariosIds);
+            //     })
+            //     ->orderBy('created_at', 'asc')
 
-                ->get();
+            //     ->get();
+            
+            $portas = Linea::currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa'])
 
+            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                $query->whereIn('id', $inventariosIds);
+            })
+
+            ->whereHasMorph(
+                'productoable',
+                [Porta::class],
+                function ($query, $type)  use ($initialDate, $finalDate) {
+
+                    $query->whereBetween('activated_at', [$initialDate, $finalDate]);
+                }
+            )->get();
 
 
             $response = PortaResource::collection($portas);

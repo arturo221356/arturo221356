@@ -195,34 +195,25 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index');
 });
 
-
-use App\Exports\IccCalculator;
-
-use Maatwebsite\Excel\Facades\Excel;
+use MarvinLabs\Luhn\Facades\Luhn;
 
 Route::get('/pruebas', function (Request $request) {
 
 
     
-        $iccs = [];
+    $i = 1;
+    while ($i <= 180) {
+        $i++;
 
-        $icc1 = 895203300038328457;
+        $inicio = '86881003';
 
-        $icc2 = 895203300038328556;
+        $random = mt_rand(100000, 999999);
 
-        while ($icc1 <= $icc2) {
+        $checkDigit = Luhn::computeCheckDigit($inicio.$random);
 
-            $lastDigit = Luhn::computeCheckDigit($icc1);
-            
-            array_push($iccs, [$icc1.$lastDigit."F"]);
+        echo($inicio.$random.$checkDigit.'<br>');
+    }
 
-            $icc1++;
-        }
 
-        $export = new IccCalculator($iccs);
-        
-        return Excel::download($export, 'iccs_calculados.xlsx');
-
-        return $iccs;
 
 });

@@ -132,15 +132,35 @@ class ChipController extends Controller
                 }
             }
 
-            $chips = Chip::whereBetween('activated_at', [$initialDate, $finalDate])
-                ->whereHas('linea', function ($query) {
-                    $query->currentStatus(['Activado', 'Sin Saldo']);
-                })
-                ->whereHas('linea.icc.inventario', function ($query) use ($inventariosIds) {
+            // $chips = Chip::whereBetween('activated_at', [$initialDate, $finalDate])
+            //     ->whereHas('linea', function ($query) {
+            //         $query->currentStatus(['Activado', 'Sin Saldo']);
+            //     })
+            //     ->whereHas('linea.icc.inventario', function ($query) use ($inventariosIds) {
 
-                    $query->whereIn('inventario_id', $inventariosIds);
+            //         $query->whereIn('inventario_id', $inventariosIds);
+            //     })
+            //     ->orderBy('activated_at', 'asc')
+            //     ->get();
+
+
+            $chips = Linea::currentStatus(['Activado', 'Sin Saldo'])
+
+            ->whereHasMorph(
+                'productoable',
+                [Chip::class],
+                function ($query, $type)  use ($initialDate, $finalDate) {
+
+                    $column = $type === Porta::class ? 'created_at' : 'activated_at';
+
+                    $query->whereBetween('activated_at', [$initialDate, $finalDate]);
+                }
+            )
+
+                ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                    $query->whereIn('id', $inventariosIds);
                 })
-                ->orderBy('activated_at', 'asc')
+
                 ->get();
 
 
@@ -181,14 +201,12 @@ class ChipController extends Controller
                 'numero' => $dn,
                 'type' => 'activa chip',
                 'message' => $message['message'],
-                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get($request->ip()))  
-                ]);
+                'location' => json_encode(Location::get($request->ip()))
+            ]);
 
             return json_encode($message);
-
-
         }
 
 
@@ -219,10 +237,10 @@ class ChipController extends Controller
                 'numero' => $dn,
                 'type' => 'activa chip',
                 'message' => $message['message'],
-                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get($request->ip()))  
-                ]);
+                'location' => json_encode(Location::get($request->ip()))
+            ]);
 
             return json_encode($message);
         }
@@ -255,10 +273,10 @@ class ChipController extends Controller
                         'numero' => $dn,
                         'type' => 'activa chip',
                         'message' => $message['message'],
-                        'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                        'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                         'browser' => Browser::browserName(),
-                        'location' => json_encode(Location::get($request->ip()))  
-                        ]);
+                        'location' => json_encode(Location::get($request->ip()))
+                    ]);
 
                     return json_encode($message);
                 }
@@ -274,10 +292,10 @@ class ChipController extends Controller
                         'numero' => $dn,
                         'type' => 'activa chip',
                         'message' => $message['message'],
-                        'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                        'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                         'browser' => Browser::browserName(),
-                        'location' => json_encode(Location::get($request->ip()))  
-                        ]);
+                        'location' => json_encode(Location::get($request->ip()))
+                    ]);
 
                     return json_encode($message);
                 }
@@ -298,10 +316,10 @@ class ChipController extends Controller
                     'numero' => $dn,
                     'type' => 'activa chip',
                     'message' => $message['message'],
-                    'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                    'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                     'browser' => Browser::browserName(),
-                    'location' => json_encode(Location::get($request->ip()))  
-                    ]);
+                    'location' => json_encode(Location::get($request->ip()))
+                ]);
 
                 return json_encode($message);
             }
@@ -321,10 +339,10 @@ class ChipController extends Controller
                 'numero' => $dn,
                 'type' => 'activa chip',
                 'message' => $message['message'],
-                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get($request->ip()))  
-                ]);
+                'location' => json_encode(Location::get($request->ip()))
+            ]);
 
             return json_encode($message);
         }
@@ -345,10 +363,10 @@ class ChipController extends Controller
                 'numero' => $dn,
                 'type' => 'activa chip',
                 'message' => $message['message'],
-                'device' => Browser::platformName()."  ".Browser::deviceFamily()."  ".Browser::deviceModel(),
+                'device' => Browser::platformName() . "  " . Browser::deviceFamily() . "  " . Browser::deviceModel(),
                 'browser' => Browser::browserName(),
-                'location' => json_encode(Location::get($request->ip()))  
-                ]);
+                'location' => json_encode(Location::get($request->ip()))
+            ]);
 
             return json_encode($message);
         }
@@ -406,7 +424,7 @@ class ChipController extends Controller
 
             $response =  json_encode([
                 'success' =>  true,
-                'message' =>$newTrasnsaction->taecel_message . ",  Folio: " . $newTrasnsaction->taecel_folio . " Monto: " . $newTrasnsaction->monto,
+                'message' => $newTrasnsaction->taecel_message . ",  Folio: " . $newTrasnsaction->taecel_folio . " Monto: " . $newTrasnsaction->monto,
             ]);
 
             $linea->deleteStatus('Proceso');
