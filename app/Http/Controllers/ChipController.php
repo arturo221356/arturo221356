@@ -144,22 +144,22 @@ class ChipController extends Controller
             //     ->get();
 
 
-            $chips = Linea::currentStatus(['Activado', 'Sin Saldo'])
+            $chips = Linea::
 
-            ->whereHasMorph(
+            whereHasMorph(
                 'productoable',
                 [Chip::class],
                 function ($query, $type)  use ($initialDate, $finalDate) {
 
-                    $column = $type === Porta::class ? 'created_at' : 'activated_at';
-
                     $query->whereBetween('activated_at', [$initialDate, $finalDate]);
                 }
-            )
+            )->
+            whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                $query->whereIn('id', $inventariosIds);
+            })
+            ->currentStatus(['Activado', 'Sin Saldo'])
 
-                ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
-                    $query->whereIn('id', $inventariosIds);
-                })
+                
 
                 ->get();
 

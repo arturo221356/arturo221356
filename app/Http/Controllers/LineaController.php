@@ -255,22 +255,23 @@ class LineaController extends Controller
         }
 
 
-        $linea = Linea::currentStatus(['Porta subida', 'Porta Exitosa', 'Activado', 'Sin Saldo', 'Pospago', 'Telemarketing', 'Exportada'])
+        $linea = Linea::
+        whereHasMorph(
+            'productoable',
+            [Porta::class, Chip::class, Pospago::class],
+            function ($query, $type)  use ($initialDate, $finalDate) {
 
-            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
-                $query->whereIn('id', $inventariosIds);
-            })
+                $column = $type === Porta::class ? 'created_at' : 'activated_at';
 
-            ->whereHasMorph(
-                'productoable',
-                [Porta::class, Chip::class, Pospago::class],
-                function ($query, $type)  use ($initialDate, $finalDate) {
-
-                    $column = $type === Porta::class ? 'created_at' : 'activated_at';
-
-                    $query->whereBetween($column, [$initialDate, $finalDate]);
-                }
-            )->get();
+                $query->whereBetween($column, [$initialDate, $finalDate]);
+            }
+        )
+        ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+            $query->whereIn('id', $inventariosIds);
+        })
+        ->currentStatus(['Porta subida', 'Porta Exitosa', 'Activado', 'Sin Saldo', 'Pospago', 'Telemarketing', 'Exportada']
+        )
+        ->get();
 
         return Excel::download(new LineaExport($linea), 'invoices.xlsx');
     }

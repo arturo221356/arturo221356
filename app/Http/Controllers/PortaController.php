@@ -211,20 +211,22 @@ class PortaController extends Controller
 
             //     ->get();
             
-            $portas = Linea::currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa'])
-
-            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
-                $query->whereIn('id', $inventariosIds);
-            })
-
-            ->whereHasMorph(
+            $portas = Linea::
+            whereHasMorph(
                 'productoable',
                 [Porta::class],
                 function ($query, $type)  use ($initialDate, $finalDate) {
 
                     $query->whereBetween('created_at', [$initialDate, $finalDate]);
                 }
-            )->get();
+            )
+            ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+                $query->whereIn('id', $inventariosIds);
+            })
+
+            ->
+            currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa'])->
+            get();
 
 
             $response = PortaResource::collection($portas);
