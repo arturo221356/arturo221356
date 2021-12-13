@@ -10,23 +10,23 @@
                         </div>
                         <!-- </div> -->
 
-                        <div class="col-xl-auto ml-auto mt-4">
+                        <div class="col-xl-auto ml-auto mt-1">
                             <b-button
-                                class="mr-3"
+                                class="mr-3 mt-3"
                                 v-if="can('create transaction')"
                                 @click="$refs.recargaModal.open()"
                                 >Agregar Recarga</b-button
                             >
 
                             <b-button
-                                class="mr-3"
+                                class="mr-3 mt-1"
                                 @click="$refs.generalModal.open()"
                             >
                                 Agregar venta general
                             </b-button>
 
                             <b-button 
-                            class="mr-3"
+                            class="mr-3 mt-1"
                             @click="$refs.accesorioModal.open()"
                             >
                                 Agregar Accesorio

@@ -80,6 +80,7 @@
                             class="mt-3"
                         >
                             <select-general
+                                ref="subProductSelect"
                                 url="/get/icc-subproducts"
                                 :query="iccData.iccProduct.id"
                                 :query2="currentIcc.company.id"
@@ -109,6 +110,7 @@
                             class="mt-3"
                         >
                             <select-general
+                                ref="recargaSelect"
                                 url="/get/recargas"
                                 :query="currentIcc.company.id"
                                 pholder="Seleccionar Recarga"
@@ -291,14 +293,19 @@ export default {
             }
         },
         subproductUpdated() {
+            
             if (
                 this.iccData.iccSubProduct &&
                 this.iccData.iccSubProduct.recarga_id
             ) {
                 this.iccData.recarga = this.iccData.iccSubProduct.recarga_id;
+
+                this.$refs['recargaSelect'].loadData();
             } else {
-                this.iccData.recarga = null;
+                      this.iccData.recarga = null;
             }
+          
+
         },
         productUpdated() {
             this.iccSubProduct = null;

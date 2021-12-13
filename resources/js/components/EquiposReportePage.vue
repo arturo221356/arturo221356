@@ -27,6 +27,9 @@
                 :fields="tableFields"
                 :busy="isLoading"
                 :filter="filter"
+                responsive
+                head-variant="dark"
+                class="position-relative"
                 @filtered="tableFiltered"
             >
                 <!--busy template-->

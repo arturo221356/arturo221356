@@ -1,9 +1,9 @@
 <template>
-    <div >
+    <div class="container">
         <div class="col-lg-8 mx-auto">
-
-             <div class="row"><h1>{{ titeName }}</h1></div>
-           
+            <div class="row">
+                <h1>{{ titeName }}</h1>
+            </div>
 
             <b-form>
                 <div class="row mt-4">
@@ -37,7 +37,22 @@
                     >
                     </select-general>
                 </b-form-group>
-                <b-button block @click="loadData" :disabled="inventario == null ? true : false">Cargar</b-button>
+                <b-overlay
+                    :show="buttonBusy"
+                    rounded
+                    opacity="0.6"
+                    spinner-small
+                    spinner-variant="primary"
+                    
+                   
+                >
+                    <b-button
+                        block
+                        @click="loadData"
+                        :disabled="inventario == null ? true : false"
+                        >Cargar</b-button
+                    >
+                </b-overlay>
             </b-form>
         </div>
     </div>
@@ -55,6 +70,8 @@ export default {
         return {
             inventario: null,
 
+            buttonBusy: false,
+
             initialDate: new Date().toISOString().substr(0, 10),
 
             finalDate: new Date().toISOString().substr(0, 10),
@@ -62,6 +79,7 @@ export default {
     },
     methods: {
         loadData() {
+            this.buttonBusy = true;
             this.$emit("is-loading", true);
             axios
                 .post(this.postUrl, {
@@ -71,11 +89,12 @@ export default {
                 })
                 .then((response) => {
                     this.$emit("data-loaded", response.data);
-
+                    this.buttonBusy = false;
                     this.$emit("is-loading", false);
                 })
                 .catch((error) => {
                     alert(error);
+                    this.buttonBusy = false;
                     this.$emit("is-loading", false);
                 });
         },
