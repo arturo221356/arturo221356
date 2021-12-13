@@ -222,7 +222,7 @@ class PortaController extends Controller
                 [Porta::class],
                 function ($query, $type)  use ($initialDate, $finalDate) {
 
-                    $query->whereBetween('activated_at', [$initialDate, $finalDate]);
+                    $query->whereBetween('created_at', [$initialDate, $finalDate]);
                 }
             )->get();
 
