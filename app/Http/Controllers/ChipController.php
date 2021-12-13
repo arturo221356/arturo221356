@@ -153,15 +153,15 @@ class ChipController extends Controller
 
                     $query->whereBetween('activated_at', [$initialDate, $finalDate]);
                 }
-            )->
+            )
+            ->
             whereHas('icc.inventario', function ($query) use ($inventariosIds) {
                 $query->whereIn('id', $inventariosIds);
             })
-            ->currentStatus(['Activado', 'Sin Saldo'])
-
-                
-
-                ->get();
+           
+            ->get() ->sortBy(function($query){
+                return $query->productoable->activated_at;
+             });
 
 
 

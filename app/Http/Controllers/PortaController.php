@@ -226,7 +226,9 @@ class PortaController extends Controller
 
             ->
             currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa'])->
-            get();
+            get()->sortBy(function($query){
+                return $query->productoable->created_at;
+             });
 
 
             $response = PortaResource::collection($portas);
