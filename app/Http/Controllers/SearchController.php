@@ -6,8 +6,6 @@ use App\Icc;
 
 use App\Imei;
 
-use App\Recarga;
-
 use Illuminate\Http\Request;
 
 use Spatie\Searchable\Search;
@@ -16,8 +14,35 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Str;
 
+use App\Imports\TraspasoImport;
+
+
 class SearchController extends Controller
 {
+
+    public function traspasoFromExcel(Request $request)
+    {
+        $errores = [];
+
+        $exitosos = [];
+
+
+
+        if ($request->hasFile('excelFile')) {
+            $file = $request->file('excelFile');
+
+            $imeiImport = new TraspasoImport();
+
+            $imeiImport->import($file);
+
+            //obtiene los los mensales de error
+            $imeiValidationErrors = $imeiImport->getErrors();
+            $imeiValidationSuccess = $imeiImport->getsuccess();
+
+        }
+
+        return ['errors' => $imeiValidationErrors, 'success' => $imeiValidationSuccess];
+    }
 
     public function ventaPrediction(Request $request)
     {
@@ -37,8 +62,7 @@ class SearchController extends Controller
                         $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
                         $query->whereIn('inventario_id', $inventariosIds);
-                    })
-                    ;
+                    });
             })
             ->registerModel(Imei::class, function ($modelSearchAspect) {
                 $modelSearchAspect
@@ -49,8 +73,7 @@ class SearchController extends Controller
                         $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
                         $query->whereIn('inventario_id', $inventariosIds);
-                    })
-                    ;
+                    });
             })
 
 

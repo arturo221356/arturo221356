@@ -51,16 +51,11 @@ Vue.use(LaravelPermissionToVueJS);
 
 
 
- Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
-// Vue.component('checkbox-status', require('./components/StatusCheckboxComponent.vue').default);
-// Vue.component('radio-producto', require('./components/RadioProductoComponent.vue').default);
- Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
+Vue.component('select-statuses', require('./components/SelectStatusesComponent.vue').default);
+Vue.component('usuarios-component', require('./components/UsuariosComponent.vue').default);
 Vue.component('equipos-component', require('./components/EquiposComponent.vue').default);
 Vue.component('sucursales-component', require('./components/SucursalesComponent.vue').default);
-Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);
-// Vue.component('venta-component', require('./components/VentaComponent.vue').default);
 Vue.component('select-general', require('./components/SelectGeneralComponent.vue').default);
-// Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalComponent.vue').default);
 Vue.component('preactivar-linea', require('./components/PreactivarComponent.vue').default);
 Vue.component('activa-chip', require('./components/ActivaChip.vue').default);
 Vue.component('linea-reporte', require('./components/LineaReporte.vue').default);

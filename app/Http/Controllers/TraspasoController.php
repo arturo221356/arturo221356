@@ -27,15 +27,15 @@ class TraspasoController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
-        if ($user->can('ver traspasos')){
+
+        if ($user->can('ver traspasos')) {
 
 
-            
-        
+
+
 
             if ($request->ajax()) {
-                
+
                 $response = [];
 
 
@@ -66,7 +66,6 @@ class TraspasoController extends Controller
                 return view('admin.inventario.traspasos');
             }
         }
-        
     }
 
     /**
@@ -155,24 +154,26 @@ class TraspasoController extends Controller
                         break;
 
                     case "imeis":
+                        if ($inventario->inventarioable_type == 'App\\Sucursal') {
+                            $imei =  Imei::findorfail($item->id);
 
-                        $imei =  Imei::findorfail($item->id);
-
-                        $traspaso->imeis()->attach(
-                            $imei,
-                            ['old_inventario_id' => $imei->inventario_id,]
-                        );
-
-
-
-                        if ($aceptacionRequired == true) {
-                            $imei->setStatus('Traslado');
-                        } else {
+                            $traspaso->imeis()->attach(
+                                $imei,
+                                ['old_inventario_id' => $imei->inventario_id,]
+                            );
 
 
-                            $imei->inventario()->associate($inventario);
+
+                            if ($aceptacionRequired == true) {
+                                $imei->setStatus('Traslado');
+                            } else {
+
+
+                                $imei->inventario()->associate($inventario);
+                            }
+                            $imei->save();
                         }
-                        $imei->save();
+
 
                         break;
                 }

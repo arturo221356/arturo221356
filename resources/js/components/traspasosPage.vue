@@ -57,7 +57,8 @@ export default {
 
     data() {
         return {
-            traspasoType: "historial",
+            // traspasoType: "historial",
+            traspasoType: "nuevo",
             traspasoOptions: [
                 { text: "Nuevo traspaso", value: "nuevo" },
                 { text: "Historial", value: "historial" },

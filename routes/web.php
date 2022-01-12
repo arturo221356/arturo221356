@@ -157,6 +157,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/search/traspaso-exact', 'SearchController@traspasoExact');
 
+    Route::post('/search/traspaso-excel', 'SearchController@traspasoFromExcel');
+
 
     Route::get('/search/venta-prediction', 'SearchController@ventaPrediction');
 

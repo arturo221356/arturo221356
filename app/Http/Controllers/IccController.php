@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Icc;
-use App\IccProduct;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\IccsImport;
 use Maatwebsite\Excel\Facades\Excel;
