@@ -60,7 +60,7 @@ Vue.component('sucursales-component', require('./components/SucursalesComponent.
 Vue.component('recargas-component', require('./components/RecargasComponent.vue').default);
 // Vue.component('venta-component', require('./components/VentaComponent.vue').default);
 Vue.component('select-general', require('./components/SelectGeneralComponent.vue').default);
-Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalComponent.vue').default);
+// Vue.component('traspaso-sucursal', require('./components/TraspasoSucursalComponent.vue').default);
 Vue.component('preactivar-linea', require('./components/PreactivarComponent.vue').default);
 Vue.component('activa-chip', require('./components/ActivaChip.vue').default);
 Vue.component('linea-reporte', require('./components/LineaReporte.vue').default);
@@ -72,10 +72,9 @@ Vue.component('otros-component', require('./components/NewOtrosComponent.vue').d
 Vue.component('cargar-inv-page', require('./components/CargarInvPage.vue').default);
 Vue.component('reporte-inv-page', require('./components/ReporteInvPage.vue').default);
 Vue.component('venta-page', require('./components/VentaPage.vue').default);
+Vue.component('traspasos-page', require('./components/TraspasosPage.vue').default);
 Vue.component('equipos-reporte-page', require('./components/EquiposReportePage.vue').default);
 Vue.component('accesorio-reporte-page', require('./components/AccesorioReportePage.vue').default);
-
-
 Vue.component('check-itx-component', require('./components/homeComponents/checkItxComponent.vue').default);
 Vue.component('check-company-component', require('./components/homeComponents/checkCompanyComponent.vue').default);
 Vue.component('icc-calculator-component', require('./components/homeComponents/iccCalculatorComponent.vue').default);

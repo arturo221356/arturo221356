@@ -18,230 +18,179 @@ use Illuminate\Support\Str;
 
 class SearchController extends Controller
 {
-    
-    public function ventaPrediction(Request $request){
 
-        
+    public function ventaPrediction(Request $request)
+    {
+
+
         // falta hacer los filtros para la distribucion y de la sucursal 
 
         $searchResults = (new Search())
-        ->registerModel(Icc::class, function ($modelSearchAspect) {
-            
-            
-            $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('icc')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-                    
-                    $query->whereIn('inventario_id', $inventariosIds);
-                })
-                ;
-        })
-        ->registerModel(Imei::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('imei')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-                    
-                    $query->whereIn('inventario_id', $inventariosIds);
-                })
-                ;
-        })
+            ->registerModel(Icc::class, function ($modelSearchAspect) {
 
 
-        
-        ->search($request->search);
-        
+                $modelSearchAspect
+                    ->limit(5)
+                    ->addSearchableAttribute('icc')
+                    ->whereHas('inventario', function ($query) {
+                        $user = Auth::user();
+                        $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
-    return $searchResults;
+                        $query->whereIn('inventario_id', $inventariosIds);
+                    })
+                    ;
+            })
+            ->registerModel(Imei::class, function ($modelSearchAspect) {
+                $modelSearchAspect
+                    ->limit(5)
+                    ->addSearchableAttribute('imei')
+                    ->whereHas('inventario', function ($query) {
+                        $user = Auth::user();
+                        $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
+                        $query->whereIn('inventario_id', $inventariosIds);
+                    })
+                    ;
+            })
+
+
+
+            ->search($request->search);
+
+
+        $respuestas = $searchResults->filter(function ($item) {
+            return $item->searchable->status != 'Vendido';
+        });
+        return $respuestas;
     }
 
-    public function ventaExact(Request $request){
+    public function ventaExact(Request $request)
+    {
 
         $searchValue = $request->search;
 
 
-        if( !Str::is('recar*', $request->search) || !Str::is('paque*', $request->search) ){
+        if (!Str::is('recar*', $request->search) || !Str::is('paque*', $request->search)) {
 
-            $searchValue = substr($request->search,0,19);
-
+            $searchValue = substr($request->search, 0, 19);
         };
 
-        
+
         // falta hacer los filtros para la distribucion y de la sucursal 
 
         $searchResults = (new Search())
-        ->registerModel(Icc::class, function ($modelSearchAspect) {
-            
-            
-            $modelSearchAspect
-                ->limit(5)
-                ->addExactSearchableAttribute('icc')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    
-                    $user = Auth::user();
+            ->registerModel(Icc::class, function ($modelSearchAspect) {
 
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-                    
-                    $query->whereIn('inventario_id', $inventariosIds);
 
-                })->with(['linea','inventario.inventarioable','type','company'])
-                ;
-        })
-        ->registerModel(Imei::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-                ->limit(5)
-                ->addExactSearchableAttribute('imei')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
+                $modelSearchAspect
+                    ->limit(5)
+                    ->addExactSearchableAttribute('icc')
+                    ->whereHas('inventario', function ($query) {
 
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
+                        $user = Auth::user();
 
-                    $query->whereIn('inventario_id', $inventariosIds);
+                        $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
-                })->with(['equipo','inventario.inventarioable'])
-                ;
-        })
+                        $query->whereIn('inventario_id', $inventariosIds);
+                    })->with(['linea', 'inventario.inventarioable', 'type', 'company'])
+                    ->otherCurrentStatus(['Vendido', 'Traslado']);
+            })
+            ->registerModel(Imei::class, function ($modelSearchAspect) {
+                $modelSearchAspect
+                    ->limit(5)
+                    ->addExactSearchableAttribute('imei')
+                    ->whereHas('inventario', function ($query) {
+                        $user = Auth::user();
 
-        
-        ->search($searchValue);
-        
+                        $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
 
-    return $searchResults;
+                        $query->whereIn('inventario_id', $inventariosIds);
+                    })->with(['equipo', 'inventario.inventarioable'])
+                    ->otherCurrentStatus(['Vendido', 'Traslado']);
+            })
 
+
+            ->search($searchValue);
+
+
+        return $searchResults;
+    }
+
+
+    public function traspasoPrediction(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $inventariosIds = $user->getInventariosForUserIds();
+
+
+        $searchResults = (new Search())
+            ->registerModel(Icc::class, function ($modelSearchAspect) use ($inventariosIds) {
+
+                $modelSearchAspect
+
+                    ->limit(5)
+                    ->addSearchableAttribute('icc')
+                    ->whereIn('inventario_id', $inventariosIds);
+            })
+            ->registerModel(Imei::class, function ($modelSearchAspect) use ($inventariosIds) {
+
+                $modelSearchAspect
+                    ->otherCurrentStatus(['Vendido', 'Traslado'])
+                    ->limit(5)
+                    ->addSearchableAttribute('imei')
+                    ->whereIn('inventario_id', $inventariosIds);
+            })
+
+            ->search($request->search);
+
+        $respuestas = $searchResults->filter(function ($item) {
+            return $item->searchable->status != 'Vendido';
+        });
+        return $respuestas;
     }
 
 
 
 
+    public function traspasoExact(Request $request)
+    {
 
-
-
-
-
-
-    public function traspasoPrediction(Request $request){
-
-        
-        // falta hacer los filtros para la distribucion y de la sucursal 
-
-        $searchResults = (new Search())
-        ->registerModel(Icc::class, function ($modelSearchAspect) {
-            
-            $user = Auth::user();
-            
-            if($user->hasPermissionTo('distribution inventarios')){
-                $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('icc')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
-                })
-                ;
-            }else{
-                $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('icc')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-                    $query->whereIn('inventario_id', $inventariosIds);
-                })
-                ;
-            }
-
-           
-        })
-        ->registerModel(Imei::class, function ($modelSearchAspect) {
-            $user = Auth::user();
-            if($user->hasPermissionTo('distribution inventarios')){
-
-            $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('imei')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
-                })
-                ;
-            }else{
-                $modelSearchAspect
-                ->limit(5)
-                ->addSearchableAttribute('imei')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-                    $query->whereIn('inventario_id', $inventariosIds);
-                })
-                ;
-
-            }
-        })
-        
-        ->search($request->search);
-        
-
-    return $searchResults;
-
-    }
-
-
-
-
-    public function traspasoExact(Request $request){
-        
         $searchResult = (new Search())
-        ->registerModel(Icc::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-               
-              
-                ->addExactSearchableAttribute('icc')
+            ->registerModel(Icc::class, function ($modelSearchAspect) {
+                $modelSearchAspect
 
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
-                })
-                
-                ->with(['inventario.inventarioable','company','type']);
-        })
-        ->registerModel(Imei::class, function ($modelSearchAspect) {
-            $modelSearchAspect
-           
-                
-                ->addExactSearchableAttribute('imei')
-                ->otherCurrentStatus(['Vendido', 'Traslado'])
-                ->whereHas('inventario', function($query) {
-                    $user = Auth::user();
-                    $query->where('distribution_id', $user->distribution->id);
-                })
-                
-                ->with(['inventario.inventarioable','equipo']);
-                
-        })
 
-        ->search(substr($request->search,0,19));
-        
+                    ->addExactSearchableAttribute('icc')
+                    ->whereHas('inventario', function ($query) {
+                        $user = Auth::user();
+                        $query->where('distribution_id', $user->distribution->id);
+                    })
 
-    return $searchResult;
+                    ->otherCurrentStatus(['Vendido', 'Traslado'])
+
+
+                    ->with(['inventario.inventarioable', 'company', 'type']);
+            })
+            ->registerModel(Imei::class, function ($modelSearchAspect) {
+                $modelSearchAspect
+
+
+                    ->addExactSearchableAttribute('imei')
+                    ->whereHas('inventario', function ($query) {
+                        $user = Auth::user();
+                        $query->where('distribution_id', $user->distribution->id);
+                    })
+                    ->otherCurrentStatus(['Vendido', 'Traslado'])
+
+
+                    ->with(['inventario.inventarioable', 'equipo']);
+            })
+
+            ->search(substr($request->search, 0, 19));
+
+
+        return $searchResult;
     }
-
 }

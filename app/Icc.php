@@ -48,6 +48,7 @@ class Icc extends Model implements Searchable
     {
         return $this->status;
     }
+
     public function inventario()
     {
         return $this->belongsTo('App\Inventario');
@@ -74,15 +75,15 @@ class Icc extends Model implements Searchable
         return $this->hasOne('App\Linea')->withTrashed();
     }
 
-    public function scopeIccInUserDistribution($query,$requestIcc)
+    public function scopeIccInUserDistribution($query, $requestIcc)
     {
-        
-        return $query->where('icc',$requestIcc)->with('linea')->whereHas('inventario', function ($query) {
+
+        return $query->where('icc', $requestIcc)->with('linea')->whereHas('inventario', function ($query) {
             $user = Auth::user();
             $query->where('distribution_id', $user->distribution->id);
         });
     }
-    public function scopeIccInUserInventario($query,$requestIcc)
+    public function scopeIccInUserInventario($query, $requestIcc)
     {
         return $query->where('icc', $requestIcc)->with('linea')
             ->otherCurrentStatus(['Vendido', 'Traslado'])
@@ -90,8 +91,7 @@ class Icc extends Model implements Searchable
             ->whereHas('inventario', function ($query) {
                 $user = Auth::user();
                 $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
-                $query->whereIn('inventario_id',$inventariosIds);
+                $query->whereIn('inventario_id', $inventariosIds);
             });
-        
     }
 }
