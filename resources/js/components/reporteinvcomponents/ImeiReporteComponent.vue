@@ -173,7 +173,7 @@ export default {
                     sortable: true,
                 },
             ];
-            if (this.can("full update stock")) {
+            if (this.is('super-admin|administrador')) {
                 $response.splice(6, 0, {
                     key: "equipo.costo",
                     label: "Costo",
@@ -181,8 +181,8 @@ export default {
                 });
             }
 
-            if (this.can("update stock")) {
-                if (this.onlyTrash == true && this.can("full update stock")) {
+            if (this.is('super-admin|administrador')) {
+                if (this.onlyTrash == true && this.is('super-admin|administrador')) {
                     $response.push({
                         key: "restaurar",
                         label: "Restaurar",

@@ -13,7 +13,7 @@
                             name="inventario"
                             v-slot="validationContext"
                             rules="required"
-                            v-if="can('full update stock')"
+                            v-if="is('super-admin|administrador')"
                         >
                             <b-form-group label="Inventario" label-size="lg">
                                 <select-general
@@ -55,7 +55,7 @@
                             name="equipo"
                             v-slot="validationContext"
                             rules="required"
-                            v-if="can('full update stock')"
+                            v-if="is('super-admin|administrador')"
                         >
                             <b-form-group label="Equipo:" label-size="lg">
                                 <select-general
@@ -88,7 +88,7 @@
                             >
                         </b-form-group>
 
-                        <b-form-group v-if="can('destroy stock')">
+                        <b-form-group v-if="is('super-admin|administrador')">
                             <b-button block variant="danger" @click="deleteItem"
                                 >Eliminar</b-button
                             >

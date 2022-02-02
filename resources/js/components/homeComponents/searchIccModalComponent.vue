@@ -1,24 +1,16 @@
 <template>
-  <div>
-
-  </div>
+    <div></div>
 </template>
 
 <script>
 export default {
-    data(){
-        return{
-
-        }
+    data() {
+        return {};
     },
-    methods:{
-                load(data){
-            console.log(data);
-        }
-    }
-}
+    methods: {
+        load(data) {},
+    },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

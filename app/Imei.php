@@ -61,7 +61,7 @@ class Imei extends Model implements  Searchable
     }
     public function traspasos()
     {
-        return $this->morphToMany('App\Traspaso', 'traspasoable');
+        return $this->morphToMany('App\Traspaso', 'traspasoable')->withPivot('old_inventario_id');
     }
     public function comisiones()
     {

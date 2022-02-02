@@ -207,7 +207,7 @@ class ImeisController extends Controller
     public function show(Imei $imei)
     {
         // return $imei->load('equipo');
-        return $imei->load(['inventario.inventarioable','venta','equipo','comment','traspasos']);
+        return new ImeiResource($imei) ;
     }
 
     /**

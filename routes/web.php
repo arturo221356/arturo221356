@@ -199,7 +199,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 use MarvinLabs\Luhn\Facades\Luhn;
 
-Route::get('/pruebas', function (Request $request) {
+Route::get('/genera-imeis', function (Request $request) {
 
 
     
@@ -216,6 +216,18 @@ Route::get('/pruebas', function (Request $request) {
         echo($inicio.$random.$checkDigit.'<br>');
     }
 
+});
 
+use App\Imei;
+
+use App\Http\Resources\ImeiResource;
+
+Route::get('/pruebas', function (Request $request) {
+
+    $imei = Imei::find(959);
+
+    return new ImeiResource($imei);
+
+    
 
 });

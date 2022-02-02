@@ -64,10 +64,10 @@ export default {
 
                     switch($type){
                         case 'iccs':
-                            this.$refs.icc.load(response.data);
+                            this.$refs.icc.load(response.data.data);
                         break;
                         case 'imeis':
-                                this.$refs.imei.load(response.data);
+                                this.$refs.imei.load(response.data.data);
                         break;
                     }
                 })

@@ -132,18 +132,6 @@ class ChipController extends Controller
                 }
             }
 
-            // $chips = Chip::whereBetween('activated_at', [$initialDate, $finalDate])
-            //     ->whereHas('linea', function ($query) {
-            //         $query->currentStatus(['Activado', 'Sin Saldo']);
-            //     })
-            //     ->whereHas('linea.icc.inventario', function ($query) use ($inventariosIds) {
-
-            //         $query->whereIn('inventario_id', $inventariosIds);
-            //     })
-            //     ->orderBy('activated_at', 'asc')
-            //     ->get();
-
-
             $chips = Linea::
 
             whereHasMorph(
@@ -208,6 +196,16 @@ class ChipController extends Controller
 
             return json_encode($message);
         }
+        if (Carbon::parse($linea->productoable->preactivated_at)->diffInDays(Carbon::now()) > 365){
+            $message = [
+                'success' => false,
+                'message' => 'Numero expirado, preactivado '. Carbon::parse($linea->productoable->preactivated_at)->diffForHumans()
+
+            ];
+           
+            return json_encode($message);
+           
+        }
 
 
         // revisa que el status de la liena sea recargble 
@@ -229,7 +227,7 @@ class ChipController extends Controller
                     $message['message'] = 'Numero con falla durante proceso de recarga contacta al distribuidor';
                     break;
                 default:
-                    $message['message'] = 'Numero activado anteriormente';
+                    $message['message'] = 'Numero activado anteriormente  '. Carbon::parse($linea->productoable->activated_at)->diffForHumans();
                     break;
             }
             Consulta::create([
