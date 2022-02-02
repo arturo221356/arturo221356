@@ -151,7 +151,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     // searchs
-
+    Route::post('/search/navbar-search', 'SearchController@navbarSearch');
 
     Route::get('/search/traspaso-prediction', 'SearchController@traspasoPrediction');
 

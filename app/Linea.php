@@ -12,11 +12,15 @@ use Illuminate\Support\Carbon;
 
 use App\Jobs\ChecksItx;
 
+use Spatie\Searchable\Searchable;
+
+use Spatie\Searchable\SearchResult;
+
 use Illuminate\Support\Facades\Http;
 
 
 
-class Linea extends Model
+class Linea extends Model  implements Searchable
 {
 
 
@@ -28,6 +32,17 @@ class Linea extends Model
 
 
     protected $fillable = ["icc_id", "dn", "icc_product_id", "icc_sub_product_id"];
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('linea.show', $this->slug);
+
+        return new \Spatie\Searchable\SearchResult(
+            $this,
+            $this->icc,
+            $url
+        );
+    }
 
     public function icc()
     {

@@ -36,12 +36,12 @@ class Icc extends Model implements Searchable
 
     public function getSearchResult(): SearchResult
     {
-        // $url = route('blogPost.show', $this->slug);
+        $url = "/icc/".$this->id;
 
         return new \Spatie\Searchable\SearchResult(
             $this,
             $this->icc,
-            // $url
+            $url
         );
     }
     public function getStatus()
@@ -69,6 +69,10 @@ class Icc extends Model implements Searchable
     public function traspasos()
     {
         return $this->morphToMany('App\Traspaso', 'traspasoable');
+    }
+    public function venta()
+    {
+        return $this->morphToMany(Venta::class, 'ventaable')->withPivot(['price','cost'])->latest();
     }
     public function linea()
     {

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 use App\Imports\TraspasoImport;
-
+use Symfony\Contracts\Service\Attribute\Required;
 
 class SearchController extends Controller
 {
@@ -38,7 +38,6 @@ class SearchController extends Controller
             //obtiene los los mensales de error
             $imeiValidationErrors = $imeiImport->getErrors();
             $imeiValidationSuccess = $imeiImport->getsuccess();
-
         }
 
         return ['errors' => $imeiValidationErrors, 'success' => $imeiValidationSuccess];
@@ -212,6 +211,30 @@ class SearchController extends Controller
             })
 
             ->search(substr($request->search, 0, 19));
+
+
+        return $searchResult;
+    }
+
+    public function navbarSearch(Request $request)
+    {
+        $searchResult = (new Search())
+            ->registerModel(Icc::class, function ($modelSearchAspect) {
+                $modelSearchAspect
+
+
+                    ->addExactSearchableAttribute('icc')
+                    ;
+            })
+            ->registerModel(Imei::class, function ($modelSearchAspect) {
+                $modelSearchAspect
+
+
+                    ->addExactSearchableAttribute('imei')
+                    ;
+            })
+
+            ->search(substr($request->searchInput, 0, 19));
 
 
         return $searchResult;

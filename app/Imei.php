@@ -33,12 +33,12 @@ class Imei extends Model implements  Searchable
 
     public function getSearchResult(): SearchResult
     {
-        // $url = route('blogPost.show', $this->slug);
+        $url = "/imei/".$this->id;
 
         return new \Spatie\Searchable\SearchResult(
             $this,
             $this->imei,
-            // $url
+            $url
         );
     }
     public function getStatus()

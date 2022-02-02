@@ -73,6 +73,7 @@ Vue.component('accesorio-reporte-page', require('./components/AccesorioReportePa
 Vue.component('check-itx-component', require('./components/homeComponents/checkItxComponent.vue').default);
 Vue.component('check-company-component', require('./components/homeComponents/checkCompanyComponent.vue').default);
 Vue.component('icc-calculator-component', require('./components/homeComponents/iccCalculatorComponent.vue').default);
+Vue.component('navbar-search-component', require('./components/homeComponents/navbarSearchComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

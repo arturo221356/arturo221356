@@ -20,7 +20,7 @@ class Caja extends Model
 
     public function cajable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
     public function gastos()
     {
@@ -56,14 +56,26 @@ class Caja extends Model
     {
         $user = Auth::user();
 
-        if ($user->can('distribution inventarios')) {
+        if ($user->can('all inventarios')) {
+
+            $query->whereHasMorph('cajable',
+                [User::class,Inventario::class],
+                function ($query) {
+                    
+                    $query->whereIn('distribution_id', [1,2])->where('deleted_at', NULL);
+                })->whereNotIn('id', [$user->caja->id]);
+
+            
+        } 
+
+        elseif ($user->can('distribution inventarios')) {
 
             $query->whereHasMorph('cajable',
                 [User::class,Inventario::class],
                 function ($query) {
                     $user = Auth::user();
                    
-                    $query->where('distribution_id', $user->distribution_id);
+                    $query->where('distribution_id', $user->distribution_id)->where('deleted_at', NULL);
                 })->whereNotIn('id', [$user->caja->id]);
         } else {
             return 

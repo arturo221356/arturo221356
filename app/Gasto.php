@@ -16,6 +16,6 @@ class Gasto extends Model
         return $this->belongsTo('App\Caja');
     }
     public function user(){
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->withTrashed();
     }
 }

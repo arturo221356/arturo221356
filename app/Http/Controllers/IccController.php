@@ -195,7 +195,7 @@ class IccController extends Controller
      */
     public function show(Icc $icc)
     {
-        return $icc;
+        return $icc->load(['inventario.inventarioable','venta','traspasos','company','type','linea.productoable.transaction']);
     }
 
     /**
