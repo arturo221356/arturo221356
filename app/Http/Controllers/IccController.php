@@ -14,6 +14,7 @@ use MarvinLabs\Luhn\Facades\Luhn;
 
 //excel export
 use App\Exports\IccCalculator;
+use App\Http\Resources\IccResource;
 
 class IccController extends Controller
 {
@@ -195,7 +196,9 @@ class IccController extends Controller
      */
     public function show(Icc $icc)
     {
-        return $icc->load(['inventario.inventarioable','venta','traspasos','company','type','linea.productoable.transaction']);
+        // return $icc->load(['inventario.inventarioable','venta','traspasos','company','type','linea.productoable.transaction']);
+
+        return new IccResource( $icc) ;
     }
 
     /**

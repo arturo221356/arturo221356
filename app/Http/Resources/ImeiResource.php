@@ -24,10 +24,10 @@ class ImeiResource extends JsonResource
             $origen = Inventario::find($traspaso->pivot->old_inventario_id);
 
             $detalle = [
-                'id' => $traspaso->id,
-                'created_at' => Carbon::parse($traspaso->created_at)->format('d/m/y h:i:s' ),
-                'origen' =>  $origen->inventarioable->name,
-                'destino' => $traspaso->inventario->inventarioable->name,
+                'id' => $traspaso->id ?? null,
+                'created_at' => isset($traspaso->created_at) ? Carbon::parse($traspaso->created_at)->format('d/m/y h:i:s' ) : null,
+                'origen' =>  $origen->inventarioable->name ?? null,
+                'destino' => $traspaso->inventario->inventarioable->name ?? null,
             ];
             array_push($traspasos, $detalle);
         }
@@ -36,11 +36,11 @@ class ImeiResource extends JsonResource
             
 
             $detalle = [
-                'id' => $venta->id,
+                'id' => $venta->id ?? null,
                 'created_at' => Carbon::parse($venta->created_at)->format('d/m/y h:i:s' ),
-                'inventario' =>  $venta->inventario->inventarioable->name,
-                'usuario' => $venta->user->name,
-                'precio_vendido'=> $venta->pivot->price,
+                'inventario' =>  $venta->inventario->inventarioable->name ?? null,
+                'usuario' => $venta->user->name ?? null,
+                'precio_vendido'=> $venta->pivot->price ?? null,
             ];
              array_push($ventas, $detalle);
         }

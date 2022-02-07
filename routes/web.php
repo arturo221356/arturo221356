@@ -12,11 +12,11 @@
 */
 //para pruebas
 
+use App\Http\Resources\IccResource;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
-use App\Linea;
 
 Auth::routes([
     'register' => false,
@@ -218,15 +218,15 @@ Route::get('/genera-imeis', function (Request $request) {
 
 });
 
-use App\Imei;
+use App\Icc;
 
-use App\Http\Resources\ImeiResource;
+
 
 Route::get('/pruebas', function (Request $request) {
 
-    $imei = Imei::find(959);
+    $imei = Icc::find(959);
 
-    return new ImeiResource($imei);
+    return new IccResource($imei);
 
     
 

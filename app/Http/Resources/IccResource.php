@@ -6,6 +6,8 @@ use Carbon\Carbon;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use App\Inventario;
+
 class IccResource extends JsonResource
 {
     /**
@@ -18,6 +20,35 @@ class IccResource extends JsonResource
     {
         Carbon::setLocale('es');
 
+        $traspasos = [];
+        $ventas = [];
+
+        foreach($this->traspasos as $traspaso){
+
+            $origen = Inventario::find($traspaso->pivot->old_inventario_id);
+
+            $detalle = [
+                'id' => $traspaso->id ?? null,
+                'created_at' => isset($traspaso->created_at) ? Carbon::parse($traspaso->created_at)->format('d/m/y h:i:s' ) : null,
+                'origen' =>  $origen->inventarioable->name ?? null,
+                'destino' => $traspaso->inventario->inventarioable->name ?? null,
+            ];
+            array_push($traspasos, $detalle);
+        }
+        foreach($this->venta as $venta){
+
+            
+
+            $detalle = [
+                'id' => $venta->id ?? null,
+                'created_at' =>  Carbon::parse($venta->created_at)->format('d/m/y h:i:s' ),
+                'inventario' =>  $venta->inventario->inventarioable->name ?? null,
+                'usuario' => $venta->user->name ?? null,
+                'precio_vendido'=> $venta->pivot->price ?? null,
+            ];
+             array_push($ventas, $detalle);
+        }
+
 
 
         return [
@@ -28,9 +59,11 @@ class IccResource extends JsonResource
             'inventario_name' => $this->inventario->inventarioable->name,
             'company' => $this->company,
             'type' => $this->type,
-            'comment'  => isset($this->comment->comment) ? $this->comment->comment : null,
+            'comment'  =>  $this->comment->comment ?? null,
             'status'    => $this->status,
-            'linea' => isset($this->linea) ? $this->linea : null,
+            'linea' => $this->linea ?? null,
+            'ventas' => $ventas,
+            'traspasos' => $traspasos,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/y h:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d/m/y h:i:s'),
             'preactivated_at' =>  isset($this->linea->productoable->preactivated_at) ? Carbon::parse($this->linea->productoable->preactivated_at)->diffForHumans() : null,

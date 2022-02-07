@@ -11,6 +11,7 @@
             :loading="isLoading"
             :class="stateClass"
             @input="emitToParent"
+            :disabled="disabled"
         ></multiselect>
         <label class="typo__label form__label invalid" v-show="state === false"
             >Elige un valor</label
@@ -27,6 +28,11 @@ export default {
             default: false,
         },
         multiple: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        disabled: {
             type: Boolean,
             required: false,
             default: false,

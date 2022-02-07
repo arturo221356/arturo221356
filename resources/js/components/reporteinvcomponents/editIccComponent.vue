@@ -5,6 +5,7 @@
             hide-footer
             :title="`ICC: ${editableItem.serie}`"
             @hidden="resetItem"
+            size="lg"
         >
             <b-overlay :show="isLoading" rounded="sm">
                 <validation-observer ref="observer" v-slot="{ handleSubmit }">
