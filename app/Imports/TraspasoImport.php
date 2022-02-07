@@ -23,17 +23,21 @@ class TraspasoImport implements ToCollection
     {
         $rows = $collection->toArray();
 
+        $user = Auth::user();
+
+        $inventariosIds = $user->getInventariosForUserIds();
+
         foreach ($rows as  $row) {
 
             $searchResult = (new Search())
-                ->registerModel(Icc::class, function ($modelSearchAspect) {
+                ->registerModel(Icc::class, function ($modelSearchAspect) use ($inventariosIds) {
                     $modelSearchAspect
 
 
                         ->addExactSearchableAttribute('icc')
-                        ->whereHas('inventario', function ($query) {
-                            $user = Auth::user();
-                            $query->where('distribution_id', $user->distribution->id);
+                        ->whereHas('inventario', function ($query) use ($inventariosIds) {
+                            
+                            $query->whereIn('inventario_id', $inventariosIds);
                         })
 
                         ->otherCurrentStatus(['Vendido', 'Traslado'])
@@ -41,14 +45,13 @@ class TraspasoImport implements ToCollection
 
                         ->with(['inventario.inventarioable', 'company', 'type']);
                 })
-                ->registerModel(Imei::class, function ($modelSearchAspect) {
+                ->registerModel(Imei::class, function ($modelSearchAspect)  use ($inventariosIds) {
                     $modelSearchAspect
 
 
                         ->addExactSearchableAttribute('imei')
-                        ->whereHas('inventario', function ($query) {
-                            $user = Auth::user();
-                            $query->where('distribution_id', $user->distribution->id);
+                        ->whereHas('inventario', function ($query) use ($inventariosIds) {
+                            $query->whereIn('inventario_id', $inventariosIds);
                         })
                         ->otherCurrentStatus(['Vendido', 'Traslado'])
 
