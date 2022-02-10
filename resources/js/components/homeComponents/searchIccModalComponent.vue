@@ -206,12 +206,17 @@
                         <b-form-group
                             label="Detalle Activacion"
                             label-size="lg"
-                            
+                            v-if="editableItem.linea"
                         >
                             <b-list-group>
                                 <b-list-group-item
                                     
-                                    ><B>asd:</B> 
+                                    >
+                                    <div v-if="editableItem.linea.producto"> <B>Producto:</B> {{editableItem.linea.producto}} </div> 
+                                    <div v-if="editableItem.linea.subproducto"> <B>Sub producto:</B> {{editableItem.linea.subproducto}} </div>
+                                    <div v-if="editableItem.linea.preactivated_at"> <B>Fecha Preactivacion:</B> {{editableItem.linea.preactivated_at}} </div>
+                                    <div v-if="editableItem.linea.activated_at"> <B>Fecha Activacion:</B> {{editableItem.linea.preactivated_at}} </div>
+                                    <div v-if="editableItem.linea.monto_recarga"> <B>Monto Recarga:</B> {{editableItem.linea.monto_recarga}} </div>
                                 </b-list-group-item>
                             </b-list-group>
                         </b-form-group>

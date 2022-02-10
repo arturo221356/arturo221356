@@ -6,6 +6,8 @@ use App\Icc;
 
 use App\Imei;
 
+use App\Linea;
+
 use Illuminate\Http\Request;
 
 use Spatie\Searchable\Search;
@@ -246,6 +248,15 @@ class SearchController extends Controller
                         $query->whereIn('inventario_id', $inventariosIds);
                     })
                     ->addExactSearchableAttribute('imei');
+            })
+            ->registerModel(Linea::class, function ($modelSearchAspect) use ($inventariosIds) {
+                $modelSearchAspect
+
+                    ->whereHas('icc.inventario', function ($query) use ($inventariosIds) {
+
+                        $query->whereIn('inventario_id', $inventariosIds);
+                    })
+                    ->addExactSearchableAttribute('dn');
             })
 
             ->search(substr($request->searchInput, 0, 19));

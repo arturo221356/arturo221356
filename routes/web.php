@@ -224,7 +224,7 @@ use App\Icc;
 
 Route::get('/pruebas', function (Request $request) {
 
-    $imei = Icc::find(959);
+    $imei = Icc::find(9009);
 
     return new IccResource($imei);
 

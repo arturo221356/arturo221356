@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Http;
 
 
 
+
+
 class Linea extends Model  implements Searchable
 {
 
@@ -28,14 +30,14 @@ class Linea extends Model  implements Searchable
 
     use SoftDeletes;
 
-    protected $appends = ['status', 'reason'];
+    protected $appends = ['status', 'reason', 'producto','subproducto','monto_recarga','preactivated_at','activated_at'];
 
 
     protected $fillable = ["icc_id", "dn", "icc_product_id", "icc_sub_product_id"];
 
     public function getSearchResult(): SearchResult
     {
-        $url = route('linea.show', $this->slug);
+        $url = "/icc/".$this->icc->id;
 
         return new \Spatie\Searchable\SearchResult(
             $this,
@@ -71,6 +73,26 @@ class Linea extends Model  implements Searchable
         return $this->belongsTo('App\IccSubProduct', 'icc_sub_product_id');
     }
 
+    public function getProductoAttribute()
+    {
+        return $this->product->name ?? null;
+    }
+    public function getSubproductoAttribute()
+    {
+        return $this->subProduct->name ?? null;
+    }
+    public function getActivatedAtAttribute()
+    {
+        return $this->productoable->activated_at  ?  Carbon::parse($this->productoable->activated_at)->format('d/m/y H:i:s' ) : null;
+    }
+    public function getPreactivatedAtAttribute()
+    {
+        return $this->productoable->preactivated_at  ?  Carbon::parse($this->productoable->preactivated_at)->format('d/m/y H:i:s' ) : null;
+    }
+    public function getMontoRecargaAttribute()
+    {
+        return $this->productoable->transaction->monto  ?? null;
+    }
     public function getReasonAttribute()
     {
         return $this->latestStatus()->reason;

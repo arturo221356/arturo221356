@@ -69,6 +69,9 @@ export default {
                         case 'imeis':
                                 this.$refs.imei.load(response.data.data);
                         break;
+                        case 'lineas':
+                            this.$refs.icc.load(response.data.data);
+                        break;
                     }
                 })
                 .catch((error) => {
