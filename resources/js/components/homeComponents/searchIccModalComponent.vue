@@ -206,7 +206,7 @@
                         <b-form-group
                             label="Detalle Activacion"
                             label-size="lg"
-                            v-if="!!editableItem.linea"
+                            v-if="editableItem.linea.dn !== null"
                         >
                             <b-list-group>
                                 <b-list-group-item
