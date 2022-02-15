@@ -122,6 +122,12 @@
 <script>
 export default {
     data: function () {
+
+        var tzoffset = new Date().getTimezoneOffset() * 60000;
+        //offset in milliseconds
+        var localISOTime = new Date(Date.now() - tzoffset).toISOString();
+
+        const today = localISOTime.substr(0, 10);
         return {
             inventario: null,
 
@@ -133,9 +139,9 @@ export default {
 
             isLoading: false,
 
-            initialDate: new Date().toISOString().substr(0, 10),
+            initialDate: today,
 
-            finalDate: new Date().toISOString().substr(0, 10),
+            finalDate: today,
 
             chipsBar: {
                 name: "Chips",

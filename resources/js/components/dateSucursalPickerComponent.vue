@@ -68,19 +68,18 @@ export default {
         var tzoffset = new Date().getTimezoneOffset() * 60000;
         //offset in milliseconds
         var localISOTime = new Date(Date.now() - tzoffset)
-            .toISOString()
-            .slice(0, -1);
+            .toISOString();
 
-        today = localISOTime;
+       const  today = localISOTime .substr(0, 10);
 
         return {
             inventario: null,
 
             buttonBusy: false,
 
-            initialDate: today.substr(0, 10),
+            initialDate: today,
 
-            finalDate: today.substr(0, 10),
+            finalDate: today,
         };
     },
     methods: {
