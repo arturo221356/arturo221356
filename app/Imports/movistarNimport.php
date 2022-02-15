@@ -111,16 +111,16 @@ class movistarNimport implements ToCollection, WithStartRow
                     }
 
                     if(isset($linea->comisiones->porta)){
-                        $comisionPorta = $linea->comisiones->porta + $row[5];
+                        $comisionPorta = $linea->comisiones->porta + $row[5]?? 0;
                     }else{
-                        $comisionPorta = $row[5];
+                        $comisionPorta = $row[5] ?? 0;
                     }
 
 
 
                     $linea->comisiones()->updateOrCreate([],[
                         /// comision del mes N esta en la letra N de excel
-                        'n' => $row[13],
+                        'n' => $row[13] ?? 0,
                         'porta' => $comisionPorta,
                     ]);
                 }

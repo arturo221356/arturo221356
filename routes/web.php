@@ -202,7 +202,7 @@ use MarvinLabs\Luhn\Facades\Luhn;
 Route::get('/genera-imeis', function (Request $request) {
 
 
-    
+
     $i = 1;
     while ($i <= 180) {
         $i++;
@@ -211,23 +211,34 @@ Route::get('/genera-imeis', function (Request $request) {
 
         $random = mt_rand(100000, 999999);
 
-        $checkDigit = Luhn::computeCheckDigit($inicio.$random);
+        $checkDigit = Luhn::computeCheckDigit($inicio . $random);
 
-        echo($inicio.$random.$checkDigit.'<br>');
+        echo ($inicio . $random . $checkDigit . '<br>');
     }
-
 });
 
 use App\Icc;
 
+use Illuminate\Support\Facades\DB;
 
+use App\Linea;
 
-Route::get('/pruebas', function (Request $request) {
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-    $imei = Icc::find(9009);
+Route::get('/duplicados', function (Request $request) {
 
-    return new IccResource($imei);
+    $duplicados = Linea::whereIn('dn', array_column( DB::select('select dn from lineas group by dn having count(*) > 1'), 'dn'))->orderBy('dn', 'desc')->get();
 
     
+    foreach($duplicados as $duplicado){
 
+        $activatedAt = $duplicado->productoable->activated_at ?? '';
+
+        $PreactivatedAt = $duplicado->productoable->preactivated_at ?? '';
+
+        echo ($duplicado->dn.' , '.$duplicado->icc->icc.'F , '.$duplicado->icc->inventario->inventarioable->name.', '.$duplicado->product->name.', '.$duplicado->icc->company->name.', '.Date::stringToExcel($PreactivatedAt).' , '.Date::stringToExcel($activatedAt).'<br>');
+    }
+});
+
+Route::get('/pruebas', function (Request $request) {
 });
