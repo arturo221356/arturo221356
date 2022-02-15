@@ -43,8 +43,6 @@
                     opacity="0.6"
                     spinner-small
                     spinner-variant="primary"
-                    
-                   
                 >
                     <b-button
                         block
@@ -67,14 +65,22 @@ export default {
     },
 
     data() {
+        var tzoffset = new Date().getTimezoneOffset() * 60000;
+        //offset in milliseconds
+        var localISOTime = new Date(Date.now() - tzoffset)
+            .toISOString()
+            .slice(0, -1);
+
+        today = localISOTime;
+
         return {
             inventario: null,
 
             buttonBusy: false,
 
-            initialDate: new Date().toISOString().substr(0, 10),
+            initialDate: today.substr(0, 10),
 
-            finalDate: new Date().toISOString().substr(0, 10),
+            finalDate: today.substr(0, 10),
         };
     },
     methods: {
