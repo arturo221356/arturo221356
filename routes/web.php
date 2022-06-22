@@ -12,6 +12,7 @@
 */
 //para pruebas
 
+use App\Chip;
 use App\Http\Resources\IccResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -224,6 +225,7 @@ use Illuminate\Support\Facades\DB;
 use App\Linea;
 
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpParser\Node\Scalar\MagicConst\Line;
 
 Route::get('/duplicados', function (Request $request) {
 
@@ -240,5 +242,12 @@ Route::get('/duplicados', function (Request $request) {
     }
 });
 
+
+
 Route::get('/pruebas', function (Request $request) {
+
+    $linea = Linea::where('dn', '3921033339')->first();
+    $counter = 1;
+    // ."  I".$linea->icc->inventario->inventarioable->name ?? ''." "    
+    return "C".$counter." ".$linea->dn."-------".$linea->status."  CC  ". ($linea->icc->icc ?? '')."  ".($linea->icc->inventario->inventarioable->name ?? '');
 });

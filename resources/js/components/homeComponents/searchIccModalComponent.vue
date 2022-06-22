@@ -15,7 +15,6 @@
                             name="inventario"
                             v-slot="validationContext"
                             rules="required"
-                            
                         >
                             <b-form-group label="Inventario" label-size="lg">
                                 <select-general
@@ -58,7 +57,6 @@
                             name="compañia"
                             v-slot="validationContext"
                             rules="required"
-                           
                         >
                             <b-form-group label="Compañia:" label-size="lg">
                                 <select-general
@@ -209,14 +207,33 @@
                             v-if="editableItem.linea.dn !== null"
                         >
                             <b-list-group>
-                                <b-list-group-item
-                                    
+                                <b-list-group-item>
+                                    <div v-if="editableItem.linea.producto">
+                                        <B>Producto:</B>
+                                        {{ editableItem.linea.producto }}
+                                    </div>
+                                    <div v-if="editableItem.linea.subproducto">
+                                        <B>Sub producto:</B>
+                                        {{ editableItem.linea.subproducto }}
+                                    </div>
+                                    <div
+                                        v-if="
+                                            editableItem.linea.preactivated_at
+                                        "
                                     >
-                                    <div v-if="editableItem.linea.producto"> <B>Producto:</B> {{editableItem.linea.producto}} </div> 
-                                    <div v-if="editableItem.linea.subproducto"> <B>Sub producto:</B> {{editableItem.linea.subproducto}} </div>
-                                    <div v-if="editableItem.linea.preactivated_at"> <B>Fecha Preactivacion:</B> {{editableItem.linea.preactivated_at}} </div>
-                                    <div v-if="editableItem.linea.activated_at"> <B>Fecha Activacion:</B> {{editableItem.linea.activated_at}} </div>
-                                    <div v-if="editableItem.linea.monto_recarga"> <B>Monto Recarga:</B> {{editableItem.linea.monto_recarga}} </div>
+                                        <B>Fecha Preactivacion:</B>
+                                        {{ editableItem.linea.preactivated_at }}
+                                    </div>
+                                    <div v-if="editableItem.linea.activated_at">
+                                        <B>Fecha Activacion:</B>
+                                        {{ editableItem.linea.activated_at }}
+                                    </div>
+                                    <div
+                                        v-if="editableItem.linea.monto_recarga"
+                                    >
+                                        <B>Monto Recarga:</B>
+                                        {{ editableItem.linea.monto_recarga }}
+                                    </div>
                                 </b-list-group-item>
                             </b-list-group>
                         </b-form-group>
@@ -255,6 +272,16 @@
                                 >
                             </b-form-group>
                         </div>
+                        <div v-if="editableItem.iccStatus.name == 'Eliminado'">
+                            <b-form-group v-if="can('destroy stock')">
+                                <b-button
+                                    block
+                                    variant="warning"
+                                    @click="restoreItem(editableItem.id)"
+                                    >Restaurar</b-button
+                                >
+                            </b-form-group>
+                        </div>
                     </b-form>
                 </validation-observer>
             </b-overlay>
@@ -283,7 +310,7 @@ export default {
                     id: null,
                     dn: null,
                 },
-                traspasos:[],
+                traspasos: [],
 
                 ventas: [],
 
@@ -401,6 +428,27 @@ export default {
                     this.isLoadig = false;
                 });
         },
+        restoreItem(id) {
+            this.tableBusy = true;
+            axios
+                .post(`/icc/restore`, { id })
+                .then((response) => {
+                    this.$bvToast.toast("Restaurado con exito", {
+                        title: "ICC",
+                        variant: "warning",
+                        solid: true,
+                    });
+
+                    this.dataChanged();
+
+                    this.hideModal();
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alert(error);
+                    this.isLoadig = false;
+                });
+        },
 
         load(item) {
             console.log(item);
@@ -490,13 +538,16 @@ export default {
             if (this.editableItem.linea?.productoable?.activated_at) {
                 return false;
             }
-            if(this.is('super-admin')) return true;
-            if (!this.can("full update stock")) return false; 
+            if (this.editableItem.iccStatus?.name == "Eliminado") {
+                return false;
+            }
+            if (this.is("super-admin")) return true;
+            if (!this.can("full update stock")) return false;
             return true;
         },
         renderSimType: function () {
-            if(!this.editableItem.company) return false;      
-            
+            if (!this.editableItem.company) return false;
+
             return true;
         },
 
@@ -505,10 +556,13 @@ export default {
             return false;
         },
         renderRecarga: function () {
-            if (this.editableItem.statusLinea.status && this.editableItem.statusLinea.status.name == "Recargable") return true;
+            if (
+                this.editableItem.statusLinea.status &&
+                this.editableItem.statusLinea.status.name == "Recargable"
+            )
+                return true;
 
             return false;
-            
         },
     },
 };

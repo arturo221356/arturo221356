@@ -34,6 +34,11 @@ class Icc extends Model implements Searchable
 
     protected $appends = ['status'];
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->withTrashed()->where($field ?? $this->getRouteKeyName(), $value)->first();
+    }
+
     public function getSearchResult(): SearchResult
     {
         $url = "/icc/".$this->id;
@@ -97,5 +102,26 @@ class Icc extends Model implements Searchable
                 $inventariosIds =  $user->InventariosAsignados()->pluck('inventarios.id')->toArray();
                 $query->whereIn('inventario_id', $inventariosIds);
             });
+    }
+    public static function boot() {
+    
+        parent::boot();
+        
+        static::created(function($item){
+            $item->setStatus('Disponible');
+        });
+        
+        
+        static::deleted(function($item){
+            $item->linea ? $item->linea()->delete() : '' ;
+            $item->setStatus('Eliminado');
+        });
+
+        static::restoring(function ($item) {
+            $item->deleteStatus('Eliminado');
+            $item->linea ? $item->linea()->restore() : '' ;
+        });
+    
+        
     }
 }

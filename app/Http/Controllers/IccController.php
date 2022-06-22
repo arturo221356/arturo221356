@@ -17,7 +17,9 @@ use App\Exports\IccCalculator;
 use App\Http\Resources\IccResource;
 
 class IccController extends Controller
+
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -40,15 +42,15 @@ class IccController extends Controller
     {
         $iccs = [];
 
-        $icc1 = substr($request->icc_1,0,18);
+        $icc1 = substr($request->icc_1, 0, 18);
 
-        $icc2 = substr($request->icc_2,0,18);
+        $icc2 = substr($request->icc_2, 0, 18);
 
         while ($icc1 <= $icc2) {
 
             $lastDigit = Luhn::computeCheckDigit($icc1);
-            
-            array_push($iccs, [$icc1.$lastDigit."F"]);
+
+            array_push($iccs, [$icc1 . $lastDigit . "F"]);
 
             $icc1++;
         }
@@ -76,13 +78,6 @@ class IccController extends Controller
 
             $series = json_decode($request->data);
 
-            $inventario = $request->input('inventario_id');
-
-            $company = $request->input('company_id');
-
-            $type = $request->input('icc_type_id');
-
-
             //si el request contiene un archivo excel procede con esta funcion 
             if ($request->hasFile('file')) {
 
@@ -92,10 +87,9 @@ class IccController extends Controller
 
                 //datos enviados al import que vienen desde la request
                 $data = [
-                    'inventario_id' => $inventario,
-                    'status_id' => 1,
-                    'icc_type_id' => $type,
-                    'company_id' => $company,
+                    'inventario_id' => $request->input('inventario_id'),
+                    'icc_type_id' => $request->input('icc_type_id'),
+                    'company_id' => $request->input('company_id'),
 
                 ];
 
@@ -109,10 +103,10 @@ class IccController extends Controller
 
                 //pushea los mensajes a los arrays
                 foreach ($imeiValidationErrors as $validationErr) {
-                    $errors = array_push($errores, $validationErr);
+                   array_push($errores, $validationErr);
                 }
                 foreach ($imeiValidationSuccess as $validationSucc) {
-                    $errors = array_push($exitosos, $validationSucc);
+                   array_push($exitosos, $validationSucc);
                 }
             }
 
@@ -126,17 +120,12 @@ class IccController extends Controller
 
                     $serie = ['serie' => $datos->serie];
 
-
-
                     $icc = new Icc([
 
                         'icc' => $datos->serie,
-                        'status_id' => 1,
                         'inventario_id' => $datos->inventario->id,
                         'company_id' => $datos->company->id,
                         'icc_type_id' => $datos->simType->id,
-
-
 
                     ]);
 
@@ -165,8 +154,6 @@ class IccController extends Controller
 
                         foreach ($validator->errors()->toArray() as $error) {
 
-
-
                             foreach ($error as $sub_error) {
                                 array_push($errorList, $sub_error);
                             }
@@ -176,7 +163,6 @@ class IccController extends Controller
                     } else {
 
                         $icc->save();
-                        $icc->setStatus('Disponible');
                         array_push($exitosos, $serie);
                     }
                 }
@@ -196,9 +182,9 @@ class IccController extends Controller
      */
     public function show(Icc $icc)
     {
-        // return $icc->load(['inventario.inventarioable','venta','traspasos','company','type','linea.productoable.transaction']);
 
         return new IccResource( $icc) ;
+
     }
 
     /**
@@ -294,12 +280,6 @@ class IccController extends Controller
         $user = Auth::user();
         if ($user->can('destroy stock')) {
 
-            $linea = $icc->linea();
-
-            $linea->delete();
-
-            $icc->setStatus('Eliminado');
-
             $icc->delete();
         }
     }
@@ -314,12 +294,6 @@ class IccController extends Controller
             $icc = Icc::onlyTrashed()->findOrfail($id)->first();
 
             $icc->restore();
-
-            $icc->deleteStatus('Eliminado');
-
-            $linea = $icc->linea()->withTrashed();
-
-            $linea->restore();
 
             return $icc;
         }

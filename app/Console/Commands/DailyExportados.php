@@ -8,7 +8,7 @@ use App\Linea;
 
 use Illuminate\Support\Carbon;
 
-use Illuminate\Support\Facades\Http;
+use App\Jobs\checkExportado;
 
 class DailyExportados extends Command
 {
@@ -44,69 +44,26 @@ class DailyExportados extends Command
     public function handle()
     {
 
-        $preactivas =  Linea::currentStatus(['Preactiva', 'Recargable'])->get();
-
-        $chipsActivados = Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
-                $query->whereBetween('activated_at', [Carbon::now()->subDays(45), Carbon::now()])
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(60))
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(90))
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(120))
-                    ->orWhereDate('activated_at', Carbon::now()->subDays(150))
-                    ;
-            })
-
-
-            ->get();
-
-
-
-
-        foreach ($preactivas as $linea) {
-
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
-                'linea' => $linea->dn,
-                
-            ]);
-
-            $response = json_decode(substr($consulta, 4));
-
-            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
-
-                $linea->setStatus('Exportada',"Linea estaba preactiva y fue exportada a".$response->result[0]->value);
-
-                $linea->updated_at = Carbon::now();
-
-                $linea->save();
-
-                $inventarioName = $linea->icc->inventario->inventarioable->name;
-
-                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
+        Linea::currentStatus(['Preactiva', 'Recargable'])->chunkById(100, function ($lineas) {
+            foreach ($lineas as $linea) {
+                checkExportado::dispatch($linea);
             }
-        }
+        });
 
-        foreach ($chipsActivados as $linea) {
-
-            $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getCarrier', [
-                'linea' => $linea->dn,
-                
-            ]);
-
-            $response = json_decode(substr($consulta, 4));
-
-            if (isset($response->result[0]->key) && $response->result[0]->key != $linea->icc->company->code) {
-               
-                $linea->setStatus('Exportada',"Exportada a".$response->result[0]->value);
-
-                $linea->updated_at = Carbon::now();
-
-                $linea->save();
-
-                $inventarioName = $linea->icc->inventario->inventarioable->name;
-
-                $this->info($linea->dn." Exportada a ".$response->result[0]->value."-------".$inventarioName);
-            }
-            
-            
-        }
+        Linea::currentStatus('Activado')->whereHasMorph('productoable', ['App\Chip', 'App\Porta', 'App\Pospago'], function ($query) {
+            $query->whereBetween('activated_at', [Carbon::now()->subDays(45), Carbon::now()])
+                ->orWhereDate('activated_at', Carbon::now()->subDays(60))
+                ->orWhereDate('activated_at', Carbon::now()->subDays(90))
+                ->orWhereDate('activated_at', Carbon::now()->subDays(120))
+                ->orWhereDate('activated_at', Carbon::now()->subDays(150))
+                ->orWhereDate('activated_at', Carbon::now()->subDays(180))
+                ->orWhereDate('activated_at', Carbon::now()->subDays(210))
+                ->orWhereDate('activated_at', Carbon::now()->subDays(365));
+        })
+        ->chunkById(100, function ($lineas) {
+                foreach ($lineas as $linea) {
+                    checkExportado::dispatch($linea);
+                }
+            });
     }
 }

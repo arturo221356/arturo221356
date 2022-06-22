@@ -48,7 +48,7 @@ class Linea extends Model  implements Searchable
 
     public function icc()
     {
-        return $this->belongsTo('App\Icc');
+        return $this->belongsTo('App\Icc')->withTrashed();
     }
     public function user()
     {

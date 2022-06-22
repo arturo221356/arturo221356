@@ -50,7 +50,6 @@ class IccsImport implements ToCollection
 
             $icc = new Icc([
                 'icc' => $formatedSerie,
-                'status_id' => 1,
                 'inventario_id' => $this->data['inventario_id'],
                 'icc_type_id' => $this->data['icc_type_id'],
                 'company_id' => $this->data['company_id'],
@@ -96,7 +95,7 @@ class IccsImport implements ToCollection
             } else {
                 
                 $icc->save();
-                $icc->setStatus('Disponible');
+               
                 array_push($this->exitosos, $serie);
             }
         }
@@ -110,10 +109,4 @@ class IccsImport implements ToCollection
         return $this->exitosos;
     }
 
-    // public function rules(): array
-    // {
-    //     return [
-    //         '0' => 'required|unique:iccs,icc|digits:19',
-    //     ];
-    // }
 }

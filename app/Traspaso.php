@@ -17,11 +17,11 @@ class Traspaso extends Model
 
     public function iccs()
     {
-        return $this->morphedByMany('App\Icc', 'traspasoable')->withPivot(['old_inventario_id']);
+        return $this->morphedByMany('App\Icc', 'traspasoable')->withPivot(['old_inventario_id'])->withTrashed();
     }
     public function imeis()
     {
-        return $this->morphedByMany('App\Imei', 'traspasoable')->withPivot(['old_inventario_id']);
+        return $this->morphedByMany('App\Imei', 'traspasoable')->withPivot(['old_inventario_id'])->withTrashed();
     }
     public function inventario()
     {

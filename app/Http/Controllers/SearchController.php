@@ -237,6 +237,7 @@ class SearchController extends Controller
 
                         $query->whereIn('inventario_id', $inventariosIds);
                     })
+                    ->withTrashed()
 
                     ->addExactSearchableAttribute('icc');
             })
@@ -256,9 +257,10 @@ class SearchController extends Controller
 
                         $query->whereIn('inventario_id', $inventariosIds);
                     })
+                    ->withTrashed()
                     ->addExactSearchableAttribute('dn');
             })
-
+            
             ->search(substr($request->searchInput, 0, 19));
 
 
