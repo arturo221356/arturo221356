@@ -27,7 +27,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->everyTwoMinutes()->emailOutputTo('arturo221357@gmail.com');	
                 
 
-        $schedule->command('exportados:daily')->timezone('America/Mexico_City')->dailyAt('07:00')->emailOutputTo('arturo221357@gmail.com');
+        $schedule->command('exportados:daily')->timezone('America/Mexico_City')->dailyAt('07:00');
+
+        $schedule->command('delete:oldlineas')->timezone('America/Mexico_City')->dailyAt('23:00');
 
         $schedule->command('revisa:portas')->timezone('America/Mexico_City')->dailyAt('04:00');
 
