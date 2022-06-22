@@ -43,7 +43,7 @@ class DeleteOldLineas extends Command
     public function handle()
     {
         
-        $lineas = Linea::currentStatus(['Recargable', 'Preactiva','Exportada'])->whereHasMorph('productoable',['App\\Chip'], function ($query) {
+        $lineas = Linea::currentStatus(['Recargable', 'Preactiva'])->whereHasMorph('productoable',['App\\Chip'], function ($query) {
             $query->where('preactivated_at', '<=', Carbon::now()->subDays(365)->toDateTimeString());
         })->
 
@@ -55,7 +55,7 @@ class DeleteOldLineas extends Command
             
               $counter ++;
 
-              $record->status == 'Exportada' ? '' : $record->setStatus('Expirado');
+              $record->setStatus('Expirado');
 
               $record->deleteStatus(['Recargable', 'Preactiva']);
 
