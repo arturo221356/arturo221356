@@ -23,4 +23,7 @@ class Porta extends Model
     {
         return $this->belongsTo('App\Transaction');
     }
+    public function checkPromoTelcel($dn, $nombre, $apaterno, $amaterno, $curp){
+
+    }
 }

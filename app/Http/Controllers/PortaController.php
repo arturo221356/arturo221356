@@ -199,17 +199,6 @@ class PortaController extends Controller
                     $inventariosIds = [];
                 }
             }
-
-            // $portas = Porta::whereBetween('created_at', [$initialDate, $finalDate])
-            //     ->whereHas('linea', function ($query) {
-            //         $query->currentStatus(['Activado','Porta subida','Preactiva','Porta Exitosa']);
-            //     })
-            //     ->whereHas('linea.icc', function ($query) use ($inventariosIds) {
-            //         $query->whereIn('inventario_id', $inventariosIds);
-            //     })
-            //     ->orderBy('created_at', 'asc')
-
-            //     ->get();
             
             $portas = Linea::
             whereHasMorph(
@@ -236,5 +225,9 @@ class PortaController extends Controller
 
             return $response;
         }
+    }
+    public function newTelcelPorta(Request $request){
+
+        
     }
 }

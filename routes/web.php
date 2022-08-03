@@ -242,12 +242,61 @@ Route::get('/duplicados', function (Request $request) {
     }
 });
 
+use Illuminate\Support\Facades\Http;
 
+use Illuminate\Support\Carbon;
 
 Route::get('/pruebas', function (Request $request) {
 
-    $linea = Linea::where('dn', '3921033339')->first();
-    $counter = 1;
-    // ."  I".$linea->icc->inventario->inventarioable->name ?? ''." "    
-    return "C".$counter." ".$linea->dn."-------".$linea->status."  CC  ". ($linea->icc->icc ?? '')."  ".($linea->icc->inventario->inventarioable->name ?? '');
+
+    //iniciar proceso 
+    // $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
+    //     'EndPoint' => 3,
+    //     "Entrada" => "{\"ApMaterno\":\"MARTINEZ\",\"ApPaterno\":\"ANDRADE\",\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"CURP\":\"MAAD010829MJCRNNA5\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"FzaVtaPospagoPadre\":\"OCOAAF\",\"FzaVtaPospagoPersonal\":\"OCOAA1\",\"FzaVtaPospagoReporte\":\"OCOAAF\",\"FzaVtaPrepagoPadre\":\"40820\",\"FzaVtaPrepagoPersonal\":\"40821\",\"FzaVtaPrepagoReporte\":\"40820\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"Nombre\":\"DIANA JACQUELINE\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Telefono\":\"3324238366\",\"TipoPlan\":\"1\",\"Usuario\":\"37746\"}",
+    //     "Metodo" => "20",
+    //     "Pantalla"=> "0",
+    //     "Usuario" => "37746"
+
+    // ]);
+
+    // return $consulta;
+
+
+
+    ////CONFIRMAR porta 
+    // $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
+    //     'EndPoint' => 3,
+    //     "Entrada" => "{\"Iccid\":\"8952020021457600472\",\"idCop\":\"18822062370712\",\"IDPromocion\":\"548\",\"IMEI\":\"546464565444344\",\"Nip\":\"9689\",\"NumeroKit\":\"\",\"SistemaOrigen\":\"CAMBACEO\"}",
+    //     "Metodo" => "21",
+    //     "Pantalla"=> "0",
+    //     "Usuario" => "37746"
+
+    // ]);
+
+    // return $consulta;
+
+
+    ////TERMINAR PORTA
+    // $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
+    //     'EndPoint' => 3,
+    //     "Entrada" => " {\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"idCop\":\"18822062370712\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Usuario\":\"37746\"}",
+    //     "Metodo" => "23",
+    //     "Pantalla"=> "0",
+    //     "Usuario" => "37746"
+
+    // ]);
+
+   
+
+    // return $consulta;
+
+    $linea = Linea::where('dn',3921007942)->first();
+
+    $date = Carbon::createFromFormat('d/m/Y','14/07/2022',)->format('Y-m-d');
+
+    $date2 = $linea->comisiones->updated_at;
+
+    echo($date.'   '.$date2);
+
+    return $date > $date2 ? 'true' : 'false'; 
 });

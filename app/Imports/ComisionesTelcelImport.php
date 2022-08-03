@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Icc;
 use App\Linea;
 use App\Imei;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+
 
 
 class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunkReading
@@ -27,288 +29,210 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
     {
         foreach ($rows as $row) {
 
-            if (isset($row['iccid'])) {
+            if (!isset($row['iccid'])) continue;
 
-                $requestIcc =  substr($row['iccid'], 0, 18);
+            $requestIcc =  substr($row['iccid'], 0, 18);
 
+            $validationData = ['icc' => $requestIcc];
 
-                // Crea la matriz de mensajes.
-                $mensajes = array(
-                    'unique' => 'ya existe en la base de datos.',
-                    'digits' => 'La Icc/DN tiene que se numerica y de 19/10 digitos'
-                );
+            // Crea la matriz de mensajes.
+            $mensajes = array(
+                'unique' => 'ya existe en la base de datos.',
+                'digits' => 'La Icc/DN tiene que se numerica y de 19/10 digitos'
+            );
 
-                $validationData = ['icc' => $requestIcc];
+            //reglas del validador
+            $validator = Validator::make($validationData, [
+                'icc' => 'required',
+            ], $mensajes);
 
-                //reglas del validador
-                $validator = Validator::make($validationData, [
-                    'icc' => 'required',
-                ], $mensajes);
+            if ($validator->fails()) continue;
 
-                if (!$validator->fails()) {
-                    $icc = Icc::where('icc', 'like', $requestIcc . '%')->withTrashed()->first();
+            $icc = Icc::where('icc', 'like', $requestIcc . '%')->withTrashed()->first();
 
-                    if ($icc != null) {
+            // $fechaActivacion = $row['fecha_movimiento'] ? Carbon::createFromFormat('d-M-y',$row['fecha_movimiento'])->format('Y-m-d') : Carbon::now();
 
-                        switch ($row['concepto']) {
+            $fechaActivacion = Carbon::now();
 
+            // $fechaPublicacion =  $row['fecha_publicacion'] ? Carbon::createFromFormat('d/m/Y',$row['fecha_publicacion'])->format('Y-m-d') :  Carbon::now();
 
+           
 
-                            case 'Bono portabilidad prepago SEMANAL':
+            if ($icc == null) continue;
 
-                                $campoComision = 'porta';
+            switch ($row['concepto']) {
 
-                                $iccProductID = 2;
+                case 'COMISION INICIAL LINEAS LIBRES':
 
-                                // $campoFechaActivado = $row['fecha_activacion'];
+                    $campoComision = 'n';
 
-                                break;
-                            case 'AMIGO CHIP EXPRESS 30 DIAS':
+                break;
+                case 'COMISION ACTIVACIÓN POSPAGO':
 
-                                $campoComision = 'n';
+                    $campoComision = 'n';
 
-                                $iccProductID = 1;
+                break;
+                case 'COMISION COMPLEMENTARIA LINEAS LIBRES':
 
-                                // $campoFechaActivado = $row['fecha_acti'];
+                    $campoComision = 'n1';
 
-                                break;
+                break;
 
-                            case 'AMIGO CHIP EXPRESS 60 DIAS':
+                case 'BONO PORTABILIDAD PREPAGO':
 
-                                $campoComision = 'n1';
+                    $campoComision = 'porta';
 
-                                $iccProductID = 1;
+                break;
 
-                                // $campoFechaActivado = $row['fecha_acti'];
+                case 'AMIGO GSM EVALUACION 30 DIAS':
 
-                                break;
+                    $campoComision = 'n';
 
-                            case 'AMIGO CHIP EXPRESS 90 DIAS':
+                break;
 
-                                $campoComision = 'n2';
+                case 'COMISION CHIP EXPRESS y CHIP TU 30 DIAS':
 
-                                $iccProductID = 1;
+                    $campoComision = 'n';
 
-                                // $campoFechaActivado = $row['fecha_acti'];
 
-                                break;
+                break;
 
+                case 'COMISION CHIP EXPRESS y CHIP TU 60 DIAS':
 
-                            case '4TA EVALUACION AMIGO CHIP EXPRESS 120 DIAS':
+                    $campoComision = 'n1';
 
-                                $campoComision = 'n3';
+                break;
 
-                                $iccProductID = 1;
+                case 'COMISION CHIP EXPRESS y CHIP TU 90 DIAS':
 
-                                // $campoFechaActivado = $row['fecha_acti'];
+                    $campoComision = 'n2';
 
-                                break;
 
 
+                break;
 
-                            case 'BONO ESPECIAL PORTABILIDAD  CONTRATACION PSL 200':
+                case 'COMISION CHIP EXPRESS Y CHIP TU 120 DIAS':
 
-                                $campoComision = 'n4';
+                    $campoComision = 'n3';
 
-                                $iccProductID = 2;
+                break;
 
-                                // $campoFechaActivado = $row['fecha_activacion'];
+                ////// falta el n4 comison contratacion psl 200
 
-                                break;
-                            case 'AMIGO CHIP EXPRESS BONO ESPECIAL SIN LIMITE 2 Y 3':
 
-                                $campoComision = 'n5';
+                case 'CHIP EXPRESS BONO ESPECIAL':
 
-                                $iccProductID = 1;
+                    $campoComision = 'n5';
 
-                                // $campoFechaActivado = $row['fecha_acti'];
+                break;
 
-                                break;
+                case 'COMISION POR VOLUMEN':
 
-                            case 'Sim Card Express activación   CIRC GCO 93_19':
+                    $campoComision = 'n7';
 
-                                $campoComision = 'n6';
+                break;
 
-                                $iccProductID = 1;
 
-                                // $campoFechaActivado = $row['fecha_activacion'];
 
-                                break;
 
-                            case 'Sim Card Portabilidad Prepago SEMANAL CIRC GCO 619_13':
+                default:
+                $campoComision = 'default';
+                break;
 
-                                $campoComision = 'n6';
 
-                                $iccProductID = 2;
 
-
-
-                                // $campoFechaActivado = $row['fecha_activacion'];
-
-                                break;
-
-
-                            case 'COMISION AMIGO KIT GSM':
-
-                                $campoComision = 'n';
-
-                                $iccProductID = 1;
-
-                                // $campoFechaActivado = $row['fec_act'];
-
-                                break;
-                            case 'BONO ADICIONAL PREPAGO DESARROLLO DE MARCA':
-
-                                $campoComision = 'n1';
-
-                                $iccProductID = 1;
-
-                                // $campoFechaActivado = $row['fecha_act'];
-
-                                break;
-                            case 'LINEAS LIBRES':
-
-                                $campoComision = 'n';
-
-                                $iccProductID = 1;
-
-                                // $campoFechaActivado = $row['fecha_act'];
-
-                                break;
-
-                            default:
-                                $campoComision = 'default';
-                                break;
-                        }
-
-
-
-                        if (!$icc->linea) {
-
-
-                            $producto  = json_decode(json_encode(array(
-                                'dn' => isset($row['celular']) ? (string)$row['celular'] : (string)$row['tel_inicial'],
-
-                                "iccProduct" => array(
-                                    "id" => $iccProductID,
-
-                                ),
-
-                                "iccSubProduct" => array(
-                                    "id" => 30,
-                                )
-                            )));
-
-                            $linea =  (new Linea)->newLineaWithProduct($producto, $icc->id);
-
-                            $linea->setStatus('Activado');
-
-                            $chip = $linea->productoable;
-
-                            $chip->activated_at = now();
-
-                            // Date::excelToDateTimeObject($campoFechaActivado);
-
-                            $chip->save();
-
-                            $icc->setStatus('Vendido');
-                        } else {
-                            $linea = $icc->linea;
-
-                            $arrayStatuses = ['Recargable', 'Preactiva', 'Proceso'];
-
-                            if (in_array($linea->status, $arrayStatuses)) {
-
-                                if (!$linea->icc_sub_product_id) {
-
-                                    $linea->icc_sub_product_id = 30;
-
-                                    $linea->save();
-                                }
-
-                                $linea->setStatus('Activado');
-
-                                $chip = $linea->productoable;
-
-                                $chip->activated_at = now();
-
-                                // Date::excelToDateTimeObject($campoFechaActivado);
-
-                                $chip->save();
-
-                                $icc->setStatus('Vendido');
-                            }
-                        }
-
-
-                        $comisionExtra = 0;
-
-                        if (isset($linea->comisiones->porta) && $row['concepto'] == 'Bono portabilidad prepago SEMANAL') {
-                            $comisionExtra = $linea->comisiones->porta;
-                        }
-
-
-                        $linea->comisiones()->updateOrCreate([], [
-
-                            $campoComision => isset($row['importe']) ? $row['importe'] + $comisionExtra : 0,
-
-                        ]);
-                    }
-                }
-            } else {
-                if (isset($row['concepto'])) {
-
-                    switch ($row['concepto']) {
-
-                        case 'REPORTES INFORMATIVO VOLUMEN':
-
-                            switch ($row['periodo_evaluacion']) {
-                                case '6 MESES':
-                                    $campoComision = 'n7';
-                                    break;
-                                case '9 MESES':
-                                    $campoComision = 'n8';
-                                    break;
-                                case '12 MESES':
-                                    $campoComision = 'n9';
-                                    break;
-                            }
-
-                            $linea = Linea::where('dn',isset($row['telefono']) ? $row['telefono'] : 0)->first();
-
-                            if(isset($linea)){
-                                $linea->comisiones()->updateOrCreate([], [
-
-                                    $campoComision => isset($row['importe']) ? $row['importe']  : 0,
-        
-                                ]);
-                            }
-
-                            
-
-                        break;
-                    }
-                }
-
-
-                if (isset($row['imei'])) {
-                    $imei = Imei::where('imei', $row['imei'])->withTrashed()->first();
-
-                    if ($imei != null) {
-
-                        $imei->comisiones()->updateOrCreate([], [
-
-                            'n11' => isset($row['importe']) ? $row['importe'] : 0,
-
-                        ]);
-                    }
-                }
             }
+
+                if(!$icc->linea){
+
+                    $iccProductID = 1;
+
+                    if($row['movimiento'] == 'PORTIN') $iccProductID = 2;
+
+                    if($row['segmento'] == 'POS') $iccProductID = 3;
+
+                    $producto  = json_decode(json_encode(array(
+                        'dn' => (string)$row['telefono'],
+
+                        "iccProduct" => array(
+                            "id" => $iccProductID,
+
+                        ),
+
+                        "iccSubProduct" => array(
+                            "id" => 30,
+                        )
+                    )));
+
+                    $linea =  (new Linea)->newLineaWithProduct($producto, $icc->id);
+
+                    $linea->setStatus('Activado');
+
+                    $chip = $linea->productoable;
+
+                    $chip->activated_at = $fechaActivacion;
+
+                    $chip->save();
+
+                    $icc->setStatus('Vendido');
+
+                }else {
+                    $linea = $icc->linea;
+
+                    $arrayStatuses = ['Recargable', 'Preactiva', 'Proceso'];
+
+                    if (in_array($linea->status, $arrayStatuses)) {
+
+                        if (!$linea->icc_sub_product_id) {
+
+                            $linea->icc_sub_product_id = 30;
+
+                            $linea->save();
+                        }
+
+                        $linea->setStatus('Activado');
+
+                        $chip = $linea->productoable;
+
+                        $chip->activated_at = $fechaActivacion;
+
+                        $chip->save();
+
+                        $icc->setStatus('Vendido');
+                    }
+                }
+
+                    $importe = $row['monto'];
+
+               
+
+                    if (isset($linea->comisiones->porta) && $row['concepto']=='BONO PORTABILIDAD PREPAGO') $importe += $linea->comisiones->porta;
+
+                    if (isset($linea->comisiones->n1) && $row['concepto']=='COMISION COMPLEMENTARIA LINEAS LIBRES') $importe += $linea->comisiones->n1;
+
+                    if (isset($linea->comisiones->n7) && $row['concepto']=='COMISION POR VOLUMEN') $importe += $linea->comisiones->n7;
+                    
+
+                
+
+                    $linea->comisiones()->updateOrCreate([], [
+
+                        $campoComision => $importe,
+    
+                    ]);
+
+                
+
+
+                 
+
+
+
         }
     }
 
     public function chunkSize(): int
     {
-        return 100;
+        return 1000;
     }
 }
