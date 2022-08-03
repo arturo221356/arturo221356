@@ -211,6 +211,8 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
                     if (isset($linea->comisiones->n1) && $row['concepto']=='COMISION COMPLEMENTARIA LINEAS LIBRES') $importe += $linea->comisiones->n1;
 
                     if (isset($linea->comisiones->n7) && $row['concepto']=='COMISION POR VOLUMEN') $importe += $linea->comisiones->n7;
+
+                    if (isset($linea->comisiones->n) && $row['concepto']=='COMISION ACTIVACIÓN POSPAGO') $importe += $linea->comisiones->n;
                     
 
                 
