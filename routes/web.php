@@ -290,13 +290,8 @@ Route::get('/pruebas', function (Request $request) {
 
     // return $consulta;
 
-    $linea = Linea::where('dn',3921007942)->first();
+    $linea = Linea::where('dn','3931504492 ')->latest()->first();
 
-    $date = Carbon::createFromFormat('d/m/Y','14/07/2022',)->format('Y-m-d');
+    return $linea;
 
-    $date2 = $linea->comisiones->updated_at;
-
-    echo($date.'   '.$date2);
-
-    return $date > $date2 ? 'true' : 'false'; 
 });

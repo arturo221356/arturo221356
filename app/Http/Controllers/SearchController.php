@@ -258,6 +258,7 @@ class SearchController extends Controller
                         $query->whereIn('inventario_id', $inventariosIds);
                     })
                     ->withTrashed()
+                    ->latest()
                     ->addExactSearchableAttribute('dn');
             })
             

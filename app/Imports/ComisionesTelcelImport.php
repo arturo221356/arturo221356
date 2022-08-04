@@ -56,12 +56,28 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
             // $fechaPublicacion =  $row['fecha_publicacion'] ? Carbon::createFromFormat('d/m/Y',$row['fecha_publicacion'])->format('Y-m-d') :  Carbon::now();
 
-           
-
+        
             if ($icc == null) continue;
 
-            switch ($row['concepto']) {
+            if ($row['concepto']=='COMISION CER')
+            {
+                if (isset($row['imei'])) {
+                    $imei = Imei::where('imei', $row['imei'])->withTrashed()->first();
 
+                    if ($imei != null) {
+
+                        $imei->comisiones()->updateOrCreate([], [
+
+                            'n11' => isset($row['monto']) ? $row['monto'] : 0,
+
+                        ]);
+                    }
+                }
+                continue;
+            }
+
+            switch ($row['concepto']) {
+                
                 case 'COMISION INICIAL LINEAS LIBRES':
 
                     $campoComision = 'n';
@@ -119,6 +135,11 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
 
                 ////// falta el n4 comison contratacion psl 200
 
+                case 'BONO ESPECIAL PORTABILIDAD  CONTRATACION PSL 200':
+                     
+                    $campoComision = 'n4'; 
+                    
+                break;
 
                 case 'CHIP EXPRESS BONO ESPECIAL':
 
@@ -127,6 +148,12 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
                 break;
 
                 case 'COMISION POR VOLUMEN':
+
+                    $campoComision = 'n7';
+
+                break;
+
+                case 'COMISION POR VOLUMEN POSPAGO':
 
                     $campoComision = 'n7';
 
