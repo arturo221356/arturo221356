@@ -83,6 +83,11 @@ class ComisionesTelcelImport implements ToCollection, WithHeadingRow,  WithChunk
                     $campoComision = 'n';
 
                 break;
+                case 'REEMBOLSO SIM LINEAS LIBRES':
+
+                    $campoComision = 'n6';
+
+                break;
                 case 'COMISION ACTIVACIÓN POSPAGO':
 
                     $campoComision = 'n';
