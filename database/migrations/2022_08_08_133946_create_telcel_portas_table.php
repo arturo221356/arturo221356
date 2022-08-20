@@ -30,7 +30,7 @@ class CreateTelcelPortasTable extends Migration
             $table->boolean('error')->default(false);
             $table->boolean('random_client')->default(false);
             $table->boolean('finnished')->default(false);
-            $table->json('promociones')->nullable();
+            $table->longText('promociones')->nullable();
             $table->string('selected_promo')->nullable();
             $table->timestamps();
             $table->softDeletes();

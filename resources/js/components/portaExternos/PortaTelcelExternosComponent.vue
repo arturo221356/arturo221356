@@ -13,7 +13,10 @@
             </div>
             <div>
                 <validation-observer ref="general" v-slot="{ handleSubmit }">
-                    <b-form @submit.prevent="handleSubmit(checkNumber)" id="Form1">
+                    <b-form
+                        @submit.prevent="handleSubmit(checkNumber)"
+                        id="Form1"
+                    >
                         <ValidationProvider
                             name="numero telefono"
                             v-slot="validationContext"
@@ -226,7 +229,10 @@
                         </b-form>
 
                         <div v-if="step > 2">
-                            <b-form @submit.prevent="handleSubmit(confirmPorta)" id="Form3">
+                            <b-form
+                                @submit.prevent="handleSubmit(confirmPorta)"
+                                id="Form3"
+                            >
                                 <ValidationProvider
                                     name="promocion"
                                     v-slot="validationContext"
@@ -403,7 +409,7 @@ export default {
                             }
                         );
                     } else {
-                        this.portaId = response.data.id ?? null
+                        this.portaId = response.data.id ?? null;
                         this.nombre = response.data.nombre ?? null;
                         this.apaterno = response.data.apaterno ?? null;
                         this.amaterno = response.data.amaterno ?? null;
@@ -435,9 +441,7 @@ export default {
         deletePorta() {
             this.isLoading = true;
             axios
-                .delete(`/telcel/porta/${this.portaId}`, {
-                    
-                })
+                .delete(`/telcel/porta/${this.portaId}`, {})
                 .then((response) => {
                     console.log(response);
                     this.$bvToast.toast("Datos de portabilidad eliminados", {
@@ -472,6 +476,9 @@ export default {
                             solid: true,
                         });
                     } else {
+                        this.portaId = response.data.datosPorta.id ?? null;
+                        this.apaterno =
+                            response.data.datosPorta.apaterno ?? null;
                         this.nombre = response.data.datosPorta.nombre ?? null;
                         this.apaterno =
                             response.data.datosPorta.apaterno ?? null;
@@ -489,7 +496,6 @@ export default {
                 })
                 .finally(() => {
                     this.isLoading = false;
-                    
                 });
         },
 
@@ -560,8 +566,7 @@ export default {
 
         resetFields() {
             this.step = 1;
-            this.portaId = null,
-            this.numero = null;
+            (this.portaId = null), (this.numero = null);
             this.isLoading = false;
             this.nombre = null;
             this.apaterno = null;
