@@ -60,6 +60,8 @@ Route::get('/venta/comprobante', 'VentaController@getInvoice');
 Route::group(['middleware' => ['auth']], function () {
 
 
+
+
     Route::view('/cuentas', 'cuentas.index')->middleware('can:ver cuentas');
 
     Route::post('/preactivar-prepago', 'ChipController@preactivarPrepago');
@@ -196,6 +198,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/get/icctypes', 'IccTypeController@index');
 
     Route::get('/get/icc-subproducts', 'Admin\IccSubProductController@index');
+
+    Route::post('/telcel/porta/check-number', 'TelcelPortaController@checkNumber');
+
+    Route::post('/telcel/porta/check-promo', 'TelcelPortaController@checarPromoTelcel');
+
+    Route::post('/telcel/porta/confirm-porta', 'TelcelPortaController@confirmarPortaTelcel');
+
+    Route::post('/telcel/porta/check-icc', 'TelcelPortaController@checkIcc');
+
+    Route::delete('/telcel/porta/{id}', 'TelcelPortaController@destroy');
+
 });
 
 use MarvinLabs\Luhn\Facades\Luhn;
@@ -225,73 +238,28 @@ use Illuminate\Support\Facades\DB;
 use App\Linea;
 
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use PhpParser\Node\Scalar\MagicConst\Line;
+
 
 Route::get('/duplicados', function (Request $request) {
 
-    $duplicados = Linea::whereIn('dn', array_column( DB::select('select dn from lineas group by dn having count(*) > 1'), 'dn'))->orderBy('dn', 'desc')->get();
+    $duplicados = Linea::whereIn('dn', array_column(DB::select('select dn from lineas group by dn having count(*) > 1'), 'dn'))->orderBy('dn', 'desc')->get();
 
-    
-    foreach($duplicados as $duplicado){
+
+    foreach ($duplicados as $duplicado) {
 
         $activatedAt = $duplicado->productoable->activated_at ?? '';
 
         $PreactivatedAt = $duplicado->productoable->preactivated_at ?? '';
 
-        echo ($duplicado->dn.' , '.$duplicado->icc->icc.'F , '.$duplicado->icc->inventario->inventarioable->name.', '.$duplicado->product->name.', '.$duplicado->icc->company->name.', '.Date::stringToExcel($PreactivatedAt).' , '.Date::stringToExcel($activatedAt).'<br>');
+        echo ($duplicado->dn . ' , ' . $duplicado->icc->icc . 'F , ' . $duplicado->icc->inventario->inventarioable->name . ', ' . $duplicado->product->name . ', ' . $duplicado->icc->company->name . ', ' . Date::stringToExcel($PreactivatedAt) . ' , ' . Date::stringToExcel($activatedAt) . '<br>');
     }
 });
 
-use Illuminate\Support\Facades\Http;
+use App\TelcelPorta;
 
-use Illuminate\Support\Carbon;
 
 Route::get('/pruebas', function (Request $request) {
 
 
-    //iniciar proceso 
-    // $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
-    //     'EndPoint' => 3,
-    //     "Entrada" => "{\"ApMaterno\":\"MARTINEZ\",\"ApPaterno\":\"ANDRADE\",\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"CURP\":\"MAAD010829MJCRNNA5\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"FzaVtaPospagoPadre\":\"OCOAAF\",\"FzaVtaPospagoPersonal\":\"OCOAA1\",\"FzaVtaPospagoReporte\":\"OCOAAF\",\"FzaVtaPrepagoPadre\":\"40820\",\"FzaVtaPrepagoPersonal\":\"40821\",\"FzaVtaPrepagoReporte\":\"40820\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"Nombre\":\"DIANA JACQUELINE\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Telefono\":\"3324238366\",\"TipoPlan\":\"1\",\"Usuario\":\"37746\"}",
-    //     "Metodo" => "20",
-    //     "Pantalla"=> "0",
-    //     "Usuario" => "37746"
-
-    // ]);
-
-    // return $consulta;
-
-
-
-    ////CONFIRMAR porta 
-    // $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
-    //     'EndPoint' => 3,
-    //     "Entrada" => "{\"Iccid\":\"8952020021457600472\",\"idCop\":\"18822062370712\",\"IDPromocion\":\"548\",\"IMEI\":\"546464565444344\",\"Nip\":\"9689\",\"NumeroKit\":\"\",\"SistemaOrigen\":\"CAMBACEO\"}",
-    //     "Metodo" => "21",
-    //     "Pantalla"=> "0",
-    //     "Usuario" => "37746"
-
-    // ]);
-
-    // return $consulta;
-
-
-    ////TERMINAR PORTA
-    // $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
-    //     'EndPoint' => 3,
-    //     "Entrada" => " {\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"idCop\":\"18822062370712\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Usuario\":\"37746\"}",
-    //     "Metodo" => "23",
-    //     "Pantalla"=> "0",
-    //     "Usuario" => "37746"
-
-    // ]);
-
-   
-
-    // return $consulta;
-
-    $linea = Linea::where('dn','3931504492 ')->latest()->first();
-
-    return $linea;
 
 });

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 use Spatie\ModelStatus\HasStatuses as HasStatuses;
 
-use Illuminate\Support\Facades\Auth;
 
 class Porta extends Model
 {
@@ -23,7 +22,5 @@ class Porta extends Model
     {
         return $this->belongsTo('App\Transaction');
     }
-    public function checkPromoTelcel($dn, $nombre, $apaterno, $amaterno, $curp){
 
-    }
 }
