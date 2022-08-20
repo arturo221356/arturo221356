@@ -16,6 +16,7 @@
             stacked="sm"
             head-variant="dark"
             :table-variant="onlyTrash == true ? 'danger' : 'light'"
+            :tbody-tr-class="rowClass"
             :busy="tableBusy"
             @filtered="tableFiltered"
         >
@@ -26,7 +27,13 @@
                     <strong>Cargando...</strong>
                 </div>
             </template>
-
+            <template v-slot:cell(check)="row">
+                <b-form-checkbox
+                    
+                    size="lg"
+                    v-model="row.item.selected"
+                ></b-form-checkbox>
+            </template>
             <template v-slot:table-caption
                 >Resultado: - {{ countItems }}
             </template>
@@ -71,7 +78,6 @@
         <edit-icc-component
             v-on:data-changed="loadData"
             ref="editIcc"
-            
         ></edit-icc-component>
     </div>
 </template>
@@ -93,6 +99,10 @@ export default {
         };
     },
     methods: {
+        rowClass(item, type) {
+            if (!item || type !== "row") return;
+            if (item.selected === true) return "table-success";
+        },
         tableFiltered(filteredItems) {
             this.countItems = filteredItems.length;
         },
@@ -104,7 +114,6 @@ export default {
             axios
                 .post(`/icc/restore`, { id })
                 .then((response) => {
-
                     this.$bvToast.toast("Restaurado con exito", {
                         title: "ICC",
                         variant: "warning",
@@ -147,10 +156,16 @@ export default {
         },
     },
     computed: {
+        selected() {
+            let list = this.tableItems.filter((item) => item.selected);
+            return list.map((obj) => obj.id);
+        },
+
         computedTableFields: function () {
             var $response = [];
 
             $response = [
+                { key: "check", label: "Marcar" },
                 { key: "serie", label: "Icc" },
                 {
                     key: "inventario_name",

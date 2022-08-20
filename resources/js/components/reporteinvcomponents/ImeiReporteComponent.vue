@@ -17,6 +17,7 @@
             head-variant="dark"
             :table-variant="onlyTrash == true ? 'danger' : 'light'"
             :busy="tableBusy"
+            :tbody-tr-class="rowClass"
             @filtered="tableFiltered"
         >
             <!--busy template-->
@@ -29,6 +30,12 @@
 
             <template v-slot:table-caption
                 >Resultado: - {{ countItems }}
+            </template>
+            <template v-slot:cell(check)="row">
+                <b-form-checkbox
+                    size="lg"
+                    v-model="row.item.selected"
+                ></b-form-checkbox>
             </template>
 
             <!--boton de editar -->
@@ -71,7 +78,6 @@
         <edit-imei-component
             v-on:data-changed="loadData"
             ref="editImei"
-            
         ></edit-imei-component>
     </div>
 </template>
@@ -80,7 +86,7 @@
 import EditImeiComponent from "./EditImeiComponent.vue";
 export default {
     components: { EditImeiComponent },
-    
+
     props: ["onlyTrash", "inventario_id", "tableFilter"],
 
     data() {
@@ -93,6 +99,10 @@ export default {
         };
     },
     methods: {
+        rowClass(item, type) {
+            if (!item || type !== "row") return;
+            if (item.selected === true) return "table-success";
+        },
         tableFiltered(filteredItems) {
             this.countItems = filteredItems.length;
         },
@@ -135,10 +145,15 @@ export default {
         },
     },
     computed: {
+        selected() {
+            let list = this.tableItems.filter((item) => item.selected);
+            return list.map((obj) => obj.id);
+        },
         computedTableFields: function () {
             var $response = [];
 
             $response = [
+                { key: "check", label: "Marcar" },
                 { key: "serie", label: "Imei" },
                 {
                     key: "inventario_name",
@@ -173,7 +188,7 @@ export default {
                     sortable: true,
                 },
             ];
-            if (this.is('super-admin|administrador')) {
+            if (this.is("super-admin|administrador")) {
                 $response.splice(6, 0, {
                     key: "equipo.costo",
                     label: "Costo",
@@ -181,8 +196,11 @@ export default {
                 });
             }
 
-            if (this.is('super-admin|administrador')) {
-                if (this.onlyTrash == true && this.is('super-admin|administrador')) {
+            if (this.is("super-admin|administrador")) {
+                if (
+                    this.onlyTrash == true &&
+                    this.is("super-admin|administrador")
+                ) {
                     $response.push({
                         key: "restaurar",
                         label: "Restaurar",
