@@ -201,7 +201,7 @@
                                             id="curp"
                                             autocomplete="off"
                                             v-model="curp"
-                                            style="text-transform: uppercase;"
+                                            @keyup="uppercase"
                                             :state="
                                                 getValidationState(
                                                     validationContext
@@ -387,6 +387,9 @@ export default {
         };
     },
     methods: {
+        uppercase() {
+            this.curp = this.curp.toUpperCase();
+        },
         getValidationState({ dirty, validated, valid = null }) {
             return dirty || validated ? valid : null;
         },
