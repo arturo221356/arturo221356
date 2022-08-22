@@ -260,6 +260,15 @@ use App\TelcelPorta;
 
 Route::get('/pruebas', function (Request $request) {
 
+    // $nombre = 'ELIAZIM';
+    // $apaterno = 'FLORES';
+    // $amaterno = 'ROMERO';
+    // $curp = 'FORE901202HDFLML06';
+    // $numero = '3310448746';
+    // $pdv = '37746';
 
+    // $telcelPorta = TelcelPorta::newTelcelPorta($numero, $nombre, $apaterno, $amaterno, $curp, $pdv);
+
+    // return $telcelPorta;
 
 });
