@@ -6,9 +6,22 @@ use App\TelcelPorta;
 use Illuminate\Http\Request;
 use App\Icc;
 use Illuminate\Support\Facades\Auth;
+use App\TelcelUser;
+
 
 class TelcelPortaController extends Controller
 {
+    private $apiUrl;
+
+    public function __construct()
+    {       
+
+
+        $this->apiUrl = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.5/rest/ConsumeServicios?fmt=json';
+
+        
+    }
+
     public function checarPromoTelcel(Request $request)
     {
         $nombre = strtoupper($request->nombre);
@@ -16,9 +29,10 @@ class TelcelPortaController extends Controller
         $amaterno = strtoupper($request->amaterno);
         $curp = strtoupper($request->curp);
         $numero = $request->numero;
-        $pdv = '37746';
+        $loggedUser = Auth::user();
+        $telcelUser = TelcelUser::where('distribution_id', $loggedUser->distribution_id)->first();
 
-        $telcelPorta = TelcelPorta::newTelcelPorta($numero, $nombre, $apaterno, $amaterno, $curp, $pdv);
+        $telcelPorta = TelcelPorta::newTelcelPorta($this->apiUrl,$numero, $nombre, $apaterno, $amaterno, $curp, $telcelUser);
 
         return $telcelPorta;
     }
@@ -32,10 +46,10 @@ class TelcelPortaController extends Controller
         $icc = $request->icc;
         $nip = $request->nip;
         $idcop = $request->idcop;
-        $pdv = '37746';
         $promo = $request->promo;
+        $telcelUser = TelcelUser::where('distribution_id', Auth::user()->distribution_id)->first();
 
-        $telcelPorta =  TelcelPorta::confirmTelcelPorta($icc, $idcop, $promo, $nip, $pdv);
+        $telcelPorta =  TelcelPorta::confirmTelcelPorta($icc, $idcop, $promo, $nip,  $telcelUser, $this->apiUrl);
 
         return $telcelPorta;
 
@@ -44,12 +58,14 @@ class TelcelPortaController extends Controller
     }
     public function checkNumber(Request $request)
     {
+        
         $number = $request->numero;
 
         $telcelPorta = TelcelPorta::where('dn', $number)->whereRaw('created_at >= now() - interval ? day', [4])->first();
 
         return $telcelPorta;
     }
+
     public function checkIcc(Request $request)
     {
        

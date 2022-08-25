@@ -12,8 +12,6 @@
 */
 //para pruebas
 
-use App\Chip;
-use App\Http\Resources\IccResource;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -50,6 +48,35 @@ Route::group(['middleware' => ['role:super-admin|administrador']], function () {
     Route::resource('/comisiones',  'ComisionController');
 
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+});
+
+
+Route::get('/toggle-telcel-porta', function () {
+
+    $response = app('valuestore')->get('telcel_porta_working');
+
+    app('valuestore')->put('telcel_porta_working', !$response ?? true);
+
+    $updatedValue = app('valuestore')->get('telcel_porta_working');
+
+    return dd($updatedValue);
+
+})->middleware('role:super-admin');
+
+
+Route::post('/telcel-porta-working', function () {
+
+    $response = app('valuestore')->get('telcel_porta_working');
+
+    return $response ?? true;
+
+});
+Route::get('/get-telcel-porta-working', function () {
+
+    $response = app('valuestore')->get('telcel_porta_working');
+
+    return dd($response ?? true);
+
 });
 
 
@@ -208,7 +235,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/telcel/porta/check-icc', 'TelcelPortaController@checkIcc');
 
     Route::delete('/telcel/porta/{id}', 'TelcelPortaController@destroy');
-
 });
 
 use MarvinLabs\Luhn\Facades\Luhn;
@@ -255,20 +281,9 @@ Route::get('/duplicados', function (Request $request) {
     }
 });
 
-use App\TelcelPorta;
-
+use App\TelcelUser;
 
 Route::get('/pruebas', function (Request $request) {
 
-    // $nombre = 'ELIAZIM';
-    // $apaterno = 'FLORES';
-    // $amaterno = 'ROMERO';
-    // $curp = 'FORE901202HDFLML06';
-    // $numero = '3310448746';
-    // $pdv = '37746';
-
-    // $telcelPorta = TelcelPorta::newTelcelPorta($numero, $nombre, $apaterno, $amaterno, $curp, $pdv);
-
-    // return $telcelPorta;
 
 });

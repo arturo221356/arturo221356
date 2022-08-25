@@ -37,6 +37,10 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('delete:invoices')->timezone('America/Mexico_City')->monthlyOn(4, '15:00')->emailOutputTo('arturo221357@gmail.com');
 
+        $schedule->command('telcel:login')->timezone('America/Mexico_City')->dailyAt('06:00')->emailOutputTo('arturo221357@gmail.com');
+
+        $schedule->command('telcel:logout')->timezone('America/Mexico_City')->dailyAt('23:00')->emailOutputTo('arturo221357@gmail.com');
+
        
     }
 

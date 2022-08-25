@@ -1,7 +1,7 @@
 <template>
 <div>
-    desabilitado temporalmente
-    <div v-show="false">
+    
+    <div >
         <b-overlay :show="isLoading" rounded="sm">
             <h3>Portabilidad Telcel</h3>
             <b-progress :value="step" :max="5" :animated="true"></b-progress>

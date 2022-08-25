@@ -16,8 +16,11 @@ use App\PortaClient;
 
 
 
+
+
 class TelcelPorta extends Model
 {
+
     use HasFactory;
 
     use SoftDeletes;
@@ -38,23 +41,65 @@ class TelcelPorta extends Model
     }
 
 
-    public static function newTelcelPorta($numero, $nombre, $apaterno, $amaterno, $curp, $pdv)
+
+
+
+
+    public static function newTelcelPorta($apiurl, $numero, $nombre, $apaterno, $amaterno, $curp, $telcelUser)
     {
-        $portaClient = PortaClient::firstOrCreate(['curp' => $curp],[
+
+        if (app('valuestore')->get('telcel_porta_working') == false) {
+            $response = [
+                'error' => true,
+                'mensaje' => 'Servicio temporalmente deshabilitado',
+            ];
+
+           
+            return [
+                'datosPorta' => null,
+                'respuesta' => $response,
+            ];
+        }
+        if($telcelUser->idSesion == null){
+            $response = [
+                'error' => true,
+                'mensaje' => 'Usuario sin sesion',
+            ];
+
+            return [
+                'datosPorta' => null,
+                'respuesta' => $response,
+            ]; 
+        }
+        if($telcelUser->error == true){
+            $response = [
+                'error' => true,
+                'mensaje' => 'Error en la sesion '.$telcelUser->mensaje,
+            ];
+
+            return [
+                'datosPorta' => null,
+                'respuesta' => $response,
+            ];  
+        }
+
+
+        $portaClient = PortaClient::firstOrCreate(['curp' => $curp], [
             'nombre' => $nombre,
             'apaterno' => $apaterno,
             'amaterno' => $amaterno,
         ]);
-        
-            
-        if($portaClient->counter >= 5){
+
+
+        if ($portaClient->counter >= 5) {
             $response = [
                 'error' => true,
                 'mensaje' => 'Cliente con mas de 5 lineas a su nombre',
             ];
 
-            return $response ;
+            return $response;
         }
+
 
 
         if (!TelcelPorta::where('dn', $numero)->whereRaw('created_at >= now() - interval ? day', [4])->exists()) {
@@ -68,22 +113,46 @@ class TelcelPorta extends Model
                 'apaterno' => $apaterno,
                 'amaterno' => $amaterno,
                 'curp' => $curp,
-                'pdv' => $pdv,
+                'pdv' => $telcelUser->user,
 
             ]);
 
-            
+
 
             try {
 
-                $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
-                    'EndPoint' => 3,
-                    "Entrada" => "{\"ApMaterno\":\"$amaterno\",\"ApPaterno\":\"$apaterno\",\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"CURP\":\"$curp\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"FzaVtaPospagoPadre\":\"OCOAAF\",\"FzaVtaPospagoPersonal\":\"OCOAA1\",\"FzaVtaPospagoReporte\":\"OCOAAF\",\"FzaVtaPrepagoPadre\":\"40820\",\"FzaVtaPrepagoPersonal\":\"40821\",\"FzaVtaPrepagoReporte\":\"40820\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"Nombre\":\"$nombre\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Telefono\":\"$numero\",\"TipoPlan\":\"1\",\"Usuario\":\"$pdv\"}",
+            $consulta = Http::contentType("application/json")->bodyFormat('json')->post($apiurl, [
+                'EndPoint' => 3,
+                "Entrada" => 
+                "{
+                    \"ApMaterno\":\"$amaterno\",
+                    \"ApPaterno\":\"$apaterno\",
+                    \"AsentaId\":\"0\",\"AsentaNom\":\"\",
+                    \"CURP\":\"$curp\",
+                    \"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",
+                    \"FzaVtaPospagoPadre\":\"$telcelUser->FzaVtaPospagoPadre\",
+                    \"FzaVtaPospagoPersonal\":\"$telcelUser->FzaVtaPospagoPersonal\",
+                    \"FzaVtaPospagoReporte\":\"$telcelUser->FzaVtaPospagoReporte\",
+                    \"FzaVtaPrepagoPadre\":\"$telcelUser->FzaVtaPrepagoPadre\",
+                    \"FzaVtaPrepagoPersonal\":\"$telcelUser->FzaVtaPrepagoPersonal\",
+                    \"FzaVtaPrepagoReporte\":\"$telcelUser->FzaVtaPrepagoReporte\",
+                    \"idDispositivo\":\"$telcelUser->idDispositivo\",
+                    \"IDRegion\":\"5\",
+                    \"idSesion\":\"$telcelUser->idSesion\",
+                    \"Latitud\":\"20.659698300\",
+                    \"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",
+                    \"Nombre\":\"$nombre\",
+                    \"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",
+                    \"Telefono\":\"$numero\",
+                    \"TipoPlan\":\"1\",
+                    \"Usuario\":\"$telcelUser->user\"
+                }",
+    
                     "Metodo" => "20",
                     "Pantalla" => "0",
-                    "Usuario" => $pdv,
-
-                ]);
+                    "Usuario" => $telcelUser->user,
+    
+            ]);
 
                 if ($consulta->successful()) {
 
@@ -101,8 +170,8 @@ class TelcelPorta extends Model
 
                     $telcelPorta->save();
 
-                    
-                    if($consultaJson->Error == false) $portaClient->increment('counter', 1);
+
+                    if ($consultaJson->Error == false) $portaClient->increment('counter', 1);
 
 
                     $response = [
@@ -110,12 +179,23 @@ class TelcelPorta extends Model
                         'mensaje' => $consultaJson->Mensaje  ?? '',
                     ];
                 } else {
+                    $telcelPorta->error = true;
+
+                    $telcelPorta->message = 'error de consulta';
+
+                    $telcelPorta->save();
+
                     $response = [
                         'error' =>  true,
                         'mensaje' =>  serialize($consulta),
                     ];
                 }
             } catch (ConnectionException $e) {
+                $telcelPorta->error = true;
+
+                $telcelPorta->message = 'error de conexion';
+
+                $telcelPorta->save();
 
                 $response = [
                     'error' => true,
@@ -137,7 +217,7 @@ class TelcelPorta extends Model
     }
 
 
-    public static function confirmTelcelPorta($icc, $idcop, $promo, $nip, $pdv)
+    public static function confirmTelcelPorta($icc, $idcop, $promo, $nip, $telcelUser, $apiurl)
     {
         ///////////imei random
         $inicio = '86881003';
@@ -154,12 +234,12 @@ class TelcelPorta extends Model
 
         try {
             ////CONFIRMAR porta 
-            $confirmacion = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
+            $confirmacion = Http::contentType("application/json")->bodyFormat('json')->post($apiurl, [
                 'EndPoint' => 3,
                 "Entrada" => "{\"Iccid\":\"$icc\",\"idCop\":\"$idcop\",\"IDPromocion\":\"$promo\",\"IMEI\":\"$imei\",\"Nip\":\"$nip\",\"NumeroKit\":\"\",\"SistemaOrigen\":\"CAMBACEO\"}",
                 "Metodo" => "21",
                 "Pantalla" => "0",
-                "Usuario" => $pdv
+                "Usuario" => $telcelUser->user
 
             ]);
 
@@ -170,7 +250,7 @@ class TelcelPorta extends Model
 
                 if ($confirmacionJson->Error == false) {
 
-                    $finnishPorta = TelcelPorta::finishTelcelPorta($idcop, $pdv, $icc);
+                    $finnishPorta = TelcelPorta::finishTelcelPorta($idcop, $telcelUser, $icc, $apiurl);
 
                     return $finnishPorta;
                 } else {
@@ -238,18 +318,18 @@ class TelcelPorta extends Model
 
 
 
-    public static function finishTelcelPorta($idcop, $pdv, $icc)
+    public static function finishTelcelPorta($idcop, $telcelUser , $icc, $apiurl)
     {
         $telcelPorta = TelcelPorta::where('idcop', $idcop)->first();
 
         try {
             ////TERMINAR PORTA
-            $consulta = Http::contentType("application/json")->bodyFormat('json')->post('http://portabilidad.telcel.com/PortabilidadCambaceo4.4/rest/ConsumeServicios?fmt=json', [
+            $consulta = Http::contentType("application/json")->bodyFormat('json')->post($apiurl, [
                 'EndPoint' => 3,
-                "Entrada" => " {\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"idCop\":\"$idcop\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Usuario\":\"$pdv\"}",
+                "Entrada" => " {\"AsentaId\":\"0\",\"AsentaNom\":\"\",\"Direccion\":\"\",\"EdoId\":\"0\",\"EdoNom\":\"\",\"idCop\":\"$idcop\",\"IDRegion\":\"5\",\"Latitud\":\"20.659698300\",\"Longitud\":\"-103.349608300\",\"MnpioId\":\"0\",\"MnpioNom\":\"\",\"OnLine\":\"1\",\"Plataforma\":\"2\",\"SistemaOrigen\":\"CAMBACEO\",\"Usuario\":\"$telcelUser->user\"}",
                 "Metodo" => "23",
                 "Pantalla" => "0",
-                "Usuario" => $pdv
+                "Usuario" => $telcelUser->user
 
             ]);
             if (!$consulta->successful()) {
@@ -301,14 +381,14 @@ class TelcelPorta extends Model
                     $linea->setStatus('Porta subida');
 
                     if (Auth::check()) {
-    
+
                         $linea->user()->associate(Auth::user());
 
                         $telcelPorta->user()->associate(Auth::user());
-        
+
                         $linea->save();
                     }
-    
+
                     $iccR->setStatus('Vendido');
 
 
