@@ -96,7 +96,7 @@
     </div>    
 </div>
 
-<div class="container">
+{{-- <div class="container">
     <div class="row">
         <div class="col-sm-12">
             <div class="wrap">
@@ -132,6 +132,6 @@
             </div>
         </div>
     </div>    
-</div>
+</div> --}}
 
 @endsection

@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\PortaClientsImport;
 
 Auth::routes([
     'register' => false,
@@ -48,13 +46,6 @@ Route::post('/new/porta-externo', 'PortaController@newExternoPorta');
 Route::group(['middleware' => ['role:super-admin|administrador']], function () {
 
     Route::resource('/comisiones',  'ComisionController');
-
-    Route::post('/cargar-clientes-porta',  function(Request $request){
-        $import = new PortaClientsImport;
-        $file = $request->clientes;
-
-        Excel::import($import, $file);
-    });
 
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
 });
