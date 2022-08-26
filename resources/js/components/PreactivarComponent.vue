@@ -142,7 +142,7 @@
                             </b-form-group>
 
                             <Validation-Provider
-                                v-if="can('asignar recarga')"
+                                v-if="can('asignar recarga')||is('super-admin')"
                                 name="recargable"
                                 v-slot="validationContext"
                                 rules="required"

@@ -225,7 +225,7 @@
                                 form="Form2"
                                 v-if="step == 2"
                                 type="summit"
-                                :disabled="error"
+                                
                                 >Avanzar 2</b-button
                             >
                         </b-form>

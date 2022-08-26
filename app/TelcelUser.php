@@ -92,7 +92,9 @@ class TelcelUser extends Model
 
         ]);
 
-         $telcelUser->idSesion =  null;
+         $telcelUser->error =  true;
+
+         $telcelUser->error =  'usuario sin sesion';
 
          $telcelUser->save();
 

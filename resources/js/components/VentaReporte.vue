@@ -101,6 +101,9 @@
                         >
                             <b>Icc:</b> {{ producto.icc }}<br />
 
+                            <!-- <b>Tipo:</b>
+                            {{ producto.icc.type.name  }}<br /> -->
+
                             <b>Compañia:</b>
                             {{ producto.company.name }}<br />
 

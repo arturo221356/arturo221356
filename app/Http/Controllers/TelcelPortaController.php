@@ -24,6 +24,7 @@ class TelcelPortaController extends Controller
 
     public function checarPromoTelcel(Request $request)
     {
+
         $nombre = strtoupper($request->nombre);
         $apaterno = strtoupper($request->apaterno);
         $amaterno = strtoupper($request->amaterno);
