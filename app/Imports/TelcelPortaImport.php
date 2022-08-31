@@ -37,10 +37,9 @@ class TelcelPortaImport implements ToCollection
             $numero = $row[1];
             $nip = $row[2];
             $icc = $row[0];
-            $promo = '548';
+            $promo = '547';
             $loggedUser = Auth::user();
             $telcelUser = TelcelUser::where('distribution_id', $loggedUser->distribution_id)->first();
-    
             SubirTelcelPorta::dispatch($numero, $nip, $telcelUser, $this->apiUrl, $icc, $promo);
 
         }
