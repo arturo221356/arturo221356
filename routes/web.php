@@ -48,6 +48,8 @@ Route::group(['middleware' => ['role:super-admin|administrador']], function () {
     Route::resource('/comisiones',  'ComisionController');
 
     Route::view('/inventario/cargar', 'admin.inventario.cargarInv');
+
+    Route::post('/cargar-portas-telcel', 'TelcelPortaController@portaTelcelExcelRandomClient');
 });
 
 
@@ -281,9 +283,11 @@ Route::get('/duplicados', function (Request $request) {
     }
 });
 
-use App\TelcelUser;
+use App\PortaClient;
 
 Route::get('/pruebas', function (Request $request) {
 
+    $telcelUser = PortaClient::where('counter','<',5)->inRandomOrder()->first();
 
+    return $telcelUser;
 });

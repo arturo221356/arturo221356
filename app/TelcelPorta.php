@@ -389,7 +389,7 @@ class TelcelPorta extends Model
                         $linea->save();
                     }
 
-                    $iccR->setStatus('Vendido');
+                    // $iccR->setStatus('Vendido');
 
 
                     $telcelPorta->linea()->associate($linea);

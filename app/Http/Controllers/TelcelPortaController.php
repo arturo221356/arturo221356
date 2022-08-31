@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\TelcelPorta;
 use Illuminate\Http\Request;
 use App\Icc;
+use App\Imports\TelcelPortaImport;
 use Illuminate\Support\Facades\Auth;
 use App\TelcelUser;
+use App\Jobs\SubirTelcelPorta;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class TelcelPortaController extends Controller
@@ -36,6 +39,22 @@ class TelcelPortaController extends Controller
         $telcelPorta = TelcelPorta::newTelcelPorta($this->apiUrl,$numero, $nombre, $apaterno, $amaterno, $curp, $telcelUser);
 
         return $telcelPorta;
+    }
+
+    public function portaTelcelExcelRandomClient(Request $request)
+    {
+        
+        if ($request->hasFile('portas')) {
+
+            foreach ($request->portas as $file) {
+
+                $import = new TelcelPortaImport($this->apiUrl);
+
+                Excel::import($import, $file);
+            }
+        }
+
+
     }
 
 

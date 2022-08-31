@@ -96,11 +96,11 @@
     </div>    
 </div>
 
-{{-- <div class="container">
+<div class="container">
     <div class="row">
         <div class="col-sm-12">
             <div class="wrap">
-                <h2>Cargar Clientes genericos para porta</h2>
+                <h2>Cargar portas telcel</h2>
                 @if ($message = Session::get('success'))
                     <div class="alert alert-success alert-block">
                         <button type="button" class="close" data-dismiss="alert">×</button>
@@ -118,11 +118,11 @@
                         </ul>
                     </div>
                 @endif
-                <form action="{{ URL::to('/cargar-clientes-porta') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ URL::to('/cargar-portas-telcel') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
-                        <input type="file" name="clientes" multiple>
+                        <input type="file" name="portas" multiple>
                         </div>
                         <div class="col-md-6">
                             <button type="submit" class="btn btn-info">Upload</button>
@@ -132,6 +132,6 @@
             </div>
         </div>
     </div>    
-</div> --}}
+</div>
 
 @endsection
