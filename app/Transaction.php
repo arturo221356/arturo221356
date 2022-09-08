@@ -69,25 +69,29 @@ class Transaction extends Model
 
         $recarga = Recarga::findOrFail($recargaId);
 
-        // si la recarga es movistar y  activachip es falso
-        if ($recarga->company_id == 2 && $activachip == false) {
-            $aplicarRecarga = false;
-        } else {
-            $aplicarRecarga = true;
-        }
+        // // si la recarga es movistar y  activachip es falso
+        // if ($recarga->company_id == 2 && $activachip == false) {
+        //     $aplicarRecarga = false;
+        // } else {
+        //     $aplicarRecarga = true;
+        // }
 
-        if ($aplicarRecarga == true) {
+        // if ($aplicarRecarga == true) {
 
-            $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+        //     $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
 
-            $taecelRequest = json_decode($requestTXN);
-        }
+        //     $taecelRequest = json_decode($requestTXN);
+        // }
+
+        $requestTXN =  (new Taecel)->taecelRequestTXN($taecelKey, $taecelNip, $recarga->taecel_code, $dn);
+
+        $taecelRequest = json_decode($requestTXN);
 
 
 
         $transaction = Transaction::create([
 
-            'taecel' => $aplicarRecarga == false ? false : true,
+            'taecel' =>  true,
 
             'monto' => $recarga->monto,
 
@@ -99,19 +103,19 @@ class Transaction extends Model
 
             'inventario_id' => $inventarioID,
 
-            'taecel_success' => $aplicarRecarga == false ? true : $taecelRequest->success,
+            'taecel_success' =>  $taecelRequest->success ?? '',
 
-            'taecel_message' => isset($taecelRequest->message) ? $taecelRequest->message : 'Recarga no aplicada, solo registrada',
+            'taecel_message' =>  $taecelRequest->message ?? '',
 
 
 
         ]);
 
-        // si la recarga no se aplica por taecel retorna la transaccion
-        if ($aplicarRecarga == false) {
+        // // si la recarga no se aplica por taecel retorna la transaccion
+        // if ($aplicarRecarga == false) {
 
-            return $transaction;
-        }
+        //     return $transaction;
+        // }
 
 
         if (isset($taecelRequest->data) && $taecelRequest->data) {
