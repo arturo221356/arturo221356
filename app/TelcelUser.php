@@ -60,7 +60,6 @@ class TelcelUser extends Model
             }
 
             $telcelUser->save();
-
         } catch (ConnectionException $e) {
 
             $telcelUser->idSesion = null;
@@ -72,7 +71,7 @@ class TelcelUser extends Model
 
 
 
-        return $telcelUser->error ;
+        return $telcelUser->error;
     }
 
     public static function logOut($urlapi, $telcelUser)
@@ -92,23 +91,63 @@ class TelcelUser extends Model
 
         ]);
 
-         $telcelUser->error =  true;
+        $telcelUser->error =  true;
 
-         $telcelUser->error =  'usuario sin sesion';
+        $telcelUser->mensaje =  'usuario sin sesion';
 
-         $telcelUser->save();
+        $telcelUser->save();
 
         return $consulta;
     }
-    public static function checkIn($urlapi, $telcelUser)
+
+
+    public static function checkIn($urlapi, $telcelUser, $latitud = "20.6596983", $longitud = "-103.3496083", $opcion = "1")
     {
 
         $consulta = Http::contentType("application/json")->bodyFormat('json')->post($urlapi, [
             'EndPoint' => 10,
-            "Entrada" => "{\"idDispositivo\":\"$telcelUser->idDispositivo\",\"idSesion\":\"$telcelUser->idSesion\",\"latitud\":\"20.6596983\",\"longitud\":\"-103.3496083\",\"opcion\":\"1\",\"Region\":\"5\"}",
+            "Entrada" => "{\"idDispositivo\":\"$telcelUser->idDispositivo\",\"idSesion\":\"$telcelUser->idSesion\",\"latitud\":\"$latitud\",\"longitud\":\"$longitud\",\"opcion\":\"$opcion\",\"Region\":\"5\"}",
             "Metodo" => "61",
             "Pantalla" => "0",
             "Usuario" => $telcelUser->user,
+
+        ]);
+
+
+        return $consulta;
+    }
+
+
+    public static function posicion($urlapi, $telcelUser, $latitud = "20.6596983", $longitud = "-103.3496083", $actividad = "CheckIn")
+    {
+        $consulta = Http::contentType("application/json")->bodyFormat('json')->post($urlapi, [
+            'EndPoint' => 8,
+            "Entrada" =>
+            "{  \"latitud\":$latitud,
+                \"longitud\":$longitud,
+                \"actividad\":\"$actividad\",
+                \"idDispositivo\":\"$telcelUser->idDispositivo\",
+                \"idSesion\":\"$telcelUser->idSesion\"}",
+            "Metodo" => "63",
+            "Pantalla" => "0",
+            "Usuario" => $telcelUser->user,
+
+        ]);
+
+        return $consulta;
+    }
+
+    public static function checkInOutReport($urlapi, $telcelUser)
+    {
+        $consulta = Http::contentType("application/json")->bodyFormat('json')->post($urlapi, [
+            'EndPoint' => 10,
+            "Entrada" =>
+            "{\"FzavtaPrepagoPersonal\":\"$telcelUser->FzaVtaPrepagoPersonal\",
+                \"idSesion\":\"$telcelUser->idSesion\",
+                \"Region\":\"5\"}",
+            "Metodo" => "66",
+            "Pantalla" => "0",
+            "Usuario" => "",
 
         ]);
 

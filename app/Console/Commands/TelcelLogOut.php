@@ -41,7 +41,7 @@ class TelcelLogOut extends Command
     {
         $urlapi = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.5/rest/ConsumeServicios?fmt=json';
 
-        $telcelUsers = TelcelUser::all();
+        $telcelUsers = TelcelUser::whereIn('id', [1, 2, 3])->get();
 
         $working = app('valuestore')->get('telcel_porta_working') ?? false;
 
