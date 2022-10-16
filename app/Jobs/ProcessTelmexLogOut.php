@@ -35,7 +35,7 @@ class ProcessTelmexLogOut implements ShouldQueue
 
         $telcelUser = TelcelUser::find(5);
 
-        $consulta1 = TelcelUser::checkIn($urlapi, $telcelUser, "20.3470133", "-102.7742017", "2");
+        $consulta1 = TelcelUser::checkIn($urlapi, $telcelUser, "20.352061", "-102.775223", "2");
 
         $consulta2 = TelcelUser::posicion($urlapi, $telcelUser, "20.352061", "-102.775223", "CheckOut");
 
