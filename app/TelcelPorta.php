@@ -54,13 +54,13 @@ class TelcelPorta extends Model
                 'mensaje' => 'Servicio temporalmente deshabilitado',
             ];
 
-           
+
             return [
                 'datosPorta' => null,
                 'respuesta' => $response,
             ];
         }
-        if($telcelUser->idSesion == null){
+        if ($telcelUser->idSesion == null) {
             $response = [
                 'error' => true,
                 'mensaje' => 'Usuario sin sesion',
@@ -69,18 +69,18 @@ class TelcelPorta extends Model
             return [
                 'datosPorta' => null,
                 'respuesta' => $response,
-            ]; 
+            ];
         }
-        if($telcelUser->error == true){
+        if ($telcelUser->error == true) {
             $response = [
                 'error' => true,
-                'mensaje' => 'Error en la sesion '.$telcelUser->mensaje,
+                'mensaje' => 'Error en la sesion ' . $telcelUser->mensaje,
             ];
 
             return [
                 'datosPorta' => null,
                 'respuesta' => $response,
-            ];  
+            ];
         }
 
 
@@ -121,10 +121,10 @@ class TelcelPorta extends Model
 
             try {
 
-            $consulta = Http::contentType("application/json")->bodyFormat('json')->post($apiurl, [
-                'EndPoint' => 3,
-                "Entrada" => 
-                "{
+                $consulta = Http::contentType("application/json")->bodyFormat('json')->post($apiurl, [
+                    'EndPoint' => 3,
+                    "Entrada" =>
+                    "{
                     \"ApMaterno\":\"$amaterno\",
                     \"ApPaterno\":\"$apaterno\",
                     \"AsentaId\":\"0\",\"AsentaNom\":\"\",
@@ -147,12 +147,12 @@ class TelcelPorta extends Model
                     \"TipoPlan\":\"1\",
                     \"Usuario\":\"$telcelUser->user\"
                 }",
-    
+
                     "Metodo" => "20",
                     "Pantalla" => "0",
                     "Usuario" => $telcelUser->user,
-    
-            ]);
+
+                ]);
 
                 if ($consulta->successful()) {
 
@@ -233,7 +233,7 @@ class TelcelPorta extends Model
 
 
         try {
-            ////CONFIRMAR porta 
+            ////CONFIRMAR porta
             $confirmacion = Http::contentType("application/json")->bodyFormat('json')->post($apiurl, [
                 'EndPoint' => 3,
                 "Entrada" => "{\"Iccid\":\"$icc\",\"idCop\":\"$idcop\",\"IDPromocion\":\"$promo\",\"IMEI\":\"$imei\",\"Nip\":\"$nip\",\"NumeroKit\":\"\",\"SistemaOrigen\":\"CAMBACEO\"}",
@@ -318,7 +318,7 @@ class TelcelPorta extends Model
 
 
 
-    public static function finishTelcelPorta($idcop, $telcelUser , $icc, $apiurl)
+    public static function finishTelcelPorta($idcop, $telcelUser, $icc, $apiurl)
     {
         $telcelPorta = TelcelPorta::where('idcop', $idcop)->first();
 
@@ -389,7 +389,7 @@ class TelcelPorta extends Model
                         $linea->save();
                     }
 
-                    // $iccR->setStatus('Vendido');
+                    $iccR->setStatus('Vendido');
 
 
                     $telcelPorta->linea()->associate($linea);
