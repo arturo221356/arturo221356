@@ -17,12 +17,10 @@ class TelcelPortaController extends Controller
     private $apiUrl;
 
     public function __construct()
-    {       
+    {
 
 
-        $this->apiUrl = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.5/rest/ConsumeServicios?fmt=json';
-
-        
+        $this->apiUrl = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.6/rest/ConsumeServicios?fmt=json';
     }
 
     public function checarPromoTelcel(Request $request)
@@ -36,14 +34,14 @@ class TelcelPortaController extends Controller
         $loggedUser = Auth::user();
         $telcelUser = TelcelUser::where('distribution_id', $loggedUser->distribution_id)->first();
 
-        $telcelPorta = TelcelPorta::newTelcelPorta($this->apiUrl,$numero, $nombre, $apaterno, $amaterno, $curp, $telcelUser);
+        $telcelPorta = TelcelPorta::newTelcelPorta($this->apiUrl, $numero, $nombre, $apaterno, $amaterno, $curp, $telcelUser);
 
         return $telcelPorta;
     }
 
     public function portaTelcelExcelRandomClient(Request $request)
     {
-        
+
         if ($request->hasFile('portas')) {
 
             foreach ($request->portas as $file) {
@@ -53,14 +51,12 @@ class TelcelPortaController extends Controller
                 Excel::import($import, $file);
             }
         }
-
-
     }
 
 
 
 
-    
+
     public function confirmarPortaTelcel(Request $request)
     {
         $icc = $request->icc;
@@ -72,13 +68,10 @@ class TelcelPortaController extends Controller
         $telcelPorta =  TelcelPorta::confirmTelcelPorta($icc, $idcop, $promo, $nip,  $telcelUser, $this->apiUrl);
 
         return $telcelPorta;
-
-        
-        
     }
     public function checkNumber(Request $request)
     {
-        
+
         $number = $request->numero;
 
         $telcelPorta = TelcelPorta::where('dn', $number)->whereRaw('created_at >= now() - interval ? day', [4])->first();
@@ -88,13 +81,13 @@ class TelcelPortaController extends Controller
 
     public function checkIcc(Request $request)
     {
-       
+
 
         $user = Auth::user();
 
         $inventariosIds = $user->getInventariosForUserIds();
 
-        $icc = Icc::where('icc', $request->icc)->where('company_id',1)->whereIn('inventario_id', $inventariosIds)->first();
+        $icc = Icc::where('icc', $request->icc)->where('company_id', 1)->whereIn('inventario_id', $inventariosIds)->first();
 
         if ($icc === null) {
             $response = [
@@ -104,7 +97,7 @@ class TelcelPortaController extends Controller
 
             return $response;
         }
-        if(!$icc->linea()->first() == null){
+        if (!$icc->linea()->first() == null) {
 
             $response = [
                 "success" => false,
@@ -135,6 +128,5 @@ class TelcelPortaController extends Controller
         $telcelPorta = TelcelPorta::find($id);
 
         $telcelPorta->delete();
-
     }
 }
