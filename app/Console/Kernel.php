@@ -8,6 +8,8 @@ use App\Jobs\ProcessMaviLogin;
 use App\Jobs\ProcessTelmexLogin;
 use App\Jobs\ProcessMaviLogOut;
 use App\Jobs\ProcessTelmexLogOut;
+use App\Jobs\ProcessElektraJLogin;
+use App\Jobs\ProcessElektraJLogOut;
 
 class Kernel extends ConsoleKernel
 {
@@ -83,6 +85,21 @@ class Kernel extends ConsoleKernel
             $job->delay(rand(0, 45));
             dispatch($job);
         })->weekdays()->at("16:15");
+
+
+        //// ELEKTRA
+
+        $schedule->call(function () {
+            $job = new ProcessElektraJLogin;
+            $job->delay(rand(0, 45));
+            dispatch($job);
+        })->weekdays()->at("10:00");
+
+        $schedule->call(function () {
+            $job = new ProcessElektraJLogOut;
+            $job->delay(rand(0, 45));
+            dispatch($job);
+        })->dailyAt("19:15");
     }
 
     /**

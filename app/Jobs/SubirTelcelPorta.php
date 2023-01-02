@@ -47,22 +47,26 @@ class SubirTelcelPorta implements ShouldQueue
      */
     public function handle()
     {
+        
+
         $portaClient = PortaClient::where('counter','<',5)->inRandomOrder()->first();
         $nombre = strtoupper($portaClient->nombre);
         $apaterno = strtoupper($portaClient->apaterno);
         $amaterno = strtoupper($portaClient->amaterno);
         $curp = strtoupper($portaClient->curp);
 
-         $telcelPorta = TelcelPorta::newTelcelPorta($this->apiUrl,$this->numero, $nombre, $apaterno, $amaterno, $curp, $this->telcelUser);
+        $telcelPorta = TelcelPorta::newTelcelPorta($this->apiUrl,$this->numero, $nombre, $apaterno, $amaterno, $curp, $this->telcelUser);
 
-        $object = json_decode(json_encode($telcelPorta), FALSE);
+        $object = json_decode(json_encode($telcelPorta));
 
         if($object->respuesta->error == false){
 
-            $idcop = $object->respuesta->datosPorta->idCop;
+            $telcelPorta = TelcelPorta::where('dn',$this->numero)->first();
 
-            $confirmTelcelPorta = TelcelPorta::confirmTelcelPorta($this->icc, $idcop, $this->promo, $this->nip,  $this->telcelUser, $this->apiUrl);
+            $confirmTelcelPorta = TelcelPorta::confirmTelcelPorta($this->icc, $telcelPorta->idcop, $this->promo, $this->nip,  $this->telcelUser, $this->apiUrl);
         
+        }else{
+            $this->fail();
         }
     }
 }
