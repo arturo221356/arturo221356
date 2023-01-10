@@ -93,7 +93,7 @@ class Kernel extends ConsoleKernel
             $job = new ProcessElektraJLogin;
             $job->delay(rand(0, 45));
             dispatch($job);
-        })->weekdays()->at("10:00");
+        })->dailyAt("19:15");
 
         $schedule->call(function () {
             $job = new ProcessElektraJLogOut;
