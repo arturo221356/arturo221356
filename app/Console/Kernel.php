@@ -74,16 +74,19 @@ class Kernel extends ConsoleKernel
 
 
         $schedule->call(function () {
-            $job = new ProcessTelmexLogin;
-            $job->delay(rand(0, 45));
-            dispatch($job);
+            // $job = new ProcessTelmexLogin;
+            // $job->delay(rand(0, 45));
+            // dispatch($job);
+
+            ProcessTelmexLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
         })->weekdays()->at("09:00");
 
 
         $schedule->call(function () {
-            $job = new ProcessTelmexLogOut;
-            $job->delay(rand(0, 45));
-            dispatch($job);
+            // $job = new ProcessTelmexLogOut;
+            // $job->delay(rand(0, 45));
+            // dispatch($job);
+            ProcessTelmexLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
         })->weekdays()->at("16:15");
 
 
