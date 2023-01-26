@@ -55,17 +55,21 @@ class Kernel extends ConsoleKernel
         /////MAVI
 
         $schedule->call(function () {
-            $job = new ProcessMaviLogin;
-            $job->delay(rand(0, 45));
-            dispatch($job);
+            // $job = new ProcessMaviLogin;
+            // $job->delay(rand(0, 45));
+            // dispatch($job);
+
+            ProcessMaviLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
         })->dailyAt("09:45");
 
 
 
         $schedule->call(function () {
-            $job = new ProcessMaviLogOut;
-            $job->delay(rand(0, 45));
-            dispatch($job);
+            // $job = new ProcessMaviLogOut;
+            // $job->delay(rand(0, 45));
+            // dispatch($job);
+
+            ProcessMaviLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
         })->dailyAt("19:15");
 
 
@@ -93,15 +97,11 @@ class Kernel extends ConsoleKernel
         //// ELEKTRA
 
         $schedule->call(function () {
-            $job = new ProcessElektraJLogin;
-            $job->delay(rand(0, 45));
-            dispatch($job);
+            ProcessElektraJLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
         })->dailyAt("10:00");
 
         $schedule->call(function () {
-            $job = new ProcessElektraJLogOut;
-            $job->delay(rand(0, 45));
-            dispatch($job);
+            ProcessElektraJLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
         })->dailyAt("19:15");
     }
 
