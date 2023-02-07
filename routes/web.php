@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 
 Auth::routes([
     'register' => false,
-    //  'reset' => false, 
+    //  'reset' => false,
     //  'password.reset' => false
 ]);
 
@@ -62,7 +62,6 @@ Route::get('/toggle-telcel-porta', function () {
     $updatedValue = app('valuestore')->get('telcel_porta_working');
 
     return dd($updatedValue);
-
 })->middleware('role:super-admin');
 
 
@@ -71,14 +70,12 @@ Route::post('/telcel-porta-working', function () {
     $response = app('valuestore')->get('telcel_porta_working');
 
     return $response ?? true;
-
 });
 Route::get('/get-telcel-porta-working', function () {
 
     $response = app('valuestore')->get('telcel_porta_working');
 
     return dd($response ?? true);
-
 });
 
 
@@ -197,7 +194,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/search/venta-exact', 'SearchController@ventaExact');
 
 
-    // apis 
+    // apis
     Route::post('/check/Itx', 'LineaController@checkItx');
 
 
@@ -283,11 +280,14 @@ Route::get('/duplicados', function (Request $request) {
     }
 });
 
-use App\PortaClient;
+use Illuminate\Support\Facades\Http;
 
 Route::get('/pruebas', function (Request $request) {
 
-    $telcelUser = PortaClient::where('counter','<',5)->inRandomOrder()->first();
+    $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getITX', [
+        'linea' => '3310512007',
 
-    return $telcelUser;
+    ]);
+
+    return $consulta;
 });
