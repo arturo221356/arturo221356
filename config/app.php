@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => '-06:00',
+    'timezone' => 'America/Mazatlan',
 
 
     /*
