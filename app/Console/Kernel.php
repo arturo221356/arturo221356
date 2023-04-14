@@ -10,6 +10,8 @@ use App\Jobs\ProcessMaviLogOut;
 use App\Jobs\ProcessTelmexLogOut;
 use App\Jobs\ProcessElektraJLogin;
 use App\Jobs\ProcessElektraJLogOut;
+use App\Jobs\ProcessElektra2JamayLogin;
+use App\Jobs\ProcessElektra2JamayLogout;
 
 class Kernel extends ConsoleKernel
 {
@@ -97,12 +99,22 @@ class Kernel extends ConsoleKernel
         //// ELEKTRA
 
         $schedule->call(function () {
-            ProcessElektraJLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->dailyAt("10:00");
+            ProcessElektraJLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        })->dailyAt("09:00");
 
         $schedule->call(function () {
-            ProcessElektraJLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->dailyAt("19:15");
+            ProcessElektraJLogOut::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        })->dailyAt("17:00");
+
+
+        /// elektra 2
+        $schedule->call(function () {
+            ProcessElektra2JamayLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        })->dailyAt("16:00");
+
+        $schedule->call(function () {
+            ProcessElektra2JamayLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        })->dailyAt("20:00");
     }
 
     /**
