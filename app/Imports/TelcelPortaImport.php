@@ -12,7 +12,7 @@ use Maatwebsite\Excel\Concerns\SkipsFailures;
 
 class TelcelPortaImport implements ToCollection
 {
-    use Importable, SkipsFailures;
+    use Importable;
 
     /**
     * @param Collection $collection
@@ -38,8 +38,8 @@ class TelcelPortaImport implements ToCollection
             $nip = $row[2];
             $icc = substr($row[0],0,19);
             $promo = '547';
-            $loggedUser = Auth::user();
-            $telcelUser = TelcelUser::where('distribution_id', $loggedUser->distribution_id)->first();
+            
+            $telcelUser = TelcelUser::where('distribution_id', 1)->first();
             SubirTelcelPorta::dispatch($numero, $nip, $telcelUser, $this->apiUrl, $icc, $promo);
 
         }

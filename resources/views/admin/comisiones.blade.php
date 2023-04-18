@@ -122,7 +122,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
-                        <input type="file" name="portas" multiple>
+                        <input type="file" name="portas[]" multiple>
                         </div>
                         <div class="col-md-6">
                             <button type="submit" class="btn btn-info">Upload</button>

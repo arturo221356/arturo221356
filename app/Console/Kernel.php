@@ -12,6 +12,8 @@ use App\Jobs\ProcessElektraJLogin;
 use App\Jobs\ProcessElektraJLogOut;
 use App\Jobs\ProcessElektra2JamayLogin;
 use App\Jobs\ProcessElektra2JamayLogout;
+use App\Jobs\ProcessCoppelLogin;
+use App\Jobs\ProcessCoppelLogout;
 
 class Kernel extends ConsoleKernel
 {
@@ -115,6 +117,17 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             ProcessElektra2JamayLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
         })->dailyAt("20:00");
+
+
+        ///coppel
+
+        $schedule->call(function () {
+            ProcessCoppelLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        })->dailyAt("10:00");
+
+        $schedule->call(function () {
+            ProcessCoppelLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        })->dailyAt("15:00");
     }
 
     /**
