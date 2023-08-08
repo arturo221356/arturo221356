@@ -20,7 +20,7 @@ class TelcelPortaController extends Controller
     {
 
 
-        $this->apiUrl = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.6/rest/ConsumeServicios?fmt=json';
+        $this->apiUrl = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.7/rest/ConsumeServicios?fmt=json';
     }
 
     public function checarPromoTelcel(Request $request)

@@ -39,7 +39,7 @@ class TelcelLogOut extends Command
      */
     public function handle()
     {
-        $urlapi = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.6/rest/ConsumeServicios?fmt=json';
+        $urlapi = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.7/rest/ConsumeServicios?fmt=json';
 
         $telcelUsers = TelcelUser::whereIn('id', [1, 2, 3])->get();
 
