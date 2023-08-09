@@ -31,7 +31,7 @@ class ProcessElektraJLogOut implements ShouldQueue
      */
     public function handle()
     {
-        $urlapi = 'http://portabilidad.telcel.com/PortabilidadCambaceo4.7/rest/ConsumeServicios?fmt=json';
+        $urlapi = 'https://portabilidad.telcel.com/PortabilidadCambaceo4.7/rest/ConsumeServicios?fmt=json';
 
         $telcelUser = TelcelUser::find(6);
 
