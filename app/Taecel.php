@@ -31,9 +31,6 @@ class Taecel extends Model
         ]);
 
 
-
-
-
         $taecelRequest = $this->requestTXN($key, $nip, $producto, $referencia);
 
         $respuesta = json_decode($taecelRequest);
@@ -88,7 +85,7 @@ class Taecel extends Model
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => 'Error ' . $request->status() .' NO REPETIR LA RECARGA, COMUNICATE CON EL DISTRIBUIDOR',
+                'message' => 'Error ' . $request->status() . ' NO REPETIR LA RECARGA, COMUNICATE CON EL DISTRIBUIDOR',
             ]);
         }
 
@@ -113,32 +110,32 @@ class Taecel extends Model
                 // ':(
                 //  Error intencional en formato de respuesta, se debe de ejecutar nuevamente el Método StatusTXN para Revisar el Status de la Transacción
                 //   :/',
-                    [
-                  'success' => true,
-                  'message' => 'Recarga Exitosa',
-                  'data' => [
-                      'TransID' => '210901470051',
-                      "Fecha"=> "2021-09-22 12:27:47",
-                      "Carrier"=> "Paquete Amigo Sin Limite",
-                      "Telefono"=> "5555555510",
-                      "Folio"=> "34234",
-                      "Status"=> "Fracasada ",
-                      "Monto"=> "$30.00",
-                      "Cargo"=> "$0.00",
-                      "Abono"=> "$0.00",
-                      "Via"=> "WS",
-                      "Región"=> "9",
-                      "Timeout"=> "10.05",
-                      "IP"=> "189.203.100.231",
-                      "Bolsa"=> "Tiempo Aire",
-                      "Comision"=> "$0.00",
-                      "Nota"=> "",
-                      "pin"=> "",
-                      "Saldo Final"=> "$8,565.05"
-                    
-                    
+                [
+                    'success' => true,
+                    'message' => 'Recarga Exitosa',
+                    'data' => [
+                        'TransID' => '210901470051',
+                        "Fecha" => "2021-09-22 12:27:47",
+                        "Carrier" => "Paquete Amigo Sin Limite",
+                        "Telefono" => "5555555510",
+                        "Folio" => "34234",
+                        "Status" => "Fracasada ",
+                        "Monto" => "$30.00",
+                        "Cargo" => "$0.00",
+                        "Abono" => "$0.00",
+                        "Via" => "WS",
+                        "Región" => "9",
+                        "Timeout" => "10.05",
+                        "IP" => "189.203.100.231",
+                        "Bolsa" => "Tiempo Aire",
+                        "Comision" => "$0.00",
+                        "Nota" => "",
+                        "pin" => "",
+                        "Saldo Final" => "$8,565.05"
+
+
                     ],
-                    ],
+                ],
                 500,
                 ['Headers']
             ),
@@ -167,6 +164,15 @@ class Taecel extends Model
 
         return $taecelRequest;
     }
+
+
+
+
+    /***
+     * 
+     * gets the status from the API 
+     */
+
 
 
     private function statusTXN($key, $nip, $transId)
@@ -205,7 +211,7 @@ class Taecel extends Model
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => 'Error ' . $request->status() .' NO REPETIR LA RECARGA!!!, COMUNICATE CON EL DISTRIBUIDOR',
+                'message' => 'Error ' . $request->status() . ' NO REPETIR LA RECARGA!!!, COMUNICATE CON EL DISTRIBUIDOR',
             ]);
         }
 
@@ -216,6 +222,11 @@ class Taecel extends Model
         return $response;
     }
 
+
+
+
+
+
     public function getBalance($key, $nip)
     {
         try {
@@ -223,7 +234,7 @@ class Taecel extends Model
             $request =  Http::asForm()->timeout(70)->post("https://taecel.com/app/api/getBalance", [
                 'key' => $key,
                 'nip' => $nip,
-               
+
 
             ]);
         } catch (RequestException $e) {
@@ -252,7 +263,7 @@ class Taecel extends Model
 
             $response =  json_encode([
                 'success' =>  false,
-                'message' => 'Error ' . $request->status() .' NO REPETIR LA RECARGA, COMUNICATE CON EL DISTRIBUIDOR',
+                'message' => 'Error ' . $request->status() . ' NO REPETIR LA RECARGA, COMUNICATE CON EL DISTRIBUIDOR',
             ]);
         }
 
@@ -262,7 +273,4 @@ class Taecel extends Model
 
         return $response;
     }
-
-
-
 }

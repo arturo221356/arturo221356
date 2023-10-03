@@ -27,7 +27,7 @@ class TelcelUser extends Model
 
             $consulta = Http::contentType("application/json")->bodyFormat('json')->post($urlapi, [
                 'EndPoint' => 1,
-                "Entrada" => "{\"idDispositivo\":\"$iddispositivo\",\"Password\":\"$pass\",\"Region\":\"5\",\"Usuario\":\"$user\",\"versionApp\":\"4.7 230718S\"}",
+                "Entrada" => "{\"idDispositivo\":\"$iddispositivo\",\"Password\":\"$pass\",\"Region\":\"5\",\"Usuario\":\"$user\",\"versionApp\":\"4.7 230912\"}",
                 "Metodo" => "1",
                 "Pantalla" => "0",
                 "Usuario" => "",
