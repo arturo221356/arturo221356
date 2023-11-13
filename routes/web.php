@@ -280,14 +280,29 @@ Route::get('/duplicados', function (Request $request) {
     }
 });
 
-use Illuminate\Support\Facades\Http;
+use  App\Jobs\ProcessMaviLogin;
 
-Route::get('/pruebas', function (Request $request) {
+use App\Jobs\ProcessTelmexLogin;
 
-    $consulta = Http::asForm()->post('http://promoviles.herokuapp.com/api/movistar/getITX', [
-        'linea' => '3310512007',
+use App\Jobs\ProcessMaviLogOut;
 
-    ]);
+use App\Jobs\ProcessTelmexLogOut;
 
-    return $consulta;
+Route::get('/telmex-login', function (Request $request) {
+
+    ProcessTelmexLogin::dispatch()->delay(now());
+});
+Route::get('/telmex-logout', function (Request $request) {
+
+    ProcessTelmexLogOut::dispatch()->delay(now());
+});
+
+
+Route::get('/mavi-login', function (Request $request) {
+
+    ProcessMaviLogin::dispatch()->delay(now());
+});
+Route::get('/mavi-logout', function (Request $request) {
+
+    ProcessMaviLogOut::dispatch()->delay(now());
 });
