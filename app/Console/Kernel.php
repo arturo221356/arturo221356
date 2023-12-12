@@ -64,7 +64,7 @@ class Kernel extends ConsoleKernel
             // dispatch($job);
 
             ProcessMaviLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->dailyAt("09:45");
+        })->timezone('America/Mexico_City')->dailyAt("09:45");
 
 
 
@@ -74,7 +74,7 @@ class Kernel extends ConsoleKernel
             // dispatch($job);
 
             ProcessMaviLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->dailyAt("19:15");
+        })->timezone('America/Mexico_City')->dailyAt("19:15");
 
 
 
@@ -83,44 +83,44 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
             ProcessTelmexLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->weekdays()->at("09:00");
+        })->timezone('America/Mexico_City')->weekdays()->at("09:00");
 
 
         $schedule->call(function () {
             ProcessTelmexLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->weekdays()->at("16:15");
+        })->timezone('America/Mexico_City')->weekdays()->at("16:15");
 
 
         //// ELEKTRA
 
-        $schedule->call(function () {
-            ProcessElektraJLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
-        })->dailyAt("09:00");
+        //$schedule->call(function () {
+            //ProcessElektraJLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        //})->timezone('America/Mexico_City')->dailyAt("09:00");
 
-        $schedule->call(function () {
-            ProcessElektraJLogOut::dispatch()->delay(now()->addMinutes(rand(0, 15)));
-        })->dailyAt("17:00");
+        //$schedule->call(function () {
+            //ProcessElektraJLogOut::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+       // })->timezone('America/Mexico_City')->dailyAt("17:00");
 
 
         /// elektra 2
-        $schedule->call(function () {
-            ProcessElektra2JamayLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
-        })->dailyAt("16:00");
+        //$schedule->call(function () {
+           // ProcessElektra2JamayLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        //})->timezone('America/Mexico_City')->dailyAt("16:00");
 
-        $schedule->call(function () {
-            ProcessElektra2JamayLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
-        })->dailyAt("20:00");
+        //$schedule->call(function () {
+           // ProcessElektra2JamayLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        //})->timezone('America/Mexico_City')->dailyAt("20:00");
 
 
         ///coppel
 
-        $schedule->call(function () {
-            ProcessCoppelLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
-        })->dailyAt("10:00");
+        //$schedule->call(function () {
+          //  ProcessCoppelLogin::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        //})->timezone('America/Mexico_City')->dailyAt("10:00");
 
-        $schedule->call(function () {
-            ProcessCoppelLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
-        })->dailyAt("15:00");
+        //$schedule->call(function () {
+          //  ProcessCoppelLogout::dispatch()->delay(now()->addMinutes(rand(0, 15)));
+        //})->timezone('America/Mexico_City')->dailyAt("15:00");
     }
 
     /**
