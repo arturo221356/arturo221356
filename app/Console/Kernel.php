@@ -58,23 +58,23 @@ class Kernel extends ConsoleKernel
 
         /////MAVI
 
-        $schedule->call(function () {
+       // $schedule->call(function () {
             // $job = new ProcessMaviLogin;
             // $job->delay(rand(0, 45));
             // dispatch($job);
 
-            ProcessMaviLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->timezone('America/Mexico_City')->dailyAt("09:45");
+           // ProcessMaviLogin::dispatch()->delay(now()->addMinutes(rand(0, 45)));
+       // })->timezone('America/Mexico_City')->dailyAt("09:45");
 
 
 
-        $schedule->call(function () {
+       // $schedule->call(function () {
             // $job = new ProcessMaviLogOut;
             // $job->delay(rand(0, 45));
             // dispatch($job);
 
-            ProcessMaviLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
-        })->timezone('America/Mexico_City')->dailyAt("19:15");
+         //   ProcessMaviLogOut::dispatch()->delay(now()->addMinutes(rand(0, 45)));
+       // })->timezone('America/Mexico_City')->dailyAt("19:15");
 
 
 
