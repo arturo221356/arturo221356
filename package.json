@@ -32,7 +32,7 @@
         "bootstrap-vue": "^2.10.1",
         "funding": "^1.0.9",
         "laravel-permission-to-vuejs": "^2.0.5",
-        "node-sass": "^4.13.1",
+        "node-sass": "^7.0.0",
         "vee-validate": "^3.3.0",
         "vue-multiselect": "^2.1.6",
         "webpack": "^4.42.1"
